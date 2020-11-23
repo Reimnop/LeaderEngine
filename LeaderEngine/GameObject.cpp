@@ -3,8 +3,8 @@
 
 using namespace LeaderEngine;
 
-GameObject::GameObject(char* name) {
-	this->name = name;
+GameObject::GameObject(const char* name) {
+	this->name = (char*)name;
 	Application::instance->gameObjects.push_back(this);
 	start();
 }
@@ -29,13 +29,6 @@ void GameObject::render() {
 void GameObject::addComponent(Component* component) {
 	components.push_back(component);
 	component->start();
-}
-
-template<typename T>
-inline T& GameObject::getComponent() {
-	for (auto comp : components)
-		if (typeof(comp) == T)
-			return comp;
 }
 
 void GameObject::removeComponent(Component* component) {

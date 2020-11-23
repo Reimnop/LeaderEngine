@@ -9,7 +9,7 @@ namespace LeaderEngine {
 		char* name;
 
 		//constructor and destructor
-		GameObject(char* name);
+		GameObject(const char* name);
 		~GameObject();
 
 		//methods
@@ -19,8 +19,14 @@ namespace LeaderEngine {
 
 		void addComponent(Component* component);
 
-		template<typename T>
-		T& getComponent();
+		/*template <typename T>
+		T* getComponent()
+		{
+			for (auto c : components)
+				if (dynamic_cast<T&>(*c))
+					return (T*)c;
+			return nullptr;
+		}*/
 
 		void removeComponent(Component* component);
 	private:

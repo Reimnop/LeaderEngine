@@ -1,7 +1,9 @@
+#pragma once
+
 namespace LeaderEngine {
 	class Component {
 	public:
-		virtual void start();
-		virtual void update();
+		virtual void start() {}
+		virtual void update() {}
 	};
 }

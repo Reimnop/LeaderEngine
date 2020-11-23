@@ -1,8 +1,20 @@
 #include <iostream>
 #include "Application.h"
+#include "Component.h"
+#include "GameObject.h"
+
+class ccc : public LeaderEngine::Component {
+public:
+	void start() {
+		std::cout << "ccc" << std::endl;
+	}
+};
 
 void onLoad() {
-	
+	LeaderEngine::GameObject* go = new LeaderEngine::GameObject("does it work?");
+	go->addComponent(new ccc());
+
+	//go->getComponent<ccc>();
 }
 
 int main(void) 
