@@ -1,3 +1,4 @@
+#include <typeinfo>
 #include "GameObject.h"
 #include "Application.h"
 
@@ -18,8 +19,8 @@ void GameObject::start() {
 }
 
 void GameObject::update() {
-	for (auto comp : components)
-		comp->update();
+	for (auto& comp : components)
+		comp.second->update();
 }
 
 void GameObject::render() {
@@ -27,10 +28,11 @@ void GameObject::render() {
 }
 
 void GameObject::addComponent(Component* component) {
-	components.push_back(component);
+	components[typeid(*component)] = component;
 	component->start();
 }
 
-void GameObject::removeComponent(Component* component) {
-	components.remove(component);
+template<typename T>
+void GameObject::removeComponent() {
+	components.erase(typeid(T));
 }

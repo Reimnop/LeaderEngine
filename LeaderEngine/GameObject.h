@@ -1,6 +1,7 @@
 #pragma once
 
-#include <list>
+#include <unordered_map>
+#include <typeindex>
 #include "Component.h"
 
 namespace LeaderEngine {
@@ -19,17 +20,15 @@ namespace LeaderEngine {
 
 		void addComponent(Component* component);
 
-		/*template <typename T>
+		template <typename T>
 		T* getComponent()
 		{
-			for (auto c : components)
-				if (dynamic_cast<T&>(*c))
-					return (T*)c;
-			return nullptr;
-		}*/
+			return (T*)components[typeid(T)];
+		}
 
-		void removeComponent(Component* component);
+		template<typename T>
+		void removeComponent();
 	private:
-		std::list<Component*> components;
+		std::unordered_map<std::type_index, Component*> components;
 	};
 }

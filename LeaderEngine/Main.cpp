@@ -14,7 +14,8 @@ void onLoad() {
 	LeaderEngine::GameObject* go = new LeaderEngine::GameObject("does it work?");
 	go->addComponent(new ccc());
 
-	//go->getComponent<ccc>();
+	auto c = go->getComponent<ccc>();
+	c->start();
 }
 
 int main(void) 
