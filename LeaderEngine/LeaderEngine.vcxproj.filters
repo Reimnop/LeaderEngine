@@ -2,39 +2,14 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Application.cpp">
-      <Filter>LeaderEngine\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>LeaderEngine\Source</Filter>
-    </ClCompile>
+    <ClCompile Include="LeaderEngine\Application.cpp" />
+    <ClCompile Include="LeaderEngine\Types\GameObject.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h">
-      <Filter>LeaderEngine\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="linmath.h">
-      <Filter>LeaderEngine\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>LeaderEngine\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Component.h">
-      <Filter>LeaderEngine\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Time.h">
-      <Filter>LeaderEngine\Headers</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="LeaderEngine">
-      <UniqueIdentifier>{f17eb60b-35b8-4482-ac5e-6de8e5aa21ba}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="LeaderEngine\Source">
-      <UniqueIdentifier>{3a02390b-49e6-434e-aad5-d7596d797103}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="LeaderEngine\Headers">
-      <UniqueIdentifier>{a6874cd0-c9e1-482f-8da0-717c4ad8eaf3}</UniqueIdentifier>
-    </Filter>
+    <ClInclude Include="LeaderEngine\Application.h" />
+    <ClInclude Include="LeaderEngine\linmath.h" />
+    <ClInclude Include="LeaderEngine\Types\Component.h" />
+    <ClInclude Include="LeaderEngine\Types\GameObject.h" />
+    <ClInclude Include="LeaderEngine\Time.h" />
   </ItemGroup>
 </Project>

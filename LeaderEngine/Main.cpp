@@ -1,7 +1,5 @@
 #include <iostream>
-#include "Application.h"
-#include "Component.h"
-#include "GameObject.h"
+#include "LeaderEngine/Application.h"
 
 int main(void) 
 {

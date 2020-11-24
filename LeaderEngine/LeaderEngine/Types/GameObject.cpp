@@ -1,6 +1,6 @@
 #include <typeinfo>
 #include "GameObject.h"
-#include "Application.h"
+#include "../Application.h"
 
 using namespace LeaderEngine;
 

@@ -19,16 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="LeaderEngine\Application.cpp" />
+    <ClCompile Include="LeaderEngine\Types\GameObject.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Application.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Component.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="linmath.h" />
-    <ClInclude Include="Application.h" />
-    <ClInclude Include="Time.h" />
+    <ClInclude Include="LeaderEngine\Application.h" />
+    <ClInclude Include="LeaderEngine\linmath.h" />
+    <ClInclude Include="LeaderEngine\Types\Component.h" />
+    <ClInclude Include="LeaderEngine\Types\GameObject.h" />
+    <ClInclude Include="LeaderEngine\Time.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

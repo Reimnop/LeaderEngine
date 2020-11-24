@@ -2,7 +2,7 @@
 
 #include <GLFW/glfw3.h>
 #include <list>
-#include "GameObject.h"
+#include "Types/GameObject.h"
 
 namespace LeaderEngine 
 {

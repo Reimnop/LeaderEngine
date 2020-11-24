@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "linmath.h"
 #include "Application.h"
 #include "Time.h"
 
@@ -55,7 +54,7 @@ void Application::start(int width, int height, const char* title, void (*loadCal
 
 void Application::load() 
 {
-	if (*loadCallback)
+	if (loadCallback)
 		(*loadCallback)();
 }
 
