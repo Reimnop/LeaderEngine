@@ -55,7 +55,8 @@ void Application::start(int width, int height, const char* title, void (*loadCal
 
 void Application::load() 
 {
-	(*loadCallback)();
+	if (*loadCallback)
+		(*loadCallback)();
 }
 
 void Application::update() 
