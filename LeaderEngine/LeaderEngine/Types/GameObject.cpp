@@ -11,12 +11,15 @@ GameObject::GameObject(const char* name) {
 
 GameObject::~GameObject() {
 	Application::instance->gameObjects.remove(this);
+
+	delete[] name;
 }
 
 void GameObject::start() {
 	transform = new Transform();
 	addComponent(transform);
-	//TODO: add start for GameObject
+
+	setActive(true);
 }
 
 void GameObject::update() {
@@ -30,7 +33,16 @@ void GameObject::update() {
 }
 
 void GameObject::render() {
-	//TODO: add render for GameObject
+	if (!active)
+		return;
+
+	if (!vertArray || !shader)
+		return;
+
+	shader->use();
+	vertArray->use();
+
+	glDrawElements(GL_TRIANGLES, vertArray->indices.size(), GL_UNSIGNED_INT, (void*)0);
 }
 
 void GameObject::onClosing() {

@@ -5,6 +5,8 @@
 #include <vector>
 #include "Component.h"
 #include "Transform.h"
+#include "VertexArray.h"
+#include "Shader.h"
 
 namespace LeaderEngine {
 	class GameObject {
@@ -14,6 +16,9 @@ namespace LeaderEngine {
 		bool active = true;
 
 		Transform* transform;
+
+		VertexArray* vertArray;
+		Shader* shader;
 
 		//constructor and destructor
 		GameObject(const char* name);

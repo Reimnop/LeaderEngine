@@ -21,8 +21,9 @@ void Application::start(int width, int height, const char* title, void (*loadCal
 	//window creation
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-	glfwWindowHint(GLFW_OPENGL_CORE_PROFILE, 1);
-	glfwWindowHint(GLFW_RESIZABLE, 0);
+	glfwWindowHint(GLFW_OPENGL_CORE_PROFILE, GL_TRUE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	window = glfwCreateWindow(width, height, title, NULL, NULL);
 
@@ -31,11 +32,11 @@ void Application::start(int width, int height, const char* title, void (*loadCal
 		exit(EXIT_FAILURE);
 	}
 
-	if (!glewInit())
-		exit(EXIT_FAILURE);
-
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(0);
+
+	if (glewInit() != GLEW_OK) 
+		exit(EXIT_FAILURE);
 
 	load();
 
@@ -61,6 +62,9 @@ void Application::start(int width, int height, const char* title, void (*loadCal
 void Application::load() 
 {
 	glEnable(GL_DEPTH_TEST);
+
+	//glEnableClientState(GL_VERTEX_ARRAY);
+	//glEnableClientState(GL_INDEX_ARRAY);
 
 	if (loadCallback)
 		(*loadCallback)();

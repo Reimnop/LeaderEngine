@@ -21,14 +21,17 @@
   <ItemGroup>
     <ClCompile Include="LeaderEngine\Application.cpp" />
     <ClCompile Include="LeaderEngine\Types\GameObject.cpp" />
+    <ClCompile Include="LeaderEngine\Types\Shader.cpp" />
     <ClCompile Include="LeaderEngine\Types\VertexArray.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LeaderEngine\Application.h" />
+    <ClInclude Include="LeaderEngine\LeaderEngine.h" />
     <ClInclude Include="LeaderEngine\Types\Component.h" />
     <ClInclude Include="LeaderEngine\Types\GameObject.h" />
     <ClInclude Include="LeaderEngine\Time.h" />
+    <ClInclude Include="LeaderEngine\Types\Shader.h" />
     <ClInclude Include="LeaderEngine\Types\Transform.h" />
     <ClInclude Include="LeaderEngine\Types\VertexArray.h" />
   </ItemGroup>

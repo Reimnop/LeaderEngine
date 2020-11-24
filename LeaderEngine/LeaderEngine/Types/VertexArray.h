@@ -5,8 +5,8 @@
 namespace LeaderEngine {
 	class VertexArray {
 	public:
-		float* vertices;
-		unsigned int* indices;
+		std::vector<float> vertices;
+		std::vector<unsigned int> indices;
 
 		VertexArray(std::vector<float> vertices, std::vector<unsigned int> indices);
 		~VertexArray();

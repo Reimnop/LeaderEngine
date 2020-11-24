@@ -5,6 +5,7 @@
     <ClCompile Include="LeaderEngine\Application.cpp" />
     <ClCompile Include="LeaderEngine\Types\GameObject.cpp" />
     <ClCompile Include="LeaderEngine\Types\VertexArray.cpp" />
+    <ClCompile Include="LeaderEngine\Types\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LeaderEngine\Application.h" />
@@ -13,5 +14,7 @@
     <ClInclude Include="LeaderEngine\Time.h" />
     <ClInclude Include="LeaderEngine\Types\VertexArray.h" />
     <ClInclude Include="LeaderEngine\Types\Transform.h" />
+    <ClInclude Include="LeaderEngine\Types\Shader.h" />
+    <ClInclude Include="LeaderEngine\LeaderEngine.h" />
   </ItemGroup>
 </Project>
