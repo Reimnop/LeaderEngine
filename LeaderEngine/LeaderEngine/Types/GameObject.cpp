@@ -14,12 +14,15 @@ GameObject::~GameObject() {
 }
 
 void GameObject::start() {
-	this->transform = new Transform();
-	addComponent(this->transform);
+	transform = new Transform();
+	addComponent(transform);
 	//TODO: add start for GameObject
 }
 
 void GameObject::update() {
+	if (!active)
+		return;
+
 	for (auto& comp : components)
 		comp.second->update();
 	for (auto& comp : components)
@@ -28,6 +31,11 @@ void GameObject::update() {
 
 void GameObject::render() {
 	//TODO: add render for GameObject
+}
+
+void GameObject::onClosing() {
+	for (auto& comp : components)
+		comp.second->onClosing();
 }
 
 void GameObject::setActive(bool active) {

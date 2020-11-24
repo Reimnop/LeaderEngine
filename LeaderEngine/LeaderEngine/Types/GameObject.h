@@ -23,6 +23,7 @@ namespace LeaderEngine {
 		void start();
 		void update();
 		void render();
+		void onClosing();
 
 		void setActive(bool active);
 

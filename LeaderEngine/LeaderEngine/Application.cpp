@@ -21,6 +21,7 @@ void Application::start(int width, int height, const char* title, void (*loadCal
 	//window creation
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	glfwWindowHint(GLFW_OPENGL_CORE_PROFILE, 1);
 	glfwWindowHint(GLFW_RESIZABLE, 0);
 
 	window = glfwCreateWindow(width, height, title, NULL, NULL);
@@ -30,7 +31,8 @@ void Application::start(int width, int height, const char* title, void (*loadCal
 		exit(EXIT_FAILURE);
 	}
 
-	glewInit();
+	if (!glewInit())
+		exit(EXIT_FAILURE);
 
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(0);
@@ -48,6 +50,8 @@ void Application::start(int width, int height, const char* title, void (*loadCal
 	}
 
 	//cleanup
+	onClosing();
+
 	glfwDestroyWindow(window);
 	glfwTerminate();
 
@@ -83,4 +87,9 @@ void Application::render()
 
 	glfwSwapBuffers(window);
 	glfwPollEvents();
+}
+
+void Application::onClosing() {
+	for (auto go : gameObjects)
+		go->onClosing();
 }

@@ -6,5 +6,6 @@ namespace LeaderEngine {
 		virtual void start() {}
 		virtual void update() {}
 		virtual void lateUpdate() {}
+		virtual void onClosing() {}
 	};
 }

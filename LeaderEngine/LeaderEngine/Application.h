@@ -25,5 +25,6 @@ namespace LeaderEngine
 		void load();
 		void update();
 		void render();
+		void onClosing();
 	};
 }
