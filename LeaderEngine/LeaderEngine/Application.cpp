@@ -30,6 +30,8 @@ void Application::start(int width, int height, const char* title, void (*loadCal
 		exit(EXIT_FAILURE);
 	}
 
+	glewInit();
+
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(0);
 
