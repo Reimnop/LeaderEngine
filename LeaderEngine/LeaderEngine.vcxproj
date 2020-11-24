@@ -28,6 +28,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="linmath.h" />
     <ClInclude Include="Application.h" />
+    <ClInclude Include="Time.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

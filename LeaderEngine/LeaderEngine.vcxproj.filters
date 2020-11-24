@@ -22,6 +22,9 @@
     <ClInclude Include="Component.h">
       <Filter>LeaderEngine\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>LeaderEngine\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="LeaderEngine">

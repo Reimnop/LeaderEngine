@@ -19,6 +19,8 @@ namespace LeaderEngine
 
 		void start(int width, int height, const char* title, void (*loadCallback)());
 	private:
+		float lastTime;
+
 		void load();
 		void update();
 		void render();

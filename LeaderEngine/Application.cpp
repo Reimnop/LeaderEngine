@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "linmath.h"
 #include "Application.h"
+#include "Time.h"
 
 using namespace LeaderEngine;
 
@@ -15,6 +16,7 @@ void Application::start(int width, int height, const char* title, void (*loadCal
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
 
+	Time::timeScale = 1;
 	this->loadCallback = loadCallback;
 
 	//window creation
@@ -35,8 +37,13 @@ void Application::start(int width, int height, const char* title, void (*loadCal
 	load();
 
 	while (!glfwWindowShouldClose(window)) {
+		lastTime = glfwGetTime();
+
 		update();
 		render();
+
+		Time::deltaTimeUnscaled = glfwGetTime() - lastTime;
+		Time::deltaTime = Time::deltaTimeUnscaled * Time::timeScale;
 	}
 
 	//cleanup
