@@ -9,7 +9,7 @@ namespace LeaderEngine
 	class Application
 	{
 	public:
-		static inline Application* instance;
+		static inline Application *instance;
 
 		GLFWwindow* window;
 

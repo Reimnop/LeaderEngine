@@ -4,12 +4,14 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="LeaderEngine\Application.cpp" />
     <ClCompile Include="LeaderEngine\Types\GameObject.cpp" />
+    <ClCompile Include="LeaderEngine\Types\VertexArray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LeaderEngine\Application.h" />
-    <ClInclude Include="LeaderEngine\linmath.h" />
     <ClInclude Include="LeaderEngine\Types\Component.h" />
     <ClInclude Include="LeaderEngine\Types\GameObject.h" />
     <ClInclude Include="LeaderEngine\Time.h" />
+    <ClInclude Include="LeaderEngine\Types\VertexArray.h" />
+    <ClInclude Include="LeaderEngine\Types\Transform.h" />
   </ItemGroup>
 </Project>

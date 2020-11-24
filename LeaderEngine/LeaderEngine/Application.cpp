@@ -54,6 +54,8 @@ void Application::start(int width, int height, const char* title, void (*loadCal
 
 void Application::load() 
 {
+	glEnable(GL_DEPTH_TEST);
+
 	if (loadCallback)
 		(*loadCallback)();
 }
@@ -61,7 +63,8 @@ void Application::load()
 void Application::update() 
 {
 	for (auto go : gameObjects)
-		go->update();
+		if (go->active)
+			go->update();
 }
 
 void Application::render() 
@@ -72,7 +75,9 @@ void Application::render()
 	glViewport(0, 0, width, height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	
+	for (auto go : gameObjects)
+		if (go->active)
+			go->render();
 
 	glfwSwapBuffers(window);
 	glfwPollEvents();

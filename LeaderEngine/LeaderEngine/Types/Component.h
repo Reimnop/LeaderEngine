@@ -5,5 +5,6 @@ namespace LeaderEngine {
 	public:
 		virtual void start() {}
 		virtual void update() {}
+		virtual void lateUpdate() {}
 	};
 }
