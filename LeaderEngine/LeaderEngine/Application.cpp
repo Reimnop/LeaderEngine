@@ -63,9 +63,6 @@ void Application::load()
 {
 	glEnable(GL_DEPTH_TEST);
 
-	//glEnableClientState(GL_VERTEX_ARRAY);
-	//glEnableClientState(GL_INDEX_ARRAY);
-
 	if (loadCallback)
 		(*loadCallback)();
 }

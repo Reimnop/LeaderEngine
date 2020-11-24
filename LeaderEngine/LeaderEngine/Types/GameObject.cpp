@@ -48,6 +48,9 @@ void GameObject::render() {
 void GameObject::onClosing() {
 	for (auto& comp : components)
 		comp.second->onClosing();
+
+	delete shader;
+	delete vertArray;
 }
 
 void GameObject::setActive(bool active) {

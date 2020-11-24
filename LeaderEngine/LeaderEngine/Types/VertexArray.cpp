@@ -14,6 +14,12 @@ VertexArray::~VertexArray() {
 	glDeleteBuffers(1, &vbo);
 	glDeleteBuffers(1, &ebo);
 	glDeleteVertexArrays(1, &vao);
+
+	vertices.clear();
+	vertices.shrink_to_fit();
+
+	indices.clear();
+	indices.shrink_to_fit();
 }
 
 void VertexArray::init() {
