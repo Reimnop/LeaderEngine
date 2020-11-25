@@ -4,6 +4,7 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace LeaderEngine
@@ -17,9 +18,9 @@ namespace LeaderEngine
 
     public class Application : GameWindow
     {
-        public static Application instance;
+        public static Application instance = null;
 
-        public static List<GameObject> GameObjects = new List<GameObject>();
+        public List<GameObject> GameObjects = new List<GameObject>();
 
         private Action initCallback;
 
@@ -29,7 +30,7 @@ namespace LeaderEngine
                 return;
 
             instance = this;
-            CursorVisible = false;
+            CursorVisible = true;
 
             this.initCallback = initCallback;
 
@@ -57,6 +58,9 @@ namespace LeaderEngine
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            GameObjects.ForEach(go => go.Update());
+            GameObjects.ForEach(go => go.LateUpdate());
+
             base.OnUpdateFrame(e);
         }
 
@@ -66,10 +70,20 @@ namespace LeaderEngine
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+            GameObjects.ForEach(go => go.Render());
+
             SwapBuffers();
 
             GL.Finish();
+
             base.OnRenderFrame(e);
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            GameObjects.ForEach(go => go.OnClosing());
+
+            base.OnClosing(e);
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿namespace LeaderEngine
 {
-    public abstract class Component
+    public class Component
     {
-        public abstract void Start();
-        public abstract void Update();
-        public abstract void LateUpdate();
-        public abstract void OnRemove();
-        public abstract void OnClosing();
+        public virtual void Start() { }
+        public virtual void Update() { }
+        public virtual void LateUpdate() { }
+        public virtual void OnRemove() { }
+        public virtual void OnClosing() { }
     }
 }
