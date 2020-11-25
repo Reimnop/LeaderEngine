@@ -74,8 +74,6 @@ namespace LeaderEngine
 
             SwapBuffers();
 
-            GL.Finish();
-
             base.OnRenderFrame(e);
         }
 

@@ -86,6 +86,7 @@ namespace LeaderEngine
 
         public void Dispose()
         {
+            Application.instance.GameObjects.Remove(this);
             Cleanup();
         }
 
