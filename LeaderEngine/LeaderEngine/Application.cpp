@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <logger.h>
+#include <string>
 #include "Application.h"
 #include "Time.h"
 
@@ -37,6 +39,10 @@ void Application::start(int width, int height, const char* title, void (*loadCal
 
 	if (glewInit() != GLEW_OK) 
 		exit(EXIT_FAILURE);
+
+	Logger::log(std::string("Vendor: ").append((const char*)glGetString(GL_VENDOR)).c_str());
+	Logger::log(std::string("Renderer: ").append((const char*)glGetString(GL_RENDERER)).c_str());
+	Logger::log(std::string("Version: ").append((const char*)glGetString(GL_VERSION)).c_str());
 
 	load();
 

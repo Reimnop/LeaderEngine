@@ -1,15 +1,16 @@
 #include <iostream>
 #include "LeaderEngine/LeaderEngine.h"
+#include <logger.h>
 
 using namespace LeaderEngine;
 
-float vertices[] = {
+std::vector<float> vertices {
     -0.5f, -0.5f, 0.0f,
      0.5f, -0.5f, 0.0f,
      0.0f,  0.5f, 0.0f
 };
 
-unsigned int indices[] = {
+std::vector<unsigned int> indices {
     0, 1, 2
 };
 
@@ -28,7 +29,7 @@ const char* fragmentShaderSource = "#version 330 core\n"
 "}";
 
 void onLoad() {
-    VertexArray* vertArray = new VertexArray(std::vector<float>(vertices, vertices + sizeof(vertices) / sizeof(vertices[0])), std::vector<unsigned int>(indices, indices + sizeof(indices) / sizeof(indices[0])));
+    VertexArray* vertArray = new VertexArray(vertices, indices);
     Shader* shader = new Shader(vertexShaderSource, fragmentShaderSource);
 
     GameObject* go = new GameObject("test obj");

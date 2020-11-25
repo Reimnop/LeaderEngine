@@ -50,3 +50,7 @@ Shader::~Shader() {
 void Shader::use() {
 	glUseProgram(handle);
 }
+
+int Shader::getAttribLocation(const char* attribName) {
+	return glGetAttribLocation(handle, attribName);
+}

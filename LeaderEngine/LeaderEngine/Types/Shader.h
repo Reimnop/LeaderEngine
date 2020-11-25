@@ -9,6 +9,8 @@ namespace LeaderEngine {
 		~Shader();
 
 		void use();
+
+		int getAttribLocation(const char* attribName);
 	private:
 		unsigned int handle;
 
