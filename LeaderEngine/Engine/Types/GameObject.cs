@@ -8,6 +8,7 @@ namespace LeaderEngine
     {
         public string Name;
         public bool ActiveSelf { private set; get; }
+        public Transform transform { private set; get; }
 
         private List<Component> components = new List<Component>();
 
@@ -21,7 +22,7 @@ namespace LeaderEngine
 
         private void Init()
         {
-            AddComponent<Transform>();
+            transform = AddComponent<Transform>();
             SetActive(true);
         }
 
@@ -56,7 +57,7 @@ namespace LeaderEngine
 
         public T AddComponent<T>(params object[] args) where T : Component
         {
-            if (typeof(T) == typeof(Transform))
+            if (typeof(T) == typeof(Transform) && transform != null)
                 return null;
 
             var comp = (T)Activator.CreateInstance(typeof(T), args);

@@ -1,4 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -33,6 +34,12 @@ namespace LeaderEngine
 
         public override void OnRender()
         {
+            Matrix4 mvp = Matrix4.CreateScale(gameObject.transform.scale)
+                 * Matrix4.CreateFromQuaternion(gameObject.transform.rotation) 
+                 * Matrix4.CreateTranslation(gameObject.transform.position);
+
+            shader.SetMatrix4("mvp", mvp * Matrix4.CreateOrthographic(16, 9, -1.0f, 200f));
+
             shader.Use();
             meshFilter.VertexArray.Use();
             texture?.Use(TextureUnit.Texture0);

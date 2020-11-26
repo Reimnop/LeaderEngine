@@ -35,9 +35,10 @@ class Program
         "layout (location = 0) in vec3 aPos;\n" +
         "layout (location = 1) in vec2 aTexCoord;\n" +
         "out vec2 TexCoord;\n" +
+        "uniform mat4 mvp;" +
         "void main()\n" +
         "{\n" +
-        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n" +
+        "   gl_Position = vec4(aPos, 1.0) * mvp;\n" +
         "   TexCoord = aTexCoord;\n" +
         "}";
 
@@ -63,5 +64,8 @@ class Program
         GameObject go = new GameObject("test");
         go.AddComponent<MeshFilter>(vertexArray);
         go.AddComponent<MeshRenderer>(shader).SetTexture(tex);
+
+        go.transform.position.X = 4f;
+        go.transform.position.Z = -5.0f;
     }
 }
