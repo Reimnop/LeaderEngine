@@ -2,10 +2,13 @@
 {
     public class Component
     {
-        public virtual void Start() { }
-        public virtual void Update() { }
-        public virtual void LateUpdate() { }
-        public virtual void OnRemove() { }
-        public virtual void OnClosing() { }
+        public GameObject gameObject = null;
+
+        public virtual void Start() { return; }
+        public virtual void Update() { return; }
+        public virtual void LateUpdate() { return; }
+        public virtual void OnRender() { return; }
+        public virtual void OnRemove() { return; }
+        public virtual void OnClosing() { return; }
     }
 }

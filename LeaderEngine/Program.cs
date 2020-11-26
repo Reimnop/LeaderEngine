@@ -49,7 +49,7 @@ class Program
         Shader shader = new Shader(vertexShaderSource, fragmentShaderSource);
 
         GameObject go = new GameObject("test");
-        go.VertexArray = vertexArray;
-        go.Shader = shader;
+        go.AddComponent<MeshFilter>(vertexArray);
+        go.AddComponent<MeshRenderer>(shader);
     }
 }

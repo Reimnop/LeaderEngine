@@ -9,9 +9,6 @@ namespace LeaderEngine
         public string Name;
         public bool ActiveSelf { private set; get; }
 
-        public VertexArray VertexArray;
-        public Shader Shader;
-
         private List<Component> components = new List<Component>();
 
         public GameObject(string name)
@@ -30,11 +27,17 @@ namespace LeaderEngine
 
         public void Update()
         {
+            if (!ActiveSelf)
+                return;
+
             components.ForEach(co => co.Update());
         }
 
         public void LateUpdate()
         {
+            if (!ActiveSelf)
+                return;
+
             components.ForEach(co => co.LateUpdate());
         }
 
@@ -43,13 +46,7 @@ namespace LeaderEngine
             if (!ActiveSelf)
                 return;
 
-            if (VertexArray == null || Shader == null)
-                return;
-
-            Shader.Use();
-            VertexArray.Use();
-
-            GL.DrawElements(PrimitiveType.Triangles, VertexArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
+            components.ForEach(co => co.OnRender());
         }
 
         public void SetActive(bool active)
@@ -57,12 +54,32 @@ namespace LeaderEngine
             ActiveSelf = active;
         }
 
-        public void AddComponent<T>(params object[] args) where T : Component
+        public T AddComponent<T>(params object[] args) where T : Component
         {
             if (typeof(T) == typeof(Transform))
-                return;
+                return null;
 
-            components.Add((T)Activator.CreateInstance(typeof(T), args));
+            var comp = (T)Activator.CreateInstance(typeof(T), args);
+            components.Add(comp);
+            comp.gameObject = this;
+            comp.Start();
+
+            return comp;
+        }
+
+        public void AddComponents(Component[] components)
+        {
+            foreach (var co in components)
+                if (co.GetType() == typeof(Transform))
+                    return;
+
+            this.components.AddRange(components);
+
+            foreach (var co in components)
+            {
+                co.gameObject = this;
+                co.Start();
+            }
         }
 
         public T GetComponent<T>() where T : Component
@@ -93,9 +110,6 @@ namespace LeaderEngine
         private void Cleanup()
         {
             components.ForEach(co => co.OnRemove());
-
-            VertexArray.Dispose();
-            Shader.Dispose();
         }
     }
 }
