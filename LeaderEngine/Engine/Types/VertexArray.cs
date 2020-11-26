@@ -48,7 +48,7 @@ namespace LeaderEngine
             {
                 GL.VertexAttribPointer(attribs[i].location, attribs[i].size, VertexAttribPointerType.Float, false, size * sizeof(float), c);
                 GL.EnableVertexAttribArray(attribs[i].location);
-                c += attribs[i].size;
+                c += attribs[i].size * sizeof(float);
             }
 
             GL.BindVertexArray(0);

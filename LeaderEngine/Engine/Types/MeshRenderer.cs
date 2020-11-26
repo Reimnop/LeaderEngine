@@ -11,9 +11,13 @@ namespace LeaderEngine
         private Texture texture;
         private MeshFilter meshFilter;
 
-        public MeshRenderer(Shader shader, Texture texture)
+        public MeshRenderer(Shader shader)
         {
             this.shader = shader;
+        }
+
+        public void SetTexture(Texture texture)
+        {
             this.texture = texture;
         }
 
@@ -30,8 +34,8 @@ namespace LeaderEngine
         public override void OnRender()
         {
             shader.Use();
-            texture.Use(TextureUnit.Texture0);
             meshFilter.VertexArray.Use();
+            texture?.Use(TextureUnit.Texture0);
 
             GL.DrawElements(PrimitiveType.Triangles, meshFilter.VertexArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
         }
