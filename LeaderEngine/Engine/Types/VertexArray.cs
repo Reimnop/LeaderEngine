@@ -5,6 +5,12 @@ using System.Text;
 
 namespace LeaderEngine
 {
+    public struct VertexAttrib
+    {
+        public int location;
+        public int size;
+    }
+
     public class VertexArray : IDisposable
     {
         private float[] vertices;
@@ -12,14 +18,14 @@ namespace LeaderEngine
 
         private int VAO, VBO, EBO;
 
-        public VertexArray(float[] vertices, uint[] indices)
+        public VertexArray(float[] vertices, uint[] indices, VertexAttrib[] attribs)
         {
             this.vertices = vertices;
             this.indices = indices;
-            Init();
+            Init(attribs);
         }
 
-        private void Init()
+        private void Init(VertexAttrib[] attribs)
         {
             VAO = GL.GenVertexArray();
             VBO = GL.GenBuffer();
@@ -33,8 +39,17 @@ namespace LeaderEngine
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
 
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
-            GL.EnableVertexAttribArray(0);
+            int size = 0;
+            foreach (VertexAttrib attrib in attribs)
+                size += attrib.size;
+
+            int c = 0;
+            for (int i = 0; i < attribs.Length; i++)
+            {
+                GL.VertexAttribPointer(attribs[i].location, attribs[i].size, VertexAttribPointerType.Float, false, size * sizeof(float), c);
+                GL.EnableVertexAttribArray(attribs[i].location);
+                c += attribs[i].size;
+            }
 
             GL.BindVertexArray(0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);

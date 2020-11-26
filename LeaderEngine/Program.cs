@@ -20,9 +20,9 @@ class Program
     }
 
     float[] vertices = new float[] {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+         0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+         0.0f,  0.5f, 0.0f, 0.5f, 1.0f
     };
 
     uint[] indices = new uint[] {
@@ -31,25 +31,35 @@ class Program
 
     string vertexShaderSource = "#version 330 core\n" +
 "layout (location = 0) in vec3 aPos;\n" +
+"layout (location = 1) in vec2 texCoord;\n" +
+"out vec2 coord;\n" +
 "void main()\n" +
 "{\n" +
 "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n" +
+"   coord = texCoord;\n" +
 "}";
 
     string fragmentShaderSource = "#version 330 core\n" +
+"in vec2 coord;\n" +
+"uniform sampler2D texture0;\n" +
 "out vec4 FragColor;\n" +
 "void main()\n" +
 "{\n" +
-"    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n" +
+"    FragColor = texture(texture0, coord);\n" +
 "}";
 
     void load()
     {
-        VertexArray vertexArray = new VertexArray(vertices, indices);
+        Texture tex = new Texture().FromFile("tex.jpg");
+        VertexArray vertexArray = new VertexArray(vertices, indices, new VertexAttrib[] {
+            new VertexAttrib { location = 0, size = 3 },
+            new VertexAttrib { location = 1, size = 2 }
+        });
         Shader shader = new Shader(vertexShaderSource, fragmentShaderSource);
+        
 
         GameObject go = new GameObject("test");
         go.AddComponent<MeshFilter>(vertexArray);
-        go.AddComponent<MeshRenderer>(shader);
+        go.AddComponent<MeshRenderer>(shader, tex);
     }
 }
