@@ -35,7 +35,7 @@ namespace LeaderEngine
         public override void OnRender()
         {
             Matrix4 mvp = Matrix4.CreateScale(gameObject.transform.scale)
-                 * Matrix4.CreateFromQuaternion(gameObject.transform.rotation) 
+                 * Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(gameObject.transform.rotationEuler)) 
                  * Matrix4.CreateTranslation(gameObject.transform.position);
 
             shader.SetMatrix4("mvp", mvp * Camera.main.ViewMatrix * Camera.main.ProjectionMatrix);

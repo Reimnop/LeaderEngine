@@ -8,7 +8,7 @@ namespace LeaderEngine
     public class Transform : Component
     {
         public Vector3 position;
-        public Quaternion rotation = Quaternion.FromEulerAngles(0.0f, 0.0f, 0.0f);
+        public Vector3 rotationEuler;
         public Vector3 scale = Vector3.One;
     }
 }

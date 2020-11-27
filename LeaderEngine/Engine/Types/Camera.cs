@@ -12,10 +12,13 @@ namespace LeaderEngine
         public static Camera main;
 
         public float VerticalScale = 9.0f;
-        public float FOV = MathF.PI / 2.0f;
+        public float FOV = 1.04719755f; //60 degrees
 
         public Matrix4 ViewMatrix;
         public Matrix4 ProjectionMatrix;
+
+        private readonly Vector3 cameraTarget = new Vector3(0.0f, 0.0f, 0.0f);
+        private readonly Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
 
         public override void Start()
         {
@@ -33,8 +36,12 @@ namespace LeaderEngine
 
         public override void LateUpdate()
         {
+            Vector3 camDirection = (gameObject.transform.position - cameraTarget).Normalized();
+            Vector3 camRight = Vector3.Cross(up, camDirection).Normalized();
+            Vector3 camUp = Vector3.Cross(camDirection, camRight).Normalized();
+
             ViewMatrix = Matrix4.LookAt(gameObject.transform.position,
-                                        gameObject.transform.position + new Vector3(0.0f, 0.0f, 1.0f),
+                                        gameObject.transform.position + Quaternion.FromEulerAngles(gameObject.transform.rotationEuler) * new Vector3(0.0f, 0.0f, 1.0f),
                                         new Vector3(0.0f, 1.0f, 0.0f));
         }
 
