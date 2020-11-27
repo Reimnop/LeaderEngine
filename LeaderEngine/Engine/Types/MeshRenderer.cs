@@ -38,7 +38,7 @@ namespace LeaderEngine
                  * Matrix4.CreateFromQuaternion(gameObject.transform.rotation) 
                  * Matrix4.CreateTranslation(gameObject.transform.position);
 
-            shader.SetMatrix4("mvp", mvp * Matrix4.CreateOrthographic(16, 9, -1.0f, 200f));
+            shader.SetMatrix4("mvp", mvp * Camera.main.ViewMatrix * Camera.main.ProjectionMatrix);
 
             shader.Use();
             meshFilter.VertexArray.Use();

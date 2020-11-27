@@ -59,13 +59,16 @@ class Program
             new VertexAttrib { location = 1, size = 2 }
         });
         Shader shader = new Shader(vertexShaderSource, fragmentShaderSource);
-        
+
+        GameObject cam = new GameObject("camera");
+        cam.AddComponent<Camera>();
+        cam.AddComponent<InputManager>();
+        cam.AddComponent<TestCamComp>();
 
         GameObject go = new GameObject("test");
         go.AddComponent<MeshFilter>(vertexArray);
         go.AddComponent<MeshRenderer>(shader).SetTexture(tex);
 
-        go.transform.position.X = 4f;
-        go.transform.position.Z = -5.0f;
+        go.transform.position.Z = 5.0f;
     }
 }
