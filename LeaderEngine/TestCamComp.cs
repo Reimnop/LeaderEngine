@@ -17,14 +17,11 @@ public class TestCamComp : Component
         float x = InputManager.GetAxis(Axis.Horizontal) * Time.deltaTime * 4.0f;
         float z = InputManager.GetAxis(Axis.Vertical) * Time.deltaTime * 4.0f;
 
-        Vector3 right = Quaternion.FromEulerAngles(gameObject.transform.rotationEuler) * new Vector3(1.0f, 0.0f, 0.0f);
-        Vector3 forward = Quaternion.FromEulerAngles(gameObject.transform.rotationEuler) * new Vector3(0.0f, 0.0f, 1.0f);
-
-        gameObject.transform.position += forward * z - right * x;
+        gameObject.transform.position += gameObject.transform.Forward * z + Vector3.Cross(gameObject.transform.Forward, gameObject.transform.Up).Normalized() * x;
 
         Vector2 delta = Application.instance.MouseState.Delta / 400.0f;
 
-        gameObject.transform.rotationEuler.Y -= delta.X;
-        //gameObject.transform.rotationEuler.X += delta.Y;
+        gameObject.transform.rotationEuler += gameObject.transform.Up * delta.X;
+        gameObject.transform.rotationEuler += gameObject.transform.Right * delta.Y;
     }
 }

@@ -36,13 +36,9 @@ namespace LeaderEngine
 
         public override void LateUpdate()
         {
-            Vector3 camDirection = (gameObject.transform.position - cameraTarget).Normalized();
-            Vector3 camRight = Vector3.Cross(up, camDirection).Normalized();
-            Vector3 camUp = Vector3.Cross(camDirection, camRight).Normalized();
-
             ViewMatrix = Matrix4.LookAt(gameObject.transform.position,
-                                        gameObject.transform.position + Quaternion.FromEulerAngles(gameObject.transform.rotationEuler) * new Vector3(0.0f, 0.0f, 1.0f),
-                                        new Vector3(0.0f, 1.0f, 0.0f));
+                                        gameObject.transform.position + gameObject.transform.Forward,
+                                        gameObject.transform.Up);
         }
 
         private void Instance_Resize(ResizeEventArgs e)
