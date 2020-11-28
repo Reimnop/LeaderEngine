@@ -32,13 +32,11 @@ namespace LeaderEngine
             ViewMatrix = Matrix4.LookAt(gameObject.transform.position,
                                         gameObject.transform.position + gameObject.transform.forward,
                                         gameObject.transform.up);
-
-            Console.WriteLine(gameObject.transform.up);
         }
 
         private void Instance_Resize(ResizeEventArgs e)
         {
-            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, e.Width / (float)e.Height, 0.05f, 200.0f);
+            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, e.Width / (float)e.Height, 0.1f, 200.0f);
         }
     }
 }

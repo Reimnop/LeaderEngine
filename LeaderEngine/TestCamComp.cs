@@ -19,9 +19,9 @@ public class TestCamComp : Component
 
         gameObject.transform.position += gameObject.transform.forward * z + gameObject.transform.right * x;
 
-        Vector2 delta = Application.instance.MouseState.Delta * Time.deltaTime;
+        Vector2 delta = Application.instance.MouseState.Delta * Time.deltaTime * 4.0f;
 
         gameObject.transform.rotationEuler.Y -= delta.X;
-        gameObject.transform.rotationEuler.X -= delta.Y;
+        //gameObject.transform.rotationEuler.X -= delta.Y;
     }
 }
