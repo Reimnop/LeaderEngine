@@ -32,6 +32,8 @@ namespace LeaderEngine
             ViewMatrix = Matrix4.LookAt(gameObject.transform.position,
                                         gameObject.transform.position + gameObject.transform.forward,
                                         gameObject.transform.up);
+
+            //TODO: fix cam roll
         }
 
         private void Instance_Resize(ResizeEventArgs e)
