@@ -37,10 +37,12 @@ namespace LeaderEngine
             Matrix4 model = Matrix4.CreateScale(gameObject.transform.scale)
                  * Matrix4.CreateFromQuaternion(gameObject.transform.rotation)
                  * Matrix4.CreateTranslation(gameObject.transform.position);
+            
+            shader.SetMatrix4("model", model);
+            shader.SetMatrix4("view", Camera.main.ViewMatrix);
+            shader.SetMatrix4("projection", Camera.main.ProjectionMatrix);
 
-            Matrix4 mvp = model * Camera.main.ViewMatrix * Camera.main.ProjectionMatrix;
-
-            shader.SetMatrix4("mvp", mvp);
+            shader.SetUniforms();
 
             shader.Use();
             meshFilter.VertexArray.Use();

@@ -11,6 +11,8 @@ namespace LeaderEngine
 
         private readonly Dictionary<string, int> uniformLocations;
 
+        private Action setUniformsCallback;
+
         public Shader(string vertSource, string fragSource)
         {
             var vertexShader = GL.CreateShader(ShaderType.VertexShader);
@@ -77,6 +79,16 @@ namespace LeaderEngine
         public int GetAttribLocation(string attribName)
         {
             return GL.GetAttribLocation(handle, attribName);
+        }
+
+        public void UniformCallback(Action uniformCallback)
+        {
+            setUniformsCallback = uniformCallback;
+        }
+
+        public void SetUniforms()
+        {
+            setUniformsCallback?.Invoke();
         }
 
         /// <summary>

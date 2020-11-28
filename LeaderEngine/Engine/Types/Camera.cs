@@ -17,6 +17,8 @@ namespace LeaderEngine
         public Matrix4 ViewMatrix;
         public Matrix4 ProjectionMatrix;
 
+        private Vector3 target = new Vector3(0.0f, 0.0f, 0.0f);
+
         public override void Start()
         {
             if (main == null)
@@ -29,11 +31,8 @@ namespace LeaderEngine
 
         public override void LateUpdate()
         {
-            ViewMatrix = Matrix4.LookAt(gameObject.transform.position,
-                                        gameObject.transform.position + gameObject.transform.forward,
-                                        gameObject.transform.up);
-
-            //TODO: fix cam roll
+            ViewMatrix = Matrix4.CreateTranslation(-gameObject.transform.position) *
+                Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(-gameObject.transform.rotationEuler));
         }
 
         private void Instance_Resize(ResizeEventArgs e)
