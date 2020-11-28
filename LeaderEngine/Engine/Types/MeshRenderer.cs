@@ -12,6 +12,8 @@ namespace LeaderEngine
         private Texture texture;
         private MeshFilter meshFilter;
 
+        private Action<Shader> uniformCallback;
+
         public MeshRenderer(Shader shader)
         {
             this.shader = shader;
@@ -32,6 +34,11 @@ namespace LeaderEngine
             this.meshFilter = meshFilter;
         }
 
+        public void UniformCallback(Action<Shader> uniformCallback)
+        {
+            this.uniformCallback = uniformCallback;
+        } 
+
         public override void OnRender()
         {
             Matrix4 model = Matrix4.CreateScale(gameObject.transform.scale)
@@ -42,7 +49,7 @@ namespace LeaderEngine
             shader.SetMatrix4("view", Camera.main.ViewMatrix);
             shader.SetMatrix4("projection", Camera.main.ProjectionMatrix);
 
-            shader.SetUniforms();
+            uniformCallback?.Invoke(shader);
 
             shader.Use();
             meshFilter.VertexArray.Use();

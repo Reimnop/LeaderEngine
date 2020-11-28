@@ -108,7 +108,7 @@ class Program
 "    vec3 diffuse = diff * lightColor;" +
 "    vec3 viewDir = normalize(viewPos - FragPos);" +
 "    vec3 reflectDir = reflect(-lightDir, norm);" +
-"    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 64);" +
+"    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);" +
 "    vec3 specular = specularStrength * spec * lightColor;" +
 "    float ambientStrength = 0.1;\r\n" +
 "    vec3 ambient = ambientStrength * lightColor;\r\n" +
@@ -145,22 +145,22 @@ class Program
         cam.AddComponent<InputManager>();
         cam.AddComponent<TestCamComp>();
 
-        lightingShader.UniformCallback(() => lightingShader.SetVector3("viewPos", cam.transform.position));
-
-        GameObject go = new GameObject("test");
-        go.AddComponent<MeshFilter>(vertexArray);
-        go.AddComponent<MeshRenderer>(lightingShader);
-
-        go.transform.position.Z = 5.0f;
-        go.transform.position.X = 3.0f;
-
         GameObject go2 = new GameObject("test");
         go2.AddComponent<MeshFilter>(vertexArray);
         go2.AddComponent<MeshRenderer>(lightSourceShader);
 
-        go2.transform.position.Z = -5.0f;
-        go2.transform.position.Y = 4.0f;
+        go2.transform.position.Z = -2.0f;
+        go2.transform.position.Y = 2.5f;
 
-        lightingShader.SetVector3("lightPos", go2.transform.position - go.transform.position);
+        GameObject go = new GameObject("test");
+        go.AddComponent<MeshFilter>(vertexArray);
+        go.AddComponent<MeshRenderer>(lightingShader).UniformCallback((s) => 
+        {
+            s.SetVector3("viewPos", cam.transform.position);
+            s.SetVector3("lightPos", go2.transform.position - go.transform.position);
+        });
+
+        go.transform.position.Z = 5.0f;
+        go.transform.position.X = 3.0f;
     }
 }
