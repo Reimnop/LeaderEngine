@@ -9,7 +9,7 @@ namespace LeaderEngine
 {
     public class Camera : Component
     {
-        public static Camera main;
+        public static Camera main { private set; get; }
 
         public float VerticalScale = 9.0f;
         public float FOV = 1.04719755f; //60 degrees
@@ -17,17 +17,10 @@ namespace LeaderEngine
         public Matrix4 ViewMatrix;
         public Matrix4 ProjectionMatrix;
 
-        private readonly Vector3 cameraTarget = new Vector3(0.0f, 0.0f, 0.0f);
-        private readonly Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
-
         public override void Start()
         {
-            if (main != null)
-            {
-                gameObject.RemoveComponent<Camera>();
-                return;
-            }
-            main = this;
+            if (main == null)
+                main = this;
 
             ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.instance.Size.X / (float)Application.instance.Size.Y, 0.05f, 500.0f);
 
@@ -37,8 +30,10 @@ namespace LeaderEngine
         public override void LateUpdate()
         {
             ViewMatrix = Matrix4.LookAt(gameObject.transform.position,
-                                        gameObject.transform.position + gameObject.transform.Forward,
-                                        gameObject.transform.Up);
+                                        gameObject.transform.position + gameObject.transform.forward,
+                                        gameObject.transform.up);
+
+            Console.WriteLine(gameObject.transform.up);
         }
 
         private void Instance_Resize(ResizeEventArgs e)

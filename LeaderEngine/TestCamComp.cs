@@ -14,14 +14,14 @@ public class TestCamComp : Component
 
     public override void Update()
     {
-        float x = InputManager.GetAxis(Axis.Horizontal) * Time.deltaTime * 4.0f;
-        float z = InputManager.GetAxis(Axis.Vertical) * Time.deltaTime * 4.0f;
+        float x = InputManager.GetAxis(Axis.Horizontal) * Time.deltaTime * 2.5f;
+        float z = InputManager.GetAxis(Axis.Vertical) * Time.deltaTime * 2.5f;
 
-        gameObject.transform.position += gameObject.transform.Forward * z + Vector3.Cross(gameObject.transform.Forward, gameObject.transform.Up).Normalized() * x;
+        gameObject.transform.position += gameObject.transform.forward * z + gameObject.transform.right * x;
 
-        Vector2 delta = Application.instance.MouseState.Delta / 400.0f;
+        Vector2 delta = Application.instance.MouseState.Delta * Time.deltaTime;
 
-        gameObject.transform.rotationEuler += gameObject.transform.Up * delta.X;
-        gameObject.transform.rotationEuler += gameObject.transform.Right * delta.Y;
+        gameObject.transform.rotationEuler.Y -= delta.X;
+        gameObject.transform.rotationEuler.X -= delta.Y;
     }
 }

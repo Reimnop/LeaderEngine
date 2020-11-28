@@ -12,9 +12,9 @@ namespace LeaderEngine
         public Vector3 rotationEuler;
         public Vector3 scale = Vector3.One;
 
-        public Vector3 Forward { get { return rotation * new Vector3(0.0f, 0.0f, 1.0f); } }
-        public Vector3 Right { get { return rotation * new Vector3(1.0f, 0.0f, 0.0f); } }
-        public Vector3 Up { get { return rotation * new Vector3(0.0f, 1.0f, 0.0f); } }
+        public Vector3 forward { get { return rotation * new Vector3(0.0f, 0.0f, -1.0f); } }
+        public Vector3 right { get { return rotation * new Vector3(1.0f, 0.0f, 0.0f); } }
+        public Vector3 up { get { return rotation * new Vector3(0.0f, 1.0f, 0.0f); } }
 
         public override void LateUpdate()
         {

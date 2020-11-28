@@ -35,10 +35,12 @@ namespace LeaderEngine
         public override void OnRender()
         {
             Matrix4 model = Matrix4.CreateScale(gameObject.transform.scale)
-                 * Matrix4.CreateFromQuaternion(gameObject.transform.rotation) 
+                 * Matrix4.CreateFromQuaternion(gameObject.transform.rotation)
                  * Matrix4.CreateTranslation(gameObject.transform.position);
 
-            shader.SetMatrix4("mvp", model * Camera.main.ViewMatrix * Camera.main.ProjectionMatrix);
+            Matrix4 mvp = model * Camera.main.ViewMatrix * Camera.main.ProjectionMatrix;
+
+            shader.SetMatrix4("mvp", mvp);
 
             shader.Use();
             meshFilter.VertexArray.Use();
