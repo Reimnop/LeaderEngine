@@ -13,7 +13,8 @@ namespace LeaderEngine
     {
         public static float deltaTime = 0.16f;
         public static float deltaTimeUnscaled = 0.16f;
-        public static float timeScale = 1f;
+        public static float timeScale = 1.0f;
+        public static float time = 0.0f;
     }
 
     public class Application : GameWindow
@@ -58,12 +59,9 @@ namespace LeaderEngine
         {
             base.OnResize(e);
         }
-
-        float lastTime = 0;
-
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            lastTime = (float)GLFW.GetTime();
+            Time.time = (float)GLFW.GetTime();
 
             GameObjects.ForEach(go => go.Update());
             GameObjects.ForEach(go => go.LateUpdate());
@@ -83,7 +81,7 @@ namespace LeaderEngine
 
             base.OnRenderFrame(e);
 
-            Time.deltaTimeUnscaled = (float)GLFW.GetTime() - lastTime;
+            Time.deltaTimeUnscaled = (float)GLFW.GetTime() - Time.time;
             Time.deltaTime = Time.deltaTimeUnscaled * Time.timeScale;
         }
 

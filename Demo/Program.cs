@@ -23,13 +23,44 @@ namespace Demo
             app.Run();
         }
 
+        float[] verts =
+        {
+            -0.5f, -0.5f, 0.0f,
+            -0.5f,  0.5f, 0.0f,
+             0.5f,  0.5f, 0.0f,
+             0.5f, -0.5f, 0.0f
+        };
+
+        uint[] indices =
+        {
+            0, 1, 3,
+            3, 2, 1
+        };
+
         void OnLoad()
         {
+            VertexArray vertexArray = new VertexArray(verts, indices, new VertexAttrib[]
+            {
+                new VertexAttrib { location = 0, size = 3 }
+            });
+
             GameObject camera = new GameObject("Main Camera");
             camera.AddComponent<Camera>();
 
             GameObject test = new GameObject("Test GameObject");
+            test.AddComponent<MeshFilter>(vertexArray);
+            test.AddComponent<MeshRenderer>();
+            test.AddComponent<Trans>();
             test.transform.position = new Vector3(0.0f, 0.0f, -3.0f);
+        }
+    }
+
+    class Trans : Component
+    {
+        public override void Update()
+        {
+            gameObject.transform.position = new Vector3(MathF.Sin(Time.time), MathF.Cos(Time.time), MathF.Sin(Time.time) - 3.0f);
+            gameObject.transform.rotationEuler.Y = MathF.Sin(Time.time) * MathF.PI;
         }
     }
 }
