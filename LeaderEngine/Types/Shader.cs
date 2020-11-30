@@ -2,11 +2,17 @@
 using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace LeaderEngine
 {
     public class Shader : IDisposable
     {
+        #region DefaultShader
+
+
+        #endregion
+
         private int handle;
 
         private readonly Dictionary<string, int> uniformLocations;
@@ -44,6 +50,16 @@ namespace LeaderEngine
 
                 uniformLocations.Add(key, location);
             }
+        }
+
+        public static Shader FromSourceFile(string vertPath, string fragPath)
+        {
+            return new Shader(File.ReadAllText(vertPath), File.ReadAllText(fragPath));
+        }
+
+        public static void InitDefaults()
+        {
+
         }
 
         private static void CompileShader(int shader)
