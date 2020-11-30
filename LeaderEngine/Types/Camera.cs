@@ -17,8 +17,6 @@ namespace LeaderEngine
         public Matrix4 ViewMatrix;
         public Matrix4 ProjectionMatrix;
 
-        private Vector3 target = new Vector3(0.0f, 0.0f, 0.0f);
-
         public override void Start()
         {
             if (main == null)

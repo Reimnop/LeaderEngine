@@ -48,6 +48,9 @@ namespace LeaderEngine
         {
             GL.Enable(EnableCap.DepthTest);
 
+            Shader.InitDefaults();
+            Material.InitDefaults();
+
             base.OnLoad();
         }
 

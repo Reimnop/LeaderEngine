@@ -9,8 +9,7 @@ namespace LeaderEngine
     public class Shader : IDisposable
     {
         #region DefaultShader
-
-
+        public static Shader NoRender;
         #endregion
 
         private int handle;
@@ -59,7 +58,7 @@ namespace LeaderEngine
 
         public static void InitDefaults()
         {
-
+            NoRender = FromSourceFile(AppContext.BaseDirectory + "DefaultShaders/norender-vs.glsl", AppContext.BaseDirectory + "DefaultShaders/norender-fs.glsl");
         }
 
         private static void CompileShader(int shader)
