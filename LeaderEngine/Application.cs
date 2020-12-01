@@ -5,7 +5,6 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 
 namespace LeaderEngine
 {
@@ -59,6 +58,7 @@ namespace LeaderEngine
         {
             base.OnResize(e);
         }
+
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             Time.time = (float)GLFW.GetTime();
@@ -73,7 +73,7 @@ namespace LeaderEngine
         {
             GL.Viewport(0, 0, Size.X, Size.Y);
 
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
             GameObjects.ForEach(go => go.Render());
 

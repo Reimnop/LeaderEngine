@@ -1,9 +1,5 @@
-﻿using System;
+﻿using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
-using System.Collections.Generic;
-using System.Text;
-using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace LeaderEngine
 {

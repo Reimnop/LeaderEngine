@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ImGui.NET" Version="1.78.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LeaderEngine\LeaderEngine.csproj" />
   </ItemGroup>
 

@@ -164,6 +164,11 @@ namespace LeaderEngine
                 Console.WriteLine($"Uniform \"{name}\" does not exist");
         }
 
+        public int GetHandle()
+        {
+            return handle;
+        }
+
         public void Dispose()
         {
             GL.DeleteShader(handle);

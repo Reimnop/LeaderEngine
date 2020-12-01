@@ -59,6 +59,11 @@ namespace LeaderEngine
             GL.BindTexture(TextureTarget.Texture2D, handle);
         }
 
+        public int GetHandle()
+        {
+            return handle;
+        }
+
         public void Dispose()
         {
             GL.DeleteTexture(handle);
