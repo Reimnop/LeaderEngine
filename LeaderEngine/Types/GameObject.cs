@@ -49,6 +49,14 @@ namespace LeaderEngine
             components.ForEach(co => co.OnRender());
         }
 
+        public void RenderGui()
+        {
+            if (!ActiveSelf)
+                return;
+
+            components.ForEach(co => co.OnRenderGui());
+        }
+
         public void SetActive(bool active)
         {
             ActiveSelf = active;

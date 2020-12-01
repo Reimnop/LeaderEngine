@@ -15,25 +15,20 @@ namespace LeaderEditor
             Application app = new Application(new GameWindowSettings(), new NativeWindowSettings()
             {
                 APIVersion = new Version(4, 5),
-                WindowBorder = WindowBorder.Fixed,
+                WindowBorder = WindowBorder.Resizable,
                 API = ContextAPI.OpenGL,
                 Flags = ContextFlags.ForwardCompatible,
                 Profile = ContextProfile.Core,
                 Size = new Vector2i(1600, 900),
                 Title = "LeaderEditor"
-            }, new Program().load);
+            }, LoadEditor);
             app.Run();
         }
 
-        public void load()
+        static void LoadEditor()
         {
-            GameObject imguiController = new GameObject("ImGui Controller");
-            imguiController.AddComponent<ImGuiController>().OnImGui += Program_OnImGui;
-        }
-
-        private void Program_OnImGui()
-        {
-            ImGui.ShowDemoWindow();
+            GameObject editorController = new GameObject("EditorController");
+            editorController.AddComponent<EditorController>();
         }
     }
 }

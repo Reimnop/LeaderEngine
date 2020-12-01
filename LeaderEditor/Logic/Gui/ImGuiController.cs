@@ -157,7 +157,7 @@ void main()
         /// or index data has increased beyond the capacity of the existing buffers.
         /// A <see cref="CommandList"/> is needed to submit drawing and resource update commands.
         /// </summary>
-        public override void OnRender()
+        public override void OnRenderGui()
         {
             OnImGui?.Invoke();
 

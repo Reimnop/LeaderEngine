@@ -24,6 +24,11 @@ namespace LeaderEngine
 
         private Action initCallback;
 
+        public event Action SceneRender;
+        public event Action PostSceneRender;
+        public event Action GuiRender;
+        public event Action FinishRender;
+
         public Application(GameWindowSettings gws, NativeWindowSettings nws, Action initCallback) : base(gws, nws)
         {
             if (instance != null)
@@ -46,8 +51,6 @@ namespace LeaderEngine
 
         protected override void OnLoad()
         {
-            GL.Enable(EnableCap.DepthTest);
-
             Shader.InitDefaults();
             Material.InitDefaults();
 
@@ -71,11 +74,27 @@ namespace LeaderEngine
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            GL.Viewport(0, 0, Size.X, Size.Y);
+            GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
+            GL.Disable(EnableCap.Blend);
+
+            GL.Enable(EnableCap.DepthTest);
+
+            SceneRender?.Invoke();
             GameObjects.ForEach(go => go.Render());
+            PostSceneRender?.Invoke();
+
+            GL.Disable(EnableCap.DepthTest);
+
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+            GuiRender?.Invoke();
+            GameObjects.ForEach(go => go.RenderGui());
+
+            FinishRender?.Invoke();
 
             SwapBuffers();
 
