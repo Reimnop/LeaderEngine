@@ -18,7 +18,7 @@ namespace Demo
                 Flags = ContextFlags.ForwardCompatible,
                 Profile = ContextProfile.Core,
                 Size = new Vector2i(1600, 900),
-                Title = "LeaderEngine"
+                Title = "LeaderEngine Demo"
             }, new Program().OnLoad);
             app.Run();
         }
@@ -46,12 +46,19 @@ namespace Demo
 
             GameObject camera = new GameObject("Main Camera");
             camera.AddComponent<Camera>();
+            camera.AddComponent<InputManager>();
+            camera.AddComponent<MouseMove>();
 
             GameObject test = new GameObject("Test GameObject");
             test.AddComponent<MeshFilter>(vertexArray);
             test.AddComponent<MeshRenderer>();
             test.AddComponent<Trans>();
             test.transform.position = new Vector3(0.0f, 0.0f, -3.0f);
+
+            GameObject test2 = new GameObject("Test GameObject2");
+            test2.AddComponent<MeshFilter>(vertexArray);
+            test2.AddComponent<MeshRenderer>();
+            test2.transform.position = new Vector3(0.0f, 0.0f, -5.0f);
         }
     }
 
