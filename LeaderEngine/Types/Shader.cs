@@ -58,7 +58,7 @@ namespace LeaderEngine
 
         public static void InitDefaults()
         {
-            NoRender = FromSourceFile(AppContext.BaseDirectory + "DefaultShaders/norender-vs.glsl", AppContext.BaseDirectory + "DefaultShaders/norender-fs.glsl");
+            NoRender = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/norender-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/norender-fs.glsl");
         }
 
         private static void CompileShader(int shader)

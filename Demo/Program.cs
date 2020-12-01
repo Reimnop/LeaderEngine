@@ -49,12 +49,6 @@ namespace Demo
             camera.AddComponent<InputManager>();
             camera.AddComponent<MouseMove>();
 
-            GameObject test = new GameObject("Test GameObject");
-            test.AddComponent<MeshFilter>(vertexArray);
-            test.AddComponent<MeshRenderer>();
-            test.AddComponent<Trans>();
-            test.transform.position = new Vector3(0.0f, 0.0f, -3.0f);
-
             GameObject test2 = new GameObject("Test GameObject2");
             test2.AddComponent<MeshFilter>(vertexArray);
             test2.AddComponent<MeshRenderer>();
