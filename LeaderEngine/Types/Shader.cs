@@ -2,11 +2,16 @@
 using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace LeaderEngine
 {
     public class Shader : IDisposable
     {
+        #region DefaultShader
+        public static Shader NoRender;
+        #endregion
+
         private int handle;
 
         private readonly Dictionary<string, int> uniformLocations;
@@ -44,6 +49,16 @@ namespace LeaderEngine
 
                 uniformLocations.Add(key, location);
             }
+        }
+
+        public static Shader FromSourceFile(string vertPath, string fragPath)
+        {
+            return new Shader(File.ReadAllText(vertPath), File.ReadAllText(fragPath));
+        }
+
+        public static void InitDefaults()
+        {
+            NoRender = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/norender-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/norender-fs.glsl");
         }
 
         private static void CompileShader(int shader)
@@ -147,6 +162,11 @@ namespace LeaderEngine
                 GL.Uniform4(uniformLocations[name], data);
             else
                 Console.WriteLine($"Uniform \"{name}\" does not exist");
+        }
+
+        public int GetHandle()
+        {
+            return handle;
         }
 
         public void Dispose()

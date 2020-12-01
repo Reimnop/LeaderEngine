@@ -5,7 +5,6 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 
 namespace LeaderEngine
 {
@@ -13,7 +12,8 @@ namespace LeaderEngine
     {
         public static float deltaTime = 0.16f;
         public static float deltaTimeUnscaled = 0.16f;
-        public static float timeScale = 1f;
+        public static float timeScale = 1.0f;
+        public static float time = 0.0f;
     }
 
     public class Application : GameWindow
@@ -23,6 +23,11 @@ namespace LeaderEngine
         public List<GameObject> GameObjects = new List<GameObject>();
 
         private Action initCallback;
+
+        public event Action SceneRender;
+        public event Action PostSceneRender;
+        public event Action GuiRender;
+        public event Action FinishRender;
 
         public Application(GameWindowSettings gws, NativeWindowSettings nws, Action initCallback) : base(gws, nws)
         {
@@ -46,7 +51,8 @@ namespace LeaderEngine
 
         protected override void OnLoad()
         {
-            GL.Enable(EnableCap.DepthTest);
+            Shader.InitDefaults();
+            Material.InitDefaults();
 
             base.OnLoad();
         }
@@ -58,6 +64,8 @@ namespace LeaderEngine
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            Time.time = (float)GLFW.GetTime();
+
             GameObjects.ForEach(go => go.Update());
             GameObjects.ForEach(go => go.LateUpdate());
 
@@ -66,17 +74,34 @@ namespace LeaderEngine
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            GL.Viewport(0, 0, Size.X, Size.Y);
+            GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
 
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
+            GL.Disable(EnableCap.Blend);
+
+            GL.Enable(EnableCap.DepthTest);
+
+            SceneRender?.Invoke();
             GameObjects.ForEach(go => go.Render());
+            PostSceneRender?.Invoke();
+
+            GL.Disable(EnableCap.DepthTest);
+
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+            GuiRender?.Invoke();
+            GameObjects.ForEach(go => go.RenderGui());
+
+            FinishRender?.Invoke();
 
             SwapBuffers();
 
-            GL.Finish();
-
             base.OnRenderFrame(e);
+
+            Time.deltaTimeUnscaled = (float)GLFW.GetTime() - Time.time;
+            Time.deltaTime = Time.deltaTimeUnscaled * Time.timeScale;
         }
 
         protected override void OnClosing(CancelEventArgs e)

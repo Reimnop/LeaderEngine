@@ -1,5 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace LeaderEngine
@@ -8,9 +7,7 @@ namespace LeaderEngine
     {
         public string Name;
         public bool ActiveSelf { private set; get; }
-
-        public VertexArray VertexArray;
-        public Shader Shader;
+        public Transform transform { private set; get; }
 
         private List<Component> components = new List<Component>();
 
@@ -24,17 +21,23 @@ namespace LeaderEngine
 
         private void Init()
         {
-            AddComponent<Transform>();
+            transform = AddComponent<Transform>();
             SetActive(true);
         }
 
         public void Update()
         {
+            if (!ActiveSelf)
+                return;
+
             components.ForEach(co => co.Update());
         }
 
         public void LateUpdate()
         {
+            if (!ActiveSelf)
+                return;
+
             components.ForEach(co => co.LateUpdate());
         }
 
@@ -43,13 +46,15 @@ namespace LeaderEngine
             if (!ActiveSelf)
                 return;
 
-            if (VertexArray == null || Shader == null)
+            components.ForEach(co => co.OnRender());
+        }
+
+        public void RenderGui()
+        {
+            if (!ActiveSelf)
                 return;
 
-            Shader.Use();
-            VertexArray.Use();
-
-            GL.DrawElements(PrimitiveType.Triangles, VertexArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
+            components.ForEach(co => co.OnRenderGui());
         }
 
         public void SetActive(bool active)
@@ -57,12 +62,32 @@ namespace LeaderEngine
             ActiveSelf = active;
         }
 
-        public void AddComponent<T>(params object[] args) where T : Component
+        public T AddComponent<T>(params object[] args) where T : Component
         {
-            if (typeof(T) == typeof(Transform))
-                return;
+            if (typeof(T) == typeof(Transform) && transform != null)
+                return null;
 
-            components.Add((T)Activator.CreateInstance(typeof(T), args));
+            var comp = (T)Activator.CreateInstance(typeof(T), args);
+            components.Add(comp);
+            comp.gameObject = this;
+            comp.Start();
+
+            return comp;
+        }
+
+        public void AddComponents(Component[] components)
+        {
+            foreach (var co in components)
+                if (co.GetType() == typeof(Transform))
+                    return;
+
+            this.components.AddRange(components);
+
+            foreach (var co in components)
+            {
+                co.gameObject = this;
+                co.Start();
+            }
         }
 
         public T GetComponent<T>() where T : Component
@@ -86,15 +111,13 @@ namespace LeaderEngine
 
         public void Dispose()
         {
+            Application.instance.GameObjects.Remove(this);
             Cleanup();
         }
 
         private void Cleanup()
         {
             components.ForEach(co => co.OnRemove());
-
-            VertexArray.Dispose();
-            Shader.Dispose();
         }
     }
 }
