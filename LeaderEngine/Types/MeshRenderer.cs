@@ -33,6 +33,9 @@ namespace LeaderEngine
 
         public override void OnRender()
         {
+            if (Camera.main == null)
+                return;
+
             Matrix4 model = Matrix4.CreateScale(gameObject.transform.scale)
                  * Matrix4.CreateFromQuaternion(gameObject.transform.rotation)
                  * Matrix4.CreateTranslation(gameObject.transform.position);

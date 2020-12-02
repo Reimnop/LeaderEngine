@@ -11,7 +11,17 @@ namespace LeaderEditor.Logic
     public class SceneHierachy : Component
     {
         public static List<GameObject> SceneObjects = new List<GameObject>();
-        public static GameObject SelectedObject;
+        public static GameObject SelectedObject { 
+            get 
+            { 
+                if (SelectedObjectIndex < SceneObjects.Count && SelectedObjectIndex > -1)
+                    return SceneObjects[SelectedObjectIndex];
+
+                return null;
+            } 
+        }
+
+        private static int SelectedObjectIndex = -1;
 
         public override void Start()
         {
@@ -20,20 +30,23 @@ namespace LeaderEditor.Logic
 
         public override void Update()
         {
-            if (InputManager.GetKey(Keys.Delete) && SelectedObject != null)
+            if (InputManager.GetKeyDown(Keys.Delete) && SelectedObject != null)
             {
-                SceneObjects.Remove(SelectedObject);
                 SelectedObject.Destroy();
-                SelectedObject = null;
+                SceneObjects.Remove(SelectedObject);
+
+                if (SceneObjects.Count <= SelectedObjectIndex)
+                    SelectedObjectIndex = -1;
             }
 
+            if (InputManager.GetKeyDown(Keys.KeyPad0))
+                SelectedObjectIndex = -1;
         }
 
         private void OnImGui()
         {
             if (ImGui.Begin("Scene Hierachy"))
             {
-
                 if (ImGui.Button("New Object"))
                     CreateNewObject();
 
@@ -43,8 +56,8 @@ namespace LeaderEditor.Logic
 
                     ImGui.PushID(go.Name + i);
 
-                    if (ImGui.Selectable(go.Name, go == SelectedObject, ImGuiSelectableFlags.DontClosePopups))
-                        SelectedObject = go;
+                    if (ImGui.Selectable(go.Name, i == SelectedObjectIndex, ImGuiSelectableFlags.DontClosePopups))
+                        SelectedObjectIndex = i;
                 }
             }
             ImGui.End();
