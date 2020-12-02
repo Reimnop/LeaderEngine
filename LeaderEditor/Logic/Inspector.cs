@@ -29,6 +29,8 @@ namespace LeaderEditor.Logic
 
                 }
 
+                ImGui.InputText("Name", ref SceneHierachy.SelectedObject.Name, 255);
+
                 Component[] components = SceneHierachy.SelectedObject.GetAllComponents();
 
                 foreach (Component component in components)
