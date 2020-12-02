@@ -78,6 +78,18 @@ namespace LeaderEngine
             return comp;
         }
 
+        public Component AddComponent(Component component)
+        {
+            if (component.GetType() == typeof(Transform) && transform != null)
+                return null;
+
+            components.Add(component);
+            component.gameObject = this;
+            component.Start();
+
+            return component;
+        }
+
         public void AddComponents(Component[] components)
         {
             foreach (var co in components)
@@ -98,9 +110,9 @@ namespace LeaderEngine
             return (T)components.Find(x => x.GetType() == typeof(T));
         }
 
-        public Component[] GetAllComponents()
+        public List<Component> GetAllComponents()
         {
-            return components.ToArray();
+            return components;
         }
 
         public void RemoveComponent<T>() where T : Component
@@ -109,6 +121,14 @@ namespace LeaderEngine
                 return;
 
             components.Remove(components.Find(x => x.GetType() == typeof(T)));
+        }
+
+        public void RemoveComponent(Component component)
+        {
+            if (component.GetType() == typeof(Transform))
+                return;
+
+            components.Remove(component);
         }
 
         public void OnClosing()
