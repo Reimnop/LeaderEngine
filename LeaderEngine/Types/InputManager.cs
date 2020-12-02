@@ -15,12 +15,12 @@ namespace LeaderEngine
 
         public override void Update()
         {
-            keyState = Application.instance.KeyboardState;
-            mouseState = Application.instance.MouseState;
+            keyState = Application.main.KeyboardState;
+            mouseState = Application.main.MouseState;
         }
         public static bool GetKeyDown(Keys key)
         {
-            if (!Application.instance.IsFocused)
+            if (!Application.main.IsFocused)
                 return false;
             if (!keyState.WasKeyDown(key) && keyState.IsKeyDown(key))
                 return true;
@@ -28,7 +28,7 @@ namespace LeaderEngine
         }
         public static bool GetKey(Keys key)
         {
-            if (!Application.instance.IsFocused)
+            if (!Application.main.IsFocused)
                 return false;
             if (keyState.IsKeyDown(key))
                 return true;
@@ -55,7 +55,7 @@ namespace LeaderEngine
         }
         public static bool GetKeyUp(Keys key)
         {
-            if (!Application.instance.IsFocused)
+            if (!Application.main.IsFocused)
                 return false;
             if (!keyState.IsKeyDown(key) && keyState.WasKeyDown(key))
                 return true;

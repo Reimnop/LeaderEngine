@@ -16,6 +16,8 @@ namespace LeaderEditor.Gui
     /// </summary>
     public class ImGuiController : Component
     {
+        public static ImGuiController main;
+
         public event Action OnImGui;
 
         private bool _frameBegun;
@@ -30,15 +32,19 @@ namespace LeaderEditor.Gui
         private Texture _fontTexture;
         private Shader _shader;
         
-        private int _windowWidth { get { return Application.instance.ClientSize.X; } }
-        private int _windowHeight { get { return Application.instance.ClientSize.Y; } }
+        private int _windowWidth { get { return Application.main.Size.X; } }
+        private int _windowHeight { get { return Application.main.Size.Y; } }
 
         private System.Numerics.Vector2 _scaleFactor = System.Numerics.Vector2.One;
 
         public override void Start()
         {
-            Application.instance.CursorVisible = false;
-            Application.instance.TextInput += TextInput;
+            main = this;
+
+            Application.main.CursorVisible = false;
+
+            Application.main.TextInput += TextInput;
+            Application.main.FinishRender += FinishRender;
 
             IntPtr context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
@@ -57,6 +63,11 @@ namespace LeaderEditor.Gui
 
             ImGui.NewFrame();
             _frameBegun = true;
+        }
+
+        private void FinishRender()
+        {
+            RenderImGui();
         }
 
         private void TextInput(TextInputEventArgs obj)
@@ -157,7 +168,7 @@ void main()
         /// or index data has increased beyond the capacity of the existing buffers.
         /// A <see cref="CommandList"/> is needed to submit drawing and resource update commands.
         /// </summary>
-        public override void OnRenderGui()
+        public void RenderImGui()
         {
             OnImGui?.Invoke();
 
@@ -206,8 +217,8 @@ void main()
         {
             ImGuiIOPtr io = ImGui.GetIO();
 
-            MouseState MouseState = Application.instance.MouseState;
-            KeyboardState KeyboardState = Application.instance.KeyboardState;
+            MouseState MouseState = Application.main.MouseState;
+            KeyboardState KeyboardState = Application.main.KeyboardState;
 
             io.MouseDown[0] = MouseState.IsButtonDown(MouseButton.Left);
             io.MouseDown[1] = MouseState.IsButtonDown(MouseButton.Right);

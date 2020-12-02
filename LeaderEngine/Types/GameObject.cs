@@ -14,7 +14,10 @@ namespace LeaderEngine
         public GameObject(string name)
         {
             Name = name;
-            Application.instance.GameObjects.Add(this);
+            Application.main.ExecuteNextUpdate(() =>
+            {
+                Application.main.GameObjects.Add(this);
+            });
 
             Init();
         }
@@ -95,6 +98,11 @@ namespace LeaderEngine
             return (T)components.Find(x => x.GetType() == typeof(T));
         }
 
+        public Component[] GetAllComponents()
+        {
+            return components.ToArray();
+        }
+
         public void RemoveComponent<T>() where T : Component
         {
             if (typeof(T) == typeof(Transform))
@@ -109,9 +117,17 @@ namespace LeaderEngine
             components.ForEach(co => co.OnClosing());
         }
 
+        public void Destroy()
+        {
+            Application.main.ExecuteNextUpdate(() =>
+            {
+                Dispose();
+            });
+        }
+
         public void Dispose()
         {
-            Application.instance.GameObjects.Remove(this);
+            Application.main.GameObjects.Remove(this);
             Cleanup();
         }
 

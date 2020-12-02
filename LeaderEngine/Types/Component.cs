@@ -9,6 +9,7 @@
         public virtual void LateUpdate() { return; }
         public virtual void OnRender() { return; }
         public virtual void OnRenderGui() { return; }
+        public virtual void OnEditorGui() { return; }
         public virtual void OnRemove() { return; }
         public virtual void OnClosing() { return; }
     }

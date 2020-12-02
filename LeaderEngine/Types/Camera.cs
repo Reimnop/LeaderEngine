@@ -18,9 +18,9 @@ namespace LeaderEngine
             if (main == null)
                 main = this;
 
-            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.instance.Size.X / (float)Application.instance.Size.Y, 0.05f, 500.0f);
+            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.main.Size.X / (float)Application.main.Size.Y, 0.05f, 500.0f);
 
-            Application.instance.Resize += Instance_Resize;
+            Application.main.Resize += Instance_Resize;
         }
 
         public override void LateUpdate()

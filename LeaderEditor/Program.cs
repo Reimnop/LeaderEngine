@@ -1,5 +1,5 @@
 ﻿using ImGuiNET;
-using LeaderEditor.Gui;
+using LeaderEditor.Logic;
 using LeaderEngine;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
