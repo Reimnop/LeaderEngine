@@ -9,12 +9,10 @@ namespace LeaderEditor.Logic
 {
     public class Inspector : Component
     {
-        private SceneHierachy sceneHierachy;
+        private bool compMenuOpen = false;
 
         public override void Start()
         {
-            sceneHierachy = gameObject.GetComponent<SceneHierachy>();
-
             ImGuiController.main.OnImGui += OnImGui;
         }
 
@@ -25,16 +23,27 @@ namespace LeaderEditor.Logic
             if (SceneHierachy.SelectedObject != null)
             {
                 if (ImGui.Button("Add Component"))
-                {
+                    compMenuOpen = !compMenuOpen;
 
-                }
+                ImGui.SameLine();
 
                 ImGui.InputText("Name", ref SceneHierachy.SelectedObject.Name, 255);
+
+                if (compMenuOpen)
+                {
+                    if (ImGui.ListBoxHeader("Components"))
+                    {
+                        ImGui.Button("Foo");
+                        ImGui.Button("Bar");
+                    }
+                    ImGui.ListBoxFooter();
+                }
 
                 Component[] components = SceneHierachy.SelectedObject.GetAllComponents();
 
                 foreach (Component component in components)
                 {
+                    ImGui.Separator();
                     if (ImGui.CollapsingHeader(component.GetType().Name))
                     {
                         component.OnEditorGui();
