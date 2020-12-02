@@ -83,9 +83,12 @@ namespace LeaderEngine
             if (component.GetType() == typeof(Transform) && transform != null)
                 return null;
 
-            components.Add(component);
-            component.gameObject = this;
-            component.Start();
+            Application.main.ExecuteNextUpdate(() =>
+            {
+                components.Add(component);
+                component.gameObject = this;
+                component.Start();
+            });
 
             return component;
         }
@@ -96,13 +99,16 @@ namespace LeaderEngine
                 if (co.GetType() == typeof(Transform))
                     return;
 
-            this.components.AddRange(components);
-
-            foreach (var co in components)
+            Application.main.ExecuteNextUpdate(() =>
             {
-                co.gameObject = this;
-                co.Start();
-            }
+                this.components.AddRange(components);
+
+                foreach (var co in components)
+                {
+                    co.gameObject = this;
+                    co.Start();
+                }
+            });
         }
 
         public T GetComponent<T>() where T : Component
@@ -120,7 +126,7 @@ namespace LeaderEngine
             if (typeof(T) == typeof(Transform))
                 return;
 
-            components.Remove(components.Find(x => x.GetType() == typeof(T)));
+            Application.main.ExecuteNextUpdate(() => components.Remove(components.Find(x => x.GetType() == typeof(T))));
         }
 
         public void RemoveComponent(Component component)
@@ -128,7 +134,7 @@ namespace LeaderEngine
             if (component.GetType() == typeof(Transform))
                 return;
 
-            components.Remove(component);
+            Application.main.ExecuteNextUpdate(() => components.Remove(component));
         }
 
         public void OnClosing()
