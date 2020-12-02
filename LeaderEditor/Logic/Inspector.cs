@@ -37,6 +37,7 @@ namespace LeaderEditor.Logic
                     {
                         component.OnEditorGui();
                     }
+                    ImGui.TreePop();
                 }
             }
 
