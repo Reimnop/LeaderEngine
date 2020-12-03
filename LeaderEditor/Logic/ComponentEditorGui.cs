@@ -9,27 +9,15 @@ using LeaderEditor.Gui;
 using System.IO;
 using OpenTK.Mathematics;
 using LeaderEditor.Logic.Memes;
+using System.Reflection;
 
 using Vector2 = System.Numerics.Vector2;
 using Vector3 = System.Numerics.Vector3;
 
 namespace LeaderEditor.Logic
 {
-    public class ComponentEditorGui
+    public class SerializeFunc
     {
-        private struct Attribute
-        {
-            public string Name;
-            public object Data;
-        }
-
-        private static Dictionary<object, List<Attribute>> attributes = new Dictionary<object, List<Attribute>>();
-
-        private static void AttachAttribute(object o, string name, object data)
-        {
-            //TODO: attribute system
-        }
-
         public static void Transform(Component obj)
         {
             Transform transform = (Transform)obj;
@@ -39,7 +27,7 @@ namespace LeaderEditor.Logic
             transform.position = posSys.ToOTKVector3();
 
             Vector3 rotSys = transform.rotationEuler.ToSystemVector3();
-            ImGui.DragFloat3("Rotation", ref rotSys, 1.0f);
+            ImGui.DragFloat3("Rotation", ref rotSys, 0.05f);
             transform.rotationEuler = rotSys.ToOTKVector3();
 
             Vector3 scaleSys = transform.scale.ToSystemVector3();
@@ -87,11 +75,41 @@ namespace LeaderEditor.Logic
                 ImGui.Image((IntPtr)sprite.Texture.GetHandle(), new Vector2(sprite.Texture.Size.X, sprite.Texture.Size.Y) / 2.0f);
         }
 
-        public static void LEADER_SPINNNN(Component obj)
+        private static Dictionary<Type, Action<Component, FieldInfo>> fieldDrawFuncs = new Dictionary<Type, Action<Component, FieldInfo>>()
         {
-            LEADER_SPINNNN spin = (LEADER_SPINNNN)obj;
+            { typeof(int), DefaultInt },
+            { typeof(float), DefaultFloat }
+        };
 
-            ImGui.DragFloat("LEADER POWERRRRRRR", ref spin.power, 0.1f);
+        public static void DefaultSerializeFunc(Component obj)
+        {
+            var fields = obj.GetType().GetFields();
+            bool guiDrawn = false;
+            foreach (var field in fields)
+            {
+                if (fieldDrawFuncs.ContainsKey(field.FieldType) && field.IsPublic)
+                {
+                    fieldDrawFuncs[field.FieldType].Invoke(obj, field);
+                    guiDrawn = true;
+                }
+            }
+
+            if (!guiDrawn)
+                ImGui.Text("No property");
+        }
+
+        private static void DefaultInt(Component obj, FieldInfo field)
+        {
+            int value = (int)field.GetValue(obj);
+            ImGui.DragInt(field.Name, ref value);
+            field.SetValue(obj, value);
+        }
+
+        private static void DefaultFloat(Component obj, FieldInfo field)
+        {
+            float value = (float)field.GetValue(obj);
+            ImGui.DragFloat(field.Name, ref value, 0.05f);
+            field.SetValue(obj, value);
         }
     }
 }

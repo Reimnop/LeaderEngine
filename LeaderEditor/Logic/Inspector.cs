@@ -13,11 +13,11 @@ namespace LeaderEditor.Logic
         public Dictionary<Type, Action<Component>> SerializeableComponents = new Dictionary<Type, Action<Component>>()
         {
             { typeof(Camera), null },
-            { typeof(Transform), ComponentEditorGui.Transform },
-            { typeof(MeshFilter), ComponentEditorGui.MeshFilter },
+            { typeof(Transform), SerializeFunc.Transform },
+            { typeof(MeshFilter), SerializeFunc.MeshFilter },
             { typeof(MeshRenderer), null },
-            { typeof(Sprite), ComponentEditorGui.Sprite },
-            { typeof(LEADER_SPINNNN), ComponentEditorGui.LEADER_SPINNNN }
+            { typeof(Sprite), SerializeFunc.Sprite },
+            { typeof(LEADER_SPINNNN), null }
         };
 
         private bool compMenuOpen = false;
@@ -73,7 +73,7 @@ namespace LeaderEditor.Logic
                                 serializeFunc = SerializeableComponents[component.GetType()];
 
                             if (serializeFunc == null)
-                                ImGui.Text("No property");
+                                SerializeFunc.DefaultSerializeFunc(component);
                             else
                                 serializeFunc.Invoke(component);
 
