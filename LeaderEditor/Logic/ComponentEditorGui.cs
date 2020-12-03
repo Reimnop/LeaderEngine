@@ -8,6 +8,7 @@ using System.Text;
 using LeaderEditor.Gui;
 using System.IO;
 using OpenTK.Mathematics;
+using LeaderEditor.Logic.Memes;
 
 using Vector2 = System.Numerics.Vector2;
 using Vector3 = System.Numerics.Vector3;
@@ -37,15 +38,9 @@ namespace LeaderEditor.Logic
             ImGui.DragFloat3("Position", ref posSys, 0.05f);
             transform.position = posSys.ToOTKVector3();
 
-            Vector3 rotSys = new Vector3(
-                MathHelper.RadiansToDegrees(transform.rotationEuler.X),
-                MathHelper.RadiansToDegrees(transform.rotationEuler.Y),
-                MathHelper.RadiansToDegrees(transform.rotationEuler.Z));
+            Vector3 rotSys = transform.rotationEuler.ToSystemVector3();
             ImGui.DragFloat3("Rotation", ref rotSys, 1.0f);
-            transform.rotationEuler = new OpenTK.Mathematics.Vector3(
-                MathHelper.DegreesToRadians(rotSys.X),
-                MathHelper.DegreesToRadians(rotSys.Y),
-                MathHelper.DegreesToRadians(rotSys.Z));
+            transform.rotationEuler = rotSys.ToOTKVector3();
 
             Vector3 scaleSys = transform.scale.ToSystemVector3();
             ImGui.DragFloat3("Scale", ref scaleSys, 0.05f);
@@ -90,6 +85,13 @@ namespace LeaderEditor.Logic
 
             if (sprite.Texture != null)
                 ImGui.Image((IntPtr)sprite.Texture.GetHandle(), new Vector2(sprite.Texture.Size.X, sprite.Texture.Size.Y) / 2.0f);
+        }
+
+        public static void LEADER_SPINNNN(Component obj)
+        {
+            LEADER_SPINNNN spin = (LEADER_SPINNNN)obj;
+
+            ImGui.DragFloat("LEADER POWERRRRRRR", ref spin.power, 0.1f);
         }
     }
 }

@@ -18,9 +18,12 @@ namespace LeaderEditor.Logic
         {
             if (ImGui.BeginMainMenuBar())
             {
-                ImGui.Button("File");
+                if (ImGui.BeginMenu("File"))
+                {
+                    ImGui.EndMenu();
+                }
+                ImGui.EndMainMenuBar();
             }
-            ImGui.EndMainMenuBar();
         }
     }
 }

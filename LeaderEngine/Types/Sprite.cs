@@ -19,10 +19,10 @@ namespace LeaderEngine
         {
             float[] vertices =
             {
-                -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-                -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-                 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
-                 0.5f, -0.5f, 0.0f, 1.0f, 0.0f
+                -0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
+                -0.5f,  0.5f, 0.0f, 0.0f, 0.0f,
+                 0.5f,  0.5f, 0.0f, 1.0f, 0.0f,
+                 0.5f, -0.5f, 0.0f, 1.0f, 1.0f
             };
 
             uint[] indices =
@@ -56,6 +56,11 @@ namespace LeaderEngine
             vertexArray.Use();
 
             GL.DrawElements(PrimitiveType.Triangles, vertexArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
+        }
+
+        public override void OnRemove()
+        {
+            vertexArray.Dispose();
         }
     }
 }

@@ -22,6 +22,7 @@ namespace LeaderEditor.Logic
             ImGuiController.AddComponent<ImGuiController>().OnImGui += OnImGui;
 
             gameObject.AddComponent<InputManager>();
+            gameObject.AddComponent<MainMenuBar>();
             gameObject.AddComponent<Viewport>();
             gameObject.AddComponent<SceneHierachy>();
             gameObject.AddComponent<Inspector>();

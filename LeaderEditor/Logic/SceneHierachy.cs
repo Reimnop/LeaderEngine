@@ -39,7 +39,7 @@ namespace LeaderEditor.Logic
                     SelectedObjectIndex = -1;
             }
 
-            if (InputManager.GetKeyDown(Keys.KeyPad0))
+            if (InputManager.GetKeyDown(Keys.RightControl))
                 SelectedObjectIndex = -1;
         }
 

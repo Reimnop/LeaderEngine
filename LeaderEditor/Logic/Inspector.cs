@@ -4,6 +4,7 @@ using LeaderEditor.Gui;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using LeaderEditor.Logic.Memes;
 
 namespace LeaderEditor.Logic
 {
@@ -11,11 +12,12 @@ namespace LeaderEditor.Logic
     {
         public Dictionary<Type, Action<Component>> SerializeableComponents = new Dictionary<Type, Action<Component>>()
         {
+            { typeof(Camera), null },
             { typeof(Transform), ComponentEditorGui.Transform },
             { typeof(MeshFilter), ComponentEditorGui.MeshFilter },
             { typeof(MeshRenderer), null },
             { typeof(Sprite), ComponentEditorGui.Sprite },
-            { typeof(Camera), null }
+            { typeof(LEADER_SPINNNN), ComponentEditorGui.LEADER_SPINNNN }
         };
 
         private bool compMenuOpen = false;
@@ -27,63 +29,65 @@ namespace LeaderEditor.Logic
 
         private void OnImGui()
         {
-            ImGui.Begin("Inspector");
-
-            if (SceneHierachy.SelectedObject != null)
+            if (ImGui.Begin("Inspector"))
             {
-                if (ImGui.Button("Add Component"))
-                    compMenuOpen = !compMenuOpen;
 
-                ImGui.SameLine();
-
-                ImGui.InputText("Name", ref SceneHierachy.SelectedObject.Name, 255);
-
-                List<Component> components = SceneHierachy.SelectedObject.GetAllComponents();
-
-                if (compMenuOpen)
+                if (SceneHierachy.SelectedObject != null)
                 {
-                    if (ImGui.ListBoxHeader("Components"))
+                    if (ImGui.Button("Add Component"))
+                        compMenuOpen = !compMenuOpen;
+
+                    ImGui.SameLine();
+
+                    ImGui.InputText("Name", ref SceneHierachy.SelectedObject.Name, 255);
+
+                    List<Component> components = SceneHierachy.SelectedObject.GetAllComponents();
+
+                    if (compMenuOpen)
                     {
-                        foreach (var comp in SerializeableComponents)
+                        if (ImGui.ListBoxHeader("Components"))
                         {
-                            if (components.Find(x => x.GetType() == comp.Key) == null)
-                                if (ImGui.Button(comp.Key.Name))
-                                {
-                                    SceneHierachy.SelectedObject.AddComponent((Component)Activator.CreateInstance(comp.Key));
-                                }
+                            foreach (var comp in SerializeableComponents)
+                            {
+                                if (components.Find(x => x.GetType() == comp.Key) == null)
+                                    if (ImGui.Button(comp.Key.Name))
+                                    {
+                                        SceneHierachy.SelectedObject.AddComponent((Component)Activator.CreateInstance(comp.Key));
+                                    }
+                            }
+                            ImGui.ListBoxFooter();
                         }
                     }
-                    ImGui.ListBoxFooter();
-                }
 
-                for (int i = 0; i < components.Count; i++)
-                {
-                    ImGui.Separator();
-
-                    Component component = components[i];
-
-                    ImGui.PushID(i);
-                    if (ImGui.CollapsingHeader(component.GetType().Name))
+                    for (int i = 0; i < components.Count; i++)
                     {
-                        Action<Component> serializeFunc = null;
-                        if (SerializeableComponents.ContainsKey(component.GetType()))
-                            serializeFunc = SerializeableComponents[component.GetType()];
+                        ImGui.Separator();
 
-                        if (serializeFunc == null)
-                            ImGui.Text("No property");
-                        else
-                            serializeFunc.Invoke(component);
+                        Component component = components[i];
 
-                        ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - 110.0f);
-                        if (ImGui.Button("Remove Component"))
+                        ImGui.PushID(i);
+                        if (ImGui.CollapsingHeader(component.GetType().Name))
                         {
-                            SceneHierachy.SelectedObject.RemoveComponent(component);
+                            Action<Component> serializeFunc = null;
+                            if (SerializeableComponents.ContainsKey(component.GetType()))
+                                serializeFunc = SerializeableComponents[component.GetType()];
+
+                            if (serializeFunc == null)
+                                ImGui.Text("No property");
+                            else
+                                serializeFunc.Invoke(component);
+
+                            ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - 110.0f);
+                            if (ImGui.Button("Remove Component"))
+                            {
+                                SceneHierachy.SelectedObject.RemoveComponent(component);
+                            }
                         }
                     }
                 }
+
+                ImGui.End();
             }
-
-            ImGui.End();
         }
     }
 }
