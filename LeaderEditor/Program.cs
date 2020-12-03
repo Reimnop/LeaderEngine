@@ -10,6 +10,7 @@ namespace LeaderEditor
 {
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             Application app = new Application(new GameWindowSettings(), new NativeWindowSettings()

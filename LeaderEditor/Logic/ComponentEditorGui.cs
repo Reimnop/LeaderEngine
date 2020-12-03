@@ -3,6 +3,7 @@ using LeaderEngine;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Windows.Forms;
 using System.Text;
 using LeaderEditor.Gui;
 using System.IO;
@@ -28,14 +29,22 @@ namespace LeaderEditor.Logic
             transform.scale = scaleSys.ToOTKVector3();
         }
 
+        static string name = string.Empty;
+
         public static void MeshFilter(Component obj)
         {
             MeshFilter meshFilter = (MeshFilter)obj;
 
             if (ImGui.Button("Import FBX"))
             {
-
+                using (OpenFileDialog ofd = new OpenFileDialog())
+                {
+                    ofd.ShowDialog();
+                    name = ofd.FileName;
+                }
             }
+            ImGui.SameLine();
+            ImGui.Text(name);
         }
     }
 }
