@@ -66,10 +66,18 @@ namespace LeaderEditor.Logic
 
                     if (!string.IsNullOrEmpty(ofd.FileName))
                     {
+                        sprite.Texture?.Dispose();
+
                         sprite.Texture = new LeaderEngine.Texture().FromFile(ofd.FileName);
                     }
                 }
             }
+
+            ImGui.SameLine();
+
+            System.Numerics.Vector4 col = new System.Numerics.Vector4(sprite.Color.R, sprite.Color.G, sprite.Color.B, sprite.Color.A);
+            ImGui.ColorEdit4("Color", ref col);
+            sprite.Color = new Color4(col.X, col.Y, col.Z, col.W);
 
             if (sprite.Texture != null)
                 ImGui.Image((IntPtr)sprite.Texture.GetHandle(), new Vector2(sprite.Texture.Size.X, sprite.Texture.Size.Y) / 2.0f);
