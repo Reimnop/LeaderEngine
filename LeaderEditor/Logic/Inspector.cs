@@ -77,7 +77,7 @@ namespace LeaderEditor.Logic
                             else
                                 serializeFunc.Invoke(component);
 
-                            ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - 110.0f);
+                            ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - 120.0f);
                             if (ImGui.Button("Remove Component"))
                             {
                                 SceneHierachy.SelectedObject.RemoveComponent(component);

@@ -49,7 +49,8 @@ namespace LeaderEditor.Gui
             IntPtr context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
             var io = ImGui.GetIO();
-            io.Fonts.AddFontDefault();
+            //io.Fonts.AddFontDefault();
+            io.Fonts.AddFontFromFileTTF(AppContext.BaseDirectory + "Fonts/Inconsolata.ttf", 16);
 
             io.BackendFlags |= ImGuiBackendFlags.HasMouseCursors;
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable | ImGuiConfigFlags.NavEnableKeyboard;
