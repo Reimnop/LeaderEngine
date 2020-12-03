@@ -51,10 +51,12 @@ namespace LeaderEditor.Gui
             var io = ImGui.GetIO();
             io.Fonts.AddFontDefault();
 
-            io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset | ImGuiBackendFlags.HasMouseCursors;
+            io.BackendFlags |= ImGuiBackendFlags.HasMouseCursors;
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable | ImGuiConfigFlags.NavEnableKeyboard;
             io.ConfigWindowsResizeFromEdges = true;
             io.MouseDrawCursor = true;
+
+            ImGui.StyleColorsDark();
 
             CreateDeviceResources();
             SetKeyMappings();
