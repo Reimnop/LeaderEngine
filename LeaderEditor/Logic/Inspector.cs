@@ -14,6 +14,7 @@ namespace LeaderEditor.Logic
             { typeof(Transform), ComponentEditorGui.Transform },
             { typeof(MeshFilter), ComponentEditorGui.MeshFilter },
             { typeof(MeshRenderer), null },
+            { typeof(Sprite), ComponentEditorGui.Sprite },
             { typeof(Camera), null }
         };
 

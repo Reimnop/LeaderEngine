@@ -1,4 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -9,6 +10,8 @@ namespace LeaderEngine
     public class Texture : IDisposable
     {
         public int handle;
+
+        public Vector2 Size;
 
         public Texture FromFile(string path)
         {
@@ -37,6 +40,9 @@ namespace LeaderEngine
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
             GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            Size = new Vector2(width, height);
+
             return this;
         }
 
@@ -50,6 +56,9 @@ namespace LeaderEngine
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
             GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            Size = new Vector2(width, height);
+
             return this;
         }
 
