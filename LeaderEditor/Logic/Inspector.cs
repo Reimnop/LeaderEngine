@@ -12,6 +12,8 @@ namespace LeaderEditor.Logic
         public Dictionary<Type, Action<Component>> SerializeableComponents = new Dictionary<Type, Action<Component>>()
         {
             { typeof(Transform), ComponentEditorGui.Transform },
+            { typeof(MeshFilter), ComponentEditorGui.MeshFilter },
+            { typeof(MeshRenderer), null },
             { typeof(Camera), null }
         };
 
@@ -62,7 +64,10 @@ namespace LeaderEditor.Logic
                     ImGui.PushID(i);
                     if (ImGui.CollapsingHeader(component.GetType().Name))
                     {
-                        Action<Component> serializeFunc = SerializeableComponents[component.GetType()];
+                        Action<Component> serializeFunc = null;
+                        if (SerializeableComponents.ContainsKey(component.GetType()))
+                            serializeFunc = SerializeableComponents[component.GetType()];
+
                         if (serializeFunc == null)
                             ImGui.Text("No property");
                         else
