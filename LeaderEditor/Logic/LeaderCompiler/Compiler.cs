@@ -13,19 +13,30 @@ namespace LeaderEditor.Logic.LeaderCompiler
 {
     public class Compiler
     {
-        public Type[] Compile(string source, out EmitResult outResult)
-        {
-            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source);
-            string assemblyName = "Assembly-CSharp.dll";
+        //assembly name
+        const string assemblyName = "InMemoryAssembly";
 
+        public Type[] Compile(string[] sources, out EmitResult outResult)
+        {
+            //parse to syntax trees
+            List<SyntaxTree> syntaxTrees = new List<SyntaxTree>();
+
+            foreach (var source in sources)
+            {
+                syntaxTrees.Add(CSharpSyntaxTree.ParseText(source));
+            }
+
+            //get all assemblies to reference
             var trustedAssembliesPaths = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")).Split(Path.PathSeparator);
 
             List<PortableExecutableReference> references = trustedAssembliesPaths
                 .Select(p => MetadataReference.CreateFromFile(p))
                 .ToList();
 
-            CSharpCompilation compilation = CSharpCompilation.Create(assemblyName, new[] { syntaxTree }, references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+            //compile
+            CSharpCompilation compilation = CSharpCompilation.Create(assemblyName, syntaxTrees, references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
+            //load compiled il code into memory
             using (var ms = new MemoryStream())
             {
                 EmitResult result = compilation.Emit(ms);
@@ -36,17 +47,7 @@ namespace LeaderEditor.Logic.LeaderCompiler
                     ms.Seek(0, SeekOrigin.Begin);
                     Assembly assembly = Assembly.Load(ms.ToArray());
 
-                    Type[] types = assembly.GetTypes();
-
-                    List<Type> output = new List<Type>();
-
-                    foreach (var t in types)
-                    {
-                        if (t.IsSubclassOf(typeof(Component)))
-                            output.Add(t);
-                    }
-
-                    return output.ToArray();
+                    return assembly.GetTypes();
                 }
             }
 

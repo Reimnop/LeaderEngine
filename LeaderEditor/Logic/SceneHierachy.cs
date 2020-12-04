@@ -63,6 +63,8 @@ namespace LeaderEditor.Logic
 
                     if (ImGui.Selectable(go.Name, i == SelectedObjectIndex, ImGuiSelectableFlags.DontClosePopups))
                         SelectedObjectIndex = i;
+
+                    ImGui.PopID();
                 }
             }
             ImGui.End();

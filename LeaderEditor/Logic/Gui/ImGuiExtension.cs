@@ -35,6 +35,7 @@ namespace LeaderEditor.Gui
             ImGui.PushID("X-drag-" + label);
             ImGui.SetNextItemWidth(75.0f);
             ImGui.DragFloat(string.Empty, ref value.X, speed);
+            ImGui.PopID();
 
             ImGui.SameLine();
             if (ImGui.Button("Y"))
@@ -45,6 +46,7 @@ namespace LeaderEditor.Gui
             ImGui.PushID("Y-drag-" + label);
             ImGui.SetNextItemWidth(75.0f);
             ImGui.DragFloat(string.Empty, ref value.Y, speed);
+            ImGui.PopID();
 
             ImGui.SameLine();
             if (ImGui.Button("Z"))
@@ -55,6 +57,7 @@ namespace LeaderEditor.Gui
             ImGui.PushID("Z-drag" + label);
             ImGui.SetNextItemWidth(75.0f);
             ImGui.DragFloat(string.Empty, ref value.Z, speed);
+            ImGui.PopID();
 
             ImGui.SameLine();
             ImGui.Text(label);

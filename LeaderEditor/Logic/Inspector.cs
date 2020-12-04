@@ -12,7 +12,7 @@ namespace LeaderEditor.Logic
     public class Inspector : Component
     {
         //all serializeable components
-        public Dictionary<Type, Action<Component>> SerializeableComponents = new Dictionary<Type, Action<Component>>()
+        public static Dictionary<Type, Action<Component>> SerializeableComponents = new Dictionary<Type, Action<Component>>()
         {
             { typeof(Transform), SerializeFunc.Transform },
             { typeof(Camera), null },
@@ -26,15 +26,6 @@ namespace LeaderEditor.Logic
 
         public override void Start()
         {
-            //DEBUG CODE - test the compiler
-            Compiler compiler = new Compiler();
-            Type[] types = compiler.Compile(File.ReadAllText("source.cs"), out _);
-
-            foreach (var t in types)
-            {
-                SerializeableComponents.Add(t, null);
-            }
-
             //register ImGui
             ImGuiController.main.OnImGui += OnImGui;
         }
@@ -43,7 +34,6 @@ namespace LeaderEditor.Logic
         {
             if (ImGui.Begin("Inspector"))
             {
-
                 if (SceneHierachy.SelectedObject != null)
                 {
                     if (ImGui.Button("Add Component"))
@@ -102,6 +92,7 @@ namespace LeaderEditor.Logic
                                 SceneHierachy.SelectedObject.RemoveComponent(component);
                             }
                         }
+                        ImGui.PopID();
                     }
                 }
 

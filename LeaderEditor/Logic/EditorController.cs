@@ -28,6 +28,7 @@ namespace LeaderEditor.Logic
             gameObject.AddComponent<Viewport>();
             gameObject.AddComponent<SceneHierachy>();
             gameObject.AddComponent<Inspector>();
+            gameObject.AddComponent<DebugConsole>();
         }
 
         private void OnImGui()
