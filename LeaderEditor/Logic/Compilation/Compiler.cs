@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.Emit;
 using System.IO;
 using LeaderEngine;
 
-namespace LeaderEditor.Logic.LeaderCompiler
+namespace LeaderEditor.Compilation
 {
     public class Compiler
     {

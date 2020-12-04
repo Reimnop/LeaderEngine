@@ -10,7 +10,7 @@ using System.Text;
 using Texture = LeaderEngine.Texture;
 
 
-namespace LeaderEditor.Logic
+namespace LeaderEditor
 {
     public class EditorController : Component
     {

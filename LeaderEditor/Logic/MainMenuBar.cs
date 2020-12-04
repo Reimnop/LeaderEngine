@@ -6,12 +6,12 @@ using Microsoft.CodeAnalysis.Emit;
 using System.Windows.Forms;
 using ImGuiNET;
 using LeaderEditor.Gui;
-using LeaderEditor.Logic.LeaderCompiler;
+using LeaderEditor.Compilation;
 using LeaderEngine;
 
 using Application = LeaderEngine.Application;
 
-namespace LeaderEditor.Logic
+namespace LeaderEditor
 {
     public class MainMenuBar : Component
     {

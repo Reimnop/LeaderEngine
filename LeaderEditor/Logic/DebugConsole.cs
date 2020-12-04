@@ -6,7 +6,7 @@ using LeaderEditor.Gui;
 using ImGuiNET;
 using LeaderEngine;
 
-namespace LeaderEditor.Logic
+namespace LeaderEditor
 {
     public class DebugConsole : Component
     {
@@ -36,7 +36,7 @@ namespace LeaderEditor.Logic
                     }
 
                     ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.2f, 0.2f, 0.2f, 0.4f));
-                    if (ImGui.BeginChild("console-scrollview", new Vector2(0.0f, 0.0f), false, ImGuiWindowFlags.HorizontalScrollbar))
+                    if (ImGui.BeginChild("console-scrollview", Vector2.Zero, false, ImGuiWindowFlags.HorizontalScrollbar))
                     {
                         ImGui.TextUnformatted(text);
                         ImGui.EndChild();

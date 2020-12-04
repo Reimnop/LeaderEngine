@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Text;
 
-namespace LeaderEditor.Logic
+namespace LeaderEditor
 {
     public class SceneHierachy : Component
     {

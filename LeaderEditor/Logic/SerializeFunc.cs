@@ -11,7 +11,7 @@ using System.Reflection;
 
 using Vector2 = System.Numerics.Vector2;
 
-namespace LeaderEditor.Logic
+namespace LeaderEditor
 {
     public class SerializeFunc
     {

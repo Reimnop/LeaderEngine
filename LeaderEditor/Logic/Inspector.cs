@@ -4,10 +4,9 @@ using LeaderEditor.Gui;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using LeaderEditor.Logic.LeaderCompiler;
 using System.IO;
 
-namespace LeaderEditor.Logic
+namespace LeaderEditor
 {
     public class Inspector : Component
     {

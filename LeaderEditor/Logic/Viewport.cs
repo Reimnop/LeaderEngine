@@ -8,7 +8,7 @@ using OpenTK.Windowing.Common;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LeaderEditor.Logic
+namespace LeaderEditor
 {
     public class Viewport : Component
     {
