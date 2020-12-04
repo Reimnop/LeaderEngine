@@ -56,11 +56,6 @@ namespace LeaderEditor.Logic
                                         Inspector.SerializeableComponents.Add(t, null);
                                 }
                             }
-                            else
-                            {
-                                foreach (var diag in result.Diagnostics)
-                                    DebugConsole.main.WriteLine(diag.ToString());
-                            }
                         }
                     }
 

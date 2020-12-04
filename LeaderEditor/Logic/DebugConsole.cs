@@ -12,7 +12,7 @@ namespace LeaderEditor.Logic
     {
         public static DebugConsole main { private set; get; }
 
-        private string text = string.Empty;
+        private static string text = string.Empty;
 
         public bool isOpen = true;
 
@@ -48,21 +48,17 @@ namespace LeaderEditor.Logic
             }
         }
 
-        public void WriteLine(string value)
+        public static void WriteLine(string value)
         {
             text += value + Environment.NewLine;
-
-            isOpen = true;
         }
 
-        public void Write(string value)
+        public static void Write(string value)
         {
             text += value;
-
-            isOpen = true;
         }
 
-        public void Clear()
+        public static void Clear()
         {
             text = string.Empty;
         }

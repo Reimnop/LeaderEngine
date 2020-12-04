@@ -49,6 +49,11 @@ namespace LeaderEditor.Logic.LeaderCompiler
 
                     return assembly.GetTypes();
                 }
+                else
+                {
+                    foreach (var diag in result.Diagnostics)
+                        DebugConsole.WriteLine(diag.ToString());
+                }
             }
 
             return null;
