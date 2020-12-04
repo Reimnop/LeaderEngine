@@ -70,6 +70,11 @@ namespace LeaderEditor.Logic
                     }
                     ImGui.EndMenu();
                 }
+                if (ImGui.BeginMenu("Windows"))
+                {
+                    ImGui.MenuItem("Console", null, ref DebugConsole.main.isOpen);
+                    ImGui.EndMenu();
+                }
                 ImGui.EndMainMenuBar();
             }
         }

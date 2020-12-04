@@ -14,7 +14,7 @@ namespace LeaderEditor.Logic
 
         private string text = string.Empty;
 
-        private bool isOpen = true;
+        public bool isOpen = true;
 
         public override void Start()
         {
@@ -26,22 +26,25 @@ namespace LeaderEditor.Logic
 
         private void OnImGui()
         {
-            if (ImGui.Begin("Console", ref isOpen))
+            if (isOpen)
             {
-                if (ImGui.Button("Clear"))
+                if (ImGui.Begin("Console", ref isOpen))
                 {
-                    Clear();
-                }
+                    if (ImGui.Button("Clear"))
+                    {
+                        Clear();
+                    }
 
-                ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.2f, 0.2f, 0.2f, 0.4f));
-                if (ImGui.BeginChild("console-scrollview", new Vector2(0.0f, 0.0f), false, ImGuiWindowFlags.HorizontalScrollbar))
-                {
-                    ImGui.TextUnformatted(text);
-                    ImGui.EndChild();
-                }
-                ImGui.PopStyleColor();
+                    ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.2f, 0.2f, 0.2f, 0.4f));
+                    if (ImGui.BeginChild("console-scrollview", new Vector2(0.0f, 0.0f), false, ImGuiWindowFlags.HorizontalScrollbar))
+                    {
+                        ImGui.TextUnformatted(text);
+                        ImGui.EndChild();
+                    }
+                    ImGui.PopStyleColor();
 
-                ImGui.End();
+                    ImGui.End();
+                }
             }
         }
 
