@@ -5,6 +5,7 @@ namespace LeaderEngine
 {
     public class Camera : Component
     {
+        //TODO: finish camera
         public static Camera main { private set; get; }
 
         public float VerticalScale = 9.0f;

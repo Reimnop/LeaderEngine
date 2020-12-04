@@ -35,12 +35,14 @@ namespace LeaderEditor.Logic
 
         private void SceneRender()
         {
+            //render scene to a framebuffer
             framebuffer.Begin();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
         }
 
         private void PostSceneRender()
         {
+            //end the render
             framebuffer.End();
         }
 
@@ -49,6 +51,7 @@ namespace LeaderEditor.Logic
         {
             if (ImGui.Begin("Viewport", ImGuiWindowFlags.NoCollapse))
             {
+                //display to framebuffer texture on gui
                 ImGui.Image((IntPtr)framebuffer.GetTexture(), new Vector2(width, height) / 2.0f, new Vector2(0.0f, 1.0f), new Vector2(1.0f, 0.0f));
                 ImGui.End();
             }

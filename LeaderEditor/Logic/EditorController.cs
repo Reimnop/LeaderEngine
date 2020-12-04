@@ -18,9 +18,11 @@ namespace LeaderEditor.Logic
 
         public override void Start()
         {
+            //add gui controller
             ImGuiController = new GameObject("Controller");
             ImGuiController.AddComponent<ImGuiController>().OnImGui += OnImGui;
 
+            //add all components 
             gameObject.AddComponent<InputManager>();
             gameObject.AddComponent<MainMenuBar>();
             gameObject.AddComponent<Viewport>();
@@ -30,6 +32,7 @@ namespace LeaderEditor.Logic
 
         private void OnImGui()
         {
+            //the dockspace
             ImGui.DockSpaceOverViewport();
         }
     }

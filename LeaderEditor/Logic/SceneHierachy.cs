@@ -30,6 +30,7 @@ namespace LeaderEditor.Logic
 
         public override void Update()
         {
+            //delete object
             if (InputManager.GetKeyDown(Keys.Delete) && SelectedObject != null)
             {
                 SelectedObject.Destroy();
@@ -39,17 +40,21 @@ namespace LeaderEditor.Logic
                     SelectedObjectIndex = -1;
             }
 
+            //press right ctrl to deselect
             if (InputManager.GetKeyDown(Keys.RightControl))
                 SelectedObjectIndex = -1;
         }
 
         private void OnImGui()
         {
+            //render scene hierachy gui
             if (ImGui.Begin("Scene Hierachy"))
             {
+                //new object button
                 if (ImGui.Button("New Object"))
                     CreateNewObject();
 
+                //draw all objects
                 for (int i = 0; i < SceneObjects.Count; i++)
                 {
                     var go = SceneObjects[i];
@@ -63,6 +68,7 @@ namespace LeaderEditor.Logic
             ImGui.End();
         }
 
+        //new object function
         private void CreateNewObject()
         {
             SceneObjects.Add(new GameObject("New GameObject"));
