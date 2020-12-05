@@ -1,4 +1,6 @@
-﻿namespace LeaderEngine
+﻿using ImGuiNET;
+
+namespace LeaderEngine
 {
     public class Component
     {

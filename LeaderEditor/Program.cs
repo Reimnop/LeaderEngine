@@ -1,5 +1,4 @@
 ﻿using ImGuiNET;
-using LeaderEditor.Gui;
 using LeaderEngine;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -10,6 +9,7 @@ namespace LeaderEditor
 {
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             Application app = new Application(new GameWindowSettings(), new NativeWindowSettings()

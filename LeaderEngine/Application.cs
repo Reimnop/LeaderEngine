@@ -18,9 +18,11 @@ namespace LeaderEngine
 
     public class Application : GameWindow
     {
-        public static Application instance = null;
+        public static Application main = null;
 
         public List<GameObject> GameObjects = new List<GameObject>();
+
+        private Queue<Action> NextUpdateQueue = new Queue<Action>();
 
         private Action initCallback;
 
@@ -31,15 +33,20 @@ namespace LeaderEngine
 
         public Application(GameWindowSettings gws, NativeWindowSettings nws, Action initCallback) : base(gws, nws)
         {
-            if (instance != null)
+            if (main != null)
                 return;
 
-            instance = this;
+            main = this;
             CursorVisible = true;
 
             this.initCallback = initCallback;
 
-            GLFW.SwapInterval(0);
+            GLFW.SwapInterval(1);
+        }
+
+        public void ExecuteNextUpdate(Action action)
+        {
+            NextUpdateQueue.Enqueue(action);
         }
 
         public override void Run()
@@ -66,6 +73,9 @@ namespace LeaderEngine
         {
             Time.time = (float)GLFW.GetTime();
 
+            while (NextUpdateQueue.Count > 0)
+                NextUpdateQueue.Dequeue().Invoke();
+
             GameObjects.ForEach(go => go.Update());
             GameObjects.ForEach(go => go.LateUpdate());
 
@@ -74,7 +84,7 @@ namespace LeaderEngine
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
+            GL.Viewport(0, 0, Size.X, Size.Y);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
