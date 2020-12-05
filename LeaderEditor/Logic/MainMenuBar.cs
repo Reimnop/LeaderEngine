@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.CodeAnalysis.Emit;
 using System.Windows.Forms;
 using ImGuiNET;
+using LeaderEditor.Data;
 using LeaderEditor.Gui;
 using LeaderEditor.Compilation;
 using LeaderEngine;
@@ -26,36 +27,17 @@ namespace LeaderEditor
             {
                 if (ImGui.BeginMenu("File"))
                 {
-                    if (ImGui.MenuItem("Compile", "F9"))
+                    if (ImGui.MenuItem("Open Project", "Ctrl+O"))
                     {
                         OpenFileDialog ofd = new OpenFileDialog();
-                        ofd.Filter = "*.cs|*.cs";
-                        ofd.Multiselect = true;
+                        ofd.Filter = "*.csproj|*.csproj";
+                        ofd.Multiselect = false;
 
                         ofd.ShowDialog();
 
-                        if (ofd.FileNames != null)
+                        if (!string.IsNullOrEmpty(ofd.FileName))
                         {
-                            List<string> sources = new List<string>();
-
-                            foreach (var fileName in ofd.FileNames)
-                            {
-                                sources.Add(File.ReadAllText(fileName));
-                            }
-
-                            EmitResult result;
-
-                            Compiler compiler = new Compiler();
-                            Type[] types = compiler.Compile(sources.ToArray(), out result);
-
-                            if (result.Success)
-                            {
-                                foreach (var t in types)
-                                {
-                                    if (t.IsSubclassOf(typeof(Component)))
-                                        Inspector.SerializeableComponents.Add(t, null);
-                                }
-                            }
+                            AssetLoader.LoadProject(ofd.FileName);
                         }
                     }
 
