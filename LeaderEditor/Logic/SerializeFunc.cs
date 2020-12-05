@@ -20,9 +20,17 @@ namespace LeaderEditor
         {
             Transform transform = (Transform)obj;
 
+            ImGui.PushID("PositionV3");
             ImGuiExtension.DragVector3("Position", ref transform.position, Vector3.Zero, 0.05f);
+            ImGui.PopID();
+
+            ImGui.PushID("RotationV3");
             ImGuiExtension.DragVector3("Rotation", ref transform.rotationEuler, Vector3.Zero, 0.05f);
+            ImGui.PopID();
+
+            ImGui.PushID("ScaleV3");
             ImGuiExtension.DragVector3("Scale", ref transform.scale, Vector3.One, 0.05f);
+            ImGui.PopID();
         }
 
         //TODO: finish meshfilter serialization functin
