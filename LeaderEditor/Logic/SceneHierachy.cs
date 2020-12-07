@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Text;
+using LeaderEditor.Data;
 
 namespace LeaderEditor
 {
@@ -51,7 +52,7 @@ namespace LeaderEditor
             if (ImGui.Begin("Scene Hierachy"))
             {
                 //new object button
-                if (ImGui.Button("New Object"))
+                if (ImGui.Button("New Object") && !string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
                     CreateNewObject();
 
                 //draw all objects

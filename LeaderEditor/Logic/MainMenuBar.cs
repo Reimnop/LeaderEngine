@@ -41,19 +41,27 @@ namespace LeaderEditor
                         }
                     }
 
+                    //DEBUG CODE
+                    if (ImGui.MenuItem("Generate Code"))
+                    {
+                        DebugConsole.WriteLine(CodeGenerator.GenerateCode());
+                    }
+
                     if (ImGui.MenuItem("Exit", "Alt+F4"))
                     {
                         Application.main.Close();
                     }
+
                     ImGui.EndMenu();
                 }
+
                 if (ImGui.BeginMenu("Windows"))
                 {
                     ImGui.MenuItem("Console", null, ref DebugConsole.main.isOpen);
                     ImGui.EndMenu();
                 }
-                ImGui.EndMainMenuBar();
             }
+            ImGui.EndMainMenuBar();
         }
     }
 }

@@ -10,6 +10,7 @@ using OpenTK.Mathematics;
 using System.Reflection;
 
 using Vector2 = System.Numerics.Vector2;
+using LeaderEditor.Data;
 
 namespace LeaderEditor
 {
@@ -68,11 +69,13 @@ namespace LeaderEditor
 
                     if (!string.IsNullOrEmpty(ofd.FileName))
                     {
+                        string fPath = AssetLoader.LoadAsset(ofd.FileName);
+
                         //dispose old texture
                         sprite.Texture?.Dispose();
 
                         //create new texture
-                        sprite.Texture = new LeaderEngine.Texture().FromFile(ofd.FileName);
+                        sprite.Texture = new LeaderEngine.Texture().FromFile(fPath);
                     }
                 }
             }

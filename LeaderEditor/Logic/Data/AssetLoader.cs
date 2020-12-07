@@ -11,16 +11,17 @@ namespace LeaderEditor.Data
     public static class AssetLoader
     {
         private static List<Type> loadedTypes = new List<Type>();
-        private static string loadedProjectDir;
+        public static string LoadedProjectDir;
 
         public static void LoadProject(string prjPath)
         {
             SceneHierachy.SceneObjects.ForEach(x => x.Destroy());
+            SceneHierachy.SceneObjects.Clear();
 
             loadedTypes.ForEach(x => Inspector.SerializeableComponents.Remove(x));
             loadedTypes.Clear();
 
-            string[] sourcePaths = Directory.GetFiles(loadedProjectDir = Path.GetDirectoryName(prjPath), "*.cs", SearchOption.AllDirectories);
+            string[] sourcePaths = Directory.GetFiles(LoadedProjectDir = Path.GetDirectoryName(prjPath), "*.cs", SearchOption.AllDirectories);
             string[] sources = new string[sourcePaths.Length];
 
             for (int i = 0; i < sourcePaths.Length; i++)
@@ -42,6 +43,22 @@ namespace LeaderEditor.Data
                     }
                 }
             }
+        }
+
+        public static string LoadAsset(string path)
+        {
+            if (!string.IsNullOrEmpty(LoadedProjectDir))
+            {
+                string fileName = Path.GetFileName(path);
+                Directory.CreateDirectory(Path.Combine(LoadedProjectDir, "Assets"));
+                string newPath = Path.Combine(LoadedProjectDir, "Assets", fileName);
+
+                if (!File.Exists(newPath))
+                    File.Copy(path, newPath);
+
+                return newPath;
+            }
+            return null;
         }
     }
 }
