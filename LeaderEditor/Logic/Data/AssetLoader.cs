@@ -21,7 +21,16 @@ namespace LeaderEditor.Data
             loadedTypes.ForEach(x => Inspector.SerializeableComponents.Remove(x));
             loadedTypes.Clear();
 
-            string[] sourcePaths = Directory.GetFiles(LoadedProjectDir = Path.GetDirectoryName(prjPath), "*.cs", SearchOption.AllDirectories);
+            LoadedProjectDir = Path.GetDirectoryName(prjPath);
+
+            string scriptsDir = Path.Combine(LoadedProjectDir, "Scripts");
+            Directory.CreateDirectory(scriptsDir);
+
+            string[] sourcePaths = Directory.GetFiles(scriptsDir, "*.cs", SearchOption.AllDirectories);
+
+            if (sourcePaths == null)
+                return;
+
             string[] sources = new string[sourcePaths.Length];
 
             for (int i = 0; i < sourcePaths.Length; i++)
