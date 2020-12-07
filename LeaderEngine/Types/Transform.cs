@@ -10,11 +10,21 @@ namespace LeaderEngine
         { 
             get 
             {
-                return Quaternion.FromEulerAngles(rotationEuler);
+                return Quaternion.FromEulerAngles(new Vector3(
+                    MathHelper.DegreesToRadians(rotationEuler.X),
+                    MathHelper.DegreesToRadians(rotationEuler.Y),
+                    MathHelper.DegreesToRadians(rotationEuler.Z))
+                    );
             }
             set
             {
-                Quaternion.ToEulerAngles(value, out rotationEuler);
+                Vector3 tempEuler;
+                Quaternion.ToEulerAngles(value, out tempEuler);
+                rotationEuler = new Vector3(
+                    MathHelper.RadiansToDegrees(tempEuler.X),
+                    MathHelper.RadiansToDegrees(tempEuler.Y),
+                    MathHelper.RadiansToDegrees(tempEuler.X)
+                    );
             }
         }
         public Vector3 rotationEuler;

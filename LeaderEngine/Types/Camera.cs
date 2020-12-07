@@ -27,7 +27,11 @@ namespace LeaderEngine
         public override void LateUpdate()
         {
             ViewMatrix = Matrix4.CreateTranslation(-gameObject.transform.position) *
-                Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(-gameObject.transform.rotationEuler));
+                Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(-new Vector3(
+                    MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.X),
+                    MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.Y),
+                    MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.Z))
+                    ));
         }
 
         private void Instance_Resize(ResizeEventArgs e)
