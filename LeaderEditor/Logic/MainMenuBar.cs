@@ -48,7 +48,13 @@ namespace LeaderEditor
                         }
                     }
 
-                    //DEBUG CODE
+                    if (ImGui.MenuItem("Save Project", "Ctrl+S"))
+                    {
+                        if (!string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
+                            SceneSerializer.SaveScene(Path.Combine(AssetLoader.LoadedProjectDir, "Assets", "scene.ldrscene"));
+                    }
+
+                    //TODO: DEBUG CODE
                     if (ImGui.MenuItem("Generate Code"))
                     {
                         if (!string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
