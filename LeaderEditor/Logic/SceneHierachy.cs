@@ -9,7 +9,7 @@ using LeaderEditor.Data;
 
 namespace LeaderEditor
 {
-    public class SceneHierachy : Component
+    public class SceneHierachy : WindowComponent
     {
         public static List<GameObject> SceneObjects = new List<GameObject>();
         public static GameObject SelectedObject { 
@@ -27,6 +27,8 @@ namespace LeaderEditor
         public override void Start()
         {
             ImGuiController.main.OnImGui += OnImGui;
+
+            MainMenuBar.RegisterWindow("Scene Hierachy", this);
         }
 
         public override void Update()
@@ -49,26 +51,27 @@ namespace LeaderEditor
         private void OnImGui()
         {
             //render scene hierachy gui
-            if (ImGui.Begin("Scene Hierachy"))
-            {
-                //new object button
-                if (ImGui.Button("New Object") && !string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
-                    CreateNewObject();
-
-                //draw all objects
-                for (int i = 0; i < SceneObjects.Count; i++)
+            if (IsOpen)
+                if (ImGui.Begin("Scene Hierachy", ref IsOpen))
                 {
-                    var go = SceneObjects[i];
+                    //new object button
+                    if (ImGui.Button("New Object") && !string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
+                        CreateNewObject();
 
-                    ImGui.PushID(go.Name + i);
+                    //draw all objects
+                    for (int i = 0; i < SceneObjects.Count; i++)
+                    {
+                        var go = SceneObjects[i];
 
-                    if (ImGui.Selectable(go.Name, i == SelectedObjectIndex, ImGuiSelectableFlags.DontClosePopups))
-                        SelectedObjectIndex = i;
+                        ImGui.PushID(go.Name + i);
 
-                    ImGui.PopID();
+                        if (ImGui.Selectable(go.Name, i == SelectedObjectIndex, ImGuiSelectableFlags.DontClosePopups))
+                            SelectedObjectIndex = i;
+
+                        ImGui.PopID();
+                    }
+                    ImGui.End();
                 }
-            }
-            ImGui.End();
         }
 
         //new object function

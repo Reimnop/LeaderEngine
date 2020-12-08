@@ -16,9 +16,16 @@ namespace LeaderEditor
 {
     public class MainMenuBar : Component
     {
+        public static Dictionary<string, WindowComponent> windows = new Dictionary<string, WindowComponent>();
+
         public override void Start()
         {
             ImGuiController.main.OnImGui += OnImGui;
+        }
+
+        public static void RegisterWindow(string name, WindowComponent window)
+        {
+            windows.Add(name, window);
         }
 
         private void OnImGui()
@@ -58,7 +65,9 @@ namespace LeaderEditor
 
                 if (ImGui.BeginMenu("Windows"))
                 {
-                    ImGui.MenuItem("Console", null, ref DebugConsole.main.isOpen);
+                    foreach (var window in windows)
+                        ImGui.MenuItem(window.Key, null, ref window.Value.IsOpen);
+
                     ImGui.EndMenu();
                 }
             }

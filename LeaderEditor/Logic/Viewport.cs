@@ -10,7 +10,7 @@ using System.Text;
 
 namespace LeaderEditor
 {
-    public class Viewport : Component
+    public class Viewport : WindowComponent
     {
         Framebuffer framebuffer;
 
@@ -26,6 +26,8 @@ namespace LeaderEditor
             Application.main.Resize += Resize;
 
             ImGuiController.main.OnImGui += OnImGui;
+
+            MainMenuBar.RegisterWindow("Viewport", this);
         }
 
         private void Resize(ResizeEventArgs e)
@@ -49,12 +51,13 @@ namespace LeaderEditor
 
         private void OnImGui()
         {
-            if (ImGui.Begin("Viewport", ImGuiWindowFlags.NoCollapse))
-            {
-                //display to framebuffer texture on gui
-                ImGui.Image((IntPtr)framebuffer.GetColorTexture(), new Vector2(width, height) / 2.0f, new Vector2(0.0f, 1.0f), new Vector2(1.0f, 0.0f));
-                ImGui.End();
-            }
+            if (IsOpen)
+                if (ImGui.Begin("Viewport", ref IsOpen, ImGuiWindowFlags.NoCollapse))
+                {
+                    //display to framebuffer texture on gui
+                    ImGui.Image((IntPtr)framebuffer.GetColorTexture(), new Vector2(width, height) / 2.0f, new Vector2(0.0f, 1.0f), new Vector2(1.0f, 0.0f));
+                    ImGui.End();
+                }
         }
     }
 }

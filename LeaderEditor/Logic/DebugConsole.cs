@@ -8,14 +8,12 @@ using LeaderEngine;
 
 namespace LeaderEditor
 {
-    public class DebugConsole : Component
+    public class DebugConsole : WindowComponent
     {
         public static DebugConsole main { private set; get; }
 
         private bool AutoScroll = true;
         private static string text = string.Empty;
-
-        public bool isOpen = true;
 
         public override void Start()
         {
@@ -23,13 +21,15 @@ namespace LeaderEditor
                 main = this;
 
             ImGuiController.main.OnImGui += OnImGui;
+
+            MainMenuBar.RegisterWindow("Console", this);
         }
 
         private void OnImGui()
         {
-            if (isOpen)
+            if (IsOpen)
             {
-                if (ImGui.Begin("Console", ref isOpen))
+                if (ImGui.Begin("Console", ref IsOpen))
                 {
                     if (ImGui.Button("Clear"))
                     {
