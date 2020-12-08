@@ -6,6 +6,8 @@ namespace LeaderEngine
     {
         public GameObject gameObject = null;
 
+        public bool Enabled = true;
+
         public virtual void Start() { return; }
         public virtual void Update() { return; }
         public virtual void LateUpdate() { return; }

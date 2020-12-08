@@ -43,7 +43,7 @@ namespace LeaderEditor
                     {
                         ImGui.TextUnformatted(text);
 
-                        if (AutoScroll && ImGui.GetScrollY() >= ImGui.GetScrollMaxY())
+                        if (AutoScroll)
                             ImGui.SetScrollHereY(1.0f);
                     }
                     ImGui.EndChild();

@@ -40,14 +40,14 @@ namespace LeaderEngine
 
         public override void OnRender()
         {
-            if (Camera.main == null || Texture == null)
+            if (Texture == null)
                 return;
 
             Matrix4 model = Matrix4.CreateScale(gameObject.transform.scale)
                  * Matrix4.CreateFromQuaternion(gameObject.transform.rotation)
                  * Matrix4.CreateTranslation(gameObject.transform.position);
 
-            shader.SetMatrix4("mvp", model * Camera.main.ViewMatrix * Camera.main.ProjectionMatrix);
+            shader.SetMatrix4("mvp", model * RenderingGlobals.View * RenderingGlobals.Projection);
             shader.SetVector4("color", new Vector4(Color.R, Color.G, Color.B, Color.A));
 
             Texture.Use(TextureUnit.Texture0);

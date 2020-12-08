@@ -33,7 +33,10 @@ namespace LeaderEngine
             if (!ActiveSelf)
                 return;
 
-            components.ForEach(co => co.Update());
+            components.ForEach(co => {
+                if (co.Enabled)
+                    co.Update();
+            });
         }
 
         public void LateUpdate()
@@ -41,7 +44,10 @@ namespace LeaderEngine
             if (!ActiveSelf)
                 return;
 
-            components.ForEach(co => co.LateUpdate());
+            components.ForEach(co => {
+                if (co.Enabled)
+                    co.LateUpdate();
+            });
         }
 
         public void Render()
@@ -49,7 +55,10 @@ namespace LeaderEngine
             if (!ActiveSelf)
                 return;
 
-            components.ForEach(co => co.OnRender());
+            components.ForEach(co => {
+                if (co.Enabled)
+                    co.OnRender();
+            });
         }
 
         public void RenderGui()
@@ -57,7 +66,10 @@ namespace LeaderEngine
             if (!ActiveSelf)
                 return;
 
-            components.ForEach(co => co.OnRenderGui());
+            components.ForEach(co => {
+                if (co.Enabled)
+                    co.OnRenderGui();
+            });
         }
 
         public void SetActive(bool active)
@@ -134,7 +146,10 @@ namespace LeaderEngine
             if (component.GetType() == typeof(Transform))
                 return;
 
-            Application.main.ExecuteNextUpdate(() => components.Remove(component));
+            Application.main.ExecuteNextUpdate(() => {
+                component.OnRemove();
+                components.Remove(component);
+            });
         }
 
         public void OnClosing()

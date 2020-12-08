@@ -26,7 +26,7 @@ namespace LeaderEditor
             ImGui.PopID();
 
             ImGui.PushID("RotationV3");
-            ImGuiExtension.DragVector3("Rotation", ref transform.rotationEuler, Vector3.Zero, 0.05f);
+            ImGuiExtension.DragVector3("Rotation", ref transform.rotationEuler, Vector3.Zero, 0.5f);
             ImGui.PopID();
 
             ImGui.PushID("ScaleV3");

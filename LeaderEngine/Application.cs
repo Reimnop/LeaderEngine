@@ -21,11 +21,11 @@ namespace LeaderEngine
         public static Application main = null;
 
         public List<GameObject> GameObjects = new List<GameObject>();
+        public bool EditorMode = false;
 
         private Queue<Action> NextUpdateQueue = new Queue<Action>();
 
         private Action initCallback;
-
         public event Action SceneRender;
         public event Action PostSceneRender;
         public event Action GuiRender;
@@ -76,39 +76,42 @@ namespace LeaderEngine
             while (NextUpdateQueue.Count > 0)
                 NextUpdateQueue.Dequeue().Invoke();
 
-            GameObjects.ForEach(go => go.Update());
-            GameObjects.ForEach(go => go.LateUpdate());
-
             base.OnUpdateFrame(e);
+
+            if (!EditorMode)
+            {
+                GameObjects.ForEach(go => go.Update());
+                GameObjects.ForEach(go => go.LateUpdate());
+            }
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             GL.Viewport(0, 0, Size.X, Size.Y);
 
+            base.OnRenderFrame(e);
+
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
             GL.Disable(EnableCap.Blend);
-
             GL.Enable(EnableCap.DepthTest);
 
             SceneRender?.Invoke();
-            GameObjects.ForEach(go => go.Render());
+            if (RenderingGlobals.RenderingEnabled)
+                GameObjects.ForEach(go => go.Render());
             PostSceneRender?.Invoke();
 
             GL.Disable(EnableCap.DepthTest);
-
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             GuiRender?.Invoke();
-            GameObjects.ForEach(go => go.RenderGui());
+            if (RenderingGlobals.RenderingEnabled)
+                GameObjects.ForEach(go => go.RenderGui());
 
             FinishRender?.Invoke();
 
             SwapBuffers();
-
-            base.OnRenderFrame(e);
 
             Time.deltaTimeUnscaled = (float)GLFW.GetTime() - Time.time;
             Time.deltaTime = Time.deltaTimeUnscaled * Time.timeScale;

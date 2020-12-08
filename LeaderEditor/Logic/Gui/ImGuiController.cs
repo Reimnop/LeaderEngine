@@ -45,6 +45,7 @@ namespace LeaderEditor.Gui
 
             Application.main.TextInput += TextInput;
             Application.main.FinishRender += FinishRender;
+            Application.main.UpdateFrame += UpdateImGui;
 
             IntPtr context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
@@ -186,7 +187,7 @@ void main()
         /// <summary>
         /// Updates ImGui input and IO configuration state.
         /// </summary>
-        public override void Update()
+        public void UpdateImGui(FrameEventArgs e)
         {
             if (_frameBegun)
             {

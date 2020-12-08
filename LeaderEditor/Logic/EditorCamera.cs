@@ -1,12 +1,15 @@
-﻿using OpenTK.Mathematics;
+﻿using LeaderEngine;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace LeaderEngine
+namespace LeaderEditor
 {
-    public class Camera : Component
+    public class EditorCamera : Component
     {
-        public static Camera main;
+        public static EditorCamera main;
 
         public float FOV = 1.04719755f; //60 degrees
 
@@ -21,12 +24,19 @@ namespace LeaderEngine
             ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.main.Size.X / (float)Application.main.Size.Y, 0.05f, 500.0f);
 
             Application.main.Resize += Resize;
+            Application.main.UpdateFrame += UpdateFrame;
             Application.main.SceneRender += SceneRender;
         }
 
         private void Resize(ResizeEventArgs e)
         {
             ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, e.Width / (float)e.Height, 0.1f, 200.0f);
+        }
+
+        private void UpdateFrame(FrameEventArgs e)
+        {
+            if (Camera.main != null && EditorController.Mode == EditorController.EditorMode.Editor)
+                Camera.main.Enabled = false;
         }
 
         private void SceneRender()
@@ -41,16 +51,8 @@ namespace LeaderEngine
                     MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.Z))
                     ));
 
-            RenderingGlobals.View = ViewMatrix;
             RenderingGlobals.Projection = ProjectionMatrix;
-        }
-
-        public override void OnRemove()
-        {
-            main = null;
-
-            Application.main.Resize -= Resize;
-            Application.main.SceneRender -= SceneRender;
+            RenderingGlobals.View = ViewMatrix;
         }
     }
 }

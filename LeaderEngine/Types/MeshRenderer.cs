@@ -33,9 +33,6 @@ namespace LeaderEngine
 
         public override void OnRender()
         {
-            if (Camera.main == null)
-                return;
-
             Matrix4 model = Matrix4.CreateScale(gameObject.transform.scale)
                  * Matrix4.CreateFromQuaternion(gameObject.transform.rotation)
                  * Matrix4.CreateTranslation(gameObject.transform.position);
@@ -44,7 +41,7 @@ namespace LeaderEngine
             if (material == null)
                 renderMat = Material.NoRender;
 
-            renderMat.SetMatrix4("mvp", model * Camera.main.ViewMatrix * Camera.main.ProjectionMatrix);
+            renderMat.SetMatrix4("mvp", model * RenderingGlobals.View * RenderingGlobals.Projection);
 
             renderMat.Use();
             meshFilter.VertexArray.Use();

@@ -27,6 +27,8 @@ namespace LeaderEditor
 
         static void LoadEditor()
         {
+            Application.main.EditorMode = true;
+
             GameObject editorController = new GameObject("EditorController");
             editorController.AddComponent<EditorController>();
         }

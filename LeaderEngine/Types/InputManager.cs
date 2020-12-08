@@ -1,4 +1,7 @@
 ﻿using OpenTK.Windowing.GraphicsLibraryFramework;
+using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.Common;
+using OpenTK.Mathematics;
 
 namespace LeaderEngine
 {
@@ -13,10 +16,45 @@ namespace LeaderEngine
         private static KeyboardState keyState;
         private static MouseState mouseState;
 
-        public override void Update()
+        public InputManager()
+        {
+            Application.main.UpdateFrame += InputUpdate;
+        }
+
+        public void InputUpdate(FrameEventArgs e)
         {
             keyState = Application.main.KeyboardState;
             mouseState = Application.main.MouseState;
+        }
+        public static Vector2 GetMouseDelta()
+        {
+            return mouseState.Delta;
+        }
+        public static Vector2 GetMousePosition()
+        {
+            return mouseState.Position;
+        }
+        public static bool GetMouseDown(MouseButton button)
+        {
+            if (!Application.main.IsFocused)
+                return false;
+            if (!mouseState.WasButtonDown(button) && mouseState.IsButtonDown(button))
+                return true;
+            return false;
+        }
+        public static bool GetMouse(MouseButton button)
+        {
+            if (!Application.main.IsFocused)
+                return false;
+            return mouseState.IsButtonDown(button);
+        }
+        public static bool GetMouseUp(MouseButton button)
+        {
+            if (!Application.main.IsFocused)
+                return false;
+            if (!mouseState.IsButtonDown(button) && mouseState.WasButtonDown(button))
+                return true;
+            return false;
         }
         public static bool GetKeyDown(Keys key)
         {
@@ -30,7 +68,13 @@ namespace LeaderEngine
         {
             if (!Application.main.IsFocused)
                 return false;
-            if (keyState.IsKeyDown(key))
+            return keyState.IsKeyDown(key);
+        }
+        public static bool GetKeyUp(Keys key)
+        {
+            if (!Application.main.IsFocused)
+                return false;
+            if (!keyState.IsKeyDown(key) && keyState.WasKeyDown(key))
                 return true;
             return false;
         }
@@ -52,14 +96,6 @@ namespace LeaderEngine
                     break;
             }
             return 0;
-        }
-        public static bool GetKeyUp(Keys key)
-        {
-            if (!Application.main.IsFocused)
-                return false;
-            if (!keyState.IsKeyDown(key) && keyState.WasKeyDown(key))
-                return true;
-            return false;
         }
     }
 }
