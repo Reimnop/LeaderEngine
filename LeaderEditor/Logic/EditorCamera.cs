@@ -35,7 +35,10 @@ namespace LeaderEditor
 
         private void UpdateFrame(FrameEventArgs e)
         {
-            if (Camera.main != null && EditorController.Mode == EditorController.EditorMode.Editor)
+            if (EditorController.Mode != EditorController.EditorMode.Editor)
+                return;
+
+            if (Camera.main != null)
                 Camera.main.Enabled = false;
         }
 
