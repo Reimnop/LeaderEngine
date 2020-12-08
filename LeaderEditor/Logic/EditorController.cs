@@ -22,13 +22,16 @@ namespace LeaderEditor
             ImGuiController = new GameObject("Controller");
             ImGuiController.AddComponent<ImGuiController>().OnImGui += OnImGui;
 
-            //add all components 
-            gameObject.AddComponent<InputManager>();
-            gameObject.AddComponent<MainMenuBar>();
-            gameObject.AddComponent<Viewport>();
-            gameObject.AddComponent<SceneHierachy>();
-            gameObject.AddComponent<Inspector>();
-            gameObject.AddComponent<DebugConsole>();
+            //add all components
+            gameObject.AddComponents(
+                new Component[] {
+                    new InputManager(),
+                    new MainMenuBar(),
+                    new Viewport(),
+                    new SceneHierachy(),
+                    new Inspector(),
+                    new DebugConsole()
+                });
         }
 
         private void OnImGui()
