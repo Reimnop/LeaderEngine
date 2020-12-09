@@ -53,6 +53,9 @@ namespace LeaderEditor.Data
                 {
                     byte[] compBytes = ComponentSerializer.SerializeComponent(comp);
 
+                    if (compBytes == null)
+                        continue;
+
                     //write component size
                     ms.Write(BitConverter.GetBytes(compBytes.Length));
 

@@ -18,9 +18,28 @@ namespace LeaderEditor.Data
             if (!serializeFuncs.ContainsKey(component.GetType()))
             {
                 DebugConsole.Log($"Type {component.GetType().Name} not serializable!", LogType.Warning);
-                return new byte[0];
+                return null;
             }
-            return serializeFuncs[component.GetType()](component);
+            using (var ms = new MemoryStream())
+            {
+                byte[] compData = serializeFuncs[component.GetType()](component);
+
+                string fullName = component.GetType().FullName;
+
+                //write component name length
+                ms.Write(BitConverter.GetBytes(fullName.Length));
+
+                //write component full name
+                ms.Write(Encoding.ASCII.GetBytes(fullName));
+
+                //write component data length
+                ms.Write(BitConverter.GetBytes(compData.Length));
+
+                //write component data
+                ms.Write(compData);
+
+                return ms.ToArray();
+            }
         }
 
         private static byte[] SerializeTransform(Component component)

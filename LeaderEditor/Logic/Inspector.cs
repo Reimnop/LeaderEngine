@@ -15,8 +15,8 @@ namespace LeaderEditor
         {
             { typeof(Transform), SerializeFunc.Transform },
             { typeof(Camera), null },
-            { typeof(MeshFilter), SerializeFunc.MeshFilter },
-            { typeof(MeshRenderer), null },
+            //{ typeof(MeshFilter), SerializeFunc.MeshFilter },
+            //{ typeof(MeshRenderer), null },
             { typeof(Sprite), SerializeFunc.Sprite }
         };
 
