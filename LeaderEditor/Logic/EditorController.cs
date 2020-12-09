@@ -85,7 +85,7 @@ namespace LeaderEditor
 
         private static void SetupEditorMode()
         {
-            DebugConsole.WriteLine("Entering Editor Mode");
+            DebugConsole.Log("Entering Editor Mode");
 
             EditorCamera.main.Enabled = true;
             if (Camera.main != null)
@@ -96,7 +96,7 @@ namespace LeaderEditor
 
         private static void SetupPlayMode()
         {
-            DebugConsole.WriteLine("Entering Play Mode");
+            DebugConsole.Log("Entering Play Mode");
 
             EditorCamera.main.Enabled = false;
             if (Camera.main != null)

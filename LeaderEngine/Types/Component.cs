@@ -2,7 +2,6 @@
 
 namespace LeaderEngine
 {
-    [System.Serializable]
     public class Component
     {
         public GameObject gameObject = null;

@@ -51,7 +51,7 @@ namespace LeaderEditor.Data
             {
                 foreach (var comp in components)
                 {
-                    byte[] compBytes = SerializeComponent(comp);
+                    byte[] compBytes = ComponentSerializer.SerializeComponent(comp);
 
                     //write component size
                     ms.Write(BitConverter.GetBytes(compBytes.Length));
@@ -59,17 +59,6 @@ namespace LeaderEditor.Data
                     //write component data
                     ms.Write(compBytes);
                 }
-                return ms.ToArray();
-            }
-        }
-
-        private static byte[] SerializeComponent(Component component)
-        {
-            using (var ms = new MemoryStream())
-            {
-                BinaryFormatter bf = new BinaryFormatter();
-                bf.Serialize(ms, component);
-
                 return ms.ToArray();
             }
         }

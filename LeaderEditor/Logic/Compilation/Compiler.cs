@@ -52,7 +52,7 @@ namespace LeaderEditor.Compilation
                 else
                 {
                     foreach (var diag in result.Diagnostics)
-                        DebugConsole.WriteLine(diag.ToString());
+                        DebugConsole.Log(diag.ToString());
                 }
             }
 
