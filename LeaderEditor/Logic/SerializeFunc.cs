@@ -105,7 +105,7 @@ namespace LeaderEditor
             bool guiDrawn = false;
             foreach (var field in fields)
             {
-                if (fieldDrawFuncs.ContainsKey(field.FieldType) && field.IsPublic)
+                if (fieldDrawFuncs.ContainsKey(field.FieldType) && field.IsPublic && !field.IsStatic)
                 {
                     fieldDrawFuncs[field.FieldType].Invoke(obj, field);
                     guiDrawn = true;
