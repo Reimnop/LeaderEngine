@@ -103,16 +103,12 @@ namespace LeaderEditor.Data
                 //write field name
                 ms.Write(Encoding.ASCII.GetBytes(fieldInfo.Name));
 
-                using (var ms1 = new MemoryStream())
-                {
-                    BinaryFormatter bf = new BinaryFormatter();
+                Vector3 data = (Vector3)fieldInfo.GetValue(component);
 
-                    //serialize to binary
-                    bf.Serialize(ms1, (Vector3)fieldInfo.GetValue(component));
-
-                    //write field data
-                    ms.Write(ms1.ToArray());
-                }
+                //write data
+                ms.Write(BitConverter.GetBytes(data.X));
+                ms.Write(BitConverter.GetBytes(data.Y));
+                ms.Write(BitConverter.GetBytes(data.Z));
 
                 return ms.ToArray();
             }
@@ -128,16 +124,11 @@ namespace LeaderEditor.Data
                 //write field name
                 ms.Write(Encoding.ASCII.GetBytes(fieldInfo.Name));
 
-                using (var ms1 = new MemoryStream())
-                {
-                    BinaryFormatter bf = new BinaryFormatter();
+                Vector2 data = (Vector2)fieldInfo.GetValue(component);
 
-                    //serialize to binary
-                    bf.Serialize(ms1, (Vector2)fieldInfo.GetValue(component));
-
-                    //write field data
-                    ms.Write(ms1.ToArray());
-                }
+                //write data
+                ms.Write(BitConverter.GetBytes(data.X));
+                ms.Write(BitConverter.GetBytes(data.Y));
 
                 return ms.ToArray();
             }
@@ -153,16 +144,13 @@ namespace LeaderEditor.Data
                 //write field name
                 ms.Write(Encoding.ASCII.GetBytes(fieldInfo.Name));
 
-                using (var ms1 = new MemoryStream())
-                {
-                    BinaryFormatter bf = new BinaryFormatter();
+                Color4 data = (Color4)fieldInfo.GetValue(component);
 
-                    //serialize to binary
-                    bf.Serialize(ms1, (Color4)fieldInfo.GetValue(component));
-
-                    //write field data
-                    ms.Write(ms1.ToArray());
-                }
+                //write data
+                ms.Write(BitConverter.GetBytes(data.R));
+                ms.Write(BitConverter.GetBytes(data.G));
+                ms.Write(BitConverter.GetBytes(data.B));
+                ms.Write(BitConverter.GetBytes(data.A));
 
                 return ms.ToArray();
             }
