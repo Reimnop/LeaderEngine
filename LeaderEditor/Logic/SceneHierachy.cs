@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Text;
 using LeaderEditor.Data;
+using OpenTK.Windowing.Common;
 
 namespace LeaderEditor
 {
@@ -27,11 +28,12 @@ namespace LeaderEditor
         public override void Start()
         {
             ImGuiController.main.OnImGui += OnImGui;
+            Application.main.UpdateFrame += UpdateSceneHierachy;
 
             MainMenuBar.RegisterWindow("Scene Hierachy", this);
         }
 
-        public override void Update()
+        public void UpdateSceneHierachy(FrameEventArgs e)
         {
             //delete object
             if (InputManager.GetKeyDown(Keys.Delete) && SelectedObject != null)

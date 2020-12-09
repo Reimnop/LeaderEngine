@@ -52,16 +52,6 @@ namespace LeaderEditor
                     new Inspector(),
                     new DebugConsole()
                 });
-
-            Application.main.UpdateFrame += UpdateFrame;
-        }
-
-        private void UpdateFrame(FrameEventArgs e)
-        {
-            if (InputManager.GetKeyDown(Keys.P))
-                if (Mode == EditorMode.Editor)
-                    Mode = EditorMode.Play;
-                else Mode = EditorMode.Editor;
         }
 
         private void OnImGui()

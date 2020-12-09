@@ -7,6 +7,7 @@ using System.Numerics;
 using OpenTK.Windowing.Common;
 using System.Collections.Generic;
 using System.Text;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace LeaderEditor
 {
@@ -54,6 +55,14 @@ namespace LeaderEditor
             if (IsOpen)
                 if (ImGui.Begin("Viewport", ref IsOpen, ImGuiWindowFlags.NoCollapse))
                 {
+                    if (ImGui.IsWindowFocused())
+                    {
+                        if (InputManager.GetKeyDown(Keys.P))
+                            if (EditorController.Mode == EditorController.EditorMode.Editor)
+                                EditorController.Mode = EditorController.EditorMode.Play;
+                            else EditorController.Mode = EditorController.EditorMode.Editor;
+                    }
+
                     //display to framebuffer texture on gui
                     ImGui.Image((IntPtr)framebuffer.GetColorTexture(), new Vector2(width, height) / 2.0f, new Vector2(0.0f, 1.0f), new Vector2(1.0f, 0.0f));
                     ImGui.End();
