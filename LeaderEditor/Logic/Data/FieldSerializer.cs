@@ -15,6 +15,7 @@ namespace LeaderEditor.Data
         {
             { typeof(float), SerializeFloat },
             { typeof(int), SerializeInt },
+            { typeof(bool), SerializeBool },
             { typeof(Vector3), SerializeVector3 },
             { typeof(Vector2), SerializeVector2 },
             { typeof(Color4), SerializeColor4 }
@@ -88,6 +89,23 @@ namespace LeaderEditor.Data
 
                 //write field data
                 ms.Write(BitConverter.GetBytes((int)fieldInfo.GetValue(component)));
+
+                return ms.ToArray();
+            }
+        }
+
+        private static byte[] SerializeBool(FieldInfo fieldInfo, Component component) 
+        {
+            using (var ms = new MemoryStream())
+            {
+                //write field name length
+                ms.Write(BitConverter.GetBytes(fieldInfo.Name.Length));
+
+                //write field name
+                ms.Write(Encoding.ASCII.GetBytes(fieldInfo.Name));
+
+                //write field data
+                ms.Write(BitConverter.GetBytes((bool)fieldInfo.GetValue(component)));
 
                 return ms.ToArray();
             }
