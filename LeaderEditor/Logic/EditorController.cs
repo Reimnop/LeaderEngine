@@ -57,7 +57,6 @@ namespace LeaderEditor
             editorCamera = new GameObject("EditorCamera");
             editorCamera.AddComponent<EditorCamera>();
             editorCamera.transform.position = new OpenTK.Mathematics.Vector3(0.0f, 1.0f, 2.0f);
-            editorCamera.transform.rotationEuler.X = 30.0f;
         }
 
         private void OnImGui()
