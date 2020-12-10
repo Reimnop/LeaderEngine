@@ -14,6 +14,9 @@ namespace LeaderEditor
 
         public float FOV = 1.04719755f; //60 degrees
 
+        public float Speed = 2.5f;
+        public float Sensitivity = 0.4f;
+
         private Matrix4 ViewMatrix;
         private Matrix4 ProjectionMatrix;
 
@@ -22,16 +25,8 @@ namespace LeaderEditor
             if (main == null)
                 main = this;
 
-            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.main.Size.X / (float)Application.main.Size.Y, 0.05f, 500.0f);
-
-            Application.main.Resize += Resize;
             Application.main.UpdateFrame += UpdateFrame;
             Application.main.SceneRender += SceneRender;
-        }
-
-        private void Resize(ResizeEventArgs e)
-        {
-            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, e.Width / (float)e.Height, 0.1f, 200.0f);
         }
 
         private void UpdateFrame(FrameEventArgs e)
@@ -49,11 +44,11 @@ namespace LeaderEditor
             float moveZ = InputManager.GetAxis(Axis.Vertical);
 
             Vector3 move = main.gameObject.transform.forward * moveZ + gameObject.transform.right * moveX;
-            gameObject.transform.position += move * Time.deltaTime * 3.0f;
+            gameObject.transform.position += move * Time.deltaTime * Speed;
 
             if (InputManager.GetMouse(MouseButton.Right))
             {
-                Vector2 delta = InputManager.GetMouseDelta() / 2.0f;
+                Vector2 delta = InputManager.GetMouseDelta() * Sensitivity;
                 gameObject.transform.rotationEuler.X += delta.Y;
                 gameObject.transform.rotationEuler.Y += delta.X;
             }
@@ -63,6 +58,8 @@ namespace LeaderEditor
         {
             if (!Enabled)
                 return;
+
+            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.main.ViewportSize.X / (float)Application.main.ViewportSize.Y, 0.1f, 200.0f);
 
             ViewMatrix = Matrix4.CreateTranslation(-gameObject.transform.position) *
                 Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(new Vector3(

@@ -13,40 +13,40 @@ namespace LeaderEditor
 {
     public class Viewport : WindowComponent
     {
-        Framebuffer framebuffer;
+        private Framebuffer framebuffer;
 
-        int width { get { return Application.main.Size.X; } }
-        int height { get { return Application.main.Size.Y; } }
+        public Vector2 ViewportSize;
 
         public override void Start()
         {
-            framebuffer = new Framebuffer(width, height);
+            framebuffer = new Framebuffer(1280, 720);
 
-            Application.main.SceneRender += SceneRender;
-            Application.main.PostSceneRender += PostSceneRender;
-            Application.main.Resize += Resize;
+            Application.main.RenderBegin += RenderBegin;
+            Application.main.PostGuiRender += PostGuiRender;
 
             ImGuiController.main.OnImGui += OnImGui;
 
             MainMenuBar.RegisterWindow("Viewport", this);
         }
 
-        private void Resize(ResizeEventArgs e)
+        private void RenderBegin()
         {
-            framebuffer.Resize(e.Width, e.Height);
-        }
+            //resize viewport
+            Application.main.ResizeViewport((int)ViewportSize.X, (int)ViewportSize.Y);
 
-        private void SceneRender()
-        {
+            //resize framebuffer to match viewport
+            framebuffer.Resize((int)ViewportSize.X, (int)ViewportSize.Y);
+
             //render scene to a framebuffer
             framebuffer.Begin();
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
         }
 
-        private void PostSceneRender()
+        private void PostGuiRender()
         {
             //end the render
             framebuffer.End();
+
+            Application.main.ResizeViewport(Application.main.Size);
         }
 
 
@@ -61,16 +61,13 @@ namespace LeaderEditor
                             if (EditorController.Mode == EditorController.EditorMode.Editor)
                                 EditorController.Mode = EditorController.EditorMode.Play;
                             else EditorController.Mode = EditorController.EditorMode.Editor;
-                    }
 
-                    if (ImGui.IsWindowHovered())
-                    {
                         if (EditorController.Mode == EditorController.EditorMode.Editor)
                             EditorCamera.main.UpdateCamMove();
                     }
 
                     //display to framebuffer texture on gui
-                    ImGui.Image((IntPtr)framebuffer.GetColorTexture(), new Vector2(width, height) / 2.0f, new Vector2(0.0f, 1.0f), new Vector2(1.0f, 0.0f));
+                    ImGui.Image((IntPtr)framebuffer.GetColorTexture(), ViewportSize = ImGui.GetContentRegionAvail(), new Vector2(0.0f, 1.0f), new Vector2(1.0f, 0.0f));
                     ImGui.End();
                 }
         }

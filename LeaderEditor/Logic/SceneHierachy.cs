@@ -57,7 +57,7 @@ namespace LeaderEditor
                 if (ImGui.Begin("Scene Hierachy", ref IsOpen))
                 {
                     //new object button
-                    if (ImGui.Button("New Object"))
+                    if (ImGui.Button("New Object") && !string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
                         CreateNewObject();
 
                     //draw all objects

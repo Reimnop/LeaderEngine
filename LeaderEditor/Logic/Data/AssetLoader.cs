@@ -28,7 +28,7 @@ namespace LeaderEditor.Data
 
             string[] sourcePaths = Directory.GetFiles(scriptsDir, "*.cs", SearchOption.AllDirectories);
 
-            if (sourcePaths == null)
+            if (sourcePaths.Length == 0)
                 return;
 
             string[] sources = new string[sourcePaths.Length];

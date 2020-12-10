@@ -18,15 +18,7 @@ namespace LeaderEngine
             if (main == null)
                 main = this;
 
-            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.main.Size.X / (float)Application.main.Size.Y, 0.05f, 500.0f);
-
-            Application.main.Resize += Resize;
             Application.main.SceneRender += SceneRender;
-        }
-
-        private void Resize(ResizeEventArgs e)
-        {
-            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, e.Width / (float)e.Height, 0.1f, 200.0f);
         }
 
         private void SceneRender()
@@ -34,22 +26,23 @@ namespace LeaderEngine
             if (!Enabled)
                 return;
 
+            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.main.ViewportSize.X / (float)Application.main.ViewportSize.Y, 0.1f, 200.0f);
+
             ViewMatrix = Matrix4.CreateTranslation(-gameObject.transform.position) *
-                Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(-new Vector3(
+                Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(new Vector3(
                     MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.X),
                     MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.Y),
-                    MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.Z))
+                    -MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.Z))
                     ));
 
-            RenderingGlobals.View = ViewMatrix;
             RenderingGlobals.Projection = ProjectionMatrix;
+            RenderingGlobals.View = ViewMatrix;
         }
 
         public override void OnRemove()
         {
             main = null;
 
-            Application.main.Resize -= Resize;
             Application.main.SceneRender -= SceneRender;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -23,13 +24,18 @@ namespace LeaderEngine
         public List<GameObject> GameObjects = new List<GameObject>();
         public bool EditorMode = false;
 
+        public Vector2i ViewportSize;
+
         private Queue<Action> NextUpdateQueue = new Queue<Action>();
 
         private Action initCallback;
+        public event Action RenderBegin;
         public event Action SceneRender;
         public event Action PostSceneRender;
         public event Action GuiRender;
+        public event Action PostGuiRender;
         public event Action FinishRender;
+        public event Action<Vector2i> OnViewportResize;
 
         public Application(GameWindowSettings gws, NativeWindowSettings nws, Action initCallback) : base(gws, nws)
         {
@@ -61,6 +67,8 @@ namespace LeaderEngine
             Shader.InitDefaults();
             Material.InitDefaults();
 
+            ViewportSize = Size;
+
             base.OnLoad();
         }
 
@@ -87,7 +95,9 @@ namespace LeaderEngine
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            GL.Viewport(0, 0, Size.X, Size.Y);
+            RenderBegin?.Invoke();
+
+            GL.Viewport(0, 0, ViewportSize.X, ViewportSize.Y);
 
             base.OnRenderFrame(e);
 
@@ -108,6 +118,7 @@ namespace LeaderEngine
             GuiRender?.Invoke();
             if (RenderingGlobals.RenderingEnabled)
                 GameObjects.ForEach(go => go.RenderGui());
+            PostGuiRender?.Invoke();
 
             FinishRender?.Invoke();
 
@@ -122,6 +133,24 @@ namespace LeaderEngine
             GameObjects.ForEach(go => go.OnClosing());
 
             base.OnClosing(e);
+        }
+
+        public void ResizeViewport(Vector2i newSize)
+        {
+            ViewportSize = newSize;
+            GL.Viewport(0, 0, newSize.X, newSize.Y);
+
+            OnViewportResize?.Invoke(newSize);
+        }
+
+        public void ResizeViewport(int width, int height)
+        {
+            Vector2i newSize = new Vector2i(width, height);
+
+            ViewportSize = newSize;
+            GL.Viewport(0, 0, width, height);
+
+            OnViewportResize?.Invoke(newSize);
         }
     }
 }
