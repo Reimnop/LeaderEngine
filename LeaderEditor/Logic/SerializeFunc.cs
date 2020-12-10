@@ -71,6 +71,9 @@ namespace LeaderEditor
                     {
                         string fPath = AssetLoader.LoadAsset(ofd.FileName);
 
+                        if (string.IsNullOrEmpty(fPath))
+                            fPath = ofd.FileName;
+
                         //dispose old texture
                         sprite.Texture?.Dispose();
 

@@ -57,8 +57,7 @@ namespace LeaderEditor
                     //TODO: DEBUG CODE
                     if (ImGui.MenuItem("Generate Code"))
                     {
-                        if (!string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
-                            DebugConsole.Log(CodeGenerator.GenerateCode());
+                        DebugConsole.Log(CodeGenerator.GenerateCode());
                     }
 
                     if (ImGui.MenuItem("Exit", "Alt+F4"))

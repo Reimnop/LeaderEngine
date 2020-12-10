@@ -61,22 +61,12 @@ namespace LeaderEditor
                             if (EditorController.Mode == EditorController.EditorMode.Editor)
                                 EditorController.Mode = EditorController.EditorMode.Play;
                             else EditorController.Mode = EditorController.EditorMode.Editor;
+                    }
 
-                        if (EditorController.Mode == EditorController.EditorMode.Editor) 
-                        {
-                            float moveX = InputManager.GetAxis(Axis.Horizontal);
-                            float moveZ = InputManager.GetAxis(Axis.Vertical);
-
-                            OpenTK.Mathematics.Vector3 move = EditorCamera.main.gameObject.transform.forward * moveZ + EditorCamera.main.gameObject.transform.right * moveX;
-                            EditorCamera.main.gameObject.transform.position += move * Time.deltaTime * 2.0f;
-
-                            if (InputManager.GetMouse(MouseButton.Right))
-                            {
-                                OpenTK.Mathematics.Vector2 delta = InputManager.GetMouseDelta() / 2.0f;
-                                EditorCamera.main.gameObject.transform.rotationEuler.X -= delta.Y;
-                                EditorCamera.main.gameObject.transform.rotationEuler.Y -= delta.X;
-                            }
-                        }
+                    if (ImGui.IsWindowHovered())
+                    {
+                        if (EditorController.Mode == EditorController.EditorMode.Editor)
+                            EditorCamera.main.UpdateCamMove();
                     }
 
                     //display to framebuffer texture on gui

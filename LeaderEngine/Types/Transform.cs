@@ -30,8 +30,8 @@ namespace LeaderEngine
         public Vector3 rotationEuler;
         public Vector3 scale = Vector3.One;
 
-        public Vector3 forward { get { return Vector3.Normalize(rotation * -Vector3.UnitZ); } }
-        public Vector3 right { get { return Vector3.Normalize(rotation * Vector3.UnitX); } }
-        public Vector3 up { get { return Vector3.Normalize(rotation * Vector3.UnitY); } }
+        public Vector3 forward { get { return (Matrix4.CreateFromQuaternion(rotation) * -Vector4.UnitZ).Xyz; } }
+        public Vector3 right { get { return (Matrix4.CreateFromQuaternion(rotation) * Vector4.UnitX).Xyz; } }
+        public Vector3 up { get { return (Matrix4.CreateFromQuaternion(rotation) * Vector4.UnitY).Xyz; } }
     }
 }
