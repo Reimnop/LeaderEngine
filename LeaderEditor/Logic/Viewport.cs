@@ -71,17 +71,20 @@ namespace LeaderEditor
 
         private void PostGuiRender()
         {
-            GL.Enable(EnableCap.DepthTest);
+            if (EditorController.Mode == EditorController.EditorMode.Editor)
+            {
+                GL.Enable(EnableCap.DepthTest);
 
-            gridShader.SetMatrix4("v", RenderingGlobals.View);
-            gridShader.SetMatrix4("p", RenderingGlobals.Projection);
+                gridShader.SetMatrix4("v", RenderingGlobals.View);
+                gridShader.SetMatrix4("p", RenderingGlobals.Projection);
 
-            gridShader.Use();
-            gridVertArray.Use();
+                gridShader.Use();
+                gridVertArray.Use();
 
-            GL.DrawElements(PrimitiveType.Triangles, gridVertArray.GetVerticesCount(), DrawElementsType.UnsignedInt, 0);
+                GL.DrawElements(PrimitiveType.Triangles, gridVertArray.GetVerticesCount(), DrawElementsType.UnsignedInt, 0);
 
-            GL.Disable(EnableCap.DepthTest);
+                GL.Disable(EnableCap.DepthTest);
+            }
 
             //end the render
             framebuffer.End();
