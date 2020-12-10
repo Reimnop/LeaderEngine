@@ -17,6 +17,8 @@ namespace LeaderEditor
         public float Speed = 2.5f;
         public float Sensitivity = 0.4f;
 
+        private float speedMultiplier = 1.0f;
+
         private Matrix4 ViewMatrix;
         private Matrix4 ProjectionMatrix;
 
@@ -40,11 +42,15 @@ namespace LeaderEditor
 
         public void UpdateCamMove()
         {
+            if (InputManager.GetKey(Keys.LeftShift))
+                speedMultiplier = 2.5f;
+            else speedMultiplier = 1.0f;
+
             float moveX = InputManager.GetAxis(Axis.Horizontal);
             float moveZ = InputManager.GetAxis(Axis.Vertical);
 
             Vector3 move = main.gameObject.transform.forward * moveZ + gameObject.transform.right * moveX;
-            gameObject.transform.position += move * Time.deltaTime * Speed;
+            gameObject.transform.position += move * Time.deltaTime * Speed * speedMultiplier;
 
             if (InputManager.GetMouse(MouseButton.Right))
             {
