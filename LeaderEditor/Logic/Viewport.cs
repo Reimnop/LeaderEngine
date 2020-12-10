@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Text;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
+using Shader = LeaderEngine.Shader;
+
 namespace LeaderEditor
 {
     public class Viewport : WindowComponent
@@ -16,6 +18,23 @@ namespace LeaderEditor
         private Framebuffer framebuffer;
 
         public Vector2 ViewportSize;
+
+        private float[] vertices =
+        {
+            -1.0f, -1.0f, 0.0f,
+            -1.0f,  1.0f, 0.0f,
+             1.0f,  1.0f, 0.0f,
+             1.0f, -1.0f, 0.0f
+        };
+
+        private uint[] indices =
+        {
+            0, 1, 3,
+            1, 2, 3
+        };
+
+        private VertexArray gridVertArray;
+        private Shader gridShader;
 
         public override void Start()
         {
@@ -25,6 +44,15 @@ namespace LeaderEditor
             Application.main.PostGuiRender += PostGuiRender;
 
             ImGuiController.main.OnImGui += OnImGui;
+
+            //setup grid rendering
+            gridVertArray = new VertexArray(vertices, indices, new VertexAttrib[]
+            {
+                new VertexAttrib { location = 0, size = 3 }
+            });
+
+            gridShader = Shader.FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/Editor/grid-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/Editor/grid-fs.glsl");
+            //end setup
 
             MainMenuBar.RegisterWindow("Viewport", this);
         }
@@ -43,6 +71,18 @@ namespace LeaderEditor
 
         private void PostGuiRender()
         {
+            GL.Enable(EnableCap.DepthTest);
+
+            gridShader.SetMatrix4("v", RenderingGlobals.View);
+            gridShader.SetMatrix4("p", RenderingGlobals.Projection);
+
+            gridShader.Use();
+            gridVertArray.Use();
+
+            GL.DrawElements(PrimitiveType.Triangles, gridVertArray.GetVerticesCount(), DrawElementsType.UnsignedInt, 0);
+
+            GL.Disable(EnableCap.DepthTest);
+
             //end the render
             framebuffer.End();
 

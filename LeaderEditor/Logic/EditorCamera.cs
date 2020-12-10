@@ -65,7 +65,7 @@ namespace LeaderEditor
                 Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(new Vector3(
                     MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.X),
                     MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.Y),
-                    -MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.Z))
+                    MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.Z))
                     ));
 
             RenderingGlobals.Projection = ProjectionMatrix;
