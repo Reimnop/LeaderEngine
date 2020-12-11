@@ -34,6 +34,18 @@ namespace LeaderEditor
             ImGui.PopID();
         }
 
+        //serialize uitext
+        public static void UIText(Component obj)
+        {
+            UIText uitext = (UIText)obj;
+
+            ImGui.PushID("UITextString");
+            string s = uitext.Text;
+            ImGui.InputText("Text", ref s, uint.MaxValue);
+            uitext.Text = s;
+            ImGui.PopID();
+        } 
+
         //TODO: finish meshfilter serialization functin
         public static void MeshFilter(Component obj)
         {
@@ -99,7 +111,8 @@ namespace LeaderEditor
         private static Dictionary<Type, Action<Component, FieldInfo>> fieldDrawFuncs = new Dictionary<Type, Action<Component, FieldInfo>>()
         {
             { typeof(int), DefaultInt },
-            { typeof(float), DefaultFloat }
+            { typeof(float), DefaultFloat },
+            { typeof(string), DefaultString }
         };
 
         public static void DefaultSerializeFunc(Component obj)
@@ -110,7 +123,9 @@ namespace LeaderEditor
             {
                 if (fieldDrawFuncs.ContainsKey(field.FieldType) && field.IsPublic && !field.IsStatic)
                 {
+                    ImGui.PushID(field.Name);
                     fieldDrawFuncs[field.FieldType].Invoke(obj, field);
+                    ImGui.PopID();
                     guiDrawn = true;
                 }
             }
@@ -130,6 +145,13 @@ namespace LeaderEditor
         {
             float value = (float)field.GetValue(obj);
             ImGui.DragFloat(field.Name, ref value, 0.05f);
+            field.SetValue(obj, value);
+        }
+
+        private static void DefaultString(Component obj, FieldInfo field)
+        {
+            string value = (string)field.GetValue(obj);
+            ImGui.InputText(field.Name, ref value, 65535);
             field.SetValue(obj, value);
         }
     }

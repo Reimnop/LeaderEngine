@@ -17,7 +17,8 @@ namespace LeaderEditor
             { typeof(Camera), null },
             //{ typeof(MeshFilter), SerializeFunc.MeshFilter },
             //{ typeof(MeshRenderer), null },
-            { typeof(Sprite), SerializeFunc.Sprite }
+            { typeof(Sprite), SerializeFunc.Sprite },
+            { typeof(UIText), null }
         };
 
         //is the add component menu open?
