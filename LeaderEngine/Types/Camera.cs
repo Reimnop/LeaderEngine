@@ -28,11 +28,11 @@ namespace LeaderEngine
 
             ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.main.ViewportSize.X / (float)Application.main.ViewportSize.Y, 0.1f, 200.0f);
 
-            ViewMatrix = Matrix4.CreateTranslation(-gameObject.transform.position) *
+            ViewMatrix = Matrix4.CreateTranslation(-gameObject.Transform.Position) *
                 Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(new Vector3(
-                    MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.X),
-                    MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.Y),
-                    MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.Z))
+                    MathHelper.DegreesToRadians(gameObject.Transform.RotationEuler.X),
+                    MathHelper.DegreesToRadians(gameObject.Transform.RotationEuler.Y),
+                    MathHelper.DegreesToRadians(gameObject.Transform.RotationEuler.Z))
                     ));
 
             RenderingGlobals.Projection = ProjectionMatrix;

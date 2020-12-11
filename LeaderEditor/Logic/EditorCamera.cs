@@ -49,14 +49,14 @@ namespace LeaderEditor
             float moveX = InputManager.GetAxis(Axis.Horizontal);
             float moveZ = InputManager.GetAxis(Axis.Vertical);
 
-            Vector3 move = main.gameObject.transform.forward * moveZ + gameObject.transform.right * moveX;
-            gameObject.transform.position += move * Time.deltaTime * Speed * speedMultiplier;
+            Vector3 move = main.gameObject.Transform.forward * moveZ + gameObject.Transform.right * moveX;
+            gameObject.Transform.Position += move * Time.deltaTime * Speed * speedMultiplier;
 
             if (InputManager.GetMouse(MouseButton.Right))
             {
                 Vector2 delta = InputManager.GetMouseDelta() * Sensitivity;
-                gameObject.transform.rotationEuler.X += delta.Y;
-                gameObject.transform.rotationEuler.Y += delta.X;
+                gameObject.Transform.RotationEuler.X += delta.Y;
+                gameObject.Transform.RotationEuler.Y += delta.X;
             }
         }
 
@@ -67,11 +67,11 @@ namespace LeaderEditor
 
             ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.main.ViewportSize.X / (float)Application.main.ViewportSize.Y, 0.1f, 200.0f);
 
-            ViewMatrix = Matrix4.CreateTranslation(-gameObject.transform.position) *
+            ViewMatrix = Matrix4.CreateTranslation(-gameObject.Transform.Position) *
                 Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(new Vector3(
-                    MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.X),
-                    MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.Y),
-                    MathHelper.DegreesToRadians(gameObject.transform.rotationEuler.Z))
+                    MathHelper.DegreesToRadians(gameObject.Transform.RotationEuler.X),
+                    MathHelper.DegreesToRadians(gameObject.Transform.RotationEuler.Y),
+                    MathHelper.DegreesToRadians(gameObject.Transform.RotationEuler.Z))
                     ));
 
             RenderingGlobals.Projection = ProjectionMatrix;

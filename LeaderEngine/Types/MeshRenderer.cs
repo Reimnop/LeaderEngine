@@ -33,9 +33,9 @@ namespace LeaderEngine
 
         public override void OnRender()
         {
-            Matrix4 model = Matrix4.CreateScale(gameObject.transform.scale)
-                 * Matrix4.CreateFromQuaternion(gameObject.transform.rotation)
-                 * Matrix4.CreateTranslation(gameObject.transform.position);
+            Matrix4 model = Matrix4.CreateScale(gameObject.Transform.Scale)
+                 * Matrix4.CreateFromQuaternion(gameObject.Transform.Rotation)
+                 * Matrix4.CreateTranslation(gameObject.Transform.Position);
 
             Material renderMat = material;
             if (material == null)
