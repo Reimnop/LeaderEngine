@@ -40,6 +40,13 @@ namespace LeaderEditor
                 Camera.main.Enabled = false;
         }
 
+        public void LookAt(Vector3 position)
+        {
+            Vector3 newPos = position + new Vector3(2.0f, 2.0f, 2.0f);
+            gameObject.Transform.Position = newPos;
+            gameObject.Transform.RotationEuler = new Vector3(30.0f, -45.0f, 0.0f);
+        }
+
         public void UpdateCamMove()
         {
             if (InputManager.GetKey(Keys.LeftShift))
@@ -49,7 +56,7 @@ namespace LeaderEditor
             float moveX = InputManager.GetAxis(Axis.Horizontal);
             float moveZ = InputManager.GetAxis(Axis.Vertical);
 
-            Vector3 move = main.gameObject.Transform.forward * moveZ + gameObject.Transform.right * moveX;
+            Vector3 move = main.gameObject.Transform.Forward * moveZ + gameObject.Transform.Right * moveX;
             gameObject.Transform.Position += move * Time.deltaTime * Speed * speedMultiplier;
 
             if (InputManager.GetMouse(MouseButton.Right))
@@ -65,7 +72,7 @@ namespace LeaderEditor
             if (!Enabled)
                 return;
 
-            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.main.ViewportSize.X / (float)Application.main.ViewportSize.Y, 0.1f, 200.0f);
+            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.main.ViewportSize.X / (float)Application.main.ViewportSize.Y, 0.02f, 1000.0f);
 
             ViewMatrix = Matrix4.CreateTranslation(-gameObject.Transform.Position) *
                 Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(new Vector3(

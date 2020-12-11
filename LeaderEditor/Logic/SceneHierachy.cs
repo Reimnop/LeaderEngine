@@ -60,6 +60,15 @@ namespace LeaderEditor
                     if (ImGui.Button("New Object") && !string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
                         CreateNewObject();
 
+                    if (SelectedObject != null)
+                    {
+                        ImGui.SameLine();
+                        if (ImGui.Button($"Go to {SelectedObject.Name}"))
+                        {
+                            EditorCamera.main.LookAt(SelectedObject.Transform.Position);
+                        }
+                    }
+
                     //draw all objects
                     for (int i = 0; i < SceneObjects.Count; i++)
                     {
