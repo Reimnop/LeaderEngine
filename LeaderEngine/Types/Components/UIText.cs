@@ -77,7 +77,7 @@ namespace LeaderEngine
             UpdateText();
         }
 
-        public override void OnRender()
+        public override void OnRenderGui()
         {
             if (CheckChanged())
                 UpdateText();

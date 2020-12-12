@@ -42,6 +42,7 @@ namespace LeaderEditor
 
             Application.main.RenderBegin += RenderBegin;
             Application.main.PostSceneRender += PostSceneRender;
+            Application.main.PostGuiRender += PostGuiRender;
 
             ImGuiController.main.OnImGui += OnImGui;
 
@@ -86,7 +87,10 @@ namespace LeaderEditor
 
                 GL.Disable(EnableCap.Blend);
             }
+        }
 
+        private void PostGuiRender()
+        {
             //end the render
             framebuffer.End();
 

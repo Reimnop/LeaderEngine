@@ -28,7 +28,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="DefaultAssets\Shaders\Editor\outline-fs.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="DefaultAssets\Shaders\Editor\grid-fs.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\Editor\outline-vs.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="DefaultAssets\Shaders\Editor\grid-vs.glsl">

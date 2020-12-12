@@ -32,6 +32,9 @@ namespace LeaderEditor
 
         private static int SelectedObjectIndex = -1;
 
+        private string[] objectTypes = { "World", "Transparent", "Gui" };
+        private string currentType = "World";
+
         public override void Start()
         {
             ImGuiController.main.OnImGui += OnImGui;
@@ -63,6 +66,21 @@ namespace LeaderEditor
             if (IsOpen)
                 if (ImGui.Begin("Scene Hierachy", ref IsOpen))
                 {
+                    //select
+                    ImGui.SetNextItemWidth(120.0f);
+
+                    if (ImGui.BeginCombo("##combo", currentType))
+                    {
+                        foreach (string typeStr in objectTypes)
+                        {
+                            if (ImGui.Selectable(typeStr, currentType == typeStr))
+                                currentType = typeStr;
+                        }
+                        ImGui.EndCombo();
+                    }
+
+                    ImGui.SameLine();
+
                     //new object button
                     if (ImGui.Button("New Object") && !string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
                         CreateNewObject();
@@ -100,7 +118,22 @@ namespace LeaderEditor
         //new object function
         private void CreateNewObject()
         {
-            SceneObjects.Add(new GameObject("New GameObject"));
+            RenderHint renderHint = RenderHint.World;
+
+            switch (currentType)
+            {
+                case "World":
+                    renderHint = RenderHint.World;
+                    break;
+                case "Transparent":
+                    renderHint = RenderHint.Transparent;
+                    break;
+                case "Gui":
+                    renderHint = RenderHint.Gui;
+                    break;
+            }
+
+            SceneObjects.Add(new GameObject("New GameObject", renderHint));
         }
     }
 }

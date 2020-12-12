@@ -42,6 +42,11 @@ namespace LeaderEditor
             ImGuiController = new GameObject("Controller");
             ImGuiController.AddComponent<ImGuiController>().OnImGui += OnImGui;
 
+            //camera
+            editorCamera = new GameObject("EditorCamera");
+            editorCamera.AddComponent<EditorCamera>();
+            editorCamera.Transform.Position = new OpenTK.Mathematics.Vector3(0.0f, 1.0f, 2.0f);
+
             //add all components
             gameObject.AddComponents(
                 new Component[] {
@@ -52,11 +57,6 @@ namespace LeaderEditor
                     new Inspector(),
                     new DebugConsole()
                 });
-
-            //camera
-            editorCamera = new GameObject("EditorCamera");
-            editorCamera.AddComponent<EditorCamera>();
-            editorCamera.Transform.Position = new OpenTK.Mathematics.Vector3(0.0f, 1.0f, 2.0f);
         }
 
         private void OnImGui()

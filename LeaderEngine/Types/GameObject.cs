@@ -48,6 +48,11 @@ namespace LeaderEngine
             Init();
         }
 
+        ~GameObject()
+        {
+            Dispose();
+        }
+
         private void Init()
         {
             Transform = AddComponent<Transform>();
