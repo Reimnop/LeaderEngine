@@ -23,11 +23,6 @@ namespace LeaderEngine
             Init(attribs);
         }
 
-        ~VertexArray()
-        {
-            Dispose();
-        }
-
         private void Init(VertexAttrib[] attribs)
         {
             VAO = GL.GenVertexArray();

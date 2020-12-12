@@ -53,11 +53,6 @@ namespace LeaderEngine
             }
         }
 
-        ~Shader()
-        {
-            Dispose();
-        }
-
         public static Shader FromSourceFile(string vertPath, string fragPath)
         {
             return new Shader(File.ReadAllText(vertPath), File.ReadAllText(fragPath));
