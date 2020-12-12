@@ -41,7 +41,7 @@ namespace LeaderEditor
             framebuffer = new Framebuffer(1280, 720);
 
             Application.main.RenderBegin += RenderBegin;
-            Application.main.PostGuiRender += PostGuiRender;
+            Application.main.PostSceneRender += PostSceneRender;
 
             ImGuiController.main.OnImGui += OnImGui;
 
@@ -69,11 +69,12 @@ namespace LeaderEditor
             framebuffer.Begin();
         }
 
-        private void PostGuiRender()
+        private void PostSceneRender()
         {
             if (EditorController.Mode == EditorController.EditorMode.Editor)
             {
-                GL.Enable(EnableCap.DepthTest);
+                GL.Enable(EnableCap.Blend);
+                GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
                 gridShader.SetMatrix4("v", RenderingGlobals.View);
                 gridShader.SetMatrix4("p", RenderingGlobals.Projection);
@@ -83,7 +84,7 @@ namespace LeaderEditor
 
                 GL.DrawElements(PrimitiveType.Triangles, gridVertArray.GetVerticesCount(), DrawElementsType.UnsignedInt, 0);
 
-                GL.Disable(EnableCap.DepthTest);
+                GL.Disable(EnableCap.Blend);
             }
 
             //end the render

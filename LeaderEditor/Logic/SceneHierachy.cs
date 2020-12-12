@@ -23,6 +23,13 @@ namespace LeaderEditor
             } 
         }
 
+        private static readonly Dictionary<RenderHint, string> renderHintText = new Dictionary<RenderHint, string>()
+        {
+            { RenderHint.World, "[World]" },
+            { RenderHint.Transparent, "[World, Transparent]" },
+            { RenderHint.Gui, "[Gui]" }
+        };
+
         private static int SelectedObjectIndex = -1;
 
         public override void Start()
@@ -78,6 +85,11 @@ namespace LeaderEditor
 
                         if (ImGui.Selectable(go.Name, i == SelectedObjectIndex, ImGuiSelectableFlags.DontClosePopups))
                             SelectedObjectIndex = i;
+                        ImGui.SameLine();
+
+                        ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(0.4f, 0.4f, 0.4f, 1.0f));
+                        ImGui.Text(renderHintText[go.RenderHint]);
+                        ImGui.PopStyleColor();
 
                         ImGui.PopID();
                     }

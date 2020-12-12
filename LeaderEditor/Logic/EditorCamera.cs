@@ -29,6 +29,7 @@ namespace LeaderEditor
 
             Application.main.UpdateFrame += UpdateFrame;
             Application.main.SceneRender += SceneRender;
+            Application.main.GuiRender += GuiRender;
         }
 
         private void UpdateFrame(FrameEventArgs e)
@@ -83,6 +84,12 @@ namespace LeaderEditor
 
             RenderingGlobals.Projection = ProjectionMatrix;
             RenderingGlobals.View = ViewMatrix;
+        }
+
+        private void GuiRender()
+        {
+            RenderingGlobals.Projection = Matrix4.CreateOrthographic(Application.main.ViewportSize.X, Application.main.ViewportSize.Y, 0.0f, 100.0f);
+            RenderingGlobals.View = Matrix4.Identity;
         }
     }
 }

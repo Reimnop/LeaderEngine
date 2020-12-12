@@ -3,20 +3,46 @@ using System.Collections.Generic;
 
 namespace LeaderEngine
 {
+    public enum RenderHint
+    {
+        World,
+        Transparent,
+        Gui
+    }
+
     public class GameObject : IDisposable
     {
         public string Name;
+        public RenderHint RenderHint;
         public bool ActiveSelf { private set; get; }
         public Transform Transform { private set; get; }
 
         private List<Component> components = new List<Component>();
 
-        public GameObject(string name)
+        public GameObject(string name, RenderHint renderHint = RenderHint.World)
         {
             Name = name;
+
+            RenderHint = renderHint;
+
+            List<GameObject> listToAdd = null;
+
+            switch (renderHint)
+            {
+                case RenderHint.World:
+                    listToAdd = Application.main.WorldGameObjects;
+                    break;
+                case RenderHint.Transparent:
+                    listToAdd = Application.main.WorldGameObjects_Transparent;
+                    break;
+                case RenderHint.Gui:
+                    listToAdd = Application.main.GuiGameObjects;
+                    break;
+            }
+
             Application.main.ExecuteNextUpdate(() =>
             {
-                Application.main.GameObjects.Add(this);
+                listToAdd.Add(this);
             });
 
             Init();
@@ -168,7 +194,7 @@ namespace LeaderEngine
 
         public void Dispose()
         {
-            Application.main.GameObjects.Remove(this);
+            Application.main.WorldGameObjects.Remove(this);
             Cleanup();
         }
 

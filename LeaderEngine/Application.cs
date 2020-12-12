@@ -21,7 +21,9 @@ namespace LeaderEngine
     {
         public static Application main = null;
 
-        public List<GameObject> GameObjects = new List<GameObject>();
+        public List<GameObject> WorldGameObjects = new List<GameObject>();
+        public List<GameObject> WorldGameObjects_Transparent = new List<GameObject>();
+        public List<GameObject> GuiGameObjects = new List<GameObject>();
         public bool EditorMode = false;
 
         public Vector2i ViewportSize;
@@ -88,8 +90,13 @@ namespace LeaderEngine
 
             if (!EditorMode)
             {
-                GameObjects.ForEach(go => go.Update());
-                GameObjects.ForEach(go => go.LateUpdate());
+                WorldGameObjects.ForEach(go => go.Update());
+                WorldGameObjects_Transparent.ForEach(go => go.Update());
+                GuiGameObjects.ForEach(go => go.Update());
+
+                WorldGameObjects.ForEach(go => go.LateUpdate());
+                WorldGameObjects_Transparent.ForEach(go => go.LateUpdate());
+                GuiGameObjects.ForEach(go => go.LateUpdate());
             }
         }
 
@@ -108,7 +115,9 @@ namespace LeaderEngine
 
             SceneRender?.Invoke();
             if (RenderingGlobals.RenderingEnabled)
-                GameObjects.ForEach(go => go.Render());
+                WorldGameObjects.ForEach(go => go.Render());
+            if (RenderingGlobals.RenderingEnabled)
+                WorldGameObjects_Transparent.ForEach(go => go.Render());
             PostSceneRender?.Invoke();
 
             GL.Disable(EnableCap.DepthTest);
@@ -117,7 +126,7 @@ namespace LeaderEngine
 
             GuiRender?.Invoke();
             if (RenderingGlobals.RenderingEnabled)
-                GameObjects.ForEach(go => go.RenderGui());
+                GuiGameObjects.ForEach(go => go.RenderGui());
             PostGuiRender?.Invoke();
 
             FinishRender?.Invoke();
@@ -130,7 +139,7 @@ namespace LeaderEngine
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            GameObjects.ForEach(go => go.OnClosing());
+            WorldGameObjects.ForEach(go => go.OnClosing());
 
             base.OnClosing(e);
         }

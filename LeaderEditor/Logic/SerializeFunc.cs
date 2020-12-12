@@ -151,7 +151,7 @@ namespace LeaderEditor
         private static void DefaultString(Component obj, FieldInfo field)
         {
             string value = (string)field.GetValue(obj);
-            ImGui.InputText(field.Name, ref value, 65535);
+            ImGui.InputText(field.Name, ref value, 65535, ImGuiInputTextFlags.Multiline);
             field.SetValue(obj, value);
         }
     }
