@@ -18,6 +18,8 @@ namespace LeaderEditor
     {
         public static Dictionary<string, WindowComponent> windows = new Dictionary<string, WindowComponent>();
 
+        private List<LeaderEngine.Texture> textures = new List<LeaderEngine.Texture>();
+
         public override void Start()
         {
             ImGuiController.main.OnImGui += OnImGui;
@@ -58,27 +60,6 @@ namespace LeaderEditor
                     if (ImGui.MenuItem("Generate Code"))
                     {
                         DebugConsole.Log(CodeGenerator.GenerateCode());
-                    }
-
-                    if (ImGui.MenuItem("Load 100 Textures"))
-                    {
-                        OpenFileDialog ofd = new OpenFileDialog();
-                        ofd.Filter = "*.png|*.png";
-                        ofd.Multiselect = false;
-
-                        ofd.ShowDialog();
-
-                        for (int i = 0; i < 100; i++)
-                        {
-                            new LeaderEngine.Texture().FromFile(ofd.FileName);
-                        }
-
-                        DebugConsole.Log("Loaded 100 textures");
-                    }
-
-                    if (ImGui.MenuItem("Run GC"))
-                    {
-                        GC.Collect();
                     }
                     //END OF DEBUG
 
