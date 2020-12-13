@@ -13,6 +13,11 @@ namespace LeaderEngine
 
         public Vector2 Size;
 
+        ~Texture()
+        {
+            Dispose();
+        }
+
         public Texture FromFile(string path)
         {
             Bitmap bitmap = new Bitmap(path);
@@ -76,6 +81,8 @@ namespace LeaderEngine
         public void Dispose()
         {
             GL.DeleteTexture(handle);
+
+            GC.SuppressFinalize(this);
         }
     }
 }

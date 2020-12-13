@@ -53,6 +53,11 @@ namespace LeaderEngine
             }
         }
 
+        ~Shader()
+        {
+            Dispose();
+        }
+
         public static Shader FromSourceFile(string vertPath, string fragPath)
         {
             return new Shader(File.ReadAllText(vertPath), File.ReadAllText(fragPath));
@@ -176,6 +181,8 @@ namespace LeaderEngine
         public void Dispose()
         {
             GL.DeleteShader(handle);
+
+            GC.SuppressFinalize(this);
         }
     }
 }

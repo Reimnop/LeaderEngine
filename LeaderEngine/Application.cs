@@ -88,6 +88,8 @@ namespace LeaderEngine
 
             base.OnUpdateFrame(e);
 
+            ThreadManager.ExecuteAll();
+
             if (!EditorMode)
             {
                 WorldGameObjects.ForEach(go => go.Update());

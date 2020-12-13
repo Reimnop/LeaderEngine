@@ -48,6 +48,11 @@ namespace LeaderEngine
             Init();
         }
 
+        ~GameObject()
+        {
+            ThreadManager.ExecuteOnMainThread(() => Dispose());
+        }
+
         private void Init()
         {
             Transform = AddComponent<Transform>();
@@ -196,6 +201,8 @@ namespace LeaderEngine
         {
             Application.main.WorldGameObjects.Remove(this);
             Cleanup();
+
+            GC.SuppressFinalize(this);
         }
 
         private void Cleanup()

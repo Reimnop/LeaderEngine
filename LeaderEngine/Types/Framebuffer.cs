@@ -34,6 +34,11 @@ namespace LeaderEngine
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
+        ~Framebuffer()
+        {
+            Dispose();
+        }
+
         public void Resize(int width, int height)
         {
             GL.BindTexture(TextureTarget.Texture2D, colorTexture);
@@ -75,6 +80,8 @@ namespace LeaderEngine
             GL.DeleteFramebuffer(handle);
             GL.DeleteTexture(depthTexture);
             GL.DeleteTexture(colorTexture);
+
+            GC.SuppressFinalize(this);
         }
     }
 }
