@@ -5,7 +5,7 @@ namespace LeaderEngine
 {
     public class MeshRenderer : Component
     {
-        private Material material;
+        private Material material = Material.Model;
         private Texture texture;
         private MeshFilter meshFilter;
 

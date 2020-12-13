@@ -76,29 +76,45 @@ namespace LeaderEditor.Data
             AssimpContext importer = new AssimpContext();
 
             Scene scene = importer.ImportFile(path, PostProcessSteps.Triangulate);
-            Mesh mesh = scene.Meshes[0];
 
-            uint[] indices = IntToUint(mesh.GetIndices());
-            float[] vertices = Vector3ToFloat(mesh.Vertices);
-
-            return new VertexArray(vertices, indices, new VertexAttrib[] 
-            {
-                new VertexAttrib { location = 0, size = 3 }
-            });
-        }
-
-        private static float[] Vector3ToFloat(List<Vector3D> vector3Ds)
-        {
             List<float> vertices = new List<float>();
+            List<uint> indices = new List<uint>();
 
-            foreach (var v3d in vector3Ds)
+            uint max = 0;
+
+            foreach (var mesh in scene.Meshes)
             {
-                vertices.Add(v3d.X);
-                vertices.Add(v3d.Y);
-                vertices.Add(v3d.Z);
+                uint[] inds = IntToUint(mesh.GetIndices());
+                var verts = mesh.Vertices;
+
+                foreach (var vert in verts)
+                {
+                    vertices.Add(vert.X);
+                    vertices.Add(vert.Y);
+                    vertices.Add(vert.Z);
+
+                    vertices.Add(scene.Materials[mesh.MaterialIndex].ColorDiffuse.R);
+                    vertices.Add(scene.Materials[mesh.MaterialIndex].ColorDiffuse.G);
+                    vertices.Add(scene.Materials[mesh.MaterialIndex].ColorDiffuse.B);
+                }
+
+                uint curMax = max;
+                uint cMax = 0;
+
+                for (int i = 0; i < inds.Length; i++)
+                {
+                    indices.Add(inds[i] + curMax);
+                    if (inds[i] > cMax)
+                        cMax = inds[i];
+                }
+                max += cMax + 1;
             }
 
-            return vertices.ToArray();
+            return new VertexArray(vertices.ToArray(), indices.ToArray(), new VertexAttrib[] 
+            {
+                new VertexAttrib { location = 0, size = 3 },
+                new VertexAttrib { location = 1, size = 3 }
+            });
         }
 
         private static uint[] IntToUint(int[] ints)

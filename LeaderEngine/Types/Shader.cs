@@ -11,6 +11,7 @@ namespace LeaderEngine
         #region DefaultShader
         public static Shader NoRender;
         public static Shader SpriteShader;
+        public static Shader ModelShader;
         public static Shader TextShader;
         #endregion
 
@@ -67,6 +68,7 @@ namespace LeaderEngine
         {
             NoRender = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/norender-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/norender-fs.glsl");
             SpriteShader = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/sprite-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/sprite-fs.glsl");
+            ModelShader = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/model-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/model-fs.glsl");
             TextShader = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/text-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/text-fs.glsl");
         }
 
