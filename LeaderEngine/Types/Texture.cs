@@ -15,7 +15,7 @@ namespace LeaderEngine
 
         ~Texture()
         {
-            Dispose();
+            ThreadManager.ExecuteOnMainThread(() => Dispose());
         }
 
         public Texture FromFile(string path)

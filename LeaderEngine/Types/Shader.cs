@@ -55,7 +55,7 @@ namespace LeaderEngine
 
         ~Shader()
         {
-            Dispose();
+            ThreadManager.ExecuteOnMainThread(() => Dispose());
         }
 
         public static Shader FromSourceFile(string vertPath, string fragPath)

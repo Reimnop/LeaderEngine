@@ -36,7 +36,7 @@ namespace LeaderEngine
 
         ~Framebuffer()
         {
-            Dispose();
+            ThreadManager.ExecuteOnMainThread(() => Dispose());
         }
 
         public void Resize(int width, int height)

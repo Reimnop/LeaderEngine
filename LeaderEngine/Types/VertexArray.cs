@@ -25,7 +25,7 @@ namespace LeaderEngine
 
         ~VertexArray()
         {
-            Dispose();
+            ThreadManager.ExecuteOnMainThread(() => Dispose());
         }
 
         private void Init(VertexAttrib[] attribs)

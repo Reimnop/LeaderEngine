@@ -60,6 +60,28 @@ namespace LeaderEditor
                         DebugConsole.Log(CodeGenerator.GenerateCode());
                     }
 
+                    if (ImGui.MenuItem("Load 100 Textures"))
+                    {
+                        OpenFileDialog ofd = new OpenFileDialog();
+                        ofd.Filter = "*.png|*.png";
+                        ofd.Multiselect = false;
+
+                        ofd.ShowDialog();
+
+                        for (int i = 0; i < 100; i++)
+                        {
+                            new LeaderEngine.Texture().FromFile(ofd.FileName);
+                        }
+
+                        DebugConsole.Log("Loaded 100 textures");
+                    }
+
+                    if (ImGui.MenuItem("Run GC"))
+                    {
+                        GC.Collect();
+                    }
+                    //END OF DEBUG
+
                     if (ImGui.MenuItem("Exit", "Alt+F4"))
                     {
                         Application.main.Close();
