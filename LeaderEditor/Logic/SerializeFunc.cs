@@ -59,6 +59,11 @@ namespace LeaderEditor
                     ofd.Multiselect = false;
 
                     ofd.ShowDialog();
+
+                    if (!string.IsNullOrEmpty(ofd.FileName))
+                    {
+                        meshFilter.VertexArray = AssetLoader.LoadModel(ofd.FileName);
+                    }
                 }
             }
         }
