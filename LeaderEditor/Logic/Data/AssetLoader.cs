@@ -97,8 +97,8 @@ namespace LeaderEditor.Data
                     Vector3D uv = (uvs != null) ? uvs[i] : new Vector3D(0, 0, 0);
 
                     vertices.Add(vert.X);
-                    vertices.Add(vert.Y);
                     vertices.Add(vert.Z);
+                    vertices.Add(vert.Y);
 
                     vertices.Add(material.ColorDiffuse.R);
                     vertices.Add(material.ColorDiffuse.G);
