@@ -51,11 +51,11 @@ namespace LeaderEditor
         {
             MeshFilter meshFilter = (MeshFilter)obj;
 
-            if (ImGui.Button("Import FBX"))
+            if (ImGui.Button("Import Model"))
             {
                 using (OpenFileDialog ofd = new OpenFileDialog())
                 {
-                    ofd.Filter = "*.fbx|*.fbx";
+                    ofd.Filter = "3D Model|*.fbx;*.obj";
                     ofd.Multiselect = false;
 
                     ofd.ShowDialog();

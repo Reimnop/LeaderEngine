@@ -20,10 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="DefaultAssets\Shaders\model-fs.glsl">
+    <None Update="DefaultAssets\Shaders\lit-fs.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\model-vs.glsl">
+    <None Update="DefaultAssets\Shaders\lit-vs.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="DefaultAssets\Shaders\norender-fs.glsl">

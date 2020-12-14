@@ -86,14 +86,14 @@ namespace LeaderEditor.Data
             {
                 List<uint> indices = IntToUint(mesh.GetIndices()).ToList();
                 List<float> vertices = new List<float>();
-                var verts = mesh.Vertices;
 
                 List <Vector3D> uvs = mesh.HasTextureCoords(0) ? mesh.TextureCoordinateChannels[0] : null;
                 var material = scene.Materials[mesh.MaterialIndex];
 
-                for (int i = 0; i < verts.Count; i++)
+                for (int i = 0; i < mesh.Vertices.Count; i++)
                 {
-                    Vector3D vert = verts[i];
+                    Vector3D vert = mesh.Vertices[i];
+                    Vector3D norm = mesh.Normals[i];
                     Vector3D uv = (uvs != null) ? uvs[i] : new Vector3D(0, 0, 0);
 
                     vertices.Add(vert.X);
@@ -104,6 +104,10 @@ namespace LeaderEditor.Data
                     vertices.Add(material.ColorDiffuse.G);
                     vertices.Add(material.ColorDiffuse.B);
 
+                    vertices.Add(norm.X);
+                    vertices.Add(norm.Z);
+                    vertices.Add(norm.Y);
+
                     vertices.Add(uv.X);
                     vertices.Add(1.0f - uv.Y);
                 }
@@ -112,7 +116,8 @@ namespace LeaderEditor.Data
                 {
                     new VertexAttrib { location = 0, size = 3 },
                     new VertexAttrib { location = 1, size = 3 },
-                    new VertexAttrib { location = 2, size = 2 }
+                    new VertexAttrib { location = 2, size = 3 },
+                    new VertexAttrib { location = 3, size = 2 }
                 });
 
                 if (material.HasTextureDiffuse)

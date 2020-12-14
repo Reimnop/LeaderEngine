@@ -6,7 +6,7 @@ namespace LeaderEngine
 {
     public class MeshRenderer : Component
     {
-        private Material material = Material.Model;
+        private Material material = Material.Lit;
         private MeshFilter meshFilter;
 
         public MeshRenderer SetMaterial(Material material)
@@ -47,6 +47,7 @@ namespace LeaderEngine
                 Texture texture = vertArray.GetTexture();
 
                 vertArray.Use();
+
                 if (texture != null)
                 {
                     renderMat.SetInt("useTexture", 1);
@@ -57,6 +58,9 @@ namespace LeaderEngine
                     renderMat.SetInt("useTexture", 0);
                     GL.BindTexture(TextureTarget.Texture2D, 0);
                 }
+
+                renderMat.SetMatrix4("model", model);
+
                 renderMat.Use();
 
                 GL.DrawElements(PrimitiveType.Triangles, vertArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);

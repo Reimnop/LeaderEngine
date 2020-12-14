@@ -23,7 +23,7 @@ namespace LeaderEngine
     public class Material
     {
         #region DefaultMaterials
-        public static Material Model;
+        public static Material Lit;
         public static Material NoRender;
         #endregion
 
@@ -39,7 +39,7 @@ namespace LeaderEngine
 
         public static void InitDefaults()
         {
-            Model = new Material(Shader.ModelShader);
+            Lit = new Material(Shader.Lit);
             NoRender = new Material(Shader.NoRender);
         }
 
