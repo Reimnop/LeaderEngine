@@ -62,7 +62,7 @@ namespace LeaderEditor
 
                     if (!string.IsNullOrEmpty(ofd.FileName))
                     {
-                        meshFilter.VertexArray = AssetLoader.LoadModel(ofd.FileName);
+                        meshFilter.Mesh = AssetLoader.LoadModel(ofd.FileName);
                     }
                 }
             }

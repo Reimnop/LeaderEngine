@@ -16,6 +16,8 @@ namespace LeaderEngine
 
         private int VAO, VBO, EBO;
 
+        private Texture texture;
+
         public VertexArray(float[] vertices, uint[] indices, VertexAttrib[] attribs)
         {
             this.vertices = vertices;
@@ -26,6 +28,16 @@ namespace LeaderEngine
         ~VertexArray()
         {
             ThreadManager.ExecuteOnMainThread(() => Dispose());
+        }
+
+        public Texture GetTexture()
+        {
+            return texture;
+        }
+
+        public void SetTexture(Texture texture)
+        {
+            this.texture = texture;
         }
 
         private void Init(VertexAttrib[] attribs)

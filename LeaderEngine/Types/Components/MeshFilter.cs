@@ -2,13 +2,13 @@
 {
     public class MeshFilter : Component
     {
-        public VertexArray VertexArray;
+        public Mesh Mesh;
 
         public MeshFilter() { }
 
-        public MeshFilter(VertexArray vertexArray)
+        public MeshFilter(Mesh mesh)
         {
-            VertexArray = vertexArray;
+            Mesh = mesh;
         }
     }
 }

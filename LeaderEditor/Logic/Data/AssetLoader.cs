@@ -6,6 +6,9 @@ using Microsoft.CodeAnalysis.Emit;
 using System.Text;
 using LeaderEngine;
 using Assimp;
+using System.Linq;
+
+using Mesh = LeaderEngine.Mesh;
 
 namespace LeaderEditor.Data
 {
@@ -71,50 +74,69 @@ namespace LeaderEditor.Data
             return null;
         }
 
-        public static VertexArray LoadModel(string path)
+        public static Mesh LoadModel(string path)
         {
             AssimpContext importer = new AssimpContext();
 
             Scene scene = importer.ImportFile(path, PostProcessSteps.Triangulate);
 
-            List<float> vertices = new List<float>();
-            List<uint> indices = new List<uint>();
-
-            uint max = 0;
+            List<VertexArray> vertexArrays = new List<VertexArray>();
 
             foreach (var mesh in scene.Meshes)
             {
-                uint[] inds = IntToUint(mesh.GetIndices());
+                List<uint> indices = IntToUint(mesh.GetIndices()).ToList();
+                List<float> vertices = new List<float>();
                 var verts = mesh.Vertices;
 
-                foreach (var vert in verts)
+                List <Vector3D> uvs = mesh.HasTextureCoords(0) ? mesh.TextureCoordinateChannels[0] : null;
+                var material = scene.Materials[mesh.MaterialIndex];
+
+                for (int i = 0; i < verts.Count; i++)
                 {
+                    Vector3D vert = verts[i];
+                    Vector3D uv = (uvs != null) ? uvs[i] : new Vector3D(0, 0, 0);
+
                     vertices.Add(vert.X);
                     vertices.Add(vert.Y);
                     vertices.Add(vert.Z);
 
-                    vertices.Add(scene.Materials[mesh.MaterialIndex].ColorDiffuse.R);
-                    vertices.Add(scene.Materials[mesh.MaterialIndex].ColorDiffuse.G);
-                    vertices.Add(scene.Materials[mesh.MaterialIndex].ColorDiffuse.B);
+                    vertices.Add(material.ColorDiffuse.R);
+                    vertices.Add(material.ColorDiffuse.G);
+                    vertices.Add(material.ColorDiffuse.B);
+
+                    vertices.Add(uv.X);
+                    vertices.Add(1.0f - uv.Y);
                 }
 
-                uint curMax = max;
-                uint cMax = 0;
-
-                for (int i = 0; i < inds.Length; i++)
+                VertexArray vertArray = new VertexArray(vertices.ToArray(), indices.ToArray(), new VertexAttrib[]
                 {
-                    indices.Add(inds[i] + curMax);
-                    if (inds[i] > cMax)
-                        cMax = inds[i];
-                }
-                max += cMax + 1;
+                    new VertexAttrib { location = 0, size = 3 },
+                    new VertexAttrib { location = 1, size = 3 },
+                    new VertexAttrib { location = 2, size = 2 }
+                });
+
+                if (!string.IsNullOrEmpty(material.TextureDiffuse.FilePath))
+                    vertArray.SetTexture(new Texture().FromFile(material.TextureDiffuse.FilePath));
+
+                vertexArrays.Add(vertArray);
             }
 
-            return new VertexArray(vertices.ToArray(), indices.ToArray(), new VertexAttrib[] 
+            return new Mesh(vertexArrays.ToArray()); 
+        }
+
+        private static byte[] TexelsToBytes(Texel[] texels)
+        {
+            List<byte> bytes = new List<byte>();
+
+            foreach (var texel in texels) 
             {
-                new VertexAttrib { location = 0, size = 3 },
-                new VertexAttrib { location = 1, size = 3 }
-            });
+                bytes.Add(texel.R);
+                bytes.Add(texel.G);
+                bytes.Add(texel.B);
+                bytes.Add(texel.A);
+            }
+
+            return bytes.ToArray();
         }
 
         private static uint[] IntToUint(int[] ints)

@@ -1,19 +1,13 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using System.Collections.Generic;
 
 namespace LeaderEngine
 {
     public class MeshRenderer : Component
     {
         private Material material = Material.Model;
-        private Texture texture;
         private MeshFilter meshFilter;
-
-        public MeshRenderer SetTexture(Texture texture)
-        {
-            this.texture = texture;
-            return this;
-        }
 
         public MeshRenderer SetMaterial(Material material)
         {
@@ -33,7 +27,7 @@ namespace LeaderEngine
 
         public override void OnRender()
         {
-            if (meshFilter.VertexArray == null)
+            if (meshFilter.Mesh == null)
                 return;
 
             Matrix4 model = Matrix4.CreateScale(gameObject.Transform.Scale)
@@ -47,10 +41,23 @@ namespace LeaderEngine
             renderMat.SetMatrix4("mvp", model * RenderingGlobals.View * RenderingGlobals.Projection);
 
             renderMat.Use();
-            meshFilter.VertexArray.Use();
-            texture?.Use(TextureUnit.Texture0);
+            var vertArrays = meshFilter.Mesh.GetAllVertexArrays();
 
-            GL.DrawElements(PrimitiveType.Triangles, meshFilter.VertexArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
+            foreach (var vertArray in vertArrays)
+            {
+                Texture texture = vertArray.GetTexture();
+
+                vertArray.Use();
+                if (texture != null)
+                {
+                    renderMat.SetInt("useTexture", 1);
+                    texture.Use(TextureUnit.Texture0);
+                }
+                else
+                    renderMat.SetInt("useTexture", 0);
+
+                GL.DrawElements(PrimitiveType.Triangles, vertArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
+            }
         }
     }
 }
