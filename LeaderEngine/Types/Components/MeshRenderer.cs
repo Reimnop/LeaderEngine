@@ -33,6 +33,9 @@ namespace LeaderEngine
 
         public override void OnRender()
         {
+            if (meshFilter.VertexArray == null)
+                return;
+
             Matrix4 model = Matrix4.CreateScale(gameObject.Transform.Scale)
                  * Matrix4.CreateFromQuaternion(gameObject.Transform.Rotation)
                  * Matrix4.CreateTranslation(gameObject.Transform.Position);
