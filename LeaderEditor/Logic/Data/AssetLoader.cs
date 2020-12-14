@@ -116,7 +116,10 @@ namespace LeaderEditor.Data
                 });
 
                 if (!string.IsNullOrEmpty(material.TextureDiffuse.FilePath))
-                    vertArray.SetTexture(new Texture().FromFile(material.TextureDiffuse.FilePath));
+                    if (Path.IsPathRooted(material.TextureDiffuse.FilePath))
+                        vertArray.SetTexture(new Texture().FromFile(material.TextureDiffuse.FilePath));
+                    else 
+                        vertArray.SetTexture(new Texture().FromFile(Path.Combine(Path.GetDirectoryName(path), material.TextureDiffuse.FilePath)));
 
                 vertexArrays.Add(vertArray);
             }
