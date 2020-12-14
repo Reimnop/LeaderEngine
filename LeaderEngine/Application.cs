@@ -69,6 +69,8 @@ namespace LeaderEngine
             Shader.InitDefaults();
             Material.InitDefaults();
 
+            GL.ClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+
             ViewportSize = Size;
 
             base.OnLoad();
