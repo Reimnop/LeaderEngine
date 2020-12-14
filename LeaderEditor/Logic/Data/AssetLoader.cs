@@ -115,7 +115,7 @@ namespace LeaderEditor.Data
                     new VertexAttrib { location = 2, size = 2 }
                 });
 
-                if (!string.IsNullOrEmpty(material.TextureDiffuse.FilePath))
+                if (material.HasTextureDiffuse)
                     if (Path.IsPathRooted(material.TextureDiffuse.FilePath))
                         vertArray.SetTexture(new Texture().FromFile(material.TextureDiffuse.FilePath));
                     else 
@@ -125,21 +125,6 @@ namespace LeaderEditor.Data
             }
 
             return new Mesh(vertexArrays.ToArray()); 
-        }
-
-        private static byte[] TexelsToBytes(Texel[] texels)
-        {
-            List<byte> bytes = new List<byte>();
-
-            foreach (var texel in texels) 
-            {
-                bytes.Add(texel.R);
-                bytes.Add(texel.G);
-                bytes.Add(texel.B);
-                bytes.Add(texel.A);
-            }
-
-            return bytes.ToArray();
         }
 
         private static uint[] IntToUint(int[] ints)

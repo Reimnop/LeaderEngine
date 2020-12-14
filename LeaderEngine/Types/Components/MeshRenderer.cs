@@ -40,7 +40,6 @@ namespace LeaderEngine
 
             renderMat.SetMatrix4("mvp", model * RenderingGlobals.View * RenderingGlobals.Projection);
 
-            renderMat.Use();
             var vertArrays = meshFilter.Mesh.GetAllVertexArrays();
 
             foreach (var vertArray in vertArrays)
@@ -54,7 +53,11 @@ namespace LeaderEngine
                     texture.Use(TextureUnit.Texture0);
                 }
                 else
+                {
                     renderMat.SetInt("useTexture", 0);
+                    GL.BindTexture(TextureTarget.Texture2D, 0);
+                }
+                renderMat.Use();
 
                 GL.DrawElements(PrimitiveType.Triangles, vertArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
             }
