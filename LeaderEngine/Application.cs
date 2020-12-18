@@ -71,6 +71,8 @@ namespace LeaderEngine
 
             GL.ClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 
+            GL.Enable(EnableCap.CullFace);
+
             ViewportSize = Size;
 
             base.OnLoad();
@@ -119,9 +121,10 @@ namespace LeaderEngine
 
             SceneRender?.Invoke();
             if (RenderingGlobals.RenderingEnabled)
+            {
                 WorldGameObjects.ForEach(go => go.Render());
-            if (RenderingGlobals.RenderingEnabled)
                 WorldGameObjects_Transparent.ForEach(go => go.Render());
+            }
             PostSceneRender?.Invoke();
 
             GL.Disable(EnableCap.DepthTest);

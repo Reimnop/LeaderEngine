@@ -30,6 +30,9 @@ namespace LeaderEngine
             if (meshFilter.Mesh == null)
                 return;
 
+            GL.FrontFace(FrontFaceDirection.Cw);
+            GL.CullFace(CullFaceMode.Back);
+
             Matrix4 model = Matrix4.CreateScale(gameObject.Transform.Scale)
                  * Matrix4.CreateFromQuaternion(gameObject.Transform.Rotation)
                  * Matrix4.CreateTranslation(gameObject.Transform.Position);

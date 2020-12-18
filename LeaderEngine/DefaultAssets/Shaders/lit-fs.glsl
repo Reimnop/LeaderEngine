@@ -5,8 +5,6 @@ layout (location = 0) out vec4 fragColor;
 uniform int useTexture;
 uniform sampler2D texture0;
 
-uniform mat4 model;
-
 in vec3 VertCol;
 in vec3 Normal;
 in vec2 TexCoord;
@@ -26,15 +24,13 @@ void main()
 	else 
 		objectColor = vec4(VertCol, 1.0);
 
-	mat3 normalMatrix = transpose(inverse(mat3(model)));
-    vec3 normal = normalize(Normal * normalMatrix);
+	vec3 norm = normalize(Normal);
+	vec3 lightDir = normalize(lightPos - FragPos);
 
-	vec3 surfaceToLight = lightPos - FragPos;
+	float diff = max(dot(norm, lightDir), 0.0);
+	vec3 diffuse = diff * lightColor;
 
-	float brightness = dot(normal, surfaceToLight) / (length(surfaceToLight) * length(normal));
-    brightness = clamp(brightness, 0, 1);
-
-	vec3 result = brightness * lightColor * vec3(objectColor) + ambient;
+	vec3 result = (ambient + diffuse) * vec3(objectColor);
 
 	fragColor = vec4(result, 1.0);
 }

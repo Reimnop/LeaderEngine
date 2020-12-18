@@ -17,7 +17,7 @@ uniform mat4 model;
 void main() 
 {
 	VertCol = aVertCol;
-	Normal = aNormal;
+	Normal = aNormal * mat3(model);
 	TexCoord = aTexCoord;
 
 	FragPos = vec3(vec4(aPos, 1.0) * model);
