@@ -10,6 +10,8 @@ namespace LeaderEngine
         public static Matrix4 View = Matrix4.Identity;
         public static Matrix4 Projection = Matrix4.Identity;
 
+        public static Shader ForcedShader = null;
+
         public static bool RenderingEnabled = true;
     }
 }

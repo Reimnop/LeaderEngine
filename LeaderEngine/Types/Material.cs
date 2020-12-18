@@ -97,30 +97,35 @@ namespace LeaderEngine
 
         public void Use()
         {
+            Shader usingShader = shader;
+
+            if (RenderingGlobals.ForcedShader != null)
+                usingShader = RenderingGlobals.ForcedShader;
+
             foreach (var prop in materialProps)
                 switch (prop.Value.PropType)
                 {
                     case MaterialPropType.Int:
-                        shader.SetInt(prop.Key, (int)prop.Value.Data);
+                        usingShader.SetInt(prop.Key, (int)prop.Value.Data);
                         break;
                     case MaterialPropType.Float:
-                        shader.SetFloat(prop.Key, (float)prop.Value.Data);
+                        usingShader.SetFloat(prop.Key, (float)prop.Value.Data);
                         break;
                     case MaterialPropType.Vector3:
-                        shader.SetVector3(prop.Key, (Vector3)prop.Value.Data);
+                        usingShader.SetVector3(prop.Key, (Vector3)prop.Value.Data);
                         break;
                     case MaterialPropType.Vector4:
-                        shader.SetVector4(prop.Key, (Vector4)prop.Value.Data);
+                        usingShader.SetVector4(prop.Key, (Vector4)prop.Value.Data);
                         break;
                     case MaterialPropType.Matrix4:
-                        shader.SetMatrix4(prop.Key, (Matrix4)prop.Value.Data);
+                        usingShader.SetMatrix4(prop.Key, (Matrix4)prop.Value.Data);
                         break;
                 }
 
             foreach (var tex in materialTextures)
                 tex.Value.Use(tex.Key);
 
-            shader.Use();
+            usingShader.Use();
         }
     }
 }

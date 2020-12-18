@@ -120,11 +120,7 @@ namespace LeaderEngine
             GL.Enable(EnableCap.DepthTest);
 
             SceneRender?.Invoke();
-            if (RenderingGlobals.RenderingEnabled)
-            {
-                WorldGameObjects.ForEach(go => go.Render());
-                WorldGameObjects_Transparent.ForEach(go => go.Render());
-            }
+            RenderScene();
             PostSceneRender?.Invoke();
 
             GL.Disable(EnableCap.DepthTest);
@@ -132,8 +128,7 @@ namespace LeaderEngine
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             GuiRender?.Invoke();
-            if (RenderingGlobals.RenderingEnabled)
-                GuiGameObjects.ForEach(go => go.RenderGui());
+            RenderGui();
             PostGuiRender?.Invoke();
 
             FinishRender?.Invoke();
@@ -142,6 +137,21 @@ namespace LeaderEngine
 
             Time.deltaTimeUnscaled = (float)GLFW.GetTime() - Time.time;
             Time.deltaTime = Time.deltaTimeUnscaled * Time.timeScale;
+        }
+
+        public void RenderScene()
+        {
+            if (!RenderingGlobals.RenderingEnabled)
+                return;
+
+            WorldGameObjects.ForEach(go => go.Render());
+            WorldGameObjects_Transparent.ForEach(go => go.Render());
+        }
+
+        public void RenderGui()
+        {
+            if (RenderingGlobals.RenderingEnabled)
+                GuiGameObjects.ForEach(go => go.RenderGui());
         }
 
         protected override void OnClosing(CancelEventArgs e)
