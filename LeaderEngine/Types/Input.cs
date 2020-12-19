@@ -11,29 +11,27 @@ namespace LeaderEngine
         Vertical = 1
     }
 
-    public class InputManager : Component
+    public static class Input
     {
         private static KeyboardState keyState;
         private static MouseState mouseState;
 
-        public InputManager()
+        public static void InputUpdate(KeyboardState ks, MouseState ms)
         {
-            Application.main.UpdateFrame += InputUpdate;
+            keyState = ks;
+            mouseState = ms;
         }
 
-        public void InputUpdate(FrameEventArgs e)
-        {
-            keyState = Application.main.KeyboardState;
-            mouseState = Application.main.MouseState;
-        }
         public static Vector2 GetMouseDelta()
         {
             return mouseState.Delta;
         }
+
         public static Vector2 GetMousePosition()
         {
             return mouseState.Position;
         }
+
         public static bool GetMouseDown(MouseButton button)
         {
             if (!Application.main.IsFocused)

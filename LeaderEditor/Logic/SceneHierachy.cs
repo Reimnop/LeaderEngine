@@ -46,7 +46,7 @@ namespace LeaderEditor
         public void UpdateSceneHierachy(FrameEventArgs e)
         {
             //delete object
-            if (InputManager.GetKeyDown(Keys.Delete) && SelectedObject != null)
+            if (Input.GetKeyDown(Keys.Delete) && SelectedObject != null)
             {
                 SelectedObject.Destroy();
                 SceneObjects.Remove(SelectedObject);
@@ -56,7 +56,7 @@ namespace LeaderEditor
             }
 
             //press right ctrl to deselect
-            if (InputManager.GetKeyDown(Keys.RightControl))
+            if (Input.GetKeyDown(Keys.RightControl))
                 SelectedObjectIndex = -1;
         }
 

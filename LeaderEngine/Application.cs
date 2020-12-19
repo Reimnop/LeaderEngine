@@ -69,6 +69,8 @@ namespace LeaderEngine
             Shader.InitDefaults();
             Material.InitDefaults();
 
+            Input.InputUpdate(KeyboardState, MouseState);
+
             GL.ClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 
             ViewportSize = Size;

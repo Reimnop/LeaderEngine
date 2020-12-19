@@ -50,7 +50,6 @@ namespace LeaderEditor
             //add all components
             gameObject.AddComponents(
                 new Component[] {
-                    new InputManager(),
                     new MainMenuBar(),
                     new Viewport(),
                     new SceneHierachy(),

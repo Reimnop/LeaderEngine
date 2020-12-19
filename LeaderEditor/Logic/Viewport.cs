@@ -105,7 +105,7 @@ namespace LeaderEditor
                 {
                     if (ImGui.IsWindowFocused())
                     {
-                        if (InputManager.GetKeyDown(Keys.P))
+                        if (Input.GetKeyDown(Keys.P))
                             if (EditorController.Mode == EditorController.EditorMode.Editor)
                                 EditorController.Mode = EditorController.EditorMode.Play;
                             else EditorController.Mode = EditorController.EditorMode.Editor;

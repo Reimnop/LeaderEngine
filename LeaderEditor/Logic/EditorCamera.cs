@@ -50,19 +50,19 @@ namespace LeaderEditor
 
         public void UpdateCamMove()
         {
-            if (InputManager.GetKey(Keys.LeftShift))
+            if (Input.GetKey(Keys.LeftShift))
                 speedMultiplier = 2.5f;
             else speedMultiplier = 1.0f;
 
-            float moveX = InputManager.GetAxis(Axis.Horizontal);
-            float moveZ = InputManager.GetAxis(Axis.Vertical);
+            float moveX = Input.GetAxis(Axis.Horizontal);
+            float moveZ = Input.GetAxis(Axis.Vertical);
 
             Vector3 move = main.gameObject.Transform.Forward * moveZ + gameObject.Transform.Right * moveX;
             gameObject.Transform.Position += move * Time.deltaTime * Speed * speedMultiplier;
 
-            if (InputManager.GetMouse(MouseButton.Right))
+            if (Input.GetMouse(MouseButton.Right))
             {
-                Vector2 delta = InputManager.GetMouseDelta() * Sensitivity;
+                Vector2 delta = Input.GetMouseDelta() * Sensitivity;
                 gameObject.Transform.RotationEuler.X += delta.Y;
                 gameObject.Transform.RotationEuler.Y += delta.X;
             }
