@@ -44,6 +44,10 @@ namespace LeaderEngine
 
             foreach (var vertArray in vertArrays)
             {
+                GL.Enable(EnableCap.CullFace);
+                GL.FrontFace(FrontFaceDirection.Cw);
+                GL.CullFace(CullFaceMode.Back);
+
                 Texture texture = vertArray.GetTexture();
 
                 vertArray.Use();

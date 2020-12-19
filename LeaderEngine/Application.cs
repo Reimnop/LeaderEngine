@@ -71,8 +71,6 @@ namespace LeaderEngine
 
             GL.ClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 
-            GL.Enable(EnableCap.CullFace);
-
             ViewportSize = Size;
 
             base.OnLoad();
