@@ -18,6 +18,7 @@ namespace LeaderEditor
             { typeof(MeshFilter), SerializeFunc.MeshFilter },
             { typeof(MeshRenderer), null },
             { typeof(Sprite), SerializeFunc.Sprite },
+            { typeof(DirectionalLight), null },
             { typeof(UIText), null }
         };
 
@@ -44,6 +45,7 @@ namespace LeaderEditor
 
                         ImGui.SameLine();
 
+                        ImGui.SetNextItemWidth(127.5f);
                         ImGui.InputText("Name", ref SceneHierachy.SelectedObject.Name, 255);
 
                         //get all components

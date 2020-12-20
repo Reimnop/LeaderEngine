@@ -6,6 +6,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace LeaderEngine
 {
@@ -66,8 +67,12 @@ namespace LeaderEngine
 
         protected override void OnLoad()
         {
+            Debug.WriteLine("Base Directory: " + AppContext.BaseDirectory);
+
             Shader.InitDefaults();
             Material.InitDefaults();
+
+            LightingController.Init();
 
             Input.InputUpdate(KeyboardState, MouseState);
 
@@ -119,13 +124,19 @@ namespace LeaderEngine
             GL.Disable(EnableCap.Blend);
             GL.Enable(EnableCap.DepthTest);
 
+            RenderingGlobals.CurrentPass = RenderPass.Lighting;
+            LightingController.RenderDepth(RenderScene);
+
             SceneRender?.Invoke();
+            RenderingGlobals.CurrentPass = RenderPass.World;
             RenderScene();
             PostSceneRender?.Invoke();
 
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+            RenderingGlobals.CurrentPass = RenderPass.Gui;
 
             GuiRender?.Invoke();
             RenderGui();

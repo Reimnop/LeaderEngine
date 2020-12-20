@@ -61,6 +61,11 @@ namespace LeaderEditor
                     {
                         DebugConsole.Log(CodeGenerator.GenerateCode());
                     }
+                    if (ImGui.MenuItem("Recompile shaders"))
+                    {
+                        DebugConsole.Log("Recompiling!");
+                        LeaderEngine.Shader.InitDefaults();
+                    }
                     //END OF DEBUG
 
                     if (ImGui.MenuItem("Exit", "Alt+F4"))

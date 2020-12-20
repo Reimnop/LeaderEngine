@@ -40,7 +40,7 @@ namespace LeaderEditor
         {
             framebuffer = new Framebuffer(1280, 720);
 
-            Application.main.RenderBegin += RenderBegin;
+            Application.main.SceneRender += SceneRender;
             Application.main.PostSceneRender += PostSceneRender;
             Application.main.PostGuiRender += PostGuiRender;
 
@@ -58,7 +58,7 @@ namespace LeaderEditor
             MainMenuBar.RegisterWindow("Viewport", this);
         }
 
-        private void RenderBegin()
+        private void SceneRender()
         {
             //resize viewport
             Application.main.ResizeViewport((int)ViewportSize.X, (int)ViewportSize.Y);
@@ -68,25 +68,28 @@ namespace LeaderEditor
 
             //render scene to a framebuffer
             framebuffer.Begin();
+
+            //clear buffers
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
         }
 
         private void PostSceneRender()
         {
-            if (EditorController.Mode == EditorController.EditorMode.Editor)
-            {
-                GL.Enable(EnableCap.Blend);
-                GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            if (EditorController.Mode != EditorController.EditorMode.Editor)
+                return;
 
-                gridShader.SetMatrix4("v", RenderingGlobals.View);
-                gridShader.SetMatrix4("p", RenderingGlobals.Projection);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-                gridShader.Use();
-                gridVertArray.Use();
+            gridShader.SetMatrix4("v", RenderingGlobals.View);
+            gridShader.SetMatrix4("p", RenderingGlobals.Projection);
 
-                GL.DrawElements(PrimitiveType.Triangles, gridVertArray.GetVerticesCount(), DrawElementsType.UnsignedInt, 0);
+            gridShader.Use();
+            gridVertArray.Use();
 
-                GL.Disable(EnableCap.Blend);
-            }
+            GL.DrawElements(PrimitiveType.Triangles, gridVertArray.GetVerticesCount(), DrawElementsType.UnsignedInt, 0);
+
+            GL.Disable(EnableCap.Blend);
         }
 
         private void PostGuiRender()

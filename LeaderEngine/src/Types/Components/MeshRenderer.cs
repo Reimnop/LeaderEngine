@@ -48,9 +48,9 @@ namespace LeaderEngine
                 GL.FrontFace(FrontFaceDirection.Cw);
                 GL.CullFace(CullFaceMode.Back);
 
-                Texture texture = vertArray.GetTexture();
-
                 vertArray.Use();
+
+                Texture texture = vertArray.GetTexture();
 
                 if (texture != null)
                 {
@@ -63,9 +63,10 @@ namespace LeaderEngine
                     GL.BindTexture(TextureTarget.Texture2D, 0);
                 }
 
-                renderMat.SetMatrix4("model", model);
-
                 renderMat.Use();
+
+                if (RenderingGlobals.CurrentPass != RenderPass.Lighting)
+                    LightingController.LightingShaderSetup(renderMat.Shader, model);
 
                 GL.DrawElements(PrimitiveType.Triangles, vertArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
             }

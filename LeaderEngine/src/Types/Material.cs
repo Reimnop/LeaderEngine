@@ -27,14 +27,14 @@ namespace LeaderEngine
         public static Material NoRender;
         #endregion
 
-        private Shader shader;
+        public Shader Shader { private set; get; }
 
         private Dictionary<string, MaterialProp> materialProps = new Dictionary<string, MaterialProp>();
         private Dictionary<TextureUnit, Texture> materialTextures = new Dictionary<TextureUnit, Texture>();
 
         public Material(Shader shader)
         {
-            this.shader = shader;
+            this.Shader = shader;
         }
 
         public static void InitDefaults()
@@ -97,10 +97,12 @@ namespace LeaderEngine
 
         public void Use()
         {
-            Shader usingShader = shader;
+            Shader usingShader = Shader;
 
             if (RenderingGlobals.ForcedShader != null)
                 usingShader = RenderingGlobals.ForcedShader;
+
+            usingShader.Use();
 
             foreach (var prop in materialProps)
                 switch (prop.Value.PropType)
@@ -124,8 +126,6 @@ namespace LeaderEngine
 
             foreach (var tex in materialTextures)
                 tex.Value.Use(tex.Key);
-
-            usingShader.Use();
         }
     }
 }
