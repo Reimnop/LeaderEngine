@@ -13,9 +13,16 @@ namespace LeaderEngine
 
         private static Framebuffer depthBuffer;
 
+        public const int ShadowWidth = 2048;
+        public const int ShadowHeight = 2048;
+
         public static void Init()
         {
-            depthBuffer = new Framebuffer(1024, 1024, true);
+            depthBuffer = new Framebuffer(ShadowWidth, ShadowHeight, true);
+
+            GL.BindTexture(TextureTarget.Texture2D, depthBuffer.GetDepthTexture());
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)TextureCompareMode.CompareRefToTexture);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
         public static void RenderDepth(Action renderFunc)
@@ -23,7 +30,7 @@ namespace LeaderEngine
             if (DirectionalLight == null)
                 return;
 
-            GL.Viewport(0, 0, 1024, 1024);
+            GL.Viewport(0, 0, ShadowWidth, ShadowHeight);
 
             Shader shader = RenderingGlobals.ForcedShader;
 
@@ -32,7 +39,7 @@ namespace LeaderEngine
             DirectionalLight.GenViewProject(out RenderingGlobals.View, out RenderingGlobals.Projection);
 
             depthBuffer.Begin();
-            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
 
             renderFunc();
             depthBuffer.End();
@@ -52,9 +59,12 @@ namespace LeaderEngine
 
             shader.SetMatrix4("model", model);
             shader.SetMatrix4("lightSpaceMatrix", view * proj);
+            shader.SetMatrix4("lightRotMat", Matrix4.CreateFromQuaternion(DirectionalLight.gameObject.Transform.Rotation));
 
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, depthBuffer.GetDepthTexture());
+
+            shader.SetInt("shadowMap", 1);
         }
     }
 }

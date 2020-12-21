@@ -70,7 +70,7 @@ namespace LeaderEditor
             framebuffer.Begin();
 
             //clear buffers
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         }
 
         private void PostSceneRender()
