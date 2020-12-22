@@ -13,8 +13,8 @@ namespace LeaderEngine
 
         private static Framebuffer depthBuffer;
 
-        public const int ShadowWidth = 2048;
-        public const int ShadowHeight = 2048;
+        public const int ShadowWidth = 16384;
+        public const int ShadowHeight = 16384;
 
         public static void Init()
         {

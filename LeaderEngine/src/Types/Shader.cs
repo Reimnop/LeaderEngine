@@ -14,6 +14,7 @@ namespace LeaderEngine
         public static Shader SpriteShader;
         public static Shader Lit;
         public static Shader DepthOnly;
+        public static Shader Skybox;
         public static Shader TextShader;
         #endregion
 
@@ -72,6 +73,7 @@ namespace LeaderEngine
             SpriteShader = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/sprite-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/sprite-fs.glsl");
             Lit = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/lit-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/lit-fs.glsl");
             DepthOnly = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/depth-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/depth-fs.glsl");
+            Skybox = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/skybox-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/skybox-fs.glsl");
             TextShader = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/text-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/text-fs.glsl");
         }
 

@@ -17,6 +17,7 @@ namespace LeaderEditor
             { typeof(Camera), null },
             { typeof(MeshFilter), SerializeFunc.MeshFilter },
             { typeof(MeshRenderer), null },
+            { typeof(Skybox), SerializeFunc.Skybox },
             { typeof(Sprite), SerializeFunc.Sprite },
             { typeof(DirectionalLight), null },
             { typeof(UIText), null }

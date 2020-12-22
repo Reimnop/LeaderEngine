@@ -8,9 +8,9 @@ using LeaderEditor.Gui;
 using System.IO;
 using OpenTK.Mathematics;
 using System.Reflection;
+using LeaderEditor.Data;
 
 using Vector2 = System.Numerics.Vector2;
-using LeaderEditor.Data;
 
 namespace LeaderEditor
 {
@@ -46,7 +46,6 @@ namespace LeaderEditor
             ImGui.PopID();
         } 
 
-        //TODO: finish meshfilter serialization functin
         public static void MeshFilter(Component obj)
         {
             MeshFilter meshFilter = (MeshFilter)obj;
@@ -62,7 +61,25 @@ namespace LeaderEditor
 
                     if (!string.IsNullOrEmpty(ofd.FileName))
                     {
-                        meshFilter.Mesh = AssetLoader.LoadModel(ofd.FileName);
+                        meshFilter.Mesh = ResourceLoader.LoadModel(ofd.FileName);
+                    }
+                }
+            }
+        }
+
+        public static void Skybox(Component obj)
+        {
+            Skybox skybox = (Skybox)obj;
+
+            if (ImGui.Button("Import Cubemap"))
+            {
+                using (FolderBrowserDialog fbd = new FolderBrowserDialog())
+                {
+                    fbd.ShowDialog();
+
+                    if (!string.IsNullOrEmpty(fbd.SelectedPath))
+                    {
+                        skybox.LoadSkybox(fbd.SelectedPath);
                     }
                 }
             }

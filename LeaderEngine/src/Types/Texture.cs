@@ -24,6 +24,7 @@ namespace LeaderEngine
             BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             FromIntPtr(bitmap.Width, bitmap.Height, data.Scan0);
             bitmap.UnlockBits(data);
+            bitmap.Dispose();
             return this;
         }
 
@@ -32,6 +33,7 @@ namespace LeaderEngine
             BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             FromIntPtr(bitmap.Width, bitmap.Height, data.Scan0);
             bitmap.UnlockBits(data);
+            bitmap.Dispose();
             return this;
         }
 
