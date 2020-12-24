@@ -21,7 +21,7 @@ void main()
 {
 	VertCol = aVertCol;
 
-	Normal = aNormal * mat3(model);
+	Normal = aNormal * mat3(transpose(inverse(model)));
 	TexCoord = aTexCoord;
 	FragPos = vec3(vec4(aPos, 1.0) * model);
 	FragPosLightSpace = vec4(FragPos, 1.0) * lightSpaceMatrix;

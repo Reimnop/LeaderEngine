@@ -61,7 +61,7 @@ namespace LeaderEditor
         private void SceneRender()
         {
             //resize viewport
-            Application.main.ResizeViewport((int)ViewportSize.X, (int)ViewportSize.Y);
+            GL.Viewport(0, 0, (int)ViewportSize.X, (int)ViewportSize.Y);
 
             //resize framebuffer to match viewport
             framebuffer.Resize((int)ViewportSize.X, (int)ViewportSize.Y);

@@ -101,6 +101,8 @@ namespace LeaderEngine
             if (cubemapId == 0)
                 return;
 
+            GL.Disable(EnableCap.CullFace);
+
             GL.DepthMask(false);
 
             shader.Use();
@@ -109,6 +111,8 @@ namespace LeaderEngine
             shader.SetMatrix4("projection", RenderingGlobals.Projection);
 
             GL.BindVertexArray(VAO);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.TextureCubeMap, cubemapId);
 
             GL.DrawArrays(PrimitiveType.Triangles, 0, 36);

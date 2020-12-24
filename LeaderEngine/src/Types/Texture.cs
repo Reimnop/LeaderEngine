@@ -69,6 +69,20 @@ namespace LeaderEngine
             return this;
         }
 
+        public void SetMinFilter(TextureMinFilter textureMinFilter)
+        {
+            GL.BindTexture(TextureTarget.Texture2D, handle);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)textureMinFilter);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+        }
+
+        public void SetMagFilter(TextureMagFilter textureMagFilter)
+        {
+            GL.BindTexture(TextureTarget.Texture2D, handle);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)textureMagFilter);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+        }
+
         public void Use(TextureUnit textureUnit)
         {
             GL.ActiveTexture(textureUnit);

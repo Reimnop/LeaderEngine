@@ -49,6 +49,35 @@ namespace LeaderEngine
             ThreadManager.ExecuteOnMainThread(() => Dispose());
         }
 
+        #region SetFuncs
+        public void SetDepthMinFilter(TextureMinFilter textureMinFilter)
+        {
+            GL.BindTexture(TextureTarget.Texture2D, depthTexture);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)textureMinFilter);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+        }
+
+        public void SetDepthMagFilter(TextureMagFilter textureMagFilter)
+        {
+            GL.BindTexture(TextureTarget.Texture2D, depthTexture);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)textureMagFilter);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+        }
+
+        public void SetColorMinFilter(TextureMinFilter textureMinFilter)
+        {
+            GL.BindTexture(TextureTarget.Texture2D, colorTexture);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)textureMinFilter);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+        }
+
+        public void SetColorMagFilter(TextureMagFilter textureMagFilter)
+        {
+            GL.BindTexture(TextureTarget.Texture2D, colorTexture);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)textureMagFilter);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+        }
+
         public void Resize(int width, int height)
         {
             if (!depthOnly)
@@ -62,6 +91,7 @@ namespace LeaderEngine
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, width, height, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
+        #endregion
 
         public int GetHandle()
         {

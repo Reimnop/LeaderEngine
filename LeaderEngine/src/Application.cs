@@ -130,6 +130,7 @@ namespace LeaderEngine
             SceneRender?.Invoke();
             RenderingGlobals.CurrentPass = RenderPass.World;
             Skybox.Main?.Render();
+
             RenderScene();
             PostSceneRender?.Invoke();
 

@@ -19,6 +19,8 @@ namespace LeaderEngine
         public static void Init()
         {
             depthBuffer = new Framebuffer(ShadowWidth, ShadowHeight, true);
+            depthBuffer.SetDepthMinFilter(TextureMinFilter.Linear);
+            depthBuffer.SetDepthMagFilter(TextureMagFilter.Linear);
 
             GL.BindTexture(TextureTarget.Texture2D, depthBuffer.GetDepthTexture());
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)TextureCompareMode.CompareRefToTexture);
@@ -55,16 +57,20 @@ namespace LeaderEngine
             Matrix4 view;
             Matrix4 proj;
 
+            var dir = DirectionalLight.gameObject.Transform.Forward;
+            dir.Z = -dir.Z;
+
             DirectionalLight.GenViewProject(out view, out proj);
 
             shader.SetMatrix4("model", model);
             shader.SetMatrix4("lightSpaceMatrix", view * proj);
-            shader.SetMatrix4("lightRotMat", Matrix4.CreateFromQuaternion(DirectionalLight.gameObject.Transform.Rotation));
+
+            shader.SetVector3("lightDir", dir);
+
+            shader.SetInt("shadowMap", 1);
 
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, depthBuffer.GetDepthTexture());
-
-            shader.SetInt("shadowMap", 1);
         }
     }
 }
