@@ -11,7 +11,7 @@ namespace LeaderEngine
 
         public void GenViewProject(out Matrix4 view, out Matrix4 proj)
         {
-            proj = Matrix4.CreateOrthographic(100.0f, 100.0f, 0.1f, 75.0f);
+            proj = Matrix4.CreateOrthographic(64.0f, 64.0f, 0.1f, 128.0f);
 
             view = Matrix4.CreateTranslation(-gameObject.Transform.Position) *
                 Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(-new Vector3(

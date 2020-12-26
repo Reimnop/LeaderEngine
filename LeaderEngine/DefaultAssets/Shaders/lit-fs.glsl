@@ -38,7 +38,7 @@ void main()
 
 	vec3 norm = normalize(Normal);
 
-	float shadow = ShadowCalculation(FragPosLightSpace);  
+	float shadow = ShadowCalculation(FragPosLightSpace);
 
 	vec3 result = (ambient + shadow * max(dot(norm, lightDir), 0.0) * lightColor * intensity) * vec3(objectColor);
 

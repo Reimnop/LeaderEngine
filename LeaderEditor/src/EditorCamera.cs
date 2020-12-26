@@ -66,6 +66,8 @@ namespace LeaderEditor
                 gameObject.Transform.RotationEuler.X += delta.Y;
                 gameObject.Transform.RotationEuler.Y += delta.X;
             }
+
+            LightingController.CameraPos = gameObject.Transform.Position;
         }
 
         private void SceneRender()

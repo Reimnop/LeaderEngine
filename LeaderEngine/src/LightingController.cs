@@ -16,6 +16,8 @@ namespace LeaderEngine
         public const int ShadowWidth = 16384;
         public const int ShadowHeight = 16384;
 
+        public static Vector3 CameraPos;
+
         public static void Init()
         {
             depthBuffer = new Framebuffer(ShadowWidth, ShadowHeight, true);
@@ -52,7 +54,11 @@ namespace LeaderEngine
         public static void LightingShaderSetup(Shader shader, Matrix4 model)
         {
             if (DirectionalLight == null)
+            {
+                GL.ActiveTexture(TextureUnit.Texture1);
+                GL.BindTexture(TextureTarget.Texture2D, 0);
                 return;
+            }
 
             Matrix4 view;
             Matrix4 proj;
