@@ -19,12 +19,12 @@ in vec3 FragPos;
 vec3 ambient = vec3(0.75, 0.75, 0.75);
 vec3 lightColor = vec3(1.0, 1.0, 0.98);
 
-float intensity = 1.0;
+float intensity = 1.25;
 
 float ShadowCalculation(vec4 fragPosLightSpace)
 {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w * 0.5 + 0.5;
-    return shadow2D(shadowMap, vec3(projCoords.xy, projCoords.z - 0.0005), 0.0).r; 
+    return shadow2D(shadowMap, vec3(projCoords.xy, projCoords.z - 0.001), 0.0).r; 
 }  
 
 void main() 

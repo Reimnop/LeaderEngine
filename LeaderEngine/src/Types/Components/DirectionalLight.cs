@@ -13,12 +13,11 @@ namespace LeaderEngine
         {
             proj = Matrix4.CreateOrthographic(256.0f, 256.0f, -128.0f, 128.0f);
 
-            view = Matrix4.CreateTranslation(-transform.Position) *
-                Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(-new Vector3(
-                    MathHelper.DegreesToRadians(transform.RotationEuler.X),
-                    MathHelper.DegreesToRadians(transform.RotationEuler.Y),
-                    MathHelper.DegreesToRadians(transform.RotationEuler.Z))
-                    ));
+            view = Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(-new Vector3(
+                MathHelper.DegreesToRadians(transform.RotationEuler.X),
+                MathHelper.DegreesToRadians(transform.RotationEuler.Y),
+                MathHelper.DegreesToRadians(transform.RotationEuler.Z))
+                ));
         }
 
         public override void OnRemove()

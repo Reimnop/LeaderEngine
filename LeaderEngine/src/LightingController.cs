@@ -13,8 +13,8 @@ namespace LeaderEngine
         private static Matrix4 lightView;
         private static Matrix4 lightProjection;
 
-        public const int ShadowWidth = 16384;
-        public const int ShadowHeight = 16384;
+        public const int ShadowWidth = 2048;
+        public const int ShadowHeight = 2048;
 
         public static Vector3 CameraPos;
 
