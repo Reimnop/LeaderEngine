@@ -1,9 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 
 namespace LeaderEngine
 {
@@ -12,6 +9,9 @@ namespace LeaderEngine
         public static DirectionalLight DirectionalLight;
 
         private static Framebuffer depthBuffer;
+
+        private static Matrix4 lightView;
+        private static Matrix4 lightProjection;
 
         public const int ShadowWidth = 16384;
         public const int ShadowHeight = 16384;
@@ -36,11 +36,16 @@ namespace LeaderEngine
 
             GL.Viewport(0, 0, ShadowWidth, ShadowHeight);
 
+            RenderingGlobals.GlobalPosition = -CameraPos;
+
             Shader shader = RenderingGlobals.ForcedShader;
 
             RenderingGlobals.ForcedShader = Shader.DepthOnly;
 
-            DirectionalLight.GenViewProject(out RenderingGlobals.View, out RenderingGlobals.Projection);
+            DirectionalLight.GenViewProject(out lightView, out lightProjection);
+
+            RenderingGlobals.View = lightView;
+            RenderingGlobals.Projection = lightProjection;
 
             depthBuffer.Begin();
             GL.Clear(ClearBufferMask.DepthBufferBit);
@@ -48,10 +53,11 @@ namespace LeaderEngine
             renderFunc();
             depthBuffer.End();
 
+            RenderingGlobals.GlobalPosition = Vector3.Zero;
             RenderingGlobals.ForcedShader = shader;
         }
 
-        public static void LightingShaderSetup(Shader shader, Matrix4 model)
+        public static void LightingShaderSetup(Shader shader, Vector3 position, Quaternion rotation, Vector3 scale)
         {
             if (DirectionalLight == null)
             {
@@ -60,16 +66,15 @@ namespace LeaderEngine
                 return;
             }
 
-            Matrix4 view;
-            Matrix4 proj;
+            Matrix4 model = Matrix4.CreateScale(scale)
+                 * Matrix4.CreateFromQuaternion(rotation)
+                 * Matrix4.CreateTranslation(position - CameraPos);
 
-            var dir = DirectionalLight.gameObject.Transform.Forward;
+            var dir = DirectionalLight.transform.Forward;
             dir.Z = -dir.Z;
 
-            DirectionalLight.GenViewProject(out view, out proj);
-
             shader.SetMatrix4("model", model);
-            shader.SetMatrix4("lightSpaceMatrix", view * proj);
+            shader.SetMatrix4("lightSpaceMatrix", lightView * lightProjection);
 
             shader.SetVector3("lightDir", dir);
 

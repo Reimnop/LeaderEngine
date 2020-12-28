@@ -1,11 +1,8 @@
-﻿using ImGuiNET;
-using LeaderEngine;
+﻿using LeaderEngine;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
-using System.Diagnostics;
 
 namespace LeaderEditor
 {
@@ -16,7 +13,7 @@ namespace LeaderEditor
         {
             Application app = new Application(new GameWindowSettings(), new NativeWindowSettings()
             {
-                APIVersion = new Version(4, 5),
+                APIVersion = new Version(4, 0),
                 WindowBorder = WindowBorder.Resizable,
                 API = ContextAPI.OpenGL,
                 Flags = ContextFlags.ForwardCompatible,

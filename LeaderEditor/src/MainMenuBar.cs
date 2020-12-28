@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Microsoft.CodeAnalysis.Emit;
-using System.Windows.Forms;
-using ImGuiNET;
+﻿using ImGuiNET;
+using LeaderEditor.Compilation;
 using LeaderEditor.Data;
 using LeaderEditor.Gui;
-using LeaderEditor.Compilation;
 using LeaderEngine;
-
+using System.Collections.Generic;
+using System.IO;
+using System.Windows.Forms;
 using Application = LeaderEngine.Application;
 
 namespace LeaderEditor

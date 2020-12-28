@@ -1,12 +1,10 @@
 ﻿using ImGuiNET;
+using LeaderEditor.Data;
 using LeaderEditor.Gui;
 using LeaderEngine;
-using System;
-using System.Collections.Generic;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-using System.Text;
-using LeaderEditor.Data;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using System.Collections.Generic;
 
 namespace LeaderEditor
 {
@@ -90,7 +88,7 @@ namespace LeaderEditor
                         ImGui.SameLine();
                         if (ImGui.Button($"Go to {SelectedObject.Name}"))
                         {
-                            EditorCamera.main.LookAt(SelectedObject.Transform.Position);
+                            EditorCamera.main.LookAt(SelectedObject.transform.Position);
                         }
                     }
 

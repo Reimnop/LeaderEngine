@@ -1,13 +1,6 @@
-﻿using LeaderEditor.Gui;
-using OpenTK.Graphics.OpenGL4;
+﻿using ImGuiNET;
+using LeaderEditor.Gui;
 using LeaderEngine;
-using ImGuiNET;
-using System;
-using System.Numerics;
-using System.Collections.Generic;
-using OpenTK.Windowing.Common;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-using System.Text;
 
 namespace LeaderEditor
 {
@@ -45,7 +38,7 @@ namespace LeaderEditor
             //camera
             editorCamera = new GameObject("EditorCamera");
             editorCamera.AddComponent<EditorCamera>();
-            editorCamera.Transform.Position = new OpenTK.Mathematics.Vector3(0.0f, 1.0f, 2.0f);
+            editorCamera.transform.Position = new OpenTK.Mathematics.Vector3(0.0f, 1.0f, 2.0f);
 
             //add all components
             gameObject.AddComponents(

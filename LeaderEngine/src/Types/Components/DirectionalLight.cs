@@ -11,13 +11,13 @@ namespace LeaderEngine
 
         public void GenViewProject(out Matrix4 view, out Matrix4 proj)
         {
-            proj = Matrix4.CreateOrthographic(64.0f, 64.0f, 0.1f, 128.0f);
+            proj = Matrix4.CreateOrthographic(256.0f, 256.0f, -128.0f, 128.0f);
 
-            view = Matrix4.CreateTranslation(-gameObject.Transform.Position) *
+            view = Matrix4.CreateTranslation(-transform.Position) *
                 Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(-new Vector3(
-                    MathHelper.DegreesToRadians(gameObject.Transform.RotationEuler.X),
-                    MathHelper.DegreesToRadians(gameObject.Transform.RotationEuler.Y),
-                    MathHelper.DegreesToRadians(gameObject.Transform.RotationEuler.Z))
+                    MathHelper.DegreesToRadians(transform.RotationEuler.X),
+                    MathHelper.DegreesToRadians(transform.RotationEuler.Y),
+                    MathHelper.DegreesToRadians(transform.RotationEuler.Z))
                     ));
         }
 

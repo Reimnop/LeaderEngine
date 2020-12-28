@@ -1,11 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using OpenTK.Mathematics;
 using System.IO;
-using System.Text;
 
 using PixelFormat = OpenTK.Graphics.OpenGL4.PixelFormat;
 

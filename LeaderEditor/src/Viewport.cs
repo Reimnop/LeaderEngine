@@ -2,13 +2,9 @@
 using LeaderEditor.Gui;
 using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Numerics;
-using OpenTK.Windowing.Common;
-using System.Collections.Generic;
-using System.Text;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-
 using Shader = LeaderEngine.Shader;
 
 namespace LeaderEditor

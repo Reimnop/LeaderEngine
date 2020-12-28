@@ -1,10 +1,9 @@
-﻿using ImGuiNET;
-
-namespace LeaderEngine
+﻿namespace LeaderEngine
 {
     public class Component
     {
         public GameObject gameObject = null;
+        public Transform transform { get { return gameObject.transform; } }
 
         public bool Enabled = true;
 

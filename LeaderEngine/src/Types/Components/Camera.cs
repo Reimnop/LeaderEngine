@@ -1,6 +1,4 @@
 ﻿using OpenTK.Mathematics;
-using OpenTK.Windowing.Common;
-using System;
 
 namespace LeaderEngine
 {
@@ -28,11 +26,11 @@ namespace LeaderEngine
 
             ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.main.ViewportSize.X / (float)Application.main.ViewportSize.Y, 0.02f, 1000.0f);
 
-            ViewMatrix = Matrix4.CreateTranslation(-gameObject.Transform.Position) *
+            ViewMatrix = Matrix4.CreateTranslation(-transform.Position) *
                 Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(new Vector3(
-                    MathHelper.DegreesToRadians(gameObject.Transform.RotationEuler.X),
-                    MathHelper.DegreesToRadians(gameObject.Transform.RotationEuler.Y),
-                    MathHelper.DegreesToRadians(gameObject.Transform.RotationEuler.Z))
+                    MathHelper.DegreesToRadians(transform.RotationEuler.X),
+                    MathHelper.DegreesToRadians(transform.RotationEuler.Y),
+                    MathHelper.DegreesToRadians(transform.RotationEuler.Z))
                     ));
 
             RenderingGlobals.Projection = ProjectionMatrix;

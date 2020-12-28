@@ -1,10 +1,8 @@
-﻿using LeaderEngine;
-using ImGuiNET;
+﻿using ImGuiNET;
 using LeaderEditor.Gui;
+using LeaderEngine;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.IO;
 
 namespace LeaderEditor
 {

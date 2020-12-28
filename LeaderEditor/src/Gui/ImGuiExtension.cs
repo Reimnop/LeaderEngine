@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using ImGuiNET;
 using OpenTK.Mathematics;
-using ImGuiNET;
 
 namespace LeaderEditor.Gui
 {

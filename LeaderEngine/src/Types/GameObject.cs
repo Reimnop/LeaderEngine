@@ -15,7 +15,7 @@ namespace LeaderEngine
         public string Name;
         public RenderHint RenderHint;
         public bool ActiveSelf { private set; get; }
-        public Transform Transform { private set; get; }
+        public Transform transform { private set; get; }
 
         private List<Component> components = new List<Component>();
 
@@ -55,7 +55,7 @@ namespace LeaderEngine
 
         private void Init()
         {
-            Transform = AddComponent<Transform>();
+            transform = AddComponent<Transform>();
             SetActive(true);
         }
 
@@ -64,10 +64,17 @@ namespace LeaderEngine
             if (!ActiveSelf)
                 return;
 
-            components.ForEach(co => {
+            Component[] comps = components.ToArray();
+
+            for (int i = 0; i < comps.Length; i++) {
+                Component co = comps[i];
+
+                if (co == null)
+                    continue;
+
                 if (co.Enabled)
                     co.Update();
-            });
+            }
         }
 
         public void LateUpdate()
@@ -75,10 +82,18 @@ namespace LeaderEngine
             if (!ActiveSelf)
                 return;
 
-            components.ForEach(co => {
+            Component[] comps = components.ToArray();
+
+            for (int i = 0; i < comps.Length; i++)
+            {
+                Component co = comps[i];
+
+                if (co == null)
+                    continue;
+
                 if (co.Enabled)
                     co.LateUpdate();
-            });
+            }
         }
 
         public void Render()
@@ -86,10 +101,18 @@ namespace LeaderEngine
             if (!ActiveSelf)
                 return;
 
-            components.ForEach(co => {
+            Component[] comps = components.ToArray();
+
+            for (int i = 0; i < comps.Length; i++)
+            {
+                Component co = comps[i];
+
+                if (co == null)
+                    continue;
+
                 if (co.Enabled)
                     co.OnRender();
-            });
+            }
         }
 
         public void RenderGui()
@@ -97,10 +120,18 @@ namespace LeaderEngine
             if (!ActiveSelf)
                 return;
 
-            components.ForEach(co => {
+            Component[] comps = components.ToArray();
+
+            for (int i = 0; i < comps.Length; i++)
+            {
+                Component co = comps[i];
+
+                if (co == null)
+                    continue;
+
                 if (co.Enabled)
                     co.OnRenderGui();
-            });
+            }
         }
 
         public void SetActive(bool active)
@@ -110,7 +141,7 @@ namespace LeaderEngine
 
         public T AddComponent<T>(params object[] args) where T : Component
         {
-            if (typeof(T) == typeof(Transform) && Transform != null)
+            if (typeof(T) == typeof(Transform) && transform != null)
                 return null;
 
             var comp = (T)Activator.CreateInstance(typeof(T), args);
@@ -123,15 +154,12 @@ namespace LeaderEngine
 
         public Component AddComponent(Component component)
         {
-            if (component.GetType() == typeof(Transform) && Transform != null)
+            if (component.GetType() == typeof(Transform) && transform != null)
                 return null;
 
-            Application.main.ExecuteNextUpdate(() =>
-            {
-                components.Add(component);
-                component.gameObject = this;
-                component.Start();
-            });
+            components.Add(component);
+            component.gameObject = this;
+            component.Start();
 
             return component;
         }
@@ -142,16 +170,13 @@ namespace LeaderEngine
                 if (co.GetType() == typeof(Transform))
                     return;
 
-            Application.main.ExecuteNextUpdate(() =>
-            {
-                this.components.AddRange(components);
+            this.components.AddRange(components);
 
-                foreach (var co in components)
-                {
-                    co.gameObject = this;
-                    co.Start();
-                }
-            });
+            foreach (var co in components)
+            {
+                co.gameObject = this;
+                co.Start();
+            }
         }
 
         public T GetComponent<T>() where T : Component
@@ -169,7 +194,7 @@ namespace LeaderEngine
             if (typeof(T) == typeof(Transform))
                 return;
 
-            Application.main.ExecuteNextUpdate(() => components.Remove(components.Find(x => x.GetType() == typeof(T))));
+            components.Remove(components.Find(x => x.GetType() == typeof(T)));
         }
 
         public void RemoveComponent(Component component)
@@ -177,10 +202,8 @@ namespace LeaderEngine
             if (component.GetType() == typeof(Transform))
                 return;
 
-            Application.main.ExecuteNextUpdate(() => {
-                component.OnRemove();
-                components.Remove(component);
-            });
+            component.OnRemove();
+            components.Remove(component);
         }
 
         public void OnClosing()

@@ -1,5 +1,4 @@
 ﻿using OpenTK.Mathematics;
-using ImGuiNET;
 
 namespace LeaderEngine
 {

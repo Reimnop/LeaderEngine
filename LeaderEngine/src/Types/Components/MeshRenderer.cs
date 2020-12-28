@@ -1,6 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using System.Collections.Generic;
 
 namespace LeaderEngine
 {
@@ -30,9 +29,9 @@ namespace LeaderEngine
             if (meshFilter.Mesh == null)
                 return;
 
-            Matrix4 model = Matrix4.CreateScale(gameObject.Transform.Scale)
-                 * Matrix4.CreateFromQuaternion(gameObject.Transform.Rotation)
-                 * Matrix4.CreateTranslation(gameObject.Transform.Position);
+            Matrix4 model = Matrix4.CreateScale(transform.Scale)
+                 * Matrix4.CreateFromQuaternion(transform.Rotation)
+                 * Matrix4.CreateTranslation(transform.Position + RenderingGlobals.GlobalPosition);
 
             Material renderMat = material;
             if (material == null)
@@ -66,7 +65,7 @@ namespace LeaderEngine
                 renderMat.Use();
 
                 if (RenderingGlobals.CurrentPass != RenderPass.Lighting)
-                    LightingController.LightingShaderSetup(renderMat.Shader, model);
+                    LightingController.LightingShaderSetup(renderMat.Shader, transform.Position + RenderingGlobals.GlobalPosition, transform.Rotation, transform.Scale);
 
                 GL.DrawElements(PrimitiveType.Triangles, vertArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
             }

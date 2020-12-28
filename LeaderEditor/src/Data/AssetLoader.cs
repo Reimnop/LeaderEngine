@@ -1,14 +1,9 @@
-﻿using System;
+﻿using LeaderEditor.Compilation;
+using LeaderEngine;
+using Microsoft.CodeAnalysis.Emit;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using LeaderEditor.Compilation;
-using Microsoft.CodeAnalysis.Emit;
-using System.Text;
-using LeaderEngine;
-using Assimp;
-using System.Linq;
-
-using Mesh = LeaderEngine.Mesh;
 
 namespace LeaderEditor.Data
 {

@@ -1,15 +1,12 @@
 ﻿using ImGuiNET;
+using LeaderEditor.Data;
+using LeaderEditor.Gui;
 using LeaderEngine;
+using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
-using System.Text;
-using LeaderEditor.Gui;
-using System.IO;
-using OpenTK.Mathematics;
 using System.Reflection;
-using LeaderEditor.Data;
-
+using System.Windows.Forms;
 using Vector2 = System.Numerics.Vector2;
 
 namespace LeaderEditor

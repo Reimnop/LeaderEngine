@@ -2,9 +2,6 @@
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace LeaderEditor
 {
@@ -14,7 +11,7 @@ namespace LeaderEditor
 
         public float FOV = 1.04719755f; //60 degrees
 
-        public float Speed = 2.5f;
+        public float Speed = 4.0f;
         public float Sensitivity = 0.4f;
 
         private float speedMultiplier = 1.0f;
@@ -44,8 +41,8 @@ namespace LeaderEditor
         public void LookAt(Vector3 position)
         {
             Vector3 newPos = position + new Vector3(2.0f, 2.0f, 2.0f);
-            gameObject.Transform.Position = newPos;
-            gameObject.Transform.RotationEuler = new Vector3(30.0f, -45.0f, 0.0f);
+            transform.Position = newPos;
+            transform.RotationEuler = new Vector3(30.0f, -45.0f, 0.0f);
         }
 
         public void UpdateCamMove()
@@ -57,17 +54,17 @@ namespace LeaderEditor
             float moveX = Input.GetAxis(Axis.Horizontal);
             float moveZ = Input.GetAxis(Axis.Vertical);
 
-            Vector3 move = main.gameObject.Transform.Forward * moveZ + gameObject.Transform.Right * moveX;
-            gameObject.Transform.Position += move * Time.deltaTime * Speed * speedMultiplier;
+            Vector3 move = transform.Forward * moveZ + transform.Right * moveX;
+            transform.Position += move * Time.deltaTime * Speed * speedMultiplier;
 
             if (Input.GetMouse(MouseButton.Right))
             {
                 Vector2 delta = Input.GetMouseDelta() * Sensitivity;
-                gameObject.Transform.RotationEuler.X += delta.Y;
-                gameObject.Transform.RotationEuler.Y += delta.X;
+                transform.RotationEuler.X += delta.Y;
+                transform.RotationEuler.Y += delta.X;
             }
 
-            LightingController.CameraPos = gameObject.Transform.Position;
+            LightingController.CameraPos = transform.Position;
         }
 
         private void SceneRender()
@@ -77,11 +74,11 @@ namespace LeaderEditor
 
             ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.main.ViewportSize.X / (float)Application.main.ViewportSize.Y, 0.02f, 1000.0f);
 
-            ViewMatrix = Matrix4.CreateTranslation(-gameObject.Transform.Position) *
+            ViewMatrix = Matrix4.CreateTranslation(-transform.Position) *
                 Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(new Vector3(
-                    MathHelper.DegreesToRadians(gameObject.Transform.RotationEuler.X),
-                    MathHelper.DegreesToRadians(gameObject.Transform.RotationEuler.Y),
-                    MathHelper.DegreesToRadians(gameObject.Transform.RotationEuler.Z))
+                    MathHelper.DegreesToRadians(transform.RotationEuler.X),
+                    MathHelper.DegreesToRadians(transform.RotationEuler.Y),
+                    MathHelper.DegreesToRadians(transform.RotationEuler.Z))
                     ));
 
             RenderingGlobals.Projection = ProjectionMatrix;

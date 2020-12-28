@@ -1,7 +1,4 @@
 ﻿using OpenTK.Mathematics;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace LeaderEngine
 {
@@ -17,6 +14,8 @@ namespace LeaderEngine
     {
         public static Matrix4 View = Matrix4.Identity;
         public static Matrix4 Projection = Matrix4.Identity;
+
+        public static Vector3 GlobalPosition = Vector3.Zero;
 
         public static Shader ForcedShader = null;
 

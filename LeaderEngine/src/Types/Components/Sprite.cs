@@ -1,8 +1,5 @@
-﻿using OpenTK.Mathematics;
-using OpenTK.Graphics.OpenGL4;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace LeaderEngine
 {
@@ -43,9 +40,9 @@ namespace LeaderEngine
             if (Texture == null)
                 return;
 
-            Matrix4 model = Matrix4.CreateScale(gameObject.Transform.Scale)
-                 * Matrix4.CreateFromQuaternion(gameObject.Transform.Rotation)
-                 * Matrix4.CreateTranslation(gameObject.Transform.Position);
+            Matrix4 model = Matrix4.CreateScale(transform.Scale)
+                 * Matrix4.CreateFromQuaternion(transform.Rotation)
+                 * Matrix4.CreateTranslation(transform.Position + RenderingGlobals.GlobalPosition);
 
             shader.SetMatrix4("mvp", model * RenderingGlobals.View * RenderingGlobals.Projection);
             shader.SetVector4("color", new Vector4(Color.R, Color.G, Color.B, Color.A));

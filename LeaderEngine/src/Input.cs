@@ -1,7 +1,5 @@
-﻿using OpenTK.Windowing.GraphicsLibraryFramework;
-using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.Common;
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace LeaderEngine
 {
