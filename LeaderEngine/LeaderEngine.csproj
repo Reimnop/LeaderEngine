@@ -45,6 +45,12 @@
     <None Update="DefaultAssets\Shaders\norender-vs.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="DefaultAssets\Shaders\pp-fs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\pp-vs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="DefaultAssets\Shaders\text-fs.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -27,6 +27,8 @@ namespace LeaderEngine
         public List<GameObject> GuiGameObjects = new List<GameObject>();
         public bool EditorMode = false;
 
+        public PostProcessor PostProcessor;
+
         public Vector2i ViewportSize;
 
         private Queue<Action> NextUpdateQueue = new Queue<Action>();
@@ -35,6 +37,7 @@ namespace LeaderEngine
         public event Action RenderBegin;
         public event Action SceneRender;
         public event Action PostSceneRender;
+        public event Action PostProcess;
         public event Action GuiRender;
         public event Action PostGuiRender;
         public event Action FinishRender;
@@ -74,9 +77,11 @@ namespace LeaderEngine
 
             LightingController.Init();
 
+            PostProcessor = new PostProcessor(Size);
+
             Input.InputUpdate(KeyboardState, MouseState);
 
-            GL.ClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+            GL.ClearColor(0.005f, 0.005f, 0.005f, 1.0f);
 
             ViewportSize = Size;
 
@@ -129,10 +134,18 @@ namespace LeaderEngine
 
             SceneRender?.Invoke();
             RenderingGlobals.CurrentPass = RenderPass.World;
-            Skybox.Main?.Render();
 
+            PostProcessor.Begin();
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            Skybox.Main?.Render();
             RenderScene();
+
             PostSceneRender?.Invoke();
+            PostProcessor.End();
+
+            PostProcess?.Invoke();
+            PostProcessor.Render();
 
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
