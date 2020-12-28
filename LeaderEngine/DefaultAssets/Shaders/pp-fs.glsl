@@ -6,7 +6,7 @@ uniform sampler2D texture0;
 
 in vec2 TexCoord;
 
-float gamma = 2.2;
+float gamma = 1.0;
 
 void main() 
 {
