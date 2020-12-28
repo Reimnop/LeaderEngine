@@ -24,6 +24,10 @@ float intensity = 1.25;
 float ShadowCalculation(vec4 fragPosLightSpace)
 {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w * 0.5 + 0.5;
+
+	if(projCoords.z > 1.0)
+        return 1.0;
+
     return shadow2D(shadowMap, vec3(projCoords.xy, projCoords.z - 0.001), 0.0).r; 
 }  
 
