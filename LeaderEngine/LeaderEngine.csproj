@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
@@ -14,24 +14,59 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AssimpNet" Version="4.1.0" />
     <PackageReference Include="ImGui.NET" Version="1.78.0" />
     <PackageReference Include="OpenTK" Version="4.3.0" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="DefaultAssets\Shaders\lit-fs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\lit-vs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\depth-fs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\skybox-fs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="DefaultAssets\Shaders\norender-fs.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\depth-vs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\skybox-vs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="DefaultAssets\Shaders\norender-vs.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\pp-fs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\pp-vs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\text-fs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="DefaultAssets\Shaders\sprite-fs.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\text-vs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="DefaultAssets\Shaders\sprite-vs.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DefaultAssets\Meshes\" />
   </ItemGroup>
 
 </Project>
