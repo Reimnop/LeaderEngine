@@ -76,6 +76,7 @@ namespace LeaderEngine
             Material.InitDefaults();
 
             LightingController.Init();
+            PhysicsController.Init();
 
             PostProcessor = new PostProcessor(Size);
 
@@ -114,6 +115,12 @@ namespace LeaderEngine
                 WorldGameObjects_Transparent.ForEach(go => go.LateUpdate());
                 GuiGameObjects.ForEach(go => go.LateUpdate());
             }
+
+            WorldGameObjects.ForEach(go => go.UpdateTransform());
+            WorldGameObjects_Transparent.ForEach(go => go.UpdateTransform());
+            GuiGameObjects.ForEach(go => go.UpdateTransform());
+
+            PhysicsController.Update();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

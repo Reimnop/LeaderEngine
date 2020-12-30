@@ -96,6 +96,11 @@ namespace LeaderEngine
             }
         }
 
+        internal void UpdateTransform()
+        {
+            transform.UpdateRotation();
+        }
+
         public void Render()
         {
             if (!ActiveSelf)

@@ -47,7 +47,8 @@ namespace LeaderEditor
                     new Viewport(),
                     new SceneHierachy(),
                     new Inspector(),
-                    new DebugConsole()
+                    new DebugConsole(),
+                    new DebugWindow()
                 });
         }
 

@@ -16,10 +16,10 @@ in vec4 FragPosLightSpace;
 
 in vec3 FragPos;
 
-vec3 ambient = vec3(0.85, 0.85, 0.85);
-vec3 lightColor = vec3(1.0, 1.0, 0.98);
+vec3 ambient = vec3(0.9, 0.9, 0.9);
+vec3 lightColor = vec3(1.0, 1.0, 0.95);
 
-float intensity = 1.45;
+float intensity = 1.4;
 
 float ShadowCalculation(vec4 fragPosLightSpace)
 {
