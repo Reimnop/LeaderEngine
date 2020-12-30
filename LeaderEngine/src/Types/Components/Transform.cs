@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using System;
 
 namespace LeaderEngine
 {
@@ -9,14 +10,28 @@ namespace LeaderEngine
         public Vector3 RotationEuler = Vector3.Zero;
         public Vector3 Scale = Vector3.One;
 
+        public event Action<Vector3> OnPositionChange;
+        public event Action<Quaternion, Vector3> OnRotationChange;
+        public event Action<Vector3> OnScaleChange;
+
         public Vector3 Forward => (Matrix4.CreateFromQuaternion(Rotation) * -Vector4.UnitZ).Xyz;
         public Vector3 Right => (Matrix4.CreateFromQuaternion(Rotation) * Vector4.UnitX).Xyz;
         public Vector3 Up => (Matrix4.CreateFromQuaternion(Rotation) * Vector4.UnitY).Xyz;
 
-        Vector3 lastEuler = Vector3.Zero;
-        Quaternion lastQuat = Quaternion.Identity;
+        private Vector3 lastEuler = Vector3.Zero;
+        private Quaternion lastQuat = Quaternion.Identity;
 
-        public void UpdateRotation()
+        private Vector3 lastPosition = Vector3.Zero;
+        private Vector3 lastScale = Vector3.One;
+
+        public void UpdateTransform()
+        {
+            UpdatePosition();
+            UpdateRotation();
+            UpdateScale();
+        }
+
+        private void UpdateRotation()
         {
             if (RotationEuler != lastEuler)
             {
@@ -28,6 +43,8 @@ namespace LeaderEngine
 
                 Rotation = quat;
                 lastQuat = quat;
+
+                OnRotationChange?.Invoke(Rotation, RotationEuler);
             }
 
             if (Rotation != lastQuat)
@@ -40,10 +57,28 @@ namespace LeaderEngine
 
                 RotationEuler = tempEuler;
                 lastEuler = tempEuler;
+
+                OnRotationChange?.Invoke(Rotation, RotationEuler);
             }
 
             lastEuler = RotationEuler;
             lastQuat = Rotation;
+        }
+
+        private void UpdatePosition()
+        {
+            if (Position != lastPosition)
+                OnPositionChange?.Invoke(Position);
+
+            lastPosition = Position;
+        }
+
+        private void UpdateScale()
+        {
+            if (Scale != lastScale)
+                OnScaleChange?.Invoke(Scale);
+
+            lastScale = Scale;
         }
     }
 }

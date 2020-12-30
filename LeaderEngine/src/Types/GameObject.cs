@@ -98,7 +98,7 @@ namespace LeaderEngine
 
         internal void UpdateTransform()
         {
-            transform.UpdateRotation();
+            transform.UpdateTransform();
         }
 
         public void Render()
@@ -186,7 +186,7 @@ namespace LeaderEngine
 
         public T GetComponent<T>() where T : Component
         {
-            return (T)components.Find(x => x.GetType() == typeof(T));
+            return (T)components.Find(x => x.GetType() == typeof(T) || x.GetType().IsSubclassOf(typeof(T)));
         }
 
         public List<Component> GetAllComponents()
