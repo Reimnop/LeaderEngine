@@ -37,6 +37,11 @@ namespace LeaderEngine
             RenderingGlobals.View = ViewMatrix;
         }
 
+        public override void LateUpdate()
+        {
+            LightingController.CameraPos = transform.Position;
+        }
+
         public override void OnRemove()
         {
             main = null;
