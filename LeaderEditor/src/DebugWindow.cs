@@ -9,7 +9,7 @@ namespace LeaderEditor
 {
     public class DebugWindow : WindowComponent
     {
-        public override void Start()
+        public override void EditorStart()
         {
             ImGuiController.main.OnImGui += OnImGui;
 

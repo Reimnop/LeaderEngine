@@ -3,7 +3,7 @@
     public class Component
     {
         public GameObject gameObject = null;
-        public Transform transform { get { return gameObject.transform; } }
+        public Transform transform => gameObject.transform;
 
         public bool Enabled = true;
 
@@ -13,6 +13,5 @@
         public virtual void OnRender() { return; }
         public virtual void OnRenderGui() { return; }
         public virtual void OnRemove() { return; }
-        public virtual void OnClosing() { return; }
     }
 }

@@ -18,6 +18,7 @@ namespace LeaderEngine
         public Transform transform { private set; get; }
 
         private List<Component> components = new List<Component>();
+        private List<EditorComponent> editorComponents = new List<EditorComponent>();
 
         public GameObject(string name, RenderHint renderHint = RenderHint.World)
         {
@@ -64,16 +65,33 @@ namespace LeaderEngine
             if (!ActiveSelf)
                 return;
 
-            Component[] comps = components.ToArray();
+            if (!Application.main.EditorMode)
+            {
+                Component[] comps = components.ToArray();
 
-            for (int i = 0; i < comps.Length; i++) {
-                Component co = comps[i];
+                for (int i = 0; i < comps.Length; i++)
+                {
+                    Component co = comps[i];
+
+                    if (co == null)
+                        continue;
+
+                    if (co.Enabled)
+                        co.Update();
+                }
+            }
+
+            EditorComponent[] eComps = editorComponents.ToArray();
+
+            for (int i = 0; i < eComps.Length; i++)
+            {
+                EditorComponent co = eComps[i];
 
                 if (co == null)
                     continue;
 
                 if (co.Enabled)
-                    co.Update();
+                    co.EditorUpdate();
             }
         }
 
@@ -82,22 +100,22 @@ namespace LeaderEngine
             if (!ActiveSelf)
                 return;
 
-            Component[] comps = components.ToArray();
-
-            for (int i = 0; i < comps.Length; i++)
+            if (!Application.main.EditorMode)
             {
-                Component co = comps[i];
+                Component[] comps = components.ToArray();
 
-                if (co == null)
-                    continue;
+                for (int i = 0; i < comps.Length; i++)
+                {
+                    Component co = comps[i];
 
-                if (co.Enabled)
-                    co.LateUpdate();
+                    if (co == null)
+                        continue;
+
+                    if (co.Enabled)
+                        co.LateUpdate();
+                }
             }
-        }
 
-        internal void UpdateTransform()
-        {
             transform.UpdateTransform();
         }
 
@@ -152,7 +170,16 @@ namespace LeaderEngine
             var comp = (T)Activator.CreateInstance(typeof(T), args);
             components.Add(comp);
             comp.gameObject = this;
-            comp.Start();
+
+            if (typeof(EditorComponent).IsAssignableFrom(typeof(T)))
+            {
+                EditorComponent eComp = (EditorComponent)(object)comp;
+                editorComponents.Add(eComp);
+                eComp.EditorStart();
+            }
+
+            if (!Application.main.EditorMode)
+                comp.Start();
 
             return comp;
         }
@@ -164,7 +191,16 @@ namespace LeaderEngine
 
             components.Add(component);
             component.gameObject = this;
-            component.Start();
+
+            if (typeof(EditorComponent).IsAssignableFrom(component.GetType()))
+            {
+                EditorComponent eComp = (EditorComponent)component;
+                editorComponents.Add(eComp);
+                eComp.EditorStart();
+            }
+
+            if (!Application.main.EditorMode)
+                component.Start();
 
             return component;
         }
@@ -180,7 +216,16 @@ namespace LeaderEngine
             foreach (var co in components)
             {
                 co.gameObject = this;
-                co.Start();
+
+                if (typeof(EditorComponent).IsAssignableFrom(co.GetType()))
+                {
+                    EditorComponent eComp = (EditorComponent)co;
+                    editorComponents.Add(eComp);
+                    eComp.EditorStart();
+                }
+
+                if (!Application.main.EditorMode)
+                    co.Start();
             }
         }
 
@@ -199,7 +244,19 @@ namespace LeaderEngine
             if (typeof(T) == typeof(Transform))
                 return;
 
-            components.Remove(components.Find(x => x.GetType() == typeof(T)));
+            Component comp = components.Find(x => x.GetType() == typeof(T));
+
+            if (typeof(EditorComponent).IsAssignableFrom(comp.GetType()))
+            {
+                EditorComponent eComp = (EditorComponent)comp;
+                editorComponents.Add(eComp);
+                eComp.EditorRemove();
+            }
+
+            if (!Application.main.EditorMode)
+                comp.OnRemove();
+
+            components.Remove(comp);
         }
 
         public void RemoveComponent(Component component)
@@ -207,14 +264,27 @@ namespace LeaderEngine
             if (component.GetType() == typeof(Transform))
                 return;
 
-            component.OnRemove();
+            if (typeof(EditorComponent).IsAssignableFrom(component.GetType()))
+            {
+                EditorComponent eComp = (EditorComponent)component;
+                editorComponents.Add(eComp);
+                eComp.EditorRemove();
+            }
+
+            if (!Application.main.EditorMode)
+                component.OnRemove();
+
             components.Remove(component);
         }
 
-        public void OnClosing()
+        public void StartAll()
         {
-            Cleanup();
-            components.ForEach(co => co.OnClosing());
+            components.ForEach(x => x.Start());
+        }
+
+        public void RemoveAll()
+        {
+            components.ForEach(x => x.OnRemove());
         }
 
         public void Destroy()

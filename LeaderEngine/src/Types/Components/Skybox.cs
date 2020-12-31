@@ -7,7 +7,7 @@ using PixelFormat = OpenTK.Graphics.OpenGL4.PixelFormat;
 
 namespace LeaderEngine
 {
-    public class Skybox : Component
+    public class Skybox : EditorComponent
     {
         public static Skybox Main = null;
 
@@ -69,7 +69,7 @@ namespace LeaderEngine
 
         private Shader shader = Shader.Skybox;
 
-        public override void Start()
+        public override void EditorStart()
         {
             Main = this;
 
@@ -87,7 +87,7 @@ namespace LeaderEngine
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
-        public override void OnRemove()
+        public override void EditorRemove()
         {
             Main = null;
         }

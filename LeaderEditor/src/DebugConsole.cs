@@ -29,7 +29,7 @@ namespace LeaderEditor
             { LogType.Error, "[ERROR] " }
         };
 
-        public override void Start()
+        public override void EditorStart()
         {
             if (main == null)
                 main = this;

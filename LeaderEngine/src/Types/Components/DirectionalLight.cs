@@ -2,9 +2,9 @@
 
 namespace LeaderEngine
 {
-    public class DirectionalLight : Component
+    public class DirectionalLight : EditorComponent
     {
-        public override void Start()
+        public override void EditorStart()
         {
             LightingController.DirectionalLight = this;
         }
@@ -20,7 +20,7 @@ namespace LeaderEngine
                 ));
         }
 
-        public override void OnRemove()
+        public override void EditorRemove()
         {
             LightingController.DirectionalLight = null;
         }

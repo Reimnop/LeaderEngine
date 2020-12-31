@@ -25,7 +25,17 @@ namespace LeaderEngine
         public List<GameObject> WorldGameObjects = new List<GameObject>();
         public List<GameObject> WorldGameObjects_Transparent = new List<GameObject>();
         public List<GameObject> GuiGameObjects = new List<GameObject>();
-        public bool EditorMode = false;
+
+        public bool EditorMode
+        {
+            get => _editorMode;
+            set
+            {
+                UpdateMode(value);
+                _editorMode = value;
+            }
+        }
+        private bool _editorMode = false;
 
         public PostProcessor PostProcessor;
 
@@ -68,6 +78,22 @@ namespace LeaderEngine
             base.Run();
         }
 
+        private void UpdateMode(bool editorMode)
+        {
+            if (!editorMode)
+            {
+                WorldGameObjects.ForEach(go => go.StartAll());
+                WorldGameObjects_Transparent.ForEach(go => go.StartAll());
+                GuiGameObjects.ForEach(go => go.StartAll());
+            }
+            else
+            {
+                WorldGameObjects.ForEach(go => go.RemoveAll());
+                WorldGameObjects_Transparent.ForEach(go => go.RemoveAll());
+                GuiGameObjects.ForEach(go => go.RemoveAll());
+            }
+        }
+
         protected override void OnLoad()
         {
             Debug.WriteLine("Base Directory: " + AppContext.BaseDirectory);
@@ -105,20 +131,13 @@ namespace LeaderEngine
 
             ThreadManager.ExecuteAll();
 
-            if (!EditorMode)
-            {
-                WorldGameObjects.ForEach(go => go.Update());
-                WorldGameObjects_Transparent.ForEach(go => go.Update());
-                GuiGameObjects.ForEach(go => go.Update());
+            WorldGameObjects.ForEach(go => go.Update());
+            WorldGameObjects_Transparent.ForEach(go => go.Update());
+            GuiGameObjects.ForEach(go => go.Update());
 
-                WorldGameObjects.ForEach(go => go.LateUpdate());
-                WorldGameObjects_Transparent.ForEach(go => go.LateUpdate());
-                GuiGameObjects.ForEach(go => go.LateUpdate());
-            }
-
-            WorldGameObjects.ForEach(go => go.UpdateTransform());
-            WorldGameObjects_Transparent.ForEach(go => go.UpdateTransform());
-            GuiGameObjects.ForEach(go => go.UpdateTransform());
+            WorldGameObjects.ForEach(go => go.LateUpdate());
+            WorldGameObjects_Transparent.ForEach(go => go.LateUpdate());
+            GuiGameObjects.ForEach(go => go.LateUpdate());
 
             PhysicsController.Update();
         }
@@ -185,13 +204,6 @@ namespace LeaderEngine
         {
             if (RenderingGlobals.RenderingEnabled)
                 GuiGameObjects.ForEach(go => go.RenderGui());
-        }
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            WorldGameObjects.ForEach(go => go.OnClosing());
-
-            base.OnClosing(e);
         }
 
         public void ResizeViewport(Vector2i newSize)

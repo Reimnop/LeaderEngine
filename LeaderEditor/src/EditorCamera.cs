@@ -5,7 +5,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace LeaderEditor
 {
-    public class EditorCamera : Component
+    public class EditorCamera : EditorComponent
     {
         public static EditorCamera main;
 
@@ -19,23 +19,22 @@ namespace LeaderEditor
         private Matrix4 ViewMatrix;
         private Matrix4 ProjectionMatrix;
 
-        public override void Start()
+        public override void EditorStart()
         {
             if (main == null)
                 main = this;
 
-            Application.main.UpdateFrame += UpdateFrame;
             Application.main.SceneRender += SceneRender;
             Application.main.GuiRender += GuiRender;
         }
 
-        private void UpdateFrame(FrameEventArgs e)
+        public override void EditorUpdate()
         {
             if (EditorController.Mode != EditorController.EditorMode.Editor)
                 return;
 
-            if (Camera.main != null)
-                Camera.main.Enabled = false;
+            if (Camera.Main != null)
+                Camera.Main.Enabled = false;
         }
 
         public void LookAt(Vector3 position)

@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 
 namespace LeaderEngine
 {
-    public class Sprite : Component
+    public class Sprite : EditorComponent
     {
         public Color4 Color = Color4.White;
         public Texture Texture;
@@ -12,7 +12,7 @@ namespace LeaderEngine
 
         private Shader shader = Shader.SpriteShader;
 
-        public override void Start()
+        public override void EditorStart()
         {
             float[] vertices =
             {
@@ -53,11 +53,6 @@ namespace LeaderEngine
             vertexArray.Use();
 
             GL.DrawElements(PrimitiveType.Triangles, vertexArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
-        }
-
-        public override void OnRemove()
-        {
-            vertexArray.Dispose();
         }
     }
 }

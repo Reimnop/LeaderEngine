@@ -32,7 +32,7 @@ namespace LeaderEditor
         private VertexArray gridVertArray;
         private Shader gridShader;
 
-        public override void Start()
+        public override void EditorStart()
         {
             framebuffer = new Framebuffer(1280, 720);
 

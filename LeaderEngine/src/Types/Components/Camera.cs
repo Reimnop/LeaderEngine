@@ -4,7 +4,7 @@ namespace LeaderEngine
 {
     public class Camera : Component
     {
-        public static Camera main;
+        public static Camera Main;
 
         public float FOV = 1.04719755f; //60 degrees
 
@@ -13,8 +13,8 @@ namespace LeaderEngine
 
         public override void Start()
         {
-            if (main == null)
-                main = this;
+            if (Main == null)
+                Main = this;
 
             Application.main.SceneRender += SceneRender;
         }
@@ -44,7 +44,7 @@ namespace LeaderEngine
 
         public override void OnRemove()
         {
-            main = null;
+            Main = null;
 
             Application.main.SceneRender -= SceneRender;
         }

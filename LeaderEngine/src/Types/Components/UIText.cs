@@ -5,7 +5,7 @@ using System.Drawing.Drawing2D;
 
 namespace LeaderEngine
 {
-    public class UIText : Component
+    public class UIText : EditorComponent
     {
         public string Text = "Text";
 
@@ -72,7 +72,7 @@ namespace LeaderEngine
             return false;
         }
 
-        public override void Start()
+        public override void EditorStart()
         {
             UpdateText();
         }

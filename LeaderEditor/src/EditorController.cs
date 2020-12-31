@@ -4,7 +4,7 @@ using LeaderEngine;
 
 namespace LeaderEditor
 {
-    public class EditorController : Component
+    public class EditorController : EditorComponent
     {
         public enum EditorMode
         {
@@ -29,7 +29,7 @@ namespace LeaderEditor
         private GameObject ImGuiController;
         private GameObject editorCamera;
 
-        public override void Start()
+        public override void EditorStart()
         {
             //add gui controller
             ImGuiController = new GameObject("Controller");
@@ -76,8 +76,8 @@ namespace LeaderEditor
             DebugConsole.Log("Entering Editor Mode");
 
             EditorCamera.main.Enabled = true;
-            if (Camera.main != null)
-                Camera.main.Enabled = false;
+            if (Camera.Main != null)
+                Camera.Main.Enabled = false;
             RenderingGlobals.RenderingEnabled = true;
             Application.main.EditorMode = true;
         }
@@ -87,8 +87,8 @@ namespace LeaderEditor
             DebugConsole.Log("Entering Play Mode");
 
             EditorCamera.main.Enabled = false;
-            if (Camera.main != null)
-                Camera.main.Enabled = true;
+            if (Camera.Main != null)
+                Camera.Main.Enabled = true;
             else RenderingGlobals.RenderingEnabled = false;
             Application.main.EditorMode = false;
         }

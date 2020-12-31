@@ -27,7 +27,7 @@ namespace LeaderEditor
         //is the add component menu open?
         private bool compMenuOpen = false;
 
-        public override void Start()
+        public override void EditorStart()
         {
             //register ImGui
             ImGuiController.main.OnImGui += OnImGui;

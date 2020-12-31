@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 
 namespace LeaderEngine
 {
-    public class MeshRenderer : Component
+    public class MeshRenderer : EditorComponent
     {
         private Material material = Material.Lit;
         private MeshFilter meshFilter;
@@ -14,7 +14,7 @@ namespace LeaderEngine
             return this;
         }
 
-        public override void Start()
+        public override void EditorStart()
         {
             MeshFilter meshFilter = gameObject.GetComponent<MeshFilter>();
 

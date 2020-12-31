@@ -14,7 +14,7 @@ namespace LeaderEditor.Gui
     /// A modified version of Veldrid.ImGui's ImGuiRenderer.
     /// Manages input for ImGui and handles rendering ImGui's DrawLists with Veldrid.
     /// </summary>
-    public class ImGuiController : Component
+    public class ImGuiController : EditorComponent
     {
         public static ImGuiController main;
 
@@ -37,7 +37,7 @@ namespace LeaderEditor.Gui
 
         private System.Numerics.Vector2 _scaleFactor = System.Numerics.Vector2.One;
 
-        public override void Start()
+        public override void EditorStart()
         {
             main = this;
 
@@ -45,7 +45,6 @@ namespace LeaderEditor.Gui
 
             Application.main.TextInput += TextInput;
             Application.main.FinishRender += FinishRender;
-            Application.main.UpdateFrame += UpdateImGui;
 
             IntPtr context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
@@ -187,7 +186,7 @@ void main()
         /// <summary>
         /// Updates ImGui input and IO configuration state.
         /// </summary>
-        public void UpdateImGui(FrameEventArgs e)
+        public override void EditorUpdate()
         {
             if (_frameBegun)
             {
@@ -395,15 +394,6 @@ void main()
             GL.Enable(EnableCap.DepthTest);
 
             GL.BindVertexArray(0);
-        }
-
-        /// <summary>
-        /// Frees all graphics resources used by the renderer.
-        /// </summary>
-        public override void OnRemove()
-        {
-            _fontTexture.Dispose();
-            _shader.Dispose();
         }
     }
 }

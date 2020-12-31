@@ -10,13 +10,13 @@ using Application = LeaderEngine.Application;
 
 namespace LeaderEditor
 {
-    public class MainMenuBar : Component
+    public class MainMenuBar : EditorComponent
     {
         public static Dictionary<string, WindowComponent> windows = new Dictionary<string, WindowComponent>();
 
         private List<LeaderEngine.Texture> textures = new List<LeaderEngine.Texture>();
 
-        public override void Start()
+        public override void EditorStart()
         {
             ImGuiController.main.OnImGui += OnImGui;
         }

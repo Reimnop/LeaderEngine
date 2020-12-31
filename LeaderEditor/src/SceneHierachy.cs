@@ -33,15 +33,14 @@ namespace LeaderEditor
         private string[] objectTypes = { "World", "Transparent", "Gui" };
         private string currentType = "World";
 
-        public override void Start()
+        public override void EditorStart()
         {
             ImGuiController.main.OnImGui += OnImGui;
-            Application.main.UpdateFrame += UpdateSceneHierachy;
 
             MainMenuBar.RegisterWindow("Scene Hierachy", this);
         }
 
-        public void UpdateSceneHierachy(FrameEventArgs e)
+        public override void EditorUpdate()
         {
             //delete object
             if (Input.GetKeyDown(Keys.Delete) && SelectedObject != null)
