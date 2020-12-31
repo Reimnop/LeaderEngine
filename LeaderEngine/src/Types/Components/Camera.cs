@@ -2,7 +2,7 @@
 
 namespace LeaderEngine
 {
-    public class Camera : Component
+    public class Camera : EditorComponent
     {
         public static Camera Main;
 
@@ -11,7 +11,7 @@ namespace LeaderEngine
         private Matrix4 ViewMatrix;
         private Matrix4 ProjectionMatrix;
 
-        public override void Start()
+        public override void EditorStart()
         {
             if (Main == null)
                 Main = this;
@@ -42,7 +42,7 @@ namespace LeaderEngine
             LightingController.CameraPos = transform.Position;
         }
 
-        public override void OnRemove()
+        public override void EditorRemove()
         {
             Main = null;
 
