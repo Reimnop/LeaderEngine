@@ -2,7 +2,6 @@
 using LeaderEditor.Data;
 using LeaderEditor.Gui;
 using LeaderEngine;
-using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Collections.Generic;
 
