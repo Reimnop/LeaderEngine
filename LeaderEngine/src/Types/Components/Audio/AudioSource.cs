@@ -26,6 +26,8 @@ namespace LeaderEngine
             var deviceName = d ?? ALC.GetString(ALDevice.Null, AlcGetString.DefaultDeviceSpecifier);
 
             device = ALC.OpenDevice(deviceName);
+
+            device = ALC.OpenDevice(null);
             context = ALC.CreateContext(device, (int[])null);
 
             ALC.MakeContextCurrent(context);
@@ -42,6 +44,7 @@ namespace LeaderEngine
             sourceHandle = AL.GenSource();
             AL.Source(sourceHandle, ALSourcef.Gain, 1.0f);
             AL.Source(sourceHandle, ALSourcef.Pitch, 1.0f);
+            AL.Source(sourceHandle, ALSourceb.Looping, true);
             AL.Source(sourceHandle, ALSource3f.Position, ref transform.Position);
 
             AL.Source(sourceHandle, ALSourcei.Buffer, bufferHandle);
