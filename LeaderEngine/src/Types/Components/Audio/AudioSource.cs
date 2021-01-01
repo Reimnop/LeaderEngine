@@ -43,6 +43,13 @@ namespace LeaderEngine
             AL.SourcePlay(sourceHandle);
         }
 
+        public override void OnRemove()
+        {
+            AL.SourceStop(sourceHandle);
+            AL.DeleteSource(sourceHandle);
+            AL.DeleteBuffer(bufferHandle);
+        }
+
         private static byte[] LoadWave(Stream stream, out int channels, out int bits, out int rate)
         {
             if (stream == null)
