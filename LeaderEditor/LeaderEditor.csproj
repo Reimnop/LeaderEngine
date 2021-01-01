@@ -39,6 +39,7 @@
     <PackageReference Include="Microsoft.Build.Framework" Version="16.8.0" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.8.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="3.8.0" />
+    <PackageReference Include="OpenTK" Version="4.4.0" />
   </ItemGroup>
 
   <ItemGroup>
