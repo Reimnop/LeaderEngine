@@ -10,6 +10,7 @@ namespace LeaderEngine
     {
         public override void Start()
         {
+            AL.Listener(ALListenerf.Gain, 1.0f);
             AL.Listener(ALListener3f.Position, ref transform.Position);
         }
     }

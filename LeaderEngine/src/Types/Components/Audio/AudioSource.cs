@@ -20,7 +20,12 @@ namespace LeaderEngine
 
         public static void Init()
         {
-            device = ALC.OpenDevice(null);
+            var devices = ALC.GetStringList(GetEnumerationStringList.DeviceSpecifier);
+            var d = devices.FirstOrDefault(x => x.Contains("OpenAL Soft"));
+
+            var deviceName = d ?? ALC.GetString(ALDevice.Null, AlcGetString.DefaultDeviceSpecifier);
+
+            device = ALC.OpenDevice(deviceName);
             context = ALC.CreateContext(device, (int[])null);
 
             ALC.MakeContextCurrent(context);
