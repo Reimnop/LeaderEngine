@@ -102,6 +102,7 @@ namespace LeaderEngine
 
             LightingController.Init();
             PhysicsController.Init();
+            AudioSource.Init();
 
             PostProcessor = new PostProcessor(Size);
 

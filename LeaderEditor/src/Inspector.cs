@@ -15,6 +15,8 @@ namespace LeaderEditor
             { typeof(Camera), null },
             { typeof(MeshFilter), SerializeFunc.MeshFilter },
             { typeof(MeshRenderer), null },
+            { typeof(AudioSource), null },
+            { typeof(AudioListener), null },
             { typeof(BoxCollider), null },
             { typeof(Rigidbody), null },
             { typeof(Staticbody), null },

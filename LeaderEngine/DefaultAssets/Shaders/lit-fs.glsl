@@ -7,7 +7,7 @@ uniform int useTexture;
 uniform vec3 lightDir;
 
 uniform sampler2D texture0;
-uniform sampler2DShadow shadowMap;
+uniform sampler2D shadowMap;
 
 in vec3 VertCol;
 in vec3 Normal;
@@ -28,7 +28,10 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 	if(projCoords.z > 1.0)
         return 1.0;
 
-    return shadow2D(shadowMap, vec3(projCoords.xy, projCoords.z - 0.001), 0.0).r; 
+	vec3 norm = normalize(Normal);
+	float bias = max(0.05 * (1.0 - dot(norm, lightDir)), 0.005);
+
+    return projCoords.z - bias > texture(shadowMap, projCoords.xy).r ? 0.0 : 1.0;
 }  
 
 void main() 

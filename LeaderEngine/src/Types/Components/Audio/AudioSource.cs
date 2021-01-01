@@ -1,6 +1,8 @@
 ﻿using OpenTK.Audio.OpenAL;
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -11,18 +13,34 @@ namespace LeaderEngine
     {
         public string Path;
 
-        private int handle;
+        private int bufferHandle, sourceHandle;
+
+        private static ALContext context;
+        private static ALDevice device;
+
+        public static void Init()
+        {
+            device = ALC.OpenDevice(null);
+            context = ALC.CreateContext(device, (int[])null);
+
+            ALC.MakeContextCurrent(context);
+        }
 
         public override void Start()
         {
-            handle = AL.GenSource();
+            bufferHandle = AL.GenBuffer();
 
-            byte[] data = LoadWave(File.OpenRead(Path), out _, out int bits, out int rate);
+            byte[] sound_data = LoadWave(File.Open(Path, FileMode.Open), out int channels, out int bits_per_sample, out int sample_rate);
 
-            GCHandle pinnedArray = GCHandle.Alloc(data, GCHandleType.Pinned);
-            IntPtr pointer = pinnedArray.AddrOfPinnedObject();
+            AL.BufferData(bufferHandle, GetSoundFormat(channels, bits_per_sample), ref sound_data[0], sound_data.Length, sample_rate);
 
-            AL.BufferData(handle, ALFormat.Stereo8, pointer, bits, rate);
+            sourceHandle = AL.GenSource();
+            AL.Source(sourceHandle, ALSourcef.Gain, 1.0f);
+            AL.Source(sourceHandle, ALSourcef.Pitch, 1.0f);
+            AL.Source(sourceHandle, ALSource3f.Position, ref transform.Position);
+
+            AL.Source(sourceHandle, ALSourcei.Buffer, bufferHandle);
+            AL.SourcePlay(sourceHandle);
         }
 
         private static byte[] LoadWave(Stream stream, out int channels, out int bits, out int rate)
@@ -67,6 +85,16 @@ namespace LeaderEngine
                 rate = sample_rate;
 
                 return reader.ReadBytes((int)reader.BaseStream.Length);
+            }
+        }
+
+        private static ALFormat GetSoundFormat(int channels, int bits)
+        {
+            switch (channels)
+            {
+                case 1: return bits == 8 ? ALFormat.Mono8 : ALFormat.Mono16;
+                case 2: return bits == 8 ? ALFormat.Stereo8 : ALFormat.Stereo16;
+                default: throw new NotSupportedException("The specified sound format is not supported.");
             }
         }
     }
