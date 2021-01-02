@@ -2,7 +2,7 @@
 
 layout (location = 0) out vec4 fragColor;
 
-uniform int useTexture;
+uniform bool useTexture;
 
 uniform vec3 lightDir;
 
@@ -29,19 +29,16 @@ float ShadowCalculation(vec4 fragPosLightSpace)
         return 1.0;
 
 	vec3 norm = normalize(Normal);
-	float bias = max(0.05 * (1.0 - dot(norm, lightDir)), 0.005);
 
-    return projCoords.z - bias > texture(shadowMap, projCoords.xy).r ? 0.0 : 1.0;
+    return projCoords.z - 0.0005 > texture(shadowMap, projCoords.xy).r ? 0.0 : 1.0;
 }  
 
 void main() 
 {
-	vec4 objectColor;
+	vec4 objectColor = vec4(VertCol, 1.0);
 
-	if (useTexture == 1)
-		objectColor = texture(texture0, TexCoord) * vec4(VertCol, 1.0);
-	else 
-		objectColor = vec4(VertCol, 1.0);
+	if (useTexture)
+		objectColor *= texture(texture0, TexCoord);
 
 	vec3 norm = normalize(Normal);
 

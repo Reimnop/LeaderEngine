@@ -17,8 +17,6 @@ namespace LeaderEngine
 
         public static Vector3 GlobalPosition = Vector3.Zero;
 
-        public static Shader ForcedShader = null;
-
         public static RenderPass CurrentPass = RenderPass.None;
 
         public static bool RenderingEnabled = true;

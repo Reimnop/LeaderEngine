@@ -37,6 +37,9 @@ namespace LeaderEngine
             if (material == null)
                 renderMat = Material.NoRender;
 
+            if (RenderingGlobals.CurrentPass == RenderPass.Lighting)
+                renderMat = Material.DepthOnly;
+
             renderMat.SetMatrix4("mvp", model * RenderingGlobals.View * RenderingGlobals.Projection);
 
             var vertArrays = meshFilter.Mesh.GetAllVertexArrays();
@@ -49,23 +52,22 @@ namespace LeaderEngine
 
                 vertArray.Use();
 
-                Texture texture = vertArray.GetTexture();
+                if (RenderingGlobals.CurrentPass != RenderPass.Lighting)
+                {
+                    Texture texture = vertArray.GetTexture();
 
-                if (texture != null)
-                {
-                    renderMat.SetInt("useTexture", 1);
-                    texture.Use(TextureUnit.Texture0);
-                }
-                else
-                {
-                    renderMat.SetInt("useTexture", 0);
-                    GL.BindTexture(TextureTarget.Texture2D, 0);
+                    if (texture != null)
+                        renderMat.SetInt("useTexture", 1);
+                    else
+                        renderMat.SetInt("useTexture", 0);
+
+                    renderMat.SetInt("texture0", 0);
+                    texture?.Use(TextureUnit.Texture0);
+
+                    LightingController.LightingShaderSetup(renderMat, transform.Position + RenderingGlobals.GlobalPosition, transform.Rotation, transform.Scale);
                 }
 
                 renderMat.Use();
-
-                if (RenderingGlobals.CurrentPass != RenderPass.Lighting)
-                    LightingController.LightingShaderSetup(renderMat.Shader, transform.Position + RenderingGlobals.GlobalPosition, transform.Rotation, transform.Scale);
 
                 GL.DrawElements(PrimitiveType.Triangles, vertArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
             }

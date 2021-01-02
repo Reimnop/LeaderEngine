@@ -38,10 +38,6 @@ namespace LeaderEngine
 
             RenderingGlobals.GlobalPosition = -CameraPos;
 
-            Shader shader = RenderingGlobals.ForcedShader;
-
-            RenderingGlobals.ForcedShader = Shader.DepthOnly;
-
             DirectionalLight.GenViewProject(out lightView, out lightProjection);
 
             RenderingGlobals.View = lightView;
@@ -54,13 +50,14 @@ namespace LeaderEngine
             depthBuffer.End();
 
             RenderingGlobals.GlobalPosition = Vector3.Zero;
-            RenderingGlobals.ForcedShader = shader;
         }
 
-        public static void LightingShaderSetup(Shader shader, Vector3 position, Quaternion rotation, Vector3 scale)
+        public static void LightingShaderSetup(Material mat, Vector3 position, Quaternion rotation, Vector3 scale)
         {
             if (DirectionalLight == null)
             {
+                mat.SetInt("shadowMap", 1);
+
                 GL.ActiveTexture(TextureUnit.Texture1);
                 GL.BindTexture(TextureTarget.Texture2D, 0);
                 return;
@@ -73,12 +70,12 @@ namespace LeaderEngine
             var dir = DirectionalLight.transform.Forward;
             dir.Z = -dir.Z;
 
-            shader.SetMatrix4("model", model);
-            shader.SetMatrix4("lightSpaceMatrix", lightView * lightProjection);
+            mat.SetMatrix4("model", model);
+            mat.SetMatrix4("lightSpaceMatrix", lightView * lightProjection);
 
-            shader.SetVector3("lightDir", dir);
+            mat.SetVector3("lightDir", dir);
 
-            shader.SetInt("shadowMap", 1);
+            mat.SetInt("shadowMap", 1);
 
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, depthBuffer.GetDepthTexture());

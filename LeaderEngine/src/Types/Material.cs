@@ -24,6 +24,7 @@ namespace LeaderEngine
     {
         #region DefaultMaterials
         public static Material Lit;
+        public static Material DepthOnly;
         public static Material NoRender;
         #endregion
 
@@ -34,12 +35,13 @@ namespace LeaderEngine
 
         public Material(Shader shader)
         {
-            this.Shader = shader;
+            Shader = shader;
         }
 
         public static void InitDefaults()
         {
             Lit = new Material(Shader.Lit);
+            DepthOnly = new Material(Shader.DepthOnly);
             NoRender = new Material(Shader.NoRender);
         }
 
@@ -98,9 +100,6 @@ namespace LeaderEngine
         public void Use()
         {
             Shader usingShader = Shader;
-
-            if (RenderingGlobals.ForcedShader != null)
-                usingShader = RenderingGlobals.ForcedShader;
 
             usingShader.Use();
 
