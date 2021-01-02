@@ -3,14 +3,22 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace LeaderEditor
 {
     class Program
     {
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool AllocConsole();
+
         [STAThread]
         static void Main(string[] args)
         {
+            AllocConsole();
+
             Application app = new Application(new GameWindowSettings(), new NativeWindowSettings()
             {
                 APIVersion = new Version(4, 0),
