@@ -1,9 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
     <Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
 
@@ -47,6 +46,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="System.Windows.Forms">
+      <HintPath>C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Windows.Forms.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="DefaultAssets\Shaders\Editor\outline-fs.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -60,7 +65,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Fonts\Inconsolata.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
