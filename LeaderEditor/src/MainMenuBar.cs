@@ -48,8 +48,10 @@ namespace LeaderEditor
 
                     if (ImGui.MenuItem("Save Project", "Ctrl+S"))
                     {
-                        if (!string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
-                            SceneSerializer.SaveScene(Path.Combine(AssetLoader.LoadedProjectDir, "Assets", "scene.ldrscene"));
+                        /*if (!string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
+                            SceneSerializer.SaveScene(Path.Combine(AssetLoader.LoadedProjectDir, "Assets", "scene.ldrscene"));*/
+                        DebugConsole.Log("Saving not implemented!", LogType.Warning);
+                        //TODO: implement saving
                     }
 
                     //TODO: DEBUG CODE
