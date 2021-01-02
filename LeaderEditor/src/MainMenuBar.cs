@@ -43,15 +43,23 @@ namespace LeaderEditor
                         if (!string.IsNullOrEmpty(ofd.FileName))
                         {
                             AssetLoader.LoadProject(ofd.FileName);
+
+                            /*string path = Path.Combine(AssetLoader.LoadedProjectDir, "Assets", "scene.ldrscene");
+
+                            if (File.Exists(path))
+                                SceneLoad.LoadScene(path);*/
+                            DebugConsole.Log("Scene loading and saving temporarily disabled!", LogType.Warning);
+                            //TODO: fix scene loading and saving
                         }
                     }
 
                     if (ImGui.MenuItem("Save Project", "Ctrl+S"))
                     {
                         /*if (!string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
-                            SceneSerializer.SaveScene(Path.Combine(AssetLoader.LoadedProjectDir, "Assets", "scene.ldrscene"));*/
-                        DebugConsole.Log("Saving not implemented!", LogType.Warning);
-                        //TODO: implement saving
+                            SceneSave.SaveScene(Path.Combine(AssetLoader.LoadedProjectDir, "Assets", "scene.ldrscene"));*/
+
+                        DebugConsole.Log("Scene loading and saving temporarily disabled!", LogType.Warning);
+                        //TODO: fix scene loading and saving
                     }
 
                     //TODO: DEBUG CODE

@@ -115,7 +115,7 @@ namespace LeaderEditor
                             else EditorController.Mode = EditorController.EditorMode.Editor;
 
                         if (EditorController.Mode == EditorController.EditorMode.Editor)
-                            EditorCamera.main.UpdateCamMove();
+                            EditorCamera.Main.UpdateCamMove();
                     }
 
                     //display to framebuffer texture on gui

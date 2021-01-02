@@ -94,6 +94,9 @@ namespace LeaderEngine
 
         public void Render()
         {
+            if (!RenderingGlobals.RenderingEnabled)
+                return;
+
             if (cubemapId == 0)
                 return;
 

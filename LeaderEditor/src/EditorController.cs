@@ -75,10 +75,7 @@ namespace LeaderEditor
         {
             DebugConsole.Log("Entering Editor Mode");
 
-            EditorCamera.main.Enabled = true;
-            if (Camera.Main != null)
-                Camera.Main.Enabled = false;
-            RenderingGlobals.RenderingEnabled = true;
+            EditorCamera.Main.Enabled = true;
             Application.main.EditorMode = true;
         }
 
@@ -86,10 +83,7 @@ namespace LeaderEditor
         {
             DebugConsole.Log("Entering Play Mode");
 
-            EditorCamera.main.Enabled = false;
-            if (Camera.Main != null)
-                Camera.Main.Enabled = true;
-            else RenderingGlobals.RenderingEnabled = false;
+            EditorCamera.Main.Enabled = false;
             Application.main.EditorMode = false;
         }
     }

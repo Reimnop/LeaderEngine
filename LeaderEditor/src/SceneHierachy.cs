@@ -86,7 +86,7 @@ namespace LeaderEditor
                         ImGui.SameLine();
                         if (ImGui.Button($"Go to {SelectedObject.Name}"))
                         {
-                            EditorCamera.main.LookAt(SelectedObject.transform.Position);
+                            EditorCamera.Main.LookAt(SelectedObject.transform.Position);
                         }
                     }
 

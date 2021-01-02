@@ -6,7 +6,7 @@ namespace LeaderEditor
 {
     public class EditorCamera : EditorComponent
     {
-        public static EditorCamera main;
+        public static EditorCamera Main;
 
         public float FOV = 1.04719755f; //60 degrees
 
@@ -20,20 +20,11 @@ namespace LeaderEditor
 
         public override void EditorStart()
         {
-            if (main == null)
-                main = this;
+            if (Main == null)
+                Main = this;
 
             Application.main.SceneRender += SceneRender;
             Application.main.GuiRender += GuiRender;
-        }
-
-        public override void EditorUpdate()
-        {
-            if (EditorController.Mode != EditorController.EditorMode.Editor)
-                return;
-
-            if (Camera.Main != null)
-                Camera.Main.Enabled = false;
         }
 
         public void LookAt(Vector3 position)
