@@ -21,7 +21,6 @@ namespace LeaderEditor
                 {
                     ImGui.Text("FPS: " + MathF.Round(100.0f / Time.deltaTime) / 100.0f);
                     ImGui.Text("Frametime: " + MathF.Round(Time.deltaTime * 100000.0f) / 100.0f + "ms");
-                    ImGui.Checkbox("Pause Physics", ref PhysicsController.PausePhysics);
                     ImGui.End();
                 }
         }
