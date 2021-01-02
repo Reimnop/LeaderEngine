@@ -50,17 +50,7 @@ namespace LeaderEngine
                 vertArray.Use();
 
                 Texture texture = vertArray.GetTexture();
-
-                if (texture != null)
-                {
-                    renderMat.SetInt("useTexture", 1);
-                    texture.Use(TextureUnit.Texture0);
-                }
-                else
-                {
-                    renderMat.SetInt("useTexture", 0);
-                    GL.BindTexture(TextureTarget.Texture2D, 0);
-                }
+                texture?.Use(TextureUnit.Texture0);
 
                 renderMat.Use();
 
