@@ -277,6 +277,14 @@ namespace LeaderEngine
             components.Remove(component);
         }
 
+        public void ReplaceTransform(Transform transform)
+        {
+            components.Remove(this.transform);
+            components.Insert(0, transform);
+
+            this.transform = transform;
+        }
+
         public void StartAll()
         {
             components.ForEach(x => x.Start());

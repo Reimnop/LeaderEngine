@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace LeaderEditor.Data
 {
@@ -12,7 +12,9 @@ namespace LeaderEditor.Data
     {
         public static void LoadScene(string path)
         {
-            SceneInfo sceneInfo = JsonSerializer.Deserialize<SceneInfo>(File.ReadAllText(path));
+            SceneInfo sceneInfo = JsonConvert.DeserializeObject<SceneInfo>(File.ReadAllText(path),
+                new Vector4Converter(),
+                new Vector3Converter());
 
             ProcessScene(sceneInfo);
         }
@@ -48,14 +50,19 @@ namespace LeaderEditor.Data
             for (int i = 0; i < componentFieldInfos.Length; i++)
                 ProcessField(component, componentFieldInfos[i]);
 
-            gameObject.AddComponent(component);
+            List<Component> components = gameObject.GetAllComponents();
+
+            if (component.GetType() != typeof(Transform))
+                components.Add(component);
+            else
+                gameObject.ReplaceTransform((Transform)component);
         }
 
         private static void ProcessField(Component component, ComponentFieldInfo componentFieldInfo)
         {
             component.GetType()
                 .GetField(componentFieldInfo.Name)
-                .SetValue(component, componentFieldInfo.Data);
+                .SetValue(component, TypeChanger.ConvertType(GetAssemblyByName(componentFieldInfo.AssemblyName).GetType(componentFieldInfo.TypeName), componentFieldInfo.Data));
         }
 
         private static Assembly GetAssemblyByName(string name)

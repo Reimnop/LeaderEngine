@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
+using Newtonsoft.Json;
 using System.Linq;
 using System.Reflection;
 
@@ -23,7 +23,9 @@ namespace LeaderEditor.Data
         public static void SaveScene(string path)
         {
             SceneInfo sceneInfo = ProcessScene();
-            string json = JsonSerializer.Serialize(sceneInfo);
+            string json = JsonConvert.SerializeObject(sceneInfo, Formatting.Indented,
+                new Vector4Converter(),
+                new Vector3Converter());
 
             File.WriteAllText(path, json);
         }
