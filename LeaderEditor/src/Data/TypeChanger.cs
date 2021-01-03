@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using LeaderEngine;
+using Newtonsoft.Json.Linq;
 using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace LeaderEditor.Data
         {
             { typeof(Vector4), ConvertToVector4 },
             { typeof(Vector3), ConvertToVector3 },
+            { typeof(Mesh), ConvertToMesh }
         };
 
         public static object ConvertType(Type dest, object data)
@@ -32,6 +34,11 @@ namespace LeaderEditor.Data
         {
             JArray array = (JArray)arg;
             return new Vector3(array[0].Value<float>(), array[1].Value<float>(), array[2].Value<float>());
+        }
+
+        private static object ConvertToMesh(object arg)
+        {
+            return ResourceLoader.LoadedModels[(string)arg];
         }
     }
 }

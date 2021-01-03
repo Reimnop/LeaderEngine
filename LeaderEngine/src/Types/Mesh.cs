@@ -6,11 +6,15 @@ namespace LeaderEngine
     {
         private List<VertexArray> vertexArrays = new List<VertexArray>();
 
-        public Mesh() { }
+        public string Name;
 
-        public Mesh(VertexArray[] vertexArrays)
+        public Mesh(string name)
+            => Name = name;
+
+        public Mesh(string name, VertexArray[] vertexArrays)
         {
             this.vertexArrays.AddRange(vertexArrays);
+            Name = name;
         }
 
         public void AddVertexArray(VertexArray vertexArray)

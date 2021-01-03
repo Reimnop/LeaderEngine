@@ -14,13 +14,19 @@ namespace LeaderEditor.Data
         {
             SceneInfo sceneInfo = JsonConvert.DeserializeObject<SceneInfo>(File.ReadAllText(path),
                 new Vector4Converter(),
-                new Vector3Converter());
+                new Vector3Converter(),
+                new MeshConverter());
 
             ProcessScene(sceneInfo);
         }
 
         private static void ProcessScene(SceneInfo sceneInfo)
         {
+            for (int i = 0; i < sceneInfo.Models.Length; i++)
+                ResourceLoader.LoadModel(Path.Combine(AssetLoader.LoadedProjectDir, "Assets", sceneInfo.Models[i]));
+
+            EditorCamera.Main.transform.Position = sceneInfo.EditorCamPosition;
+            EditorCamera.Main.transform.RotationEuler = sceneInfo.EditorCamRotation;
             GameObjectInfo[] gameObjectInfos = sceneInfo.GameObjects;
 
             for (int i = 0; i < gameObjectInfos.Length; i++)
@@ -50,10 +56,8 @@ namespace LeaderEditor.Data
             for (int i = 0; i < componentFieldInfos.Length; i++)
                 ProcessField(component, componentFieldInfos[i]);
 
-            List<Component> components = gameObject.GetAllComponents();
-
             if (component.GetType() != typeof(Transform))
-                components.Add(component);
+                gameObject.AddComponent(component);
             else
                 gameObject.ReplaceTransform((Transform)component);
         }

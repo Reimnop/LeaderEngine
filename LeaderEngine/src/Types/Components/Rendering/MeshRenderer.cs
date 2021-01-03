@@ -5,8 +5,9 @@ namespace LeaderEngine
 {
     public class MeshRenderer : EditorComponent
     {
+        public MeshFilter MeshFilter;
+
         private Material material = Material.Lit;
-        private MeshFilter meshFilter;
 
         public MeshRenderer SetMaterial(Material material)
         {
@@ -21,12 +22,15 @@ namespace LeaderEngine
             if (meshFilter == null)
                 meshFilter = gameObject.AddComponent<MeshFilter>();
 
-            this.meshFilter = meshFilter;
+            this.MeshFilter = meshFilter;
         }
 
         public override void OnRender()
         {
-            if (meshFilter.Mesh == null)
+            if (MeshFilter == null)
+                return;
+
+            if (MeshFilter.Mesh == null)
                 return;
 
             Matrix4 model = Matrix4.CreateScale(transform.Scale)
@@ -42,7 +46,7 @@ namespace LeaderEngine
 
             renderMat.SetMatrix4("mvp", model * RenderingGlobals.View * RenderingGlobals.Projection);
 
-            var vertArrays = meshFilter.Mesh.GetAllVertexArrays();
+            var vertArrays = MeshFilter.Mesh.GetAllVertexArrays();
 
             foreach (var vertArray in vertArrays)
             {

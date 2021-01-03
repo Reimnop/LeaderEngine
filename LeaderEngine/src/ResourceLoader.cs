@@ -7,6 +7,8 @@ namespace LeaderEngine
 {
     public static class ResourceLoader
     {
+        public static Dictionary<string, Mesh> LoadedModels = new Dictionary<string, Mesh>();
+
         public static Mesh LoadModel(string path)
         {
             AssimpContext importer = new AssimpContext();
@@ -62,7 +64,12 @@ namespace LeaderEngine
                 vertexArrays.Add(vertArray);
             }
 
-            return new Mesh(vertexArrays.ToArray());
+            string mName = Path.GetFileName(path);
+            Mesh m = new Mesh(mName, vertexArrays.ToArray());
+
+            LoadedModels.Add(mName, m);
+
+            return m;
         }
 
         private static uint[] IntToUint(int[] ints)

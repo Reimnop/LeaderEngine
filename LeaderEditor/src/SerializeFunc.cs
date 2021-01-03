@@ -47,20 +47,16 @@ namespace LeaderEditor
         {
             MeshFilter meshFilter = (MeshFilter)obj;
 
-            if (ImGui.Button("Import Model"))
+            string preview = meshFilter.Mesh == null ? "[None]" : meshFilter.Mesh.Name;
+
+            if (ImGui.BeginCombo("Select Model", preview))
             {
-                using (OpenFileDialog ofd = new OpenFileDialog())
+                foreach (var item in ResourceLoader.LoadedModels) 
                 {
-                    ofd.Filter = "3D Model|*.fbx;*.obj";
-                    ofd.Multiselect = false;
-
-                    ofd.ShowDialog();
-
-                    if (!string.IsNullOrEmpty(ofd.FileName))
-                    {
-                        meshFilter.Mesh = ResourceLoader.LoadModel(ofd.FileName);
-                    }
+                    if (ImGui.Selectable(item.Key, meshFilter.Mesh == item.Value))
+                        meshFilter.Mesh = item.Value;
                 }
+                ImGui.EndCombo();
             }
         }
 
@@ -131,8 +127,24 @@ namespace LeaderEditor
         {
             { typeof(int), DefaultInt },
             { typeof(float), DefaultFloat },
-            { typeof(string), DefaultString }
+            { typeof(string), DefaultString },
+            { typeof(Vector4), DefaultV4 },
+            { typeof(Vector3), DefaultV3 },
         };
+
+        private static void DefaultV3(Component obj, FieldInfo field)
+        {
+            Vector3 value = (Vector3)field.GetValue(obj);
+            ImGuiExtension.DragVector3(field.Name, ref value, Vector3.Zero);
+            field.SetValue(obj, value);
+        }
+
+        private static void DefaultV4(Component obj, FieldInfo field)
+        {
+            Vector4 value = (Vector4)field.GetValue(obj);
+            ImGuiExtension.DragVector4(field.Name, ref value, Vector4.Zero);
+            field.SetValue(obj, value);
+        }
 
         public static void DefaultSerializeFunc(Component obj)
         {

@@ -5,6 +5,7 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Linq;
+using LeaderEngine;
 
 namespace LeaderEditor.Data
 {
@@ -70,6 +71,31 @@ namespace LeaderEditor.Data
             writer.WriteValue(vector.Y);
             writer.WriteValue(vector.Z);
             writer.WriteEndArray();
+        }
+    }
+
+    public class MeshConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(Mesh);
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            var obj = JToken.Load(reader);
+            if (obj.Type == JTokenType.String)
+            {
+                var name = (string)obj;
+                return ResourceLoader.LoadedModels[name];
+            }
+            return null;
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            var m = (Mesh)value;
+            writer.WriteValue(m.Name);
         }
     }
 }

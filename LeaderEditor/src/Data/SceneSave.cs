@@ -17,7 +17,8 @@ namespace LeaderEditor.Data
             typeof(int),
             typeof(float),
             typeof(Vector4),
-            typeof(Vector3)
+            typeof(Vector3),
+            typeof(Mesh)
         };
 
         public static void SaveScene(string path)
@@ -25,7 +26,8 @@ namespace LeaderEditor.Data
             SceneInfo sceneInfo = ProcessScene();
             string json = JsonConvert.SerializeObject(sceneInfo, Formatting.Indented,
                 new Vector4Converter(),
-                new Vector3Converter());
+                new Vector3Converter(),
+                new MeshConverter());
 
             File.WriteAllText(path, json);
         }
@@ -33,6 +35,9 @@ namespace LeaderEditor.Data
         private static SceneInfo ProcessScene()
         {
             SceneInfo sceneInfo = new SceneInfo();
+            sceneInfo.Models = ResourceLoader.LoadedModels.Select(x => x.Key).ToArray();
+            sceneInfo.EditorCamPosition = EditorCamera.Main.transform.Position;
+            sceneInfo.EditorCamRotation = EditorCamera.Main.transform.RotationEuler;
             sceneInfo.GameObjects = new GameObjectInfo[SceneHierachy.SceneObjects.Count];
 
             for (int i = 0; i < sceneInfo.GameObjects.Length; i++)
