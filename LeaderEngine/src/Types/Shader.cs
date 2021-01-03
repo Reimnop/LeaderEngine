@@ -121,8 +121,6 @@ namespace LeaderEngine
             GL.UseProgram(handle);
             if (uniformLocations.ContainsKey(name))
                 GL.Uniform1(uniformLocations[name], data);
-            else
-                Console.WriteLine($"Uniform \"{name}\" does not exist");
         }
 
         /// <summary>
@@ -135,8 +133,6 @@ namespace LeaderEngine
             GL.UseProgram(handle);
             if (uniformLocations.ContainsKey(name))
                 GL.Uniform1(uniformLocations[name], data);
-            else
-                Console.WriteLine($"Uniform \"{name}\" does not exist");
         }
 
         /// <summary>
@@ -154,8 +150,6 @@ namespace LeaderEngine
             GL.UseProgram(handle);
             if (uniformLocations.ContainsKey(name))
                 GL.UniformMatrix4(uniformLocations[name], true, ref data);
-            else
-                Console.WriteLine($"Uniform \"{name}\" does not exist");
         }
 
         /// <summary>
@@ -168,8 +162,6 @@ namespace LeaderEngine
             GL.UseProgram(handle);
             if (uniformLocations.ContainsKey(name))
                 GL.Uniform3(uniformLocations[name], data);
-            else
-                Console.WriteLine($"Uniform \"{name}\" does not exist");
         }
 
         public void SetVector4(string name, Vector4 data)
@@ -177,8 +169,6 @@ namespace LeaderEngine
             GL.UseProgram(handle);
             if (uniformLocations.ContainsKey(name))
                 GL.Uniform4(uniformLocations[name], data);
-            else
-                Console.WriteLine($"Uniform \"{name}\" does not exist");
         }
 
         public int GetHandle()

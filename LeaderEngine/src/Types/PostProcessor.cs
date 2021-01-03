@@ -74,8 +74,13 @@ namespace LeaderEngine
             vertexArray.Use();
             PPShader.Use();
 
+            PPShader.SetInt("texture0", 0);
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, framebuffer.GetColorTexture());
+
+            PPShader.SetInt("depthMap", 1);
+            GL.ActiveTexture(TextureUnit.Texture1);
+            GL.BindTexture(TextureTarget.Texture2D, framebuffer.GetDepthTexture());
 
             GL.DrawElements(PrimitiveType.Triangles, vertexArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
         }
