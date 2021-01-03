@@ -57,7 +57,7 @@ namespace LeaderEditor
                             SceneSave.SaveScene(Path.Combine(AssetLoader.LoadedProjectDir, "Assets", "scene.ldrscene"));
                     }
 
-                    //TODO: DEBUG CODE
+#if DEBUG
                     if (ImGui.MenuItem("Generate Code"))
                     {
                         DebugConsole.Log(CodeGenerator.GenerateCode());
@@ -67,7 +67,7 @@ namespace LeaderEditor
                         DebugConsole.Log("Recompiling!");
                         LeaderEngine.Shader.InitDefaults();
                     }
-                    //END OF DEBUG
+#endif
 
                     if (ImGui.MenuItem("Exit", "Alt+F4"))
                     {
