@@ -97,7 +97,7 @@ namespace LeaderEditor
 
                         ImGui.PushID(go.Name + i);
 
-                        if (ImGui.Selectable(go.Name, i == SelectedObjectIndex, ImGuiSelectableFlags.DontClosePopups))
+                        if (ImGui.Selectable(go.Name, i == SelectedObjectIndex))
                             SelectedObjectIndex = i;
                         ImGui.SameLine();
 
