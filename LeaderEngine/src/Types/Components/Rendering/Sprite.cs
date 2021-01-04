@@ -40,9 +40,7 @@ namespace LeaderEngine
             if (Texture == null)
                 return;
 
-            Matrix4 model = Matrix4.CreateScale(transform.Scale)
-                 * Matrix4.CreateFromQuaternion(transform.Rotation)
-                 * Matrix4.CreateTranslation(transform.Position + RenderingGlobals.GlobalPosition);
+            Matrix4 model = transform.ModelMatrix;
 
             shader.SetMatrix4("mvp", model * RenderingGlobals.View * RenderingGlobals.Projection);
             shader.SetVector4("color", new Vector4(Color.R, Color.G, Color.B, Color.A));

@@ -33,9 +33,7 @@ namespace LeaderEngine
             if (MeshFilter.Mesh == null)
                 return;
 
-            Matrix4 model = Matrix4.CreateScale(transform.Scale)
-                 * Matrix4.CreateFromQuaternion(transform.Rotation)
-                 * Matrix4.CreateTranslation(transform.Position + RenderingGlobals.GlobalPosition);
+            Matrix4 model = transform.ModelMatrix;
 
             Material renderMat = material;
             if (material == null)

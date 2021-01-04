@@ -10,6 +10,23 @@ namespace LeaderEngine
         public Vector3 RotationEuler = Vector3.Zero;
         public Vector3 Scale = Vector3.One;
 
+        public Matrix4 ModelMatrix {
+            get
+            {
+                Matrix4 model;
+                if (gameObject.Parent == null)
+                    model = Matrix4.CreateScale(Scale)
+                        * Matrix4.CreateFromQuaternion(Rotation)
+                        * Matrix4.CreateTranslation(Position + RenderingGlobals.GlobalPosition);
+                else
+                    model = Matrix4.CreateScale(Scale)
+                        * Matrix4.CreateFromQuaternion(Rotation)
+                        * Matrix4.CreateTranslation(Position)
+                        * gameObject.Parent.transform.ModelMatrix;
+                return model;
+            }
+        }
+
         public event Action<Vector3> OnPositionChange;
         public event Action<Quaternion, Vector3> OnRotationChange;
         public event Action<Vector3> OnScaleChange;
