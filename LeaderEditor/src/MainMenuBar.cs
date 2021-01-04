@@ -13,13 +13,21 @@ namespace LeaderEditor
 {
     public class MainMenuBar : EditorComponent
     {
-        public static Dictionary<string, WindowComponent> windows = new Dictionary<string, WindowComponent>();
+        private static class Theme
+        {
+            public static string Light = "Light";
+            public static string Dark = "Dark";
+        }
 
         private static Dictionary<string, Action> ImGuiMenuDrawers = new Dictionary<string, Action>()
         {
             { "File", DrawFileMenu },
             { "Windows", DrawWindowsMenu }
         };
+
+        private string theme = Theme.Dark;
+
+        public static Dictionary<string, WindowComponent> windows = new Dictionary<string, WindowComponent>();
 
         public static void RegisterWindow(string name, WindowComponent window)
             => windows.Add(name, window);
@@ -37,6 +45,22 @@ namespace LeaderEditor
                         item.Value();
                         ImGui.EndMenu();
                     }
+
+                ImGui.SetNextItemWidth(120.0f);
+                if (ImGui.BeginCombo("Theme", theme))
+                {
+                    if (ImGui.Selectable(Theme.Dark, theme == Theme.Dark))
+                    {
+                        theme = Theme.Dark;
+                        ImGui.StyleColorsDark();
+                    }
+                    if (ImGui.Selectable(Theme.Light, theme == Theme.Light))
+                    {
+                        theme = Theme.Light;
+                        ImGui.StyleColorsLight();
+                    }
+                    ImGui.EndCombo();
+                }
 
                 ImGui.EndMainMenuBar();
             }
