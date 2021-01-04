@@ -211,7 +211,7 @@ void main()
                 _windowWidth / _scaleFactor.X,
                 _windowHeight / _scaleFactor.Y);
             io.DisplayFramebufferScale = _scaleFactor;
-            io.DeltaTime = Time.deltaTime; // DeltaTime is in seconds.
+            io.DeltaTime = Time.deltaTimeUnscaled; // DeltaTime is in seconds.
         }
 
         readonly List<char> PressedChars = new List<char>();
