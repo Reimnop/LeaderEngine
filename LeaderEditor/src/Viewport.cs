@@ -36,10 +36,10 @@ namespace LeaderEditor
         {
             framebuffer = new Framebuffer(1280, 720);
 
-            Application.main.SceneRender += SceneRender;
-            Application.main.PostSceneRender += PostSceneRender;
-            Application.main.PostProcess += PostProcess;
-            Application.main.PostGuiRender += PostGuiRender;
+            Application.Main.SceneRender += SceneRender;
+            Application.Main.PostSceneRender += PostSceneRender;
+            Application.Main.PostProcess += PostProcess;
+            Application.Main.PostGuiRender += PostGuiRender;
 
             ImGuiController.main.OnImGui += OnImGui;
 
@@ -58,8 +58,8 @@ namespace LeaderEditor
         private void SceneRender()
         {
             //resize viewport and postprocessor
-            Application.main.ResizeViewport((int)ViewportSize.X, (int)ViewportSize.Y);
-            Application.main.PostProcessor.Resize((int)ViewportSize.X, (int)ViewportSize.Y);
+            Application.Main.ResizeViewport((int)ViewportSize.X, (int)ViewportSize.Y);
+            Application.Main.PostProcessor.Resize((int)ViewportSize.X, (int)ViewportSize.Y);
         }
 
         private void PostSceneRender()
@@ -98,7 +98,7 @@ namespace LeaderEditor
             //end the render
             framebuffer.End();
 
-            GL.Viewport(0, 0, Application.main.Size.X, Application.main.Size.Y);
+            GL.Viewport(0, 0, Application.Main.Size.X, Application.Main.Size.Y);
         }
 
 

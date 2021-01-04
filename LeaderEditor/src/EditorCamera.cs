@@ -23,8 +23,8 @@ namespace LeaderEditor
             if (Main == null)
                 Main = this;
 
-            Application.main.SceneRender += SceneRender;
-            Application.main.GuiRender += GuiRender;
+            Application.Main.SceneRender += SceneRender;
+            Application.Main.GuiRender += GuiRender;
         }
 
         public void LookAt(Vector3 position)
@@ -61,7 +61,7 @@ namespace LeaderEditor
             if (!Enabled)
                 return;
 
-            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.main.ViewportSize.X / (float)Application.main.ViewportSize.Y, 0.02f, 512.0f);
+            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.Main.ViewportSize.X / (float)Application.Main.ViewportSize.Y, 0.02f, 512.0f);
 
             ViewMatrix = Matrix4.CreateTranslation(-transform.Position) *
                 Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(new Vector3(
@@ -76,7 +76,7 @@ namespace LeaderEditor
 
         private void GuiRender()
         {
-            RenderingGlobals.Projection = Matrix4.CreateOrthographic(Application.main.ViewportSize.X, Application.main.ViewportSize.Y, 0.0f, 100.0f);
+            RenderingGlobals.Projection = Matrix4.CreateOrthographic(Application.Main.ViewportSize.X, Application.Main.ViewportSize.Y, 0.0f, 100.0f);
             RenderingGlobals.View = Matrix4.Identity;
         }
     }

@@ -16,7 +16,7 @@ namespace LeaderEngine
             if (Main == null)
                 Main = this;
 
-            Application.main.SceneRender += SceneRender;
+            Application.Main.SceneRender += SceneRender;
         }
 
         private void SceneRender()
@@ -24,7 +24,7 @@ namespace LeaderEngine
             if (!Enabled)
                 return;
 
-            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.main.ViewportSize.X / (float)Application.main.ViewportSize.Y, 0.02f, 512.0f);
+            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.Main.ViewportSize.X / (float)Application.Main.ViewportSize.Y, 0.02f, 512.0f);
 
             ViewMatrix = Matrix4.CreateTranslation(-transform.Position) *
                 Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(new Vector3(
@@ -46,7 +46,7 @@ namespace LeaderEngine
         {
             Main = null;
 
-            Application.main.SceneRender -= SceneRender;
+            Application.Main.SceneRender -= SceneRender;
         }
     }
 }

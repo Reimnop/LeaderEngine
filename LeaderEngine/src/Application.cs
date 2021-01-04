@@ -19,7 +19,7 @@ namespace LeaderEngine
 
     public class Application : GameWindow
     {
-        public static Application main = null;
+        public static Application Main = null;
 
         public List<GameObject> WorldGameObjects = new List<GameObject>();
         public List<GameObject> WorldGameObjects_Transparent = new List<GameObject>();
@@ -54,10 +54,10 @@ namespace LeaderEngine
 
         public Application(GameWindowSettings gws, NativeWindowSettings nws, Action initCallback) : base(gws, nws)
         {
-            if (main != null)
+            if (Main != null)
                 return;
 
-            main = this;
+            Main = this;
             CursorVisible = true;
 
             this.initCallback = initCallback;
@@ -131,13 +131,13 @@ namespace LeaderEngine
 
             ThreadManager.ExecuteAll();
 
-            WorldGameObjects.ForEach(go => go.Update());
-            WorldGameObjects_Transparent.ForEach(go => go.Update());
-            GuiGameObjects.ForEach(go => go.Update());
+            WorldGameObjects.ForEach(go => { if (go.Parent == null) go.Update(); });
+            WorldGameObjects_Transparent.ForEach(go => { if (go.Parent == null) go.Update(); });
+            GuiGameObjects.ForEach(go => { if (go.Parent == null) go.Update(); });
 
-            WorldGameObjects.ForEach(go => go.LateUpdate());
-            WorldGameObjects_Transparent.ForEach(go => go.LateUpdate());
-            GuiGameObjects.ForEach(go => go.LateUpdate());
+            WorldGameObjects.ForEach(go => { if (go.Parent == null) go.LateUpdate(); });
+            WorldGameObjects_Transparent.ForEach(go => { if (go.Parent == null) go.LateUpdate(); });
+            GuiGameObjects.ForEach(go => { if (go.Parent == null) go.LateUpdate(); });
 
             PhysicsController.Update();
         }

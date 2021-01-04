@@ -32,8 +32,8 @@ namespace LeaderEditor.Gui
         private Texture _fontTexture;
         private Shader _shader;
         
-        private int _windowWidth { get { return Application.main.Size.X; } }
-        private int _windowHeight { get { return Application.main.Size.Y; } }
+        private int _windowWidth { get { return Application.Main.Size.X; } }
+        private int _windowHeight { get { return Application.Main.Size.Y; } }
 
         private System.Numerics.Vector2 _scaleFactor = System.Numerics.Vector2.One;
 
@@ -41,10 +41,10 @@ namespace LeaderEditor.Gui
         {
             main = this;
 
-            Application.main.CursorVisible = false;
+            Application.Main.CursorVisible = false;
 
-            Application.main.TextInput += TextInput;
-            Application.main.FinishRender += FinishRender;
+            Application.Main.TextInput += TextInput;
+            Application.Main.FinishRender += FinishRender;
 
             IntPtr context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
@@ -220,8 +220,8 @@ void main()
         {
             ImGuiIOPtr io = ImGui.GetIO();
 
-            MouseState MouseState = Application.main.MouseState;
-            KeyboardState KeyboardState = Application.main.KeyboardState;
+            MouseState MouseState = Application.Main.MouseState;
+            KeyboardState KeyboardState = Application.Main.KeyboardState;
 
             io.MouseDown[0] = MouseState.IsButtonDown(MouseButton.Left);
             io.MouseDown[1] = MouseState.IsButtonDown(MouseButton.Right);

@@ -129,7 +129,7 @@ namespace LeaderEditor
 
             if (ImGui.MenuItem("Exit", "Alt+F4"))
             {
-                Application.main.Close();
+                Application.Main.Close();
             }
         }
 

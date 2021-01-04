@@ -17,6 +17,11 @@ namespace LeaderEngine
         public bool ActiveSelf { private set; get; }
         public Transform transform { private set; get; }
 
+        public string Tag = "Default";
+
+        public GameObject Parent;
+        public List<GameObject> Children = new List<GameObject>();
+
         private List<Component> components = new List<Component>();
         private List<EditorComponent> editorComponents = new List<EditorComponent>();
 
@@ -31,17 +36,17 @@ namespace LeaderEngine
             switch (renderHint)
             {
                 case RenderHint.World:
-                    listToAdd = Application.main.WorldGameObjects;
+                    listToAdd = Application.Main.WorldGameObjects;
                     break;
                 case RenderHint.Transparent:
-                    listToAdd = Application.main.WorldGameObjects_Transparent;
+                    listToAdd = Application.Main.WorldGameObjects_Transparent;
                     break;
                 case RenderHint.Gui:
-                    listToAdd = Application.main.GuiGameObjects;
+                    listToAdd = Application.Main.GuiGameObjects;
                     break;
             }
 
-            Application.main.ExecuteNextUpdate(() =>
+            Application.Main.ExecuteNextUpdate(() =>
             {
                 listToAdd.Add(this);
             });
@@ -65,7 +70,7 @@ namespace LeaderEngine
             if (!ActiveSelf)
                 return;
 
-            if (!Application.main.EditorMode)
+            if (!Application.Main.EditorMode)
             {
                 Component[] comps = components.ToArray();
 
@@ -93,6 +98,8 @@ namespace LeaderEngine
                 if (co.Enabled)
                     co.EditorUpdate();
             }
+
+            UpdateLocal();
         }
 
         public void LateUpdate()
@@ -100,7 +107,7 @@ namespace LeaderEngine
             if (!ActiveSelf)
                 return;
 
-            if (!Application.main.EditorMode)
+            if (!Application.Main.EditorMode)
             {
                 Component[] comps = components.ToArray();
 
@@ -117,6 +124,28 @@ namespace LeaderEngine
             }
 
             transform.UpdateTransform();
+
+            LateUpdateLocal();
+        }
+
+        private void UpdateLocal()
+        {
+            GameObject[] _children = Children.ToArray();
+
+            for (int i = 0; i < _children.Length; i++)
+            {
+                _children[i]?.Update();
+            }
+        }
+
+        private void LateUpdateLocal()
+        {
+            GameObject[] _children = Children.ToArray();
+
+            for (int i = 0; i < _children.Length; i++)
+            {
+                _children[i]?.LateUpdate();
+            }
         }
 
         public void Render()
@@ -178,7 +207,7 @@ namespace LeaderEngine
                 eComp.EditorStart();
             }
 
-            if (!Application.main.EditorMode)
+            if (!Application.Main.EditorMode)
                 comp.Start();
 
             return comp;
@@ -199,7 +228,7 @@ namespace LeaderEngine
                 eComp.EditorStart();
             }
 
-            if (!Application.main.EditorMode)
+            if (!Application.Main.EditorMode)
                 component.Start();
 
             return component;
@@ -224,7 +253,7 @@ namespace LeaderEngine
                     eComp.EditorStart();
                 }
 
-                if (!Application.main.EditorMode)
+                if (!Application.Main.EditorMode)
                     co.Start();
             }
         }
@@ -253,7 +282,7 @@ namespace LeaderEngine
                 eComp.EditorRemove();
             }
 
-            if (!Application.main.EditorMode)
+            if (!Application.Main.EditorMode)
                 comp.OnRemove();
 
             components.Remove(comp);
@@ -271,7 +300,7 @@ namespace LeaderEngine
                 eComp.EditorRemove();
             }
 
-            if (!Application.main.EditorMode)
+            if (!Application.Main.EditorMode)
                 component.OnRemove();
 
             components.Remove(component);
@@ -297,7 +326,7 @@ namespace LeaderEngine
 
         public void Destroy()
         {
-            Application.main.ExecuteNextUpdate(() =>
+            Application.Main.ExecuteNextUpdate(() =>
             {
                 Dispose();
             });
@@ -305,7 +334,8 @@ namespace LeaderEngine
 
         public void Dispose()
         {
-            Application.main.WorldGameObjects.Remove(this);
+            Application.Main.WorldGameObjects.Remove(this);
+            Parent?.Children.Remove(this);
             Cleanup();
 
             GC.SuppressFinalize(this);

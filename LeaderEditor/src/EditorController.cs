@@ -35,10 +35,14 @@ namespace LeaderEditor
             ImGuiController = new GameObject("Controller");
             ImGuiController.AddComponent<ImGuiController>().OnImGui += OnImGui;
 
+            ImGuiController.Tag = "Editor";
+
             //camera
             editorCamera = new GameObject("EditorCamera");
             editorCamera.AddComponent<EditorCamera>();
             editorCamera.transform.Position = new OpenTK.Mathematics.Vector3(0.0f, 1.0f, 2.0f);
+
+            editorCamera.Tag = "Editor";
 
             //add all components
             gameObject.AddComponents(
@@ -50,6 +54,8 @@ namespace LeaderEditor
                     new DebugConsole(),
                     new DebugWindow()
                 });
+
+            gameObject.Tag = "Editor";
         }
 
         private void OnImGui()
@@ -76,7 +82,7 @@ namespace LeaderEditor
             DebugConsole.Log("Entering Editor Mode");
 
             EditorCamera.Main.Enabled = true;
-            Application.main.EditorMode = true;
+            Application.Main.EditorMode = true;
         }
 
         private static void SetupPlayMode()
@@ -84,7 +90,7 @@ namespace LeaderEditor
             DebugConsole.Log("Entering Play Mode");
 
             EditorCamera.Main.Enabled = false;
-            Application.main.EditorMode = false;
+            Application.Main.EditorMode = false;
         }
     }
 }

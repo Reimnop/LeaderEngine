@@ -4,21 +4,26 @@ using LeaderEditor.Gui;
 using LeaderEngine;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LeaderEditor
 {
     public class SceneHierachy : WindowComponent
     {
-        public static List<GameObject> SceneObjects = new List<GameObject>();
-        public static GameObject SelectedObject { 
+        public static List<GameObject> SceneObjects { 
             get 
-            { 
-                if (SelectedObjectIndex < SceneObjects.Count && SelectedObjectIndex > -1)
-                    return SceneObjects[SelectedObjectIndex];
+            {
+                List<GameObject> gameObjects = new List<GameObject>();
 
-                return null;
+                gameObjects.AddRange(Application.Main.WorldGameObjects.Where(x => x.Tag != "Editor"));
+                gameObjects.AddRange(Application.Main.WorldGameObjects_Transparent);
+                gameObjects.AddRange(Application.Main.GuiGameObjects);
+
+                return gameObjects;
             } 
         }
+
+        public static GameObject SelectedObject = null;
 
         private static readonly Dictionary<RenderHint, string> renderHintText = new Dictionary<RenderHint, string>()
         {
@@ -26,8 +31,6 @@ namespace LeaderEditor
             { RenderHint.Transparent, "[World, Transparent]" },
             { RenderHint.Gui, "[Gui]" }
         };
-
-        private static int SelectedObjectIndex = -1;
 
         private string[] objectTypes = { "World", "Transparent", "Gui" };
         private string currentType = "World";
@@ -47,13 +50,12 @@ namespace LeaderEditor
                 SelectedObject.Destroy();
                 SceneObjects.Remove(SelectedObject);
 
-                if (SceneObjects.Count <= SelectedObjectIndex)
-                    SelectedObjectIndex = -1;
+                SelectedObject = null;
             }
 
             //press right ctrl to deselect
             if (Input.GetKeyDown(Keys.RightControl))
-                SelectedObjectIndex = -1;
+                SelectedObject = null;
         }
 
         private void OnImGui()
@@ -91,22 +93,7 @@ namespace LeaderEditor
                     }
 
                     //draw all objects
-                    for (int i = 0; i < SceneObjects.Count; i++)
-                    {
-                        var go = SceneObjects[i];
-
-                        ImGui.PushID(go.Name + i);
-
-                        if (ImGui.Selectable(go.Name, i == SelectedObjectIndex))
-                            SelectedObjectIndex = i;
-                        ImGui.SameLine();
-
-                        ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(0.4f, 0.4f, 0.4f, 1.0f));
-                        ImGui.Text(renderHintText[go.RenderHint]);
-                        ImGui.PopStyleColor();
-
-                        ImGui.PopID();
-                    }
+                    RenderObjectTree();
                     ImGui.End();
                 }
         }
@@ -129,7 +116,60 @@ namespace LeaderEditor
                     break;
             }
 
-            SceneObjects.Add(new GameObject("New GameObject", renderHint));
+            GameObject go = new GameObject("New GameObject", renderHint);
+
+            go.Parent = SelectedObject;
+            SelectedObject?.Children.Add(go);
+        }
+
+        private int index = 0;
+
+        private void RenderObjectTree()
+        {
+            List<GameObject> _sceneObjects = SceneObjects;
+
+            index = 0;
+
+            for (int i = 0; i < SceneObjects.Count; i++)
+            {
+                var go = _sceneObjects[i];
+
+                if (go.Parent == null)
+                    RecursivelyRender(go);
+            }
+        }
+
+        private void RecursivelyRender(GameObject go)
+        {
+            ImGui.PushID(go.Name + index);
+
+            index++;
+
+            ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags.OpenOnArrow;
+
+            if (SelectedObject == go)
+                nodeFlags |= ImGuiTreeNodeFlags.Selected;
+
+            bool nodeOpen = ImGui.TreeNodeEx(go.Name, nodeFlags);
+
+            if (ImGui.IsItemClicked())
+                SelectedObject = go;
+
+            ImGui.SameLine();
+
+            ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(0.4f, 0.4f, 0.4f, 1.0f));
+            ImGui.Text(renderHintText[go.RenderHint]);
+            ImGui.PopStyleColor();
+
+            if (nodeOpen)
+            {
+                for (int i = 0; i < go.Children.Count; i++)
+                    RecursivelyRender(go.Children[i]);
+
+                ImGui.TreePop();
+            }
+
+            ImGui.PopID();
         }
     }
 }

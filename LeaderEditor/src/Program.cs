@@ -29,7 +29,7 @@ namespace LeaderEditor
 
         static void LoadEditor()
         {
-            Application.main.EditorMode = true;
+            Application.Main.EditorMode = true;
 
             GameObject editorController = new GameObject("EditorController");
             editorController.AddComponent<EditorController>();
