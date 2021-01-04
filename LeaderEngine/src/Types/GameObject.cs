@@ -19,8 +19,19 @@ namespace LeaderEngine
 
         public string Tag = "Default";
 
-        public GameObject Parent;
-        public List<GameObject> Children = new List<GameObject>();
+        public GameObject Parent
+        {
+            get => _parent;
+            set
+            {
+                _parent?.Children.Remove(this);
+                value?.Children.Add(this);
+                _parent = value;
+            }
+        }
+        private GameObject _parent;
+
+        public List<GameObject> Children { private set; get; } = new List<GameObject>();
 
         private List<Component> components = new List<Component>();
         private List<EditorComponent> editorComponents = new List<EditorComponent>();
@@ -335,7 +346,7 @@ namespace LeaderEngine
         public void Dispose()
         {
             Application.Main.WorldGameObjects.Remove(this);
-            Parent?.Children.Remove(this);
+            Parent = null;
             Cleanup();
 
             GC.SuppressFinalize(this);

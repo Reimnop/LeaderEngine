@@ -119,7 +119,6 @@ namespace LeaderEditor
             GameObject go = new GameObject("New GameObject", renderHint);
 
             go.Parent = SelectedObject;
-            SelectedObject?.Children.Add(go);
         }
 
         private int index = 0;
