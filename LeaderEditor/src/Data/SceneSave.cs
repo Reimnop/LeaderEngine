@@ -24,10 +24,7 @@ namespace LeaderEditor.Data
         public static void SaveScene(string path)
         {
             SceneInfo sceneInfo = ProcessScene();
-            string json = JsonConvert.SerializeObject(sceneInfo, Formatting.Indented,
-                new Vector4Converter(),
-                new Vector3Converter(),
-                new MeshConverter());
+            string json = JsonConvert.SerializeObject(sceneInfo, Formatting.Indented, SceneCommons.JsonConverters);
 
             File.WriteAllText(path, json);
         }
@@ -88,7 +85,7 @@ namespace LeaderEditor.Data
             componentFieldInfo.Name = fieldInfo.Name;
             componentFieldInfo.TypeName = fieldInfo.FieldType.FullName;
             componentFieldInfo.AssemblyName = fieldInfo.FieldType.Assembly.GetName().Name;
-            componentFieldInfo.Data = fieldInfo.GetValue(comp);
+            componentFieldInfo.DataJson = JsonConvert.SerializeObject(fieldInfo.GetValue(comp), SceneCommons.JsonConverters);
 
             return componentFieldInfo;
         }

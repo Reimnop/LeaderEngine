@@ -12,10 +12,7 @@ namespace LeaderEditor.Data
     {
         public static void LoadScene(string path)
         {
-            SceneInfo sceneInfo = JsonConvert.DeserializeObject<SceneInfo>(File.ReadAllText(path),
-                new Vector4Converter(),
-                new Vector3Converter(),
-                new MeshConverter());
+            SceneInfo sceneInfo = JsonConvert.DeserializeObject<SceneInfo>(File.ReadAllText(path), SceneCommons.JsonConverters);
 
             ProcessScene(sceneInfo);
         }
@@ -64,9 +61,12 @@ namespace LeaderEditor.Data
 
         private static void ProcessField(Component component, ComponentFieldInfo componentFieldInfo)
         {
+            Type typeToDeserializeTo = GetAssemblyByName(componentFieldInfo.AssemblyName).GetType(componentFieldInfo.TypeName);
+            object data = JsonConvert.DeserializeObject(componentFieldInfo.DataJson, typeToDeserializeTo, SceneCommons.JsonConverters);
+
             component.GetType()
                 .GetField(componentFieldInfo.Name)
-                .SetValue(component, TypeChanger.ConvertType(GetAssemblyByName(componentFieldInfo.AssemblyName).GetType(componentFieldInfo.TypeName), componentFieldInfo.Data));
+                .SetValue(component, data);
         }
 
         private static Assembly GetAssemblyByName(string name)
