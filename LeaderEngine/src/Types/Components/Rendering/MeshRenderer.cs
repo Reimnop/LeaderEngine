@@ -66,7 +66,7 @@ namespace LeaderEngine
                     renderMat.SetInt("texture0", 0);
                     texture?.Use(TextureUnit.Texture0);
 
-                    LightingController.LightingShaderSetup(renderMat, transform.Position + RenderingGlobals.GlobalPosition, transform.Rotation, transform.Scale);
+                    LightingController.LightingShaderSetup(renderMat, model);
                 }
 
                 renderMat.Use();

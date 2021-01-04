@@ -52,7 +52,7 @@ namespace LeaderEngine
             RenderingGlobals.GlobalPosition = Vector3.Zero;
         }
 
-        public static void LightingShaderSetup(Material mat, Vector3 position, Quaternion rotation, Vector3 scale)
+        public static void LightingShaderSetup(Material mat, Matrix4 model)
         {
             if (DirectionalLight == null)
             {
@@ -63,14 +63,12 @@ namespace LeaderEngine
                 return;
             }
 
-            Matrix4 model = Matrix4.CreateScale(scale)
-                 * Matrix4.CreateFromQuaternion(rotation)
-                 * Matrix4.CreateTranslation(position - CameraPos);
+            Matrix4 lightModel = model * Matrix4.CreateTranslation(-CameraPos);
 
             var dir = DirectionalLight.transform.Forward;
             dir.Z = -dir.Z;
 
-            mat.SetMatrix4("model", model);
+            mat.SetMatrix4("model", lightModel);
             mat.SetMatrix4("lightSpaceMatrix", lightView * lightProjection);
 
             mat.SetVector3("lightDir", dir);
