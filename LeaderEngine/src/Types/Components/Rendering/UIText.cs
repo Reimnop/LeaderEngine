@@ -87,9 +87,7 @@ namespace LeaderEngine
             //GL.Enable(EnableCap.Blend);
             //GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            Matrix4 model = Matrix4.CreateScale(transform.Scale)
-                 * Matrix4.CreateFromQuaternion(transform.Rotation)
-                 * Matrix4.CreateTranslation(transform.Position);
+            Matrix4 model = transform.ModelMatrix;
 
             shader.SetMatrix4("mvp", model * RenderingGlobals.View * RenderingGlobals.Projection);
 

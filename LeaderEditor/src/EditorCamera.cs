@@ -30,7 +30,7 @@ namespace LeaderEditor
         public void LookAt(Vector3 position)
         {
             Vector3 newPos = position + new Vector3(2.0f, 2.0f, 2.0f);
-            transform.Position = newPos;
+            transform.LocalPosition = newPos;
             transform.RotationEuler = new Vector3(30.0f, -45.0f, 0.0f);
         }
 
@@ -44,7 +44,7 @@ namespace LeaderEditor
             float moveZ = Input.GetAxis(Axis.Vertical);
 
             Vector3 move = transform.Forward * moveZ + transform.Right * moveX;
-            transform.Position += move * Time.deltaTime * Speed * speedMultiplier;
+            transform.LocalPosition += move * Time.deltaTime * Speed * speedMultiplier;
 
             if (Input.GetMouse(MouseButton.Right))
             {
@@ -61,14 +61,15 @@ namespace LeaderEditor
             if (!Enabled)
                 return;
 
+            Vector3 pos = transform.Position;
+
             ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.Main.ViewportSize.X / (float)Application.Main.ViewportSize.Y, 0.02f, 512.0f);
 
-            ViewMatrix = Matrix4.CreateTranslation(-transform.Position) *
-                Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(new Vector3(
-                    MathHelper.DegreesToRadians(transform.RotationEuler.X),
-                    MathHelper.DegreesToRadians(transform.RotationEuler.Y),
-                    MathHelper.DegreesToRadians(transform.RotationEuler.Z))
-                    ));
+            ViewMatrix = Matrix4.LookAt(
+                    pos,
+                    pos + transform.Forward,
+                    transform.Up
+                );
 
             RenderingGlobals.Projection = ProjectionMatrix;
             RenderingGlobals.View = ViewMatrix;

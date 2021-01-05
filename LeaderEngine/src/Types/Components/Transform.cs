@@ -5,23 +5,32 @@ namespace LeaderEngine
 {
     public class Transform : Component
     {
-        public Vector3 Position = Vector3.Zero;
+        public Vector3 Position
+        {
+            get
+            {
+                Matrix4 model = ModelMatrix;
+                return new Vector3(model.M41, model.M42, model.M43);
+            }
+        }
+        public Vector3 LocalPosition = Vector3.Zero;
         public Quaternion Rotation = Quaternion.Identity;
         public Vector3 RotationEuler = Vector3.Zero;
         public Vector3 Scale = Vector3.One;
 
-        public Matrix4 ModelMatrix {
+        public Matrix4 ModelMatrix 
+        {
             get
             {
                 Matrix4 model;
                 if (gameObject.Parent == null)
                     model = Matrix4.CreateScale(Scale)
                         * Matrix4.CreateFromQuaternion(Rotation)
-                        * Matrix4.CreateTranslation(Position + RenderingGlobals.GlobalPosition);
+                        * Matrix4.CreateTranslation(LocalPosition + RenderingGlobals.GlobalPosition);
                 else
                     model = Matrix4.CreateScale(Scale)
                         * Matrix4.CreateFromQuaternion(Rotation)
-                        * Matrix4.CreateTranslation(Position)
+                        * Matrix4.CreateTranslation(LocalPosition)
                         * gameObject.Parent.transform.ModelMatrix;
                 return model;
             }
@@ -31,9 +40,9 @@ namespace LeaderEngine
         public event Action<Quaternion, Vector3> OnRotationChange;
         public event Action<Vector3> OnScaleChange;
 
-        public Vector3 Forward => (Matrix4.CreateFromQuaternion(Rotation) * -Vector4.UnitZ).Xyz;
-        public Vector3 Right => (Matrix4.CreateFromQuaternion(Rotation) * Vector4.UnitX).Xyz;
-        public Vector3 Up => (Matrix4.CreateFromQuaternion(Rotation) * Vector4.UnitY).Xyz;
+        public Vector3 Forward => Vector3.Transform(-Vector3.UnitZ, Quaternion.Conjugate(Rotation));
+        public Vector3 Right => Vector3.Transform(Vector3.UnitX, Quaternion.Conjugate(Rotation));
+        public Vector3 Up => Vector3.Transform(Vector3.UnitY, Quaternion.Conjugate(Rotation));
 
         private Vector3 lastEuler = Vector3.Zero;
         private Quaternion lastQuat = Quaternion.Identity;
@@ -84,10 +93,10 @@ namespace LeaderEngine
 
         private void UpdatePosition()
         {
-            if (Position != lastPosition)
-                OnPositionChange?.Invoke(Position);
+            if (LocalPosition != lastPosition)
+                OnPositionChange?.Invoke(LocalPosition);
 
-            lastPosition = Position;
+            lastPosition = LocalPosition;
         }
 
         private void UpdateScale()

@@ -22,7 +22,7 @@ namespace LeaderEditor.Data
             for (int i = 0; i < sceneInfo.Models.Length; i++)
                 ResourceLoader.LoadModel(Path.Combine(AssetLoader.LoadedProjectDir, "Assets", sceneInfo.Models[i]));
 
-            EditorCamera.Main.transform.Position = sceneInfo.EditorCamPosition;
+            EditorCamera.Main.transform.LocalPosition = sceneInfo.EditorCamPosition;
             EditorCamera.Main.transform.RotationEuler = sceneInfo.EditorCamRotation;
             GameObjectInfo[] gameObjectInfos = sceneInfo.GameObjects;
 

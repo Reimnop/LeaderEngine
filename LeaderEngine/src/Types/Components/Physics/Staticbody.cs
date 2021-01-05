@@ -14,7 +14,7 @@ namespace LeaderEngine
             collider = gameObject.GetComponent<Collider>();
 
             handle = PhysicsController.Simulation.Statics.Add(new StaticDescription(
-                new System.Numerics.Vector3(transform.Position.X, transform.Position.Y, transform.Position.Z),
+                new System.Numerics.Vector3(transform.LocalPosition.X, transform.LocalPosition.Y, transform.LocalPosition.Z),
                 new CollidableDescription(collider.ShapeIndex, 0.01f)));
 
             transform.OnPositionChange += OnPositionChange;
@@ -24,7 +24,7 @@ namespace LeaderEngine
         {
             PhysicsController.Simulation.Statics.ApplyDescription(handle,
                 new StaticDescription(
-                    new System.Numerics.Vector3(transform.Position.X, transform.Position.Y, transform.Position.Z),
+                    new System.Numerics.Vector3(transform.LocalPosition.X, transform.LocalPosition.Y, transform.LocalPosition.Z),
                     new CollidableDescription(collider.ShapeIndex, 0.01f))
                 );
         }

@@ -33,7 +33,7 @@ namespace LeaderEditor.Data
         {
             SceneInfo sceneInfo = new SceneInfo();
             sceneInfo.Models = ResourceLoader.LoadedModels.Select(x => x.Key).ToArray();
-            sceneInfo.EditorCamPosition = EditorCamera.Main.transform.Position;
+            sceneInfo.EditorCamPosition = EditorCamera.Main.transform.LocalPosition;
             sceneInfo.EditorCamRotation = EditorCamera.Main.transform.RotationEuler;
             sceneInfo.GameObjects = new GameObjectInfo[SceneHierachy.SceneObjects.Count];
 

@@ -15,7 +15,7 @@ namespace LeaderEngine
             collider.Shape.ComputeInertia(1.0f, out var bodyInertia);
 
             handle = PhysicsController.Simulation.Bodies.Add(BodyDescription.CreateDynamic(
-                new System.Numerics.Vector3(transform.Position.X, transform.Position.Y, transform.Position.Z),
+                new System.Numerics.Vector3(transform.LocalPosition.X, transform.LocalPosition.Y, transform.LocalPosition.Z),
                 bodyInertia,
                 new CollidableDescription(collider.ShapeIndex, 0.01f),
                 new BodyActivityDescription(0.05f)));
@@ -27,7 +27,7 @@ namespace LeaderEngine
         {
             BodyReference body = sim.Bodies.GetBodyReference(handle);
 
-            transform.Position = new OpenTK.Mathematics.Vector3(body.Pose.Position.X, body.Pose.Position.Y, body.Pose.Position.Z);
+            transform.LocalPosition = new OpenTK.Mathematics.Vector3(body.Pose.Position.X, body.Pose.Position.Y, body.Pose.Position.Z);
             transform.Rotation = new OpenTK.Mathematics.Quaternion(body.Pose.Orientation.X, body.Pose.Orientation.Y, body.Pose.Orientation.Z, body.Pose.Orientation.W);
         }
 

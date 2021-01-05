@@ -41,11 +41,13 @@ namespace LeaderEngine
 
             AL.BufferData(bufferHandle, GetSoundFormat(channels, bits_per_sample), ref sound_data[0], sound_data.Length, sample_rate);
 
+            var pos = transform.Position;
+
             sourceHandle = AL.GenSource();
             AL.Source(sourceHandle, ALSourcef.Gain, 1.0f);
             AL.Source(sourceHandle, ALSourcef.Pitch, 1.0f);
             AL.Source(sourceHandle, ALSourceb.Looping, true);
-            AL.Source(sourceHandle, ALSource3f.Position, ref transform.Position);
+            AL.Source(sourceHandle, ALSource3f.Position, ref pos);
 
             AL.Source(sourceHandle, ALSourcei.Buffer, bufferHandle);
             AL.SourcePlay(sourceHandle);

@@ -40,7 +40,7 @@ namespace LeaderEditor
             //camera
             editorCamera = new GameObject("EditorCamera");
             editorCamera.AddComponent<EditorCamera>();
-            editorCamera.transform.Position = new OpenTK.Mathematics.Vector3(0.0f, 1.0f, 2.0f);
+            editorCamera.transform.LocalPosition = new OpenTK.Mathematics.Vector3(0.0f, 1.0f, 2.0f);
 
             editorCamera.Tag = "Editor";
 

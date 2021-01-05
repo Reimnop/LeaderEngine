@@ -19,7 +19,7 @@ namespace LeaderEditor
             Transform transform = (Transform)obj;
 
             ImGui.PushID("PositionV3");
-            ImGuiExtension.DragVector3("Position", ref transform.Position, Vector3.Zero, 0.05f);
+            ImGuiExtension.DragVector3("Position", ref transform.LocalPosition, Vector3.Zero, 0.05f);
             ImGui.PopID();
 
             ImGui.PushID("RotationV3");
