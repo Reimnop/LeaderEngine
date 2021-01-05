@@ -52,10 +52,6 @@ namespace LeaderEditor
 
                 SelectedObject = null;
             }
-
-            //press right ctrl to deselect
-            if (Input.GetKeyDown(Keys.RightControl))
-                SelectedObject = null;
         }
 
         private void OnImGui()
@@ -128,13 +124,20 @@ namespace LeaderEditor
             List<GameObject> _sceneObjects = SceneObjects;
 
             index = 0;
-
-            for (int i = 0; i < SceneObjects.Count; i++)
+            if (ImGui.BeginChild("Scene"))
             {
-                var go = _sceneObjects[i];
+                for (int i = 0; i < SceneObjects.Count; i++)
+                {
+                    var go = _sceneObjects[i];
 
-                if (go.Parent == null)
-                    RecursivelyRender(go);
+                    if (go.Parent == null)
+                        RecursivelyRender(go);
+                }
+
+                if (!ImGui.IsAnyItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Left) && ImGui.IsWindowHovered(ImGuiHoveredFlags.ChildWindows))
+                    SelectedObject = null;
+
+                ImGui.EndChild();
             }
         }
 
