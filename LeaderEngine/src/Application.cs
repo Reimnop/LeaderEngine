@@ -150,7 +150,7 @@ namespace LeaderEngine
 
             base.OnRenderFrame(e);
 
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.Disable(EnableCap.Blend);
             GL.Enable(EnableCap.DepthTest);
