@@ -27,10 +27,10 @@ namespace LeaderEditor.Data
             GameObjectInfo[] gameObjectInfos = sceneInfo.GameObjects;
 
             for (int i = 0; i < gameObjectInfos.Length; i++)
-                ProcessGameObject(gameObjectInfos[i]);
+                ProcessGameObject(gameObjectInfos[i], null);
         }
 
-        private static void ProcessGameObject(GameObjectInfo gameObjectInfo)
+        private static void ProcessGameObject(GameObjectInfo gameObjectInfo, GameObject parent)
         {
             GameObject gameObject = new GameObject(gameObjectInfo.Name, gameObjectInfo.RenderHint);
             gameObject.SetActive(gameObjectInfo.Active);
@@ -40,7 +40,11 @@ namespace LeaderEditor.Data
             for (int i = 0; i < componentInfos.Length; i++)
                 ProcessComponent(gameObject, componentInfos[i]);
 
-            SceneHierachy.SceneObjects.Add(gameObject);
+            if (parent != null)
+                gameObject.Parent = parent;
+
+            for (int i = 0; i < gameObjectInfo.Children.Length; i++)
+                ProcessGameObject(gameObjectInfo.Children[i], gameObject);
         }
 
         private static void ProcessComponent(GameObject gameObject, ComponentInfo componentInfo)

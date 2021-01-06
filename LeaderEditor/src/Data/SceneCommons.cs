@@ -35,6 +35,7 @@ namespace LeaderEditor.Data
         public string Name { get; set; }
         public bool Active { get; set; }
         public RenderHint RenderHint { get; set; }
+        public GameObjectInfo[] Children;
         public ComponentInfo[] Components { get; set; }
     }
 

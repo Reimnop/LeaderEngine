@@ -35,7 +35,10 @@ namespace LeaderEditor.Data
             sceneInfo.Models = ResourceLoader.LoadedModels.Select(x => x.Key).ToArray();
             sceneInfo.EditorCamPosition = EditorCamera.Main.transform.LocalPosition;
             sceneInfo.EditorCamRotation = EditorCamera.Main.transform.RotationEuler;
-            sceneInfo.GameObjects = new GameObjectInfo[SceneHierachy.SceneObjects.Count];
+
+            var sceneObjectsSurf = SceneHierachy.SceneObjects.Where(x => x.Parent == null).ToArray();
+
+            sceneInfo.GameObjects = new GameObjectInfo[sceneObjectsSurf.Length];
 
             for (int i = 0; i < sceneInfo.GameObjects.Length; i++)
                 sceneInfo.GameObjects[i] = ProcessGameObject(SceneHierachy.SceneObjects[i]);
@@ -56,6 +59,11 @@ namespace LeaderEditor.Data
 
             for (int i = 0; i < components.Count; i++)
                 gameObjectInfo.Components[i] = ProcessComponent(components[i]);
+
+            gameObjectInfo.Children = new GameObjectInfo[gameObject.Children.Count];
+
+            for (int i = 0; i < gameObject.Children.Count; i++)
+                gameObjectInfo.Children[i] = ProcessGameObject(gameObject.Children[i]);
 
             return gameObjectInfo;
         }
