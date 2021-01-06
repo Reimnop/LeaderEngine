@@ -31,19 +31,6 @@ namespace LeaderEditor
 
         public override void EditorStart()
         {
-            //add gui controller
-            ImGuiController = new GameObject("Controller");
-            ImGuiController.AddComponent<ImGuiController>().OnImGui += OnImGui;
-
-            ImGuiController.Tag = "Editor";
-
-            //camera
-            editorCamera = new GameObject("EditorCamera");
-            editorCamera.AddComponent<EditorCamera>();
-            editorCamera.transform.LocalPosition = new OpenTK.Mathematics.Vector3(0.0f, 1.0f, 2.0f);
-
-            editorCamera.Tag = "Editor";
-
             //add all components
             gameObject.AddComponents(
                 new Component[] {
@@ -56,12 +43,19 @@ namespace LeaderEditor
                 });
 
             gameObject.Tag = "Editor";
-        }
 
-        private void OnImGui()
-        {
-            //the dockspace
-            ImGui.DockSpaceOverViewport();
+            //camera
+            editorCamera = new GameObject("EditorCamera");
+            editorCamera.AddComponent<EditorCamera>();
+            editorCamera.transform.LocalPosition = new OpenTK.Mathematics.Vector3(0.0f, 1.0f, 2.0f);
+
+            editorCamera.Tag = "Editor";
+
+            //add gui controller
+            ImGuiController = new GameObject("Controller");
+            ImGuiController.AddComponent<ImGuiController>();
+
+            ImGuiController.Tag = "Editor";
         }
 
         private static void UpdateMode()

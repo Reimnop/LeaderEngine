@@ -41,7 +41,7 @@ namespace LeaderEditor
             Application.Main.PostProcess += PostProcess;
             Application.Main.PostGuiRender += PostGuiRender;
 
-            ImGuiController.main.OnImGui += OnImGui;
+            ImGuiController.AddImGuiFunc(OnImGui);
 
             //setup grid rendering
             gridVertArray = new VertexArray(vertices, indices, new VertexAttrib[]

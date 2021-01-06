@@ -16,9 +16,7 @@ namespace LeaderEditor.Gui
     /// </summary>
     public class ImGuiController : EditorComponent
     {
-        public static ImGuiController main;
-
-        public event Action OnImGui;
+        public static ImGuiController Main;
 
         private bool _frameBegun;
 
@@ -37,9 +35,16 @@ namespace LeaderEditor.Gui
 
         private System.Numerics.Vector2 _scaleFactor = System.Numerics.Vector2.One;
 
+        private static List<Action> ImGuiFuncs = new List<Action>();
+
+        public static void AddImGuiFunc(Action action)
+        {
+            ImGuiFuncs.Add(action);
+        }
+
         public unsafe override void EditorStart()
         {
-            main = this;
+            Main = this;
 
             //Application.Main.CursorVisible = false;
 
@@ -97,7 +102,7 @@ namespace LeaderEditor.Gui
 
             RecreateFontDeviceTexture();
 
-            string VertexSource = @"#version 330 core
+            string VertexSource = @"#version 400 core
 
 uniform mat4 projection_matrix;
 
@@ -114,7 +119,7 @@ void main()
     color = in_color;
     texCoord = in_texCoord;
 }";
-            string FragmentSource = @"#version 330 core
+            string FragmentSource = @"#version 400 core
 
 layout(location = 0) out vec4 outputColor;
 
@@ -173,7 +178,9 @@ void main()
         /// </summary>
         public void RenderImGui()
         {
-            OnImGui?.Invoke();
+            ImGui.DockSpaceOverViewport();
+
+            ImGuiFuncs.ForEach(x => x.Invoke());
 
             if (_frameBegun)
             {

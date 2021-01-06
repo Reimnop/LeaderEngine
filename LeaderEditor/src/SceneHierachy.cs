@@ -37,7 +37,7 @@ namespace LeaderEditor
 
         public override void EditorStart()
         {
-            ImGuiController.main.OnImGui += OnImGui;
+            ImGuiController.AddImGuiFunc(OnImGui);
 
             MainMenuBar.RegisterWindow("Scene Hierachy", this);
         }

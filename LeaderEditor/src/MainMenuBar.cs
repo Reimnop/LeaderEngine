@@ -33,7 +33,7 @@ namespace LeaderEditor
             => windows.Add(name, window);
 
         public override void EditorStart()
-            => ImGuiController.main.OnImGui += OnImGui;
+            => ImGuiController.AddImGuiFunc(OnImGui);
 
         private void OnImGui()
         {
