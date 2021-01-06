@@ -319,6 +319,8 @@ namespace LeaderEngine
 
         public void ReplaceTransform(Transform transform)
         {
+            transform.gameObject = this;
+
             components.Remove(this.transform);
             components.Insert(0, transform);
 

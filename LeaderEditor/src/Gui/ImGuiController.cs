@@ -37,11 +37,11 @@ namespace LeaderEditor.Gui
 
         private System.Numerics.Vector2 _scaleFactor = System.Numerics.Vector2.One;
 
-        public override void EditorStart()
+        public unsafe override void EditorStart()
         {
             main = this;
 
-            Application.Main.CursorVisible = false;
+            //Application.Main.CursorVisible = false;
 
             Application.Main.TextInput += TextInput;
             Application.Main.FinishRender += FinishRender;
@@ -55,7 +55,7 @@ namespace LeaderEditor.Gui
             io.BackendFlags |= ImGuiBackendFlags.HasMouseCursors;
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable | ImGuiConfigFlags.NavEnableKeyboard;
             io.ConfigWindowsResizeFromEdges = true;
-            io.MouseDrawCursor = true;
+            io.MouseDrawCursor = false;
 
             ImGui.StyleColorsDark();
 
@@ -232,6 +232,10 @@ void main()
 
             io.MouseWheel = MouseState.ScrollDelta.Y;
             io.MouseWheelH = MouseState.ScrollDelta.X;
+
+            //mouse cursors
+            ImGuiMouseCursor imCursor = ImGui.GetMouseCursor();
+            SetCursor(imCursor);
             
             foreach (Keys key in Enum.GetValues(typeof(Keys)))
             {
@@ -249,6 +253,43 @@ void main()
             io.KeyAlt = KeyboardState.IsKeyDown(Keys.LeftAlt) || KeyboardState.IsKeyDown(Keys.RightAlt);
             io.KeyShift = KeyboardState.IsKeyDown(Keys.LeftShift) || KeyboardState.IsKeyDown(Keys.RightShift);
             io.KeySuper = KeyboardState.IsKeyDown(Keys.LeftSuper) || KeyboardState.IsKeyDown(Keys.RightSuper);
+        }
+
+        private void SetCursor(ImGuiMouseCursor imCursor)
+        {
+            switch (imCursor)
+            {
+                case ImGuiMouseCursor.Arrow:
+                    SetGLCursor(CursorShape.Arrow);
+                    break;
+                case ImGuiMouseCursor.Hand:
+                    SetGLCursor(CursorShape.Hand);
+                    break;
+                case ImGuiMouseCursor.TextInput:
+                    SetGLCursor(CursorShape.IBeam);
+                    break;
+                case ImGuiMouseCursor.ResizeNS:
+                    SetGLCursor(CursorShape.VResize);
+                    break;
+                case ImGuiMouseCursor.ResizeEW:
+                    SetGLCursor(CursorShape.HResize);
+                    break;
+                case ImGuiMouseCursor.ResizeNESW:
+                    SetGLCursor(CursorShape.Arrow);
+                    break;
+                case ImGuiMouseCursor.ResizeNWSE:
+                    SetGLCursor(CursorShape.Arrow);
+                    break;
+                default:
+                    SetGLCursor(CursorShape.Arrow);
+                    break;
+            }
+        }
+
+        private unsafe void SetGLCursor(CursorShape cursorShape)
+        {
+            Cursor* cursor = GLFW.CreateStandardCursor(cursorShape);
+            GLFW.SetCursor(Application.Main.WindowPtr, cursor);
         }
 
         internal void PressChar(char keyChar)
