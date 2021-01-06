@@ -6,7 +6,9 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace LeaderEditor.Gui
 {
@@ -282,10 +284,16 @@ void main()
                     SetGLCursor(CursorShape.HResize);
                     break;
                 case ImGuiMouseCursor.ResizeNESW:
-                    SetGLCursor(CursorShape.Arrow);
+                    SetGLCursor(CursorShape.NESWResize);
                     break;
                 case ImGuiMouseCursor.ResizeNWSE:
-                    SetGLCursor(CursorShape.Arrow);
+                    SetGLCursor(CursorShape.NWSEResize);
+                    break;
+                case ImGuiMouseCursor.ResizeAll:
+                    SetGLCursor(CursorShape.ResizeAll);
+                    break;
+                case ImGuiMouseCursor.NotAllowed:
+                    SetGLCursor(CursorShape.NotAllowed);
                     break;
                 default:
                     SetGLCursor(CursorShape.Arrow);
