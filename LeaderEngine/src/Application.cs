@@ -25,6 +25,18 @@ namespace LeaderEngine
         public List<GameObject> WorldGameObjects_Transparent = new List<GameObject>();
         public List<GameObject> GuiGameObjects = new List<GameObject>();
 
+        private GameObject[] allObjects
+        {
+            get
+            {
+                List<GameObject> all = new List<GameObject>();
+                all.AddRange(WorldGameObjects);
+                all.AddRange(WorldGameObjects_Transparent);
+                all.AddRange(GuiGameObjects);
+                return all.ToArray();
+            }
+        }
+
         public bool EditorMode
         {
             get => _editorMode;
@@ -131,13 +143,17 @@ namespace LeaderEngine
 
             ThreadManager.ExecuteAll();
 
-            WorldGameObjects.ForEach(go => { if (go.Parent == null) go.Update(); });
-            WorldGameObjects_Transparent.ForEach(go => { if (go.Parent == null) go.Update(); });
-            GuiGameObjects.ForEach(go => { if (go.Parent == null) go.Update(); });
+            GameObject[] gameObjects = allObjects;
 
-            WorldGameObjects.ForEach(go => { if (go.Parent == null) go.LateUpdate(); });
-            WorldGameObjects_Transparent.ForEach(go => { if (go.Parent == null) go.LateUpdate(); });
-            GuiGameObjects.ForEach(go => { if (go.Parent == null) go.LateUpdate(); });
+            for (int i = 0; i < gameObjects.Length; i++)
+                if (gameObjects[i] != null)
+                    if (gameObjects[i].Parent == null)
+                        gameObjects[i].Update();
+
+            for (int i = 0; i < gameObjects.Length; i++)
+                if (gameObjects[i] != null)
+                    if (gameObjects[i].Parent == null)
+                        gameObjects[i].LateUpdate();
 
             PhysicsController.Update();
         }

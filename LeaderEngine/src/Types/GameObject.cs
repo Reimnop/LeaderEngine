@@ -57,10 +57,7 @@ namespace LeaderEngine
                     break;
             }
 
-            Application.Main.ExecuteNextUpdate(() =>
-            {
-                listToAdd.Add(this);
-            });
+            listToAdd.Add(this);
 
             Init();
         }
@@ -339,14 +336,15 @@ namespace LeaderEngine
 
         public void Destroy()
         {
-            Application.Main.ExecuteNextUpdate(() =>
-            {
-                Dispose();
-            });
+            Dispose();
         }
 
         public void Dispose()
         {
+            GameObject[] _children = Children.ToArray();
+            for (int i = 0; i < _children.Length; i++)
+                _children[i].Parent = null;
+
             Application.Main.WorldGameObjects.Remove(this);
             Parent = null;
             Cleanup();
