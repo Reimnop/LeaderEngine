@@ -59,7 +59,6 @@ namespace LeaderEditor
         {
             //resize viewport and postprocessor
             Application.Main.ResizeViewport((int)ViewportSize.X, (int)ViewportSize.Y);
-            Application.Main.PostProcessor.Resize((int)ViewportSize.X, (int)ViewportSize.Y);
         }
 
         private void PostSceneRender()

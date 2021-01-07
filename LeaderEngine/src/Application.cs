@@ -177,6 +177,7 @@ namespace LeaderEngine
             SceneRender?.Invoke();
             RenderingGlobals.CurrentPass = RenderPass.World;
 
+            PostProcessor.Resize(ViewportSize.X, ViewportSize.Y);
             PostProcessor.Begin();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
@@ -198,7 +199,7 @@ namespace LeaderEngine
             GuiRender?.Invoke();
             RenderGui();
             PostGuiRender?.Invoke();
-
+            
             FinishRender?.Invoke();
 
             SwapBuffers();
