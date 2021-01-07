@@ -111,19 +111,19 @@ namespace LeaderEditor
             if (ImGui.BeginMenu("Import"))
             {
                 if (ImGui.MenuItem("Model"))
-                    using (OpenFileDialog ofd = new OpenFileDialog())
-                    {
-                        ofd.Filter = "3D Model|*.fbx;*.obj";
-                        ofd.Multiselect = false;
-
-                        ofd.ShowDialog();
-
-                        if (!string.IsNullOrEmpty(ofd.FileName))
+                    if (!string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
+                        using (OpenFileDialog ofd = new OpenFileDialog())
                         {
-                            ResourceLoader.LoadModel(AssetLoader.LoadAsset(ofd.FileName));
-                        }
-                    }
+                            ofd.Filter = "3D Model|*.fbx;*.obj";
+                            ofd.Multiselect = false;
 
+                            ofd.ShowDialog();
+
+                            if (!string.IsNullOrEmpty(ofd.FileName))
+                            {
+                                ResourceLoader.LoadModel(AssetLoader.LoadAsset(ofd.FileName));
+                            }
+                        }
                 ImGui.EndMenu();
             }
 
