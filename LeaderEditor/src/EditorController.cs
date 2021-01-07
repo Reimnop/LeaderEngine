@@ -15,10 +15,7 @@ namespace LeaderEditor
         private static EditorMode _mode;
         public static EditorMode Mode
         {
-            get
-            {
-                return _mode;
-            }
+            get => _mode;
             set
             {
                 _mode = value;
