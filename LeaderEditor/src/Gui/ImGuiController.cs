@@ -224,6 +224,7 @@ void main()
         }
 
         readonly List<char> PressedChars = new List<char>();
+        private ImGuiMouseCursor lastCursor;
 
         private void UpdateImGuiInput()
         {
@@ -244,7 +245,11 @@ void main()
 
             //mouse cursors
             ImGuiMouseCursor imCursor = ImGui.GetMouseCursor();
-            SetCursor(imCursor);
+
+            if (imCursor != lastCursor)
+                SetCursor(imCursor);
+
+            lastCursor = imCursor;
             
             foreach (Keys key in Enum.GetValues(typeof(Keys)))
             {
