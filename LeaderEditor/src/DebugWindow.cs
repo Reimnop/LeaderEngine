@@ -11,13 +11,13 @@ namespace LeaderEditor
         {
             ImGuiController.AddImGuiFunc(OnImGui);
 
-            MainMenuBar.RegisterWindow("Debug Window", this);
+            MainMenuBar.RegisterWindow("Stats", this);
         }
 
         private void OnImGui()
         {
             if (IsOpen)
-                if (ImGui.Begin("Debug"))
+                if (ImGui.Begin("Stats"))
                 {
                     ImGui.Text("FPS: " + MathF.Round(100.0f / Time.deltaTimeUnscaled) / 100.0f);
                     ImGui.Text("Frametime: " + MathF.Round(Time.deltaTimeUnscaled * 100000.0f) / 100.0f + "ms");
