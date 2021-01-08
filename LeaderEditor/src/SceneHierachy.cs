@@ -1,5 +1,4 @@
 ﻿using ImGuiNET;
-using ImGuizmoNET;
 using LeaderEditor.Data;
 using LeaderEditor.Gui;
 using LeaderEngine;
