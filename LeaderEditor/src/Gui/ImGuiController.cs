@@ -1,4 +1,7 @@
 ﻿using ImGuiNET;
+using ImPlotNET;
+using ImNodesNET;
+using ImGuizmoNET;
 using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -55,6 +58,11 @@ namespace LeaderEditor.Gui
 
             IntPtr context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
+
+            IntPtr plotContext = ImPlot.CreateContext();
+            ImPlot.SetCurrentContext(plotContext);
+            ImPlot.SetImGuiContext(context);
+
             var io = ImGui.GetIO();
             //io.Fonts.AddFontDefault();
             io.Fonts.AddFontFromFileTTF(AppContext.BaseDirectory + "Fonts/Inconsolata.ttf", 16);
