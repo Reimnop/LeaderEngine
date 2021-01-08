@@ -5,7 +5,7 @@ using System;
 
 namespace LeaderEditor
 {
-    public class DebugWindow : WindowComponent
+    public class StatsWindow : WindowComponent
     {
         public override void EditorStart()
         {
