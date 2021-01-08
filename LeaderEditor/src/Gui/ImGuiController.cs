@@ -1,7 +1,6 @@
 ﻿using ImGuiNET;
 using ImPlotNET;
 using ImNodesNET;
-using ImGuizmoNET;
 using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
