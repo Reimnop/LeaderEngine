@@ -36,7 +36,7 @@ namespace LeaderEditor
                     new SceneHierachy(),
                     new Inspector(),
                     new DebugConsole(),
-                    new DebugWindow()
+                    new StatsWindow()
                 });
 
             gameObject.Tag = "Editor";
