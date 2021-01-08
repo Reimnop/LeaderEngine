@@ -1,7 +1,9 @@
 ﻿using ImGuiNET;
+using ImGuizmoNET;
 using LeaderEditor.Data;
 using LeaderEditor.Gui;
 using LeaderEngine;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Collections.Generic;
 using System.Linq;
