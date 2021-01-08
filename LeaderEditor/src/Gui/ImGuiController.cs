@@ -69,7 +69,7 @@ namespace LeaderEditor.Gui
             io.BackendFlags |= ImGuiBackendFlags.HasMouseCursors;
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable | ImGuiConfigFlags.NavEnableKeyboard;
             io.ConfigWindowsResizeFromEdges = true;
-            io.MouseDrawCursor = false;
+            //io.MouseDrawCursor = false;
 
             ImGui.StyleColorsDark();
 
