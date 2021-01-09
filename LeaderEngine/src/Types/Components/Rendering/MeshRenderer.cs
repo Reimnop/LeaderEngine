@@ -7,13 +7,7 @@ namespace LeaderEngine
     {
         public MeshFilter MeshFilter;
 
-        private Material material = Material.Lit;
-
-        public MeshRenderer SetMaterial(Material material)
-        {
-            this.material = material;
-            return this;
-        }
+        public Material Material;
 
         public override void EditorStart()
         {
@@ -22,7 +16,7 @@ namespace LeaderEngine
             if (meshFilter == null)
                 meshFilter = gameObject.AddComponent<MeshFilter>();
 
-            this.MeshFilter = meshFilter;
+            MeshFilter = meshFilter;
         }
 
         public override void OnRender()
@@ -35,43 +29,26 @@ namespace LeaderEngine
 
             Matrix4 model = transform.ModelMatrix;
 
-            Material renderMat = material;
-            if (material == null)
+            Material renderMat = Material;
+            if (Material == null)
                 renderMat = Material.NoRender;
 
             if (RenderingGlobals.CurrentPass == RenderPass.Lighting)
                 renderMat = Material.DepthOnly;
 
-            renderMat.SetMatrix4("mvp", model * RenderingGlobals.View * RenderingGlobals.Projection);
+            if (RenderingGlobals.CurrentPass != RenderPass.Lighting)
+                LightingController.LightingShaderSetup(renderMat, model);
 
-            var vertArrays = MeshFilter.Mesh.GetAllVertexArrays();
+            renderMat.Use();
+            renderMat.Shader.SetMatrix4("mvp", model * RenderingGlobals.View * RenderingGlobals.Projection);
 
-            foreach (var vertArray in vertArrays)
-            {
-                GL.Enable(EnableCap.CullFace);
-                GL.FrontFace(FrontFaceDirection.Cw);
-                GL.CullFace(CullFaceMode.Back);
+            MeshFilter.Mesh.Use();
 
-                if (RenderingGlobals.CurrentPass != RenderPass.Lighting)
-                {
-                    Texture texture = vertArray.GetTexture();
+            GL.Enable(EnableCap.CullFace);
+            GL.FrontFace(FrontFaceDirection.Cw);
+            GL.CullFace(CullFaceMode.Back);
 
-                    if (texture != null)
-                        renderMat.SetInt("useTexture", 1);
-                    else
-                        renderMat.SetInt("useTexture", 0);
-
-                    renderMat.SetInt("texture0", 0);
-                    texture?.Use(TextureUnit.Texture0);
-
-                    LightingController.LightingShaderSetup(renderMat, model);
-                }
-
-                renderMat.Use();
-                vertArray.Use();
-
-                GL.DrawElements(PrimitiveType.Triangles, vertArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
-            }
+            GL.DrawElements(PrimitiveType.Triangles, MeshFilter.Mesh.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
         }
     }
 }

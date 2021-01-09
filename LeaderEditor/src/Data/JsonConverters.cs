@@ -87,7 +87,7 @@ namespace LeaderEditor.Data
             if (obj.Type == JTokenType.String)
             {
                 var name = (string)obj;
-                return ResourceLoader.LoadedModels[name];
+                return ResourceLoader.LoadedMeshes[name];
             }
             return null;
         }

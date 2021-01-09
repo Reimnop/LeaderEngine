@@ -51,7 +51,7 @@ namespace LeaderEditor
 
             if (ImGui.BeginCombo("Select Model", preview))
             {
-                foreach (var item in ResourceLoader.LoadedModels) 
+                foreach (var item in ResourceLoader.LoadedMeshes) 
                 {
                     if (ImGui.Selectable(item.Key, meshFilter.Mesh == item.Value))
                         meshFilter.Mesh = item.Value;

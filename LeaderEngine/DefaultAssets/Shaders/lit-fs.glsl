@@ -4,6 +4,7 @@ layout (location = 0) out vec4 fragColor;
 
 uniform bool useTexture;
 
+uniform vec4 color;
 uniform vec3 lightDir;
 
 uniform sampler2D texture0;
@@ -35,7 +36,7 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 
 void main() 
 {
-	vec4 objectColor = vec4(VertCol, 1.0);
+	vec4 objectColor = vec4(VertCol, 1.0) * color;
 
 	if (useTexture)
 		objectColor *= texture(texture0, TexCoord);

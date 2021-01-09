@@ -97,6 +97,21 @@ namespace LeaderEngine
         }
         #endregion
 
+        public Material Clone()
+        {
+            return new Material(Shader);
+        }
+
+        public static Material Clone(Material material)
+        {
+            return new Material(material.Shader);
+        }
+
+        public static void Clone(Material material, out Material newMaterial)
+        {
+            newMaterial = new Material(material.Shader);
+        }
+
         public void Use()
         {
             Shader usingShader = Shader;

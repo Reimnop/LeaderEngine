@@ -17,7 +17,7 @@ namespace LeaderEngine
 
         private Texture textTexture;
         private Shader shader = Shader.TextShader;
-        private VertexArray vertexArray;
+        private Mesh mesh;
 
         private void UpdateText()
         {
@@ -52,7 +52,7 @@ namespace LeaderEngine
                 1, 2, 3
             };
 
-            vertexArray = new VertexArray(vertices, indices, new VertexAttrib[]
+            mesh = new Mesh("TextMesh", vertices, indices, new VertexAttrib[]
             {
                 new VertexAttrib { location = 0, size = 3 },
                 new VertexAttrib { location = 1, size = 2 }
@@ -94,9 +94,9 @@ namespace LeaderEngine
             textTexture.Use(TextureUnit.Texture0);
 
             shader.Use();
-            vertexArray.Use();
+            mesh.Use();
 
-            GL.DrawElements(PrimitiveType.Triangles, vertexArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, mesh.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
 
             //GL.DepthMask(true);
             //GL.Disable(EnableCap.Blend);

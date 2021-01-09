@@ -29,7 +29,7 @@ namespace LeaderEditor
             1, 2, 3
         };
 
-        private VertexArray gridVertArray;
+        private Mesh gridMesh;
         private Shader gridShader;
 
         public override void EditorStart()
@@ -44,7 +44,7 @@ namespace LeaderEditor
             ImGuiController.AddImGuiFunc(OnImGui);
 
             //setup grid rendering
-            gridVertArray = new VertexArray(vertices, indices, new VertexAttrib[]
+            gridMesh = new Mesh("Grids", vertices, indices, new VertexAttrib[]
             {
                 new VertexAttrib { location = 0, size = 3 }
             });
@@ -73,9 +73,9 @@ namespace LeaderEditor
             gridShader.SetMatrix4("p", RenderingGlobals.Projection);
 
             gridShader.Use();
-            gridVertArray.Use();
+            gridMesh.Use();
 
-            GL.DrawElements(PrimitiveType.Triangles, gridVertArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, gridMesh.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
 
             GL.Disable(EnableCap.Blend);
         }

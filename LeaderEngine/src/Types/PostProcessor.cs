@@ -10,7 +10,7 @@ namespace LeaderEngine
 
         private Framebuffer framebuffer;
 
-        private VertexArray vertexArray;
+        private Mesh mesh;
 
         public PostProcessor(int width, int height)
         {
@@ -47,7 +47,7 @@ namespace LeaderEngine
                 1, 2, 3
             };
 
-            vertexArray = new VertexArray(vertices, indices, new VertexAttrib[]
+            mesh = new Mesh("PPMesh", vertices, indices, new VertexAttrib[]
             {
                 new VertexAttrib { location = 0, size = 3 },
                 new VertexAttrib { location = 1, size = 2 }
@@ -71,7 +71,7 @@ namespace LeaderEngine
 
         public void Render()
         {
-            vertexArray.Use();
+            mesh.Use();
             PPShader.Use();
 
             PPShader.SetInt("texture0", 0);
@@ -82,12 +82,12 @@ namespace LeaderEngine
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, framebuffer.GetDepthTexture());
 
-            GL.DrawElements(PrimitiveType.Triangles, vertexArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, mesh.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
         }
 
         public void Dispose()
         {
-            vertexArray.Dispose();
+            mesh.Dispose();
         }
     }
 }

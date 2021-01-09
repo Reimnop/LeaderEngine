@@ -102,6 +102,8 @@ namespace LeaderEngine
         {
             Debug.WriteLine("Base Directory: " + AppContext.BaseDirectory);
 
+            GL.ClearColor(0.005f, 0.005f, 0.005f, 1.0f);
+
             Shader.InitDefaults();
             Material.InitDefaults();
 
@@ -110,12 +112,9 @@ namespace LeaderEngine
             PhysicsController.Init();
             AudioSource.Init();
 
-            PostProcessor = new PostProcessor(Size);
-
             Input.InputUpdate(KeyboardState, MouseState);
 
-            GL.ClearColor(0.005f, 0.005f, 0.005f, 1.0f);
-
+            PostProcessor = new PostProcessor(Size);
             ViewportSize = Size;
 
             initCallback?.Invoke();

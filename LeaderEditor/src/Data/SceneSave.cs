@@ -32,7 +32,7 @@ namespace LeaderEditor.Data
         private static SceneInfo ProcessScene()
         {
             SceneInfo sceneInfo = new SceneInfo();
-            sceneInfo.Models = ResourceLoader.LoadedModels.Select(x => x.Key).ToArray();
+            sceneInfo.Models = ResourceLoader.LoadedMeshes.Select(x => x.Key).ToArray();
             sceneInfo.EditorCamPosition = EditorCamera.Main.transform.LocalPosition;
             sceneInfo.EditorCamRotation = EditorCamera.Main.transform.RotationEuler;
 

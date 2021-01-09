@@ -8,7 +8,7 @@ namespace LeaderEngine
         public Color4 Color = Color4.White;
         public Texture Texture;
 
-        private VertexArray vertexArray;
+        private Mesh mesh;
 
         private Shader shader = Shader.SpriteShader;
 
@@ -28,7 +28,7 @@ namespace LeaderEngine
                 1, 2, 3
             };
 
-            vertexArray = new VertexArray(vertices, indices, new VertexAttrib[] 
+            mesh = new Mesh("SpriteMesh", vertices, indices, new VertexAttrib[] 
             {
                 new VertexAttrib { location = 0, size = 3 },
                 new VertexAttrib { location = 1, size = 2 }
@@ -48,9 +48,9 @@ namespace LeaderEngine
             Texture.Use(TextureUnit.Texture0);
 
             shader.Use();
-            vertexArray.Use();
+            mesh.Use();
 
-            GL.DrawElements(PrimitiveType.Triangles, vertexArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, mesh.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
         }
     }
 }

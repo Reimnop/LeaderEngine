@@ -1,30 +1,90 @@
-﻿using System.Collections.Generic;
+﻿using OpenTK.Graphics.OpenGL4;
+using System;
 
 namespace LeaderEngine
 {
-    public class Mesh
+    public struct VertexAttrib
     {
-        private List<VertexArray> vertexArrays = new List<VertexArray>();
+        public int location;
+        public int size;
+    }
 
+    public class Mesh : IDisposable
+    {
         public string Name;
 
-        public Mesh(string name)
-            => Name = name;
+        private float[] vertices;
+        private uint[] indices;
 
-        public Mesh(string name, VertexArray[] vertexArrays)
+        private int VAO, VBO, EBO;
+
+        public Mesh(string name, float[] vertices, uint[] indices, VertexAttrib[] attribs)
         {
-            this.vertexArrays.AddRange(vertexArrays);
             Name = name;
+
+            this.vertices = vertices;
+            this.indices = indices;
+            Init(attribs);
         }
 
-        public void AddVertexArray(VertexArray vertexArray)
+        ~Mesh()
         {
-            vertexArrays.Add(vertexArray);
+            ThreadManager.ExecuteOnMainThread(() => Dispose());
         }
 
-        public List<VertexArray> GetAllVertexArrays()
+        private void Init(VertexAttrib[] attribs)
         {
-            return vertexArrays;
+            VAO = GL.GenVertexArray();
+            VBO = GL.GenBuffer();
+            EBO = GL.GenBuffer();
+
+            GL.BindVertexArray(VAO);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
+
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
+
+            int size = 0;
+            foreach (VertexAttrib attrib in attribs)
+                size += attrib.size;
+
+            int c = 0;
+            for (int i = 0; i < attribs.Length; i++)
+            {
+                GL.VertexAttribPointer(attribs[i].location, attribs[i].size, VertexAttribPointerType.Float, false, size * sizeof(float), c);
+                GL.EnableVertexAttribArray(attribs[i].location);
+                c += attribs[i].size * sizeof(float);
+            }
+
+            GL.BindVertexArray(0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+        }
+
+        public int GetVerticesCount()
+        {
+            return vertices.Length;
+        }
+
+        public int GetIndicesCount()
+        {
+            return indices.Length;
+        }
+
+        public void Use()
+        {
+            GL.BindVertexArray(VAO);
+        }
+
+        public void Dispose()
+        {
+            GL.DeleteVertexArray(VAO);
+            GL.DeleteBuffer(VBO);
+            GL.DeleteBuffer(EBO);
+
+            GC.SuppressFinalize(this);
         }
     }
 }
