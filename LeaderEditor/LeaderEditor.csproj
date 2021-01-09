@@ -35,7 +35,6 @@
   <ItemGroup>
     <PackageReference Include="AssimpNet" Version="4.1.0" />
     <PackageReference Include="BEPUphysics" Version="2.2.0" />
-    <PackageReference Include="ImGui.NET" Version="1.78.0" />
     <PackageReference Include="Microsoft.Build" Version="16.8.0" />
     <PackageReference Include="Microsoft.Build.Framework" Version="16.8.0" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.8.0" />
@@ -48,6 +47,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="ImGui.NET">
+      <HintPath>..\thirdparty\ImGui.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="ImNodes.NET">
+      <HintPath>..\thirdparty\ImNodes.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="ImPlot.NET">
+      <HintPath>..\thirdparty\ImPlot.NET.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK.Compute">
       <HintPath>..\thirdparty\OpenTK.Compute.dll</HintPath>
     </Reference>
@@ -78,10 +86,25 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="cimgui.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="cimnodes.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="cimplot.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\Editor\mousepick-fs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="DefaultAssets\Shaders\Editor\outline-fs.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="DefaultAssets\Shaders\Editor\grid-fs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\Editor\mousepick-vs.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="DefaultAssets\Shaders\Editor\outline-vs.glsl">

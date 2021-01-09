@@ -1,4 +1,6 @@
 ﻿using ImGuiNET;
+using ImPlotNET;
+using ImNodesNET;
 using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -55,6 +57,11 @@ namespace LeaderEditor.Gui
 
             IntPtr context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
+
+            IntPtr plotContext = ImPlot.CreateContext();
+            ImPlot.SetCurrentContext(plotContext);
+            ImPlot.SetImGuiContext(context);
+
             var io = ImGui.GetIO();
             //io.Fonts.AddFontDefault();
             io.Fonts.AddFontFromFileTTF(AppContext.BaseDirectory + "Fonts/Inconsolata.ttf", 16);
@@ -62,7 +69,7 @@ namespace LeaderEditor.Gui
             io.BackendFlags |= ImGuiBackendFlags.HasMouseCursors;
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable | ImGuiConfigFlags.NavEnableKeyboard;
             io.ConfigWindowsResizeFromEdges = true;
-            io.MouseDrawCursor = false;
+            //io.MouseDrawCursor = false;
 
             ImGui.StyleColorsDark();
 

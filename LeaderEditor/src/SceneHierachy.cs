@@ -2,6 +2,7 @@
 using LeaderEditor.Data;
 using LeaderEditor.Gui;
 using LeaderEngine;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,12 +74,6 @@ namespace LeaderEditor
                         ImGui.EndCombo();
                     }
 
-                    ImGui.SameLine();
-
-                    //new object button
-                    if (ImGui.Button("New Object") && !string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
-                        CreateNewObject();
-
                     if (SelectedObject != null)
                     {
                         ImGui.SameLine();
@@ -95,8 +90,11 @@ namespace LeaderEditor
         }
 
         //new object function
-        private void CreateNewObject()
+        private void CreateNewObject(GameObject parent)
         {
+            if (string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
+                return;
+
             RenderHint renderHint = RenderHint.World;
 
             switch (currentType)
@@ -114,7 +112,7 @@ namespace LeaderEditor
 
             GameObject go = new GameObject("New GameObject", renderHint);
 
-            go.Parent = SelectedObject;
+            go.Parent = parent;
         }
 
         private int index = 0;
@@ -134,8 +132,22 @@ namespace LeaderEditor
                         RecursivelyRender(go);
                 }
 
-                if (!ImGui.IsAnyItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Left) && ImGui.IsWindowHovered(ImGuiHoveredFlags.ChildWindows))
-                    SelectedObject = null;
+                if (!ImGui.IsAnyItemHovered() && ImGui.IsWindowHovered(ImGuiHoveredFlags.ChildWindows))
+                {
+                    if (ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+                        ImGui.OpenPopup("GameObject Menu");
+
+                    if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+                        SelectedObject = null;
+                }
+
+                if (ImGui.BeginPopup("GameObject Menu")) 
+                { 
+                    if (ImGui.MenuItem("New GameObject"))
+                        Application.Main.ExecuteNextUpdate(() => CreateNewObject(null));
+
+                    ImGui.EndPopup();
+                }
 
                 ImGui.EndChild();
             }
@@ -156,6 +168,17 @@ namespace LeaderEditor
 
             if (ImGui.IsItemClicked())
                 SelectedObject = go;
+
+            if (ImGui.BeginPopupContextItem("GameObject Popup"))
+            {
+                if (ImGui.MenuItem("New GameObject"))
+                    Application.Main.ExecuteNextUpdate(() => CreateNewObject(go));
+
+                if (ImGui.MenuItem("Delete"))
+                    Application.Main.ExecuteNextUpdate(() => go.Destroy());
+
+                ImGui.EndPopup();
+            }
 
             ImGui.SameLine();
 
