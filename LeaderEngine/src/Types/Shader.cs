@@ -16,6 +16,7 @@ namespace LeaderEngine
         public static Shader DepthOnly;
         public static Shader Skybox;
         public static Shader TextShader;
+        public static Shader ImmediateMode;
         #endregion
 
         private int handle;
@@ -76,6 +77,7 @@ namespace LeaderEngine
             DepthOnly = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/depth-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/depth-fs.glsl");
             Skybox = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/skybox-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/skybox-fs.glsl");
             TextShader = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/text-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/text-fs.glsl");
+            ImmediateMode = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/immediatemode-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/immediatemode-fs.glsl");
         }
 
         private static void CompileShader(int shader)

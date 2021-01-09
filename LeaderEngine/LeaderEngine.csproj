@@ -30,6 +30,12 @@
     <None Update="DefaultAssets\Shaders\depth-fs.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="DefaultAssets\Shaders\immediatemode-fs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\immediatemode-vs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="DefaultAssets\Shaders\skybox-fs.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

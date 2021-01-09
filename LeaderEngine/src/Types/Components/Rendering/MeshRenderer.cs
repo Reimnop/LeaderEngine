@@ -52,8 +52,6 @@ namespace LeaderEngine
                 GL.FrontFace(FrontFaceDirection.Cw);
                 GL.CullFace(CullFaceMode.Back);
 
-                vertArray.Use();
-
                 if (RenderingGlobals.CurrentPass != RenderPass.Lighting)
                 {
                     Texture texture = vertArray.GetTexture();
@@ -70,6 +68,7 @@ namespace LeaderEngine
                 }
 
                 renderMat.Use();
+                vertArray.Use();
 
                 GL.DrawElements(PrimitiveType.Triangles, vertArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
             }

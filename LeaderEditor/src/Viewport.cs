@@ -75,9 +75,17 @@ namespace LeaderEditor
             gridShader.Use();
             gridVertArray.Use();
 
-            GL.DrawElements(PrimitiveType.Triangles, gridVertArray.GetVerticesCount(), DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, gridVertArray.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
 
             GL.Disable(EnableCap.Blend);
+
+            IM.Begin(PrimitiveType.Triangles);
+
+            IM.Vertex3(-1, -1, 0);
+            IM.Vertex3(0, 1, 0);
+            IM.Vertex3(1, -1, 0);
+
+            IM.End();
         }
 
         private void PostProcess()

@@ -82,13 +82,6 @@ namespace LeaderEngine
             NextUpdateQueue.Enqueue(action);
         }
 
-        public override void Run()
-        {
-            initCallback?.Invoke();
-
-            base.Run();
-        }
-
         private void UpdateMode(bool editorMode)
         {
             if (!editorMode)
@@ -113,6 +106,7 @@ namespace LeaderEngine
             Material.InitDefaults();
 
             LightingController.Init();
+            IM.Init();
             PhysicsController.Init();
             AudioSource.Init();
 
@@ -123,6 +117,8 @@ namespace LeaderEngine
             GL.ClearColor(0.005f, 0.005f, 0.005f, 1.0f);
 
             ViewportSize = Size;
+
+            initCallback?.Invoke();
 
             base.OnLoad();
         }
