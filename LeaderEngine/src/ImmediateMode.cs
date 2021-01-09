@@ -49,6 +49,16 @@ namespace LeaderEngine
             currentColor = color;
         }
 
+        public static void Color(float R, float G, float B)
+        {
+            currentColor = new Color4(R, G, B, 1.0f);
+        }
+
+        public static void Color(float R, float G, float B, float A)
+        {
+            currentColor = new Color4(R, G, B, A);
+        }
+
         public static void Vertex3(Vector3 vert)
         {
             vertList.Add(vert.X);
