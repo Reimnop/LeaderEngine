@@ -16,9 +16,12 @@ out vec3 NormalWorldSpace;
 out vec3 FragPosWorldSpace;
 
 uniform mat4 mvp;
-uniform mat4 model;
 
-uniform mat4 modelWorldSpace;
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+uniform mat4 modelLS;
 
 uniform mat4 lightSpaceMatrix;
 
@@ -26,13 +29,13 @@ void main()
 {
 	VertCol = aVertCol;
 
-	Normal = aNormal * mat3(transpose(inverse(model)));
+	Normal = aNormal * mat3(transpose(inverse(modelLS)));
 	TexCoord = aTexCoord;
-	FragPos = vec3(vec4(aPos, 1.0) * model);
+	FragPos = vec3(vec4(aPos, 1.0) * modelLS);
 	FragPosLightSpace = vec4(FragPos, 1.0) * lightSpaceMatrix;
 
-	NormalWorldSpace = vec3(vec4(aNormal, 1.0) * modelWorldSpace);
-	FragPosWorldSpace = vec3(vec4(aPos, 1.0) * modelWorldSpace);
+	NormalWorldSpace = vec3(vec4(aNormal, 1.0) * model * view);
+	FragPosWorldSpace = vec3(vec4(aPos, 1.0) * model * view);
 
 	gl_Position = vec4(aPos, 1.0) * mvp;
 }

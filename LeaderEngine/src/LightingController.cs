@@ -68,7 +68,7 @@ namespace LeaderEngine
             var dir = DirectionalLight.transform.Forward;
             dir.Z = -dir.Z;
 
-            mat.SetMatrix4("model", lightModel);
+            mat.SetMatrix4("modelLS", lightModel);
             mat.SetMatrix4("lightSpaceMatrix", lightView * lightProjection);
 
             mat.SetVector3("lightDir", dir);

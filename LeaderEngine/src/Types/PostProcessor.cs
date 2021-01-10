@@ -11,11 +11,13 @@ namespace LeaderEngine
 
         private int FBO, gAlbedoSpec, gPosition, gNormal, depthTexture;
 
+        private Vector2 currentSize;
+
         private Mesh mesh;
 
         //SSAO
-        private const int kernelSize = 64;
-        private Vector3[] ssaoKernel;
+        private const int kernelSize = 128;
+        private float[] ssaoKernel;
 
         private Texture noiseTexture;
 
@@ -112,12 +114,14 @@ namespace LeaderEngine
         private void SSAOSetup()
         {
             //Kernel setup
-            ssaoKernel = new Vector3[kernelSize];
+            ssaoKernel = new float[kernelSize * 3];
 
             Random rng = new Random();
 
             for (int i = 0; i < kernelSize; i++)
             {
+                int offset = i * 3;
+
                 Vector3 sample = new Vector3(
                     (float)rng.NextDouble() * 2.0f - 1.0f,
                     (float)rng.NextDouble() * 2.0f - 1.0f,
@@ -126,13 +130,18 @@ namespace LeaderEngine
                 sample.Normalize();
                 sample *= (float)rng.NextDouble();
 
-                float scale = i / 64.0f;
+                float scale = i / 128.0f;
                 scale = MathHelper.Lerp(0.1f, 1.0f, scale * scale);
 
                 sample *= scale;
 
-                ssaoKernel[i] = sample;
+                ssaoKernel[offset + 0] = sample.X;
+                ssaoKernel[offset + 1] = sample.Y;
+                ssaoKernel[offset + 2] = sample.Z;
             }
+
+            int attLoc = GL.GetUniformLocation(PPShader.GetHandle(), "samples");
+            GL.ProgramUniform3(PPShader.GetHandle(), attLoc, 3, ssaoKernel);
 
             //kernel rotations
             Vector3[] ssaoNoise = new Vector3[16];
@@ -174,6 +183,7 @@ namespace LeaderEngine
         public void Resize(int width, int height)
         {
             Update(new Vector2i(width, height));
+            currentSize = new Vector2(width, height);
         }
 
         private void Update(Vector2i size)
@@ -212,6 +222,13 @@ namespace LeaderEngine
             PPShader.SetInt("depthMap", 3);
             GL.ActiveTexture(TextureUnit.Texture3);
             GL.BindTexture(TextureTarget.Texture2D, depthTexture);
+
+            PPShader.SetInt("texNoise", 4);
+            GL.ActiveTexture(TextureUnit.Texture4);
+            GL.BindTexture(TextureTarget.Texture2D, noiseTexture.GetHandle());
+
+            PPShader.SetMatrix4("projection", RenderingGlobals.Projection);
+            PPShader.SetVector2("vSize", currentSize);
 
             GL.DrawElements(PrimitiveType.Triangles, mesh.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
         }

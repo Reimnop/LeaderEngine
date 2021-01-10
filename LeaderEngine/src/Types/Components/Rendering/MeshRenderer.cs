@@ -41,7 +41,10 @@ namespace LeaderEngine
 
             renderMat.Use();
             renderMat.Shader.SetMatrix4("mvp", model * RenderingGlobals.View * RenderingGlobals.Projection);
-            renderMat.Shader.SetMatrix4("modelWorldSpace", model);
+
+            renderMat.Shader.SetMatrix4("model", model);
+            renderMat.Shader.SetMatrix4("view", RenderingGlobals.View);
+            renderMat.Shader.SetMatrix4("projection", RenderingGlobals.Projection);
 
             MeshFilter.Mesh.Use();
 
