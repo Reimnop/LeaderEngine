@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System;
+using System.Runtime.InteropServices;
 
 namespace LeaderEngine
 {
@@ -11,6 +12,12 @@ namespace LeaderEngine
         private int FBO, gAlbedoSpec, gPosition, gNormal, depthTexture;
 
         private Mesh mesh;
+
+        //SSAO
+        private const int kernelSize = 64;
+        private Vector3[] ssaoKernel;
+
+        private Texture noiseTexture;
 
         public PostProcessor(int width, int height)
         {
@@ -98,6 +105,59 @@ namespace LeaderEngine
                 new VertexAttrib { location = 1, size = 2 }
             });
             #endregion
+
+            SSAOSetup();
+        }
+
+        private void SSAOSetup()
+        {
+            //Kernel setup
+            ssaoKernel = new Vector3[kernelSize];
+
+            Random rng = new Random();
+
+            for (int i = 0; i < kernelSize; i++)
+            {
+                Vector3 sample = new Vector3(
+                    (float)rng.NextDouble() * 2.0f - 1.0f,
+                    (float)rng.NextDouble() * 2.0f - 1.0f,
+                    (float)rng.NextDouble());
+
+                sample.Normalize();
+                sample *= (float)rng.NextDouble();
+
+                float scale = i / 64.0f;
+                scale = MathHelper.Lerp(0.1f, 1.0f, scale * scale);
+
+                sample *= scale;
+
+                ssaoKernel[i] = sample;
+            }
+
+            //kernel rotations
+            Vector3[] ssaoNoise = new Vector3[16];
+
+            for (int i = 0; i < 16; i++)
+            {
+                Vector3 noise = new Vector3(
+                    (float)rng.NextDouble() * 2.0f - 1.0f,
+                    (float)rng.NextDouble() * 2.0f - 1.0f,
+                    0.0f);
+
+                ssaoNoise[i] = noise;
+            }
+
+            //setup noise texture
+            GCHandle handle = GCHandle.Alloc(ssaoNoise, GCHandleType.Pinned);
+            IntPtr ptr = handle.AddrOfPinnedObject();
+
+            noiseTexture = new Texture().FromIntPtr(4, 4, ptr, PixelInternalFormat.Rgba16f, PixelFormat.Rgb, PixelType.Float);
+            noiseTexture.SetMinFilter(TextureMinFilter.Nearest);
+            noiseTexture.SetMagFilter(TextureMagFilter.Nearest);
+            noiseTexture.SetWrapS(TextureWrapMode.Repeat);
+            noiseTexture.SetWrapT(TextureWrapMode.Repeat);
+
+            handle.Free();
         }
 
         public void Begin()
