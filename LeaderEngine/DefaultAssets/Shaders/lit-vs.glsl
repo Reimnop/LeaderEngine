@@ -31,7 +31,7 @@ void main()
 	FragPos = vec3(vec4(aPos, 1.0) * model);
 	FragPosLightSpace = vec4(FragPos, 1.0) * lightSpaceMatrix;
 
-	NormalWorldSpace = aNormal * mat3(transpose(inverse(modelWorldSpace)));
+	NormalWorldSpace = vec3(vec4(aNormal, 1.0) * modelWorldSpace);
 	FragPosWorldSpace = vec3(vec4(aPos, 1.0) * modelWorldSpace);
 
 	gl_Position = vec4(aPos, 1.0) * mvp;
