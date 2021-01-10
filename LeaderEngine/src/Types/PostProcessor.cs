@@ -8,7 +8,7 @@ namespace LeaderEngine
     {
         public Shader PPShader = Shader.PostProcessing;
 
-        private int FBO, depthTexture, gColorSpec, gPosition, gNormal;
+        private int FBO, gAlbedoSpec, gPosition, gNormal, depthTexture;
 
         private Mesh mesh;
 
@@ -29,76 +29,75 @@ namespace LeaderEngine
 
         private void Setup(Vector2i size)
         {
+            FBO = GL.GenFramebuffer();
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
+
+            #region GBUFFER
+            //color + specular buffer
+            gAlbedoSpec = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, gAlbedoSpec);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, gAlbedoSpec, 0);
+
+            //position color buffer
+            gPosition = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, gPosition);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, gPosition, 0);
+
+            //normals color buffer
+            gNormal = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, gNormal);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment2, TextureTarget.Texture2D, gNormal, 0);
+
+            GL.DrawBuffers(3, new DrawBuffersEnum[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2 });
+            #endregion
+
+            //depth buffer
+            depthTexture = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, depthTexture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, size.X, size.Y, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, depthTexture, 0);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            #region QUAD_SETUP
+            float[] vertices =
             {
-                FBO = GL.GenFramebuffer();
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
+                -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+                -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+                 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+                 1.0f, -1.0f, 0.0f, 1.0f, 0.0f
+            };
 
-                //GBUFFER SETUP
-
-                //color + specular buffer
-                gColorSpec = GL.GenTexture();
-                GL.BindTexture(TextureTarget.Texture2D, gColorSpec);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-                GL.BindTexture(TextureTarget.Texture2D, 0);
-
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, gColorSpec, 0);
-
-                //position color buffer
-                gPosition = GL.GenTexture();
-                GL.BindTexture(TextureTarget.Texture2D, gPosition);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-                GL.BindTexture(TextureTarget.Texture2D, 0);
-
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, gPosition, 0);
-
-                //normals color buffer
-                gNormal = GL.GenTexture();
-                GL.BindTexture(TextureTarget.Texture2D, gNormal);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-                GL.BindTexture(TextureTarget.Texture2D, 0);
-
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment2, TextureTarget.Texture2D, gNormal, 0);
-
-                //END OF GBUFFER SETUP
-
-                depthTexture = GL.GenTexture();
-                GL.BindTexture(TextureTarget.Texture2D, depthTexture);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, size.X, size.Y, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-                GL.BindTexture(TextureTarget.Texture2D, 0);
-
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, depthTexture, 0);
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            }
-
+            uint[] indices =
             {
-                float[] vertices =
-                {
-                    -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-                    -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-                     1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-                     1.0f, -1.0f, 0.0f, 1.0f, 0.0f
-                };
+                0, 1, 3,
+                1, 2, 3
+            };
 
-                uint[] indices =
-                {
-                    0, 1, 3,
-                    1, 2, 3
-                };
-
-                mesh = new Mesh("PPMesh", vertices, indices, new VertexAttrib[]
-                {
-                    new VertexAttrib { location = 0, size = 3 },
-                    new VertexAttrib { location = 1, size = 2 }
-                });
-            }
+            mesh = new Mesh("PPMesh", vertices, indices, new VertexAttrib[]
+            {
+                new VertexAttrib { location = 0, size = 3 },
+                new VertexAttrib { location = 1, size = 2 }
+            });
+            #endregion
         }
 
         public void Begin()
@@ -119,10 +118,7 @@ namespace LeaderEngine
 
         private void Update(Vector2i size)
         {
-            GL.BindTexture(TextureTarget.Texture2D, depthTexture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, size.X, size.Y, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
-
-            GL.BindTexture(TextureTarget.Texture2D, gColorSpec);
+            GL.BindTexture(TextureTarget.Texture2D, gAlbedoSpec);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
 
             GL.BindTexture(TextureTarget.Texture2D, gPosition);
@@ -130,6 +126,9 @@ namespace LeaderEngine
 
             GL.BindTexture(TextureTarget.Texture2D, gNormal);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+
+            GL.BindTexture(TextureTarget.Texture2D, depthTexture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, size.X, size.Y, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
@@ -138,21 +137,21 @@ namespace LeaderEngine
             mesh.Use();
             PPShader.Use();
 
-            PPShader.SetInt("depthMap", 0);
+            PPShader.SetInt("gAlbedoSpec", 0);
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, gAlbedoSpec);
+
+            PPShader.SetInt("gPosition", 1);
             GL.ActiveTexture(TextureUnit.Texture1);
-            GL.BindTexture(TextureTarget.Texture2D, depthTexture);
-
-            PPShader.SetInt("albedoSpec", 1);
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, gColorSpec);
-
-            PPShader.SetInt("position", 2);
-            GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, gPosition);
 
-            PPShader.SetInt("normal", 3);
-            GL.ActiveTexture(TextureUnit.Texture0);
+            PPShader.SetInt("gNormal", 2);
+            GL.ActiveTexture(TextureUnit.Texture2);
             GL.BindTexture(TextureTarget.Texture2D, gNormal);
+
+            PPShader.SetInt("depthMap", 3);
+            GL.ActiveTexture(TextureUnit.Texture3);
+            GL.BindTexture(TextureTarget.Texture2D, depthTexture);
 
             GL.DrawElements(PrimitiveType.Triangles, mesh.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
         }
@@ -160,11 +159,12 @@ namespace LeaderEngine
         public void Dispose()
         {
             GL.DeleteFramebuffer(FBO);
-            GL.DeleteTexture(depthTexture);
 
             GL.DeleteTexture(gPosition);
             GL.DeleteTexture(gNormal);
-            GL.DeleteTexture(gColorSpec);
+            GL.DeleteTexture(gAlbedoSpec);
+
+            GL.DeleteTexture(depthTexture);
 
             mesh.Dispose();
         }

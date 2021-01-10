@@ -17,9 +17,12 @@ in vec3 Normal;
 in vec2 TexCoord;
 in vec4 FragPosLightSpace;
 
+in vec3 NormalWorldSpace;
+in vec3 FragPosWorldSpace;
+
 in vec3 FragPos;
 
-vec3 ambient = vec3(0.9, 0.9, 0.9);
+vec3 ambient = vec3(0.6, 0.6, 0.6);
 vec3 lightColor = vec3(1.0, 1.0, 0.95);
 
 float intensity = 1.4;
@@ -50,6 +53,6 @@ void main()
 	vec3 result = (ambient + shadow * max(dot(norm, lightDir), 0.0) * lightColor * intensity) * vec3(objectColor);
 
 	gAlbedoSpec = vec4(result, 1.0);
-	gPosition = FragPos;
-	gNormal = norm;
+	gPosition = FragPosWorldSpace;
+	gNormal = normalize(NormalWorldSpace);
 }

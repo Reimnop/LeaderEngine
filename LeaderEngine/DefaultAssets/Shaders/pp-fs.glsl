@@ -2,20 +2,25 @@
 
 layout (location = 0) out vec4 fragColor;
 
+uniform sampler2D gAlbedoSpec;
+uniform sampler2D gPosition;
+uniform sampler2D gNormal;
 uniform sampler2D depthMap;
-uniform sampler2D albedoSpec;
-uniform sampler2D position;
-uniform sampler2D normal;
 
 in vec2 TexCoord;
 
-float gamma = 2.2;
-
-vec3 gammaCorrect(vec3 col) {
-	return pow(col, vec3(gamma));
-}
-
 void main() 
 {
-	fragColor = vec4(texture(albedoSpec, TexCoord).rgb, 1.0);
+    vec3 Albedo = texture(gAlbedoSpec, TexCoord).rgb;
+    vec3 FragPos = texture(gPosition, TexCoord).rgb;
+    vec3 Normal = texture(gNormal, TexCoord).rgb;
+
+    vec3 lighting = Albedo;
+    
+    // diffuse
+    vec3 lightDir = normalize(vec3(0.0) - FragPos);
+    vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Albedo;
+    lighting += diffuse;
+
+	fragColor = vec4(lighting, 1.0);
 }
