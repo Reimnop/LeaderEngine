@@ -15,12 +15,5 @@ void main()
     vec3 FragPos = texture(gPosition, TexCoord).rgb;
     vec3 Normal = texture(gNormal, TexCoord).rgb;
 
-    vec3 lighting = Albedo;
-    
-    // diffuse
-    vec3 lightDir = normalize(vec3(0.0) - FragPos);
-    vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Albedo;
-    lighting += diffuse;
-
-	fragColor = vec4(lighting, 1.0);
+	fragColor = vec4(Normal, 1.0);
 }
