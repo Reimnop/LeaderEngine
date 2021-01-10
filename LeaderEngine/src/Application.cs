@@ -174,7 +174,6 @@ namespace LeaderEngine
 
             PostProcessor.Resize(ViewportSize.X, ViewportSize.Y);
             PostProcessor.Begin();
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             Skybox.Main?.Render();
             RenderScene();
