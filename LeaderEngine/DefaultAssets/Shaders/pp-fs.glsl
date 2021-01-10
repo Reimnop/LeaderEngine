@@ -2,8 +2,10 @@
 
 layout (location = 0) out vec4 fragColor;
 
-uniform sampler2D texture0;
 uniform sampler2D depthMap;
+uniform sampler2D albedoSpec;
+uniform sampler2D position;
+uniform sampler2D normal;
 
 in vec2 TexCoord;
 
@@ -15,5 +17,5 @@ vec3 gammaCorrect(vec3 col) {
 
 void main() 
 {
-	fragColor = vec4(texture(texture0, TexCoord).rgb, 1.0);
+	fragColor = vec4(texture(albedoSpec, TexCoord).rgb, 1.0);
 }

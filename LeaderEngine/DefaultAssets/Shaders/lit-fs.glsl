@@ -1,6 +1,8 @@
 ﻿#version 330 core
 
-layout (location = 0) out vec4 fragColor;
+layout (location = 0) out vec4 gAlbedoSpec;
+layout (location = 1) out vec3 gPosition;
+layout (location = 2) out vec3 gNormal;
 
 uniform bool useTexture;
 
@@ -47,5 +49,7 @@ void main()
 
 	vec3 result = (ambient + shadow * max(dot(norm, lightDir), 0.0) * lightColor * intensity) * vec3(objectColor);
 
-	fragColor = vec4(result, 1.0);
+	gAlbedoSpec = vec4(result, 1.0);
+	gPosition = FragPos;
+	gNormal = norm;
 }

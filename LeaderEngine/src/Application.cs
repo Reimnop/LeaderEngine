@@ -59,6 +59,7 @@ namespace LeaderEngine
         public event Action SceneRender;
         public event Action PostSceneRender;
         public event Action PostProcess;
+        public event Action PostPostProcess;
         public event Action GuiRender;
         public event Action PostGuiRender;
         public event Action FinishRender;
@@ -183,6 +184,7 @@ namespace LeaderEngine
 
             PostProcess?.Invoke();
             PostProcessor.Render();
+            PostPostProcess?.Invoke();
 
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
