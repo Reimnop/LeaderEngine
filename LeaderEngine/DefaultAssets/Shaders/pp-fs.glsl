@@ -15,5 +15,5 @@ void main()
     vec3 FragPos = texture(gPosition, TexCoord).rgb;
     vec3 Normal = texture(gNormal, TexCoord).rgb;
 
-	fragColor = vec4(Normal, 1.0);
+	fragColor = vec4(Albedo, 1.0);
 }
