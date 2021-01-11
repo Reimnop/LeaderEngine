@@ -30,7 +30,7 @@ in vec3 FragPos;
 vec3 ambient = vec3(0.6, 0.6, 0.6);
 vec3 lightColor = vec3(1.0, 1.0, 0.95);
 
-float intensity = 1.4;
+float intensity = 1.6;
 
 float ShadowCalculation(vec4 fragPosLightSpace)
 {

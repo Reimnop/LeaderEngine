@@ -7,17 +7,18 @@ namespace LeaderEngine
 {
     internal class SSAO : IDisposable
     {
-        public Shader SSAOShader = Shader.SSAO;
+        private Shader SSAOShader = Shader.SSAO;
 
-        private int FBO, gAlbedoSpec, gPosition, gNormal, gPositionViewSpace, gNormalViewSpace, depthTexture;
+        private int FBO, gPosition, gNormal, gPositionViewSpace, gNormalViewSpace, depthTexture;
+        public int Albedo;
 
         private Vector2 currentSize;
 
         private Mesh mesh;
 
         //SSAO
-        private const int kernelSize = 128;
-        private const int noiseWidth = 64, noiseHeight = 64;
+        private const int kernelSize = 64;
+        private const int noiseWidth = 4, noiseHeight = 4;
         private float[] ssaoKernel;
 
         private Texture noiseTexture;
@@ -44,14 +45,14 @@ namespace LeaderEngine
 
             #region GBUFFER
             //color + specular buffer
-            gAlbedoSpec = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, gAlbedoSpec);
+            Albedo = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, Albedo);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
             GL.BindTexture(TextureTarget.Texture2D, 0);
 
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, gAlbedoSpec, 0);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, Albedo, 0);
 
             //position color buffer
             gPosition = GL.GenTexture();
@@ -211,7 +212,7 @@ namespace LeaderEngine
 
         private void Update(Vector2i size)
         {
-            GL.BindTexture(TextureTarget.Texture2D, gAlbedoSpec);
+            GL.BindTexture(TextureTarget.Texture2D, Albedo);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
 
             GL.BindTexture(TextureTarget.Texture2D, gPosition);
@@ -238,7 +239,7 @@ namespace LeaderEngine
 
             SSAOShader.SetInt("gAlbedoSpec", 0);
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, gAlbedoSpec);
+            GL.BindTexture(TextureTarget.Texture2D, Albedo);
 
             SSAOShader.SetInt("gPosition", 1);
             GL.ActiveTexture(TextureUnit.Texture1);
@@ -268,7 +269,7 @@ namespace LeaderEngine
 
             GL.DeleteTexture(gPosition);
             GL.DeleteTexture(gNormal);
-            GL.DeleteTexture(gAlbedoSpec);
+            GL.DeleteTexture(Albedo);
 
             GL.DeleteTexture(depthTexture);
 

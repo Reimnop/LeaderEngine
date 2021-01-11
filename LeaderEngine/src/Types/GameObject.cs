@@ -355,6 +355,7 @@ namespace LeaderEngine
         private void Cleanup()
         {
             components.ForEach(co => co.OnRemove());
+            editorComponents.ForEach(co => co.EditorRemove());
         }
     }
 }

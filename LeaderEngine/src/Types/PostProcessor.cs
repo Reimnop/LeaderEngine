@@ -9,7 +9,6 @@ namespace LeaderEngine
     {
         public Shader PPShader = Shader.PostProcessing;
 
-        private bool useCustomTextures = false;
         private int FBO, gAlbedoSpec, gPosition, gNormal, depthTexture;
 
         private Mesh mesh;
@@ -17,16 +16,6 @@ namespace LeaderEngine
         public PostProcessor(int width, int height)
         {
             Setup(new Vector2i(width, height));
-        }
-
-        public PostProcessor(int gAlbedoSpec, int gPosition, int gNormal, int depth)
-        {
-            this.gAlbedoSpec = gAlbedoSpec;
-            this.gPosition = gPosition;
-            this.gNormal = gNormal;
-            depthTexture = depth;
-
-            useCustomTextures = true;
         }
 
         public PostProcessor(Vector2i vSize)
@@ -130,9 +119,6 @@ namespace LeaderEngine
 
         private void Update(Vector2i size)
         {
-            if (useCustomTextures)
-                return;
-
             GL.BindTexture(TextureTarget.Texture2D, gAlbedoSpec);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
 

@@ -12,14 +12,14 @@ in vec2 TexCoord;
 //SSAO
 uniform sampler2D texNoise;
 
-const int kernelSize = 128;
-const float radius = 1.0;
-const float bias = 0.025;
+const int kernelSize = 64;
+const float radius = 0.5;
+const float bias = 0.0005;
 
 uniform vec3 samples[kernelSize];
 uniform mat4 projection;
 
-uniform float power = 16.0;
+uniform float power = 6.0;
 
 uniform vec2 vSize;
 uniform vec2 nSize;
@@ -56,5 +56,5 @@ void main()
 
     occlusion = 1.0 - (occlusion / kernelSize);
 
-	fragColor = vec4(Albedo * vec3(pow(occlusion, power)), 1.0);
+	fragColor = vec4(vec3(pow(occlusion, power)), 1.0);
 }
