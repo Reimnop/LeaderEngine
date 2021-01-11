@@ -48,7 +48,7 @@ namespace LeaderEngine
         }
         private bool _editorMode = false;
 
-        public PostProcessor PostProcessor;
+        public SSAO PostProcessor;
 
         public Vector2i ViewportSize;
 
@@ -115,7 +115,7 @@ namespace LeaderEngine
 
             Input.InputUpdate(KeyboardState, MouseState);
 
-            PostProcessor = new PostProcessor(Size);
+            PostProcessor = new SSAO(Size);
             ViewportSize = Size;
 
             initCallback?.Invoke();

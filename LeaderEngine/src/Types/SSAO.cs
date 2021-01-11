@@ -5,25 +5,34 @@ using System.Runtime.InteropServices;
 
 namespace LeaderEngine
 {
-    public class PostProcessor : IDisposable
+    internal class SSAO : IDisposable
     {
-        public Shader PPShader = Shader.PostProcessing;
+        public Shader SSAOShader = Shader.SSAO;
 
         private int FBO, gAlbedoSpec, gPosition, gNormal, depthTexture;
 
+        private Vector2 currentSize;
+
         private Mesh mesh;
 
-        public PostProcessor(int width, int height)
+        //SSAO
+        private const int kernelSize = 128;
+        private const int noiseWidth = 64, noiseHeight = 64;
+        private float[] ssaoKernel;
+
+        private Texture noiseTexture;
+
+        public SSAO(int width, int height)
         {
             Setup(new Vector2i(width, height));
         }
 
-        public PostProcessor(Vector2i vSize)
+        public SSAO(Vector2i vSize)
         {
             Setup(vSize);
         }
 
-        ~PostProcessor()
+        ~SSAO()
         {
             ThreadManager.ExecuteOnMainThread(() => Dispose());
         }
@@ -99,6 +108,68 @@ namespace LeaderEngine
                 new VertexAttrib { location = 1, size = 2 }
             });
             #endregion
+
+            SSAOSetup();
+        }
+
+        private void SSAOSetup()
+        {
+            //Kernel setup
+            ssaoKernel = new float[kernelSize * 3];
+
+            Random rng = new Random();
+
+            for (int i = 0; i < kernelSize; i++)
+            {
+                int offset = i * 3;
+
+                Vector3 sample = new Vector3(
+                    (float)rng.NextDouble() * 2.0f - 1.0f,
+                    (float)rng.NextDouble() * 2.0f - 1.0f,
+                    (float)rng.NextDouble());
+
+                sample.Normalize();
+                sample *= (float)rng.NextDouble();
+
+                float scale = i / 128.0f;
+                scale = MathHelper.Lerp(0.1f, 1.0f, scale * scale);
+
+                sample *= scale;
+
+                ssaoKernel[offset + 0] = sample.X;
+                ssaoKernel[offset + 1] = sample.Y;
+                ssaoKernel[offset + 2] = sample.Z;
+            }
+
+            int attLoc = GL.GetUniformLocation(SSAOShader.GetHandle(), "samples");
+            GL.ProgramUniform3(SSAOShader.GetHandle(), attLoc, 3, ssaoKernel);
+
+            //kernel rotations
+            SSAOShader.SetVector2("nSize", new Vector2(noiseWidth, noiseHeight));
+
+            Vector3[] ssaoNoise = new Vector3[noiseWidth * noiseHeight];
+
+            for (int i = 0; i < noiseWidth * noiseHeight; i++)
+            {
+                Vector3 noise = new Vector3(
+                    (float)rng.NextDouble() * 2.0f - 1.0f,
+                    (float)rng.NextDouble() * 2.0f - 1.0f,
+                    0.0f);
+
+                ssaoNoise[i] = noise;
+            }
+
+            //setup noise texture
+            GCHandle handle = GCHandle.Alloc(ssaoNoise, GCHandleType.Pinned);
+            IntPtr ptr = handle.AddrOfPinnedObject();
+
+            noiseTexture = new Texture().FromIntPtr(noiseWidth, noiseHeight, ptr, PixelInternalFormat.Rgba16f, PixelFormat.Rgb, PixelType.Float);
+            noiseTexture.SetMinFilter(TextureMinFilter.Nearest);
+            noiseTexture.SetMagFilter(TextureMagFilter.Nearest);
+            noiseTexture.SetWrapS(TextureWrapMode.Repeat);
+            noiseTexture.SetWrapT(TextureWrapMode.Repeat);
+
+            handle.Free();
         }
 
         public void Begin()
@@ -115,6 +186,7 @@ namespace LeaderEngine
         public void Resize(int width, int height)
         {
             Update(new Vector2i(width, height));
+            currentSize = new Vector2(width, height);
         }
 
         private void Update(Vector2i size)
@@ -136,23 +208,30 @@ namespace LeaderEngine
         public void Render()
         {
             mesh.Use();
-            PPShader.Use();
+            SSAOShader.Use();
 
-            PPShader.SetInt("gAlbedoSpec", 0);
+            SSAOShader.SetInt("gAlbedoSpec", 0);
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, gAlbedoSpec);
 
-            PPShader.SetInt("gPosition", 1);
+            SSAOShader.SetInt("gPosition", 1);
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, gPosition);
 
-            PPShader.SetInt("gNormal", 2);
+            SSAOShader.SetInt("gNormal", 2);
             GL.ActiveTexture(TextureUnit.Texture2);
             GL.BindTexture(TextureTarget.Texture2D, gNormal);
 
-            PPShader.SetInt("depthMap", 3);
+            SSAOShader.SetInt("depthMap", 3);
             GL.ActiveTexture(TextureUnit.Texture3);
             GL.BindTexture(TextureTarget.Texture2D, depthTexture);
+
+            SSAOShader.SetInt("texNoise", 4);
+            GL.ActiveTexture(TextureUnit.Texture4);
+            GL.BindTexture(TextureTarget.Texture2D, noiseTexture.GetHandle());
+
+            SSAOShader.SetMatrix4("projection", RenderingGlobals.Projection);
+            SSAOShader.SetVector2("vSize", currentSize);
 
             GL.DrawElements(PrimitiveType.Triangles, mesh.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
         }
