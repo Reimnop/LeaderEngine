@@ -1,11 +1,7 @@
 ﻿using OpenTK.Audio.OpenAL;
 using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
+using System.Linq;
 
 namespace LeaderEngine
 {

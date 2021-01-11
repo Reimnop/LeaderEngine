@@ -24,12 +24,11 @@ uniform float bias = 0.0005;
 uniform vec2 vSize;
 uniform vec2 nSize;
 
-void main() 
-{
+float calcOcclusion() {
     vec3 Albedo = texture(gAlbedoSpec, TexCoord).rgb;
     vec3 FragPos = texture(gPosition, TexCoord).rgb;
     vec3 Normal = texture(gNormal, TexCoord).rgb;
-
+    
     vec2 noiseScale = vec2(vSize.x / nSize.x, vSize.y / nSize.y);
 
     vec3 randomVec = texture(texNoise, TexCoord * noiseScale).xyz;
@@ -56,5 +55,17 @@ void main()
 
     occlusion = 1.0 - (occlusion / kernelSize);
 
-	fragColor = vec4(vec3(pow(occlusion, power)), 1.0);
+    return occlusion;
+}
+
+void main() 
+{
+    vec3 result;
+
+    if (power > 0)
+        result = vec3(pow(calcOcclusion(), power));
+    else
+        result = vec3(1.0);
+
+	fragColor = vec4(result, 1.0);
 }

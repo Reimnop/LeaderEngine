@@ -1,8 +1,7 @@
 ﻿using Assimp;
+using OpenTK.Mathematics;
 using System.Collections.Generic;
 using System.IO;
-using OpenTK.Mathematics;
-using System.Linq;
 
 namespace LeaderEngine
 {

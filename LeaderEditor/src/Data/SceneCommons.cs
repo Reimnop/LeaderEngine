@@ -1,7 +1,6 @@
 ﻿using LeaderEngine;
-using OpenTK.Mathematics;
-using System;
 using Newtonsoft.Json;
+using OpenTK.Mathematics;
 
 namespace LeaderEditor.Data
 {

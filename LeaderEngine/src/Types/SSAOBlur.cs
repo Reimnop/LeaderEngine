@@ -1,7 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System;
-using System.Runtime.InteropServices;
 
 namespace LeaderEngine
 {
@@ -15,7 +14,7 @@ namespace LeaderEngine
 
         private Mesh mesh;
 
-        public int BlurSamples = 2;
+        public int BlurSamples = 4;
 
         public SSAOBlur(Vector2i vSize)
         {

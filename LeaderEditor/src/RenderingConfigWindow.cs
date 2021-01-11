@@ -1,7 +1,6 @@
 ﻿using ImGuiNET;
 using LeaderEditor.Gui;
 using LeaderEngine;
-using System;
 
 namespace LeaderEditor
 {
