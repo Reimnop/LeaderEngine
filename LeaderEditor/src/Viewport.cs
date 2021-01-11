@@ -58,7 +58,8 @@ namespace LeaderEditor
         private void SceneRender()
         {
             //resize viewport and postprocessor
-            Application.Main.ResizeViewport((int)ViewportSize.X, (int)ViewportSize.Y);
+            if (ViewportSize != Vector2.Zero)
+                Application.Main.ResizeViewport((int)ViewportSize.X, (int)ViewportSize.Y);
         }
 
         private void PostSceneRender()
@@ -83,7 +84,8 @@ namespace LeaderEditor
         private void PostProcess()
         {
             //resize framebuffer to match viewport
-            framebuffer.Resize((int)ViewportSize.X, (int)ViewportSize.Y);
+            if (ViewportSize != Vector2.Zero)
+                framebuffer.Resize((int)ViewportSize.X, (int)ViewportSize.Y);
 
             //render scene to a framebuffer
             framebuffer.Begin();

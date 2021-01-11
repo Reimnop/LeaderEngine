@@ -76,12 +76,14 @@ namespace LeaderEngine
             if (Main != null)
                 return;
 
+            Logger.Log("Starting " + nws.Title);
+
             Main = this;
             CursorVisible = true;
 
             this.initCallback = initCallback;
 
-            Logger.Log("Starting " + nws.Title);
+            ViewportSize = nws.Size;
 
             GLFW.SwapInterval(1);
         }
@@ -125,11 +127,12 @@ namespace LeaderEngine
 
             Input.InputUpdate(KeyboardState, MouseState);
 
-            SSAOProcessor = new SSAO(Size);
-            SSAOBlur = new SSAOBlur(SSAOProcessor.Albedo, Size);
             //PostProcessor = new PostProcessor(Size);
             //TODO: fix post processing
-            ViewportSize = Size;
+            Size = ViewportSize;
+
+            SSAOProcessor = new SSAO(ViewportSize);
+            SSAOBlur = new SSAOBlur(SSAOProcessor.Albedo, ViewportSize);
 
             initCallback?.Invoke();
 

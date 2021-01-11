@@ -40,6 +40,8 @@ namespace LeaderEngine
 
         private void Setup(Vector2i size)
         {
+            currentSize = size;
+
             FBO = GL.GenFramebuffer();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
 
