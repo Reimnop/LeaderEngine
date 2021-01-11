@@ -36,9 +36,6 @@ namespace LeaderEngine
             if (RenderingGlobals.CurrentPass == RenderPass.Lighting)
                 renderMat = Material.DepthOnly;
 
-            if (RenderingGlobals.CurrentPass != RenderPass.Lighting)
-                LightingController.LightingShaderSetup(renderMat, model);
-
             renderMat.Use();
             renderMat.Shader.SetMatrix4("mvp", model * RenderingGlobals.View * RenderingGlobals.Projection);
 

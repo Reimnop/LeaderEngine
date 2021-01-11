@@ -5,12 +5,11 @@ using System.Runtime.InteropServices;
 
 namespace LeaderEngine
 {
-    internal class SSAO : IDisposable
+    public class SSAO : IDisposable
     {
         private Shader SSAOShader = Shader.SSAO;
 
-        private int FBO, gPosition, gNormal, gPositionViewSpace, gNormalViewSpace, depthTexture;
-        public int Albedo;
+        private int FBO, gAlbedo, gPosition, gNormal, gPositionViewSpace, gNormalViewSpace, depthTexture;
 
         private Vector2 currentSize;
 
@@ -18,10 +17,18 @@ namespace LeaderEngine
 
         //SSAO
         private const int kernelSize = 64;
-        private const int noiseWidth = 4, noiseHeight = 4;
+        private const int noiseWidth = 64, noiseHeight = 64;
         private float[] ssaoKernel;
 
         private Texture noiseTexture;
+
+        public SSAOBlur SSAOBlur;
+
+        public float Power = 5.0f;
+        public float Radius = 0.5f;
+        public float Bias = 0.0005f;
+
+        public DeferredProcessor DeferredProcessor;
 
         public SSAO(int width, int height)
         {
@@ -47,14 +54,14 @@ namespace LeaderEngine
 
             #region GBUFFER
             //color + specular buffer
-            Albedo = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, Albedo);
+            gAlbedo = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, gAlbedo);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
             GL.BindTexture(TextureTarget.Texture2D, 0);
 
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, Albedo, 0);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, gAlbedo, 0);
 
             //position color buffer
             gPosition = GL.GenTexture();
@@ -137,6 +144,8 @@ namespace LeaderEngine
             #endregion
 
             SSAOSetup();
+            SSAOBlur = new SSAOBlur(size);
+            DeferredProcessor = new DeferredProcessor(size, gAlbedo, gPosition, gNormal, depthTexture);
         }
 
         private void SSAOSetup()
@@ -213,12 +222,14 @@ namespace LeaderEngine
         public void Resize(int width, int height)
         {
             Update(new Vector2i(width, height));
+            SSAOBlur.Resize(width, height);
+            DeferredProcessor.Resize(width, height);
             currentSize = new Vector2(width, height);
         }
 
         private void Update(Vector2i size)
         {
-            GL.BindTexture(TextureTarget.Texture2D, Albedo);
+            GL.BindTexture(TextureTarget.Texture2D, gAlbedo);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
 
             GL.BindTexture(TextureTarget.Texture2D, gPosition);
@@ -245,7 +256,7 @@ namespace LeaderEngine
 
             SSAOShader.SetInt("gAlbedoSpec", 0);
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, Albedo);
+            GL.BindTexture(TextureTarget.Texture2D, gAlbedo);
 
             SSAOShader.SetInt("gPosition", 1);
             GL.ActiveTexture(TextureUnit.Texture1);
@@ -266,7 +277,25 @@ namespace LeaderEngine
             SSAOShader.SetMatrix4("projection", RenderingGlobals.Projection);
             SSAOShader.SetVector2("vSize", currentSize);
 
+            SSAOShader.SetFloat("power", Power);
+            SSAOShader.SetFloat("radius", Radius);
+            SSAOShader.SetFloat("bias", Bias);
+
+            SSAOBlur.Begin();
             GL.DrawElements(PrimitiveType.Triangles, mesh.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
+            SSAOBlur.End();
+        }
+
+        public void RenderBlurPass()
+        {
+            DeferredProcessor.Begin();
+            SSAOBlur.Render();
+            DeferredProcessor.End();
+        }
+
+        public void RenderLightPass()
+        {
+            DeferredProcessor.Render();
         }
 
         public void Dispose()
@@ -275,7 +304,7 @@ namespace LeaderEngine
 
             GL.DeleteTexture(gPosition);
             GL.DeleteTexture(gNormal);
-            GL.DeleteTexture(Albedo);
+            GL.DeleteTexture(gAlbedo);
 
             GL.DeleteTexture(depthTexture);
 

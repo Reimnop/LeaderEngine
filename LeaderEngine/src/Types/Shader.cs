@@ -14,6 +14,7 @@ namespace LeaderEngine
         public static Shader PostProcessing;
         public static Shader SSAO;
         public static Shader SSAOBlur;
+        public static Shader Deferred;
         public static Shader Lit;
         public static Shader DepthOnly;
         public static Shader Skybox;
@@ -77,6 +78,7 @@ namespace LeaderEngine
             PostProcessing = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/pp-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/pp-fs.glsl");
             SSAO = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/ssao-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/ssao-fs.glsl");
             SSAOBlur = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/ssaoblur-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/ssaoblur-fs.glsl");
+            Deferred = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/deferred-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/deferred-fs.glsl");
             Lit = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/lit-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/lit-fs.glsl");
             DepthOnly = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/depth-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/depth-fs.glsl");
             Skybox = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/skybox-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/skybox-fs.glsl");

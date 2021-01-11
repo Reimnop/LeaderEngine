@@ -52,30 +52,30 @@ namespace LeaderEngine
             RenderingGlobals.GlobalPosition = Vector3.Zero;
         }
 
-        public static void LightingShaderSetup(Material mat, Matrix4 model)
+        public static void LightingShaderSetup(Shader shader)
         {
             if (DirectionalLight == null)
             {
-                mat.SetInt("shadowMap", 1);
+                shader.SetInt("shadowMap", 5);
 
-                GL.ActiveTexture(TextureUnit.Texture1);
+                GL.ActiveTexture(TextureUnit.Texture5);
                 GL.BindTexture(TextureTarget.Texture2D, 0);
                 return;
             }
 
-            Matrix4 lightModel = model * Matrix4.CreateTranslation(-CameraPos);
-
             var dir = DirectionalLight.transform.Forward;
             dir.Z = -dir.Z;
 
-            mat.SetMatrix4("modelLS", lightModel);
-            mat.SetMatrix4("lightSpaceMatrix", lightView * lightProjection);
+            Matrix4 camModel = Matrix4.CreateTranslation(-CameraPos);
 
-            mat.SetVector3("lightDir", dir);
+            shader.SetMatrix4("modelLS", camModel);
+            shader.SetMatrix4("lightSpaceMatrix", camModel * lightView * lightProjection);
 
-            mat.SetInt("shadowMap", 1);
+            shader.SetVector3("lightDir", dir);
 
-            GL.ActiveTexture(TextureUnit.Texture1);
+            shader.SetInt("shadowMap", 5);
+
+            GL.ActiveTexture(TextureUnit.Texture5);
             GL.BindTexture(TextureTarget.Texture2D, depthBuffer.GetDepthTexture());
         }
     }

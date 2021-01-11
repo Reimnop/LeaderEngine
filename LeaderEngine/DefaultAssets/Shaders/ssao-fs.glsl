@@ -13,13 +13,13 @@ in vec2 TexCoord;
 uniform sampler2D texNoise;
 
 const int kernelSize = 64;
-const float radius = 0.5;
-const float bias = 0.0005;
 
 uniform vec3 samples[kernelSize];
 uniform mat4 projection;
 
 uniform float power = 5.0;
+uniform float radius = 0.5;
+uniform float bias = 0.0005;
 
 uniform vec2 vSize;
 uniform vec2 nSize;

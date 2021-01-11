@@ -50,8 +50,7 @@ namespace LeaderEngine
         }
         private bool _editorMode = false;
 
-        internal SSAO SSAOProcessor;
-        internal SSAOBlur SSAOBlur;
+        public SSAO SSAOProcessor;
 
         [Obsolete] //TODO: Fix post processing
         public PostProcessor PostProcessor;
@@ -132,7 +131,6 @@ namespace LeaderEngine
             Size = ViewportSize;
 
             SSAOProcessor = new SSAO(ViewportSize);
-            SSAOBlur = new SSAOBlur(SSAOProcessor.Albedo, ViewportSize);
 
             initCallback?.Invoke();
 
@@ -192,7 +190,6 @@ namespace LeaderEngine
             RenderingGlobals.CurrentPass = RenderPass.World;
 
             SSAOProcessor.Resize(ViewportSize.X, ViewportSize.Y);
-            SSAOBlur.Resize(ViewportSize.X, ViewportSize.Y);
             SSAOProcessor.Begin();
 
             Skybox.Main?.Render();
@@ -201,12 +198,11 @@ namespace LeaderEngine
             PostSceneRender?.Invoke();
             SSAOProcessor.End();
 
-            SSAOBlur.Begin();
             SSAOProcessor.Render();
-            SSAOBlur.End();
+            SSAOProcessor.RenderBlurPass();
 
             PostProcess?.Invoke();
-            SSAOBlur.Render(); //TODO: post process here
+            SSAOProcessor.RenderLightPass(); //TODO: post process here
             PostPostProcess?.Invoke();
 
             GL.Disable(EnableCap.DepthTest);

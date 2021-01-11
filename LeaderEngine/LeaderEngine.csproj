@@ -35,6 +35,12 @@
     <None Update="DefaultAssets\Shaders\immediatemode-vs.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="DefaultAssets\Shaders\deferred-fs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\deferred-vs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="DefaultAssets\Shaders\ssaoblur-fs.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
