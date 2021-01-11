@@ -103,6 +103,7 @@ namespace LeaderEngine
             GL.Disable(EnableCap.CullFace);
 
             GL.DepthMask(false);
+            GL.DepthFunc(DepthFunction.Lequal);
 
             shader.Use();
 
@@ -117,6 +118,7 @@ namespace LeaderEngine
             GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
 
             GL.DepthMask(true);
+            GL.DepthFunc(DepthFunction.Less);
         }
 
         public void LoadSkybox(string dir)

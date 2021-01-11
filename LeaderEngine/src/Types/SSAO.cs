@@ -17,7 +17,7 @@ namespace LeaderEngine
 
         //SSAO
         private const int kernelSize = 64;
-        private const int noiseWidth = 64, noiseHeight = 64;
+        private const int noiseWidth = 4, noiseHeight = 4;
         private float[] ssaoKernel;
 
         private Texture noiseTexture;

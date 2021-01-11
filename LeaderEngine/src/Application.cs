@@ -191,7 +191,6 @@ namespace LeaderEngine
             SSAOProcessor.Resize(ViewportSize.X, ViewportSize.Y);
             SSAOProcessor.Begin();
 
-            Skybox.Main?.Render();
             RenderScene();
 
             PostSceneRender?.Invoke();
@@ -201,7 +200,11 @@ namespace LeaderEngine
             SSAOProcessor.RenderBlurPass();
 
             PostProcess?.Invoke();
-            SSAOProcessor.RenderLightPass(); //TODO: post process here
+            
+            SSAOProcessor.RenderLightPass();
+            Skybox.Main?.Render();
+            //TODO: post process here
+
             PostPostProcess?.Invoke();
 
             GL.Disable(EnableCap.DepthTest);
