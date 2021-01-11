@@ -15,6 +15,8 @@ uniform vec3 lightDir;
 uniform mat4 modelLS;
 uniform mat4 lightSpaceMatrix;
 
+float intensity = 1.5;
+
 in vec2 TexCoord;
 
 float ShadowCalculation(vec4 fragPosLightSpace)
@@ -37,7 +39,7 @@ void main()
 
     float shadow = ShadowCalculation(FragPosLightSpace);
 
-    vec3 result = (0.5 + shadow * max(dot(Normal, lightDir), 0.0)) * Albedo;
+    vec3 result = (0.6 * texture(blurredSSAO, TexCoord).rgb + shadow * max(dot(Normal, lightDir) * intensity, 0.0)) * Albedo;
 
 	fragColor = vec4(result, 1.0);
 }
