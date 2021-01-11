@@ -9,7 +9,7 @@ namespace LeaderEngine
     {
         public Shader SSAOShader = Shader.SSAO;
 
-        private int FBO, gAlbedoSpec, gPosition, gNormal, depthTexture;
+        private int FBO, gAlbedoSpec, gPosition, gNormal, gPositionViewSpace, gNormalViewSpace, depthTexture;
 
         private Vector2 currentSize;
 
@@ -73,7 +73,27 @@ namespace LeaderEngine
 
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment2, TextureTarget.Texture2D, gNormal, 0);
 
-            GL.DrawBuffers(3, new DrawBuffersEnum[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2 });
+            //position color buffer view space
+            gPositionViewSpace = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, gPositionViewSpace);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment3, TextureTarget.Texture2D, gPositionViewSpace, 0);
+
+            //normals color buffer view space
+            gNormalViewSpace = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, gNormalViewSpace);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment4, TextureTarget.Texture2D, gNormalViewSpace, 0);
+
+            GL.DrawBuffers(5, new DrawBuffersEnum[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3, DrawBuffersEnum.ColorAttachment4 });
             #endregion
 
             //depth buffer
@@ -200,6 +220,12 @@ namespace LeaderEngine
             GL.BindTexture(TextureTarget.Texture2D, gNormal);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
 
+            GL.BindTexture(TextureTarget.Texture2D, gPositionViewSpace);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+
+            GL.BindTexture(TextureTarget.Texture2D, gNormalViewSpace);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+
             GL.BindTexture(TextureTarget.Texture2D, depthTexture);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, size.X, size.Y, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
             GL.BindTexture(TextureTarget.Texture2D, 0);
@@ -216,11 +242,11 @@ namespace LeaderEngine
 
             SSAOShader.SetInt("gPosition", 1);
             GL.ActiveTexture(TextureUnit.Texture1);
-            GL.BindTexture(TextureTarget.Texture2D, gPosition);
+            GL.BindTexture(TextureTarget.Texture2D, gPositionViewSpace);
 
             SSAOShader.SetInt("gNormal", 2);
             GL.ActiveTexture(TextureUnit.Texture2);
-            GL.BindTexture(TextureTarget.Texture2D, gNormal);
+            GL.BindTexture(TextureTarget.Texture2D, gNormalViewSpace);
 
             SSAOShader.SetInt("depthMap", 3);
             GL.ActiveTexture(TextureUnit.Texture3);

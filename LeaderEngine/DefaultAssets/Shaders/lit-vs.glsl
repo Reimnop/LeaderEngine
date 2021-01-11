@@ -15,6 +15,9 @@ out vec4 FragPosLightSpace;
 out vec3 NormalWorldSpace;
 out vec3 FragPosWorldSpace;
 
+out vec3 NormalViewSpace;
+out vec3 FragPosViewSpace;
+
 uniform mat4 mvp;
 
 uniform mat4 model;
@@ -34,8 +37,11 @@ void main()
 	FragPos = vec3(vec4(aPos, 1.0) * modelLS);
 	FragPosLightSpace = vec4(FragPos, 1.0) * lightSpaceMatrix;
 
-	NormalWorldSpace = vec3(vec4(aNormal, 1.0) * model * view);
-	FragPosWorldSpace = vec3(vec4(aPos, 1.0) * model * view);
+	NormalWorldSpace = vec3(vec4(aNormal, 1.0) * model);
+	FragPosWorldSpace = vec3(vec4(aPos, 1.0) * model);
+
+	NormalViewSpace = vec3(vec4(aNormal, 1.0) * model * view);
+	FragPosViewSpace = vec3(vec4(aPos, 1.0) * model * view);
 
 	gl_Position = vec4(aPos, 1.0) * mvp;
 }

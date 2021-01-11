@@ -48,7 +48,7 @@ namespace LeaderEngine
         }
         private bool _editorMode = false;
 
-        public SSAO PostProcessor;
+        internal SSAO SSAOProcessor;
 
         public Vector2i ViewportSize;
 
@@ -115,7 +115,7 @@ namespace LeaderEngine
 
             Input.InputUpdate(KeyboardState, MouseState);
 
-            PostProcessor = new SSAO(Size);
+            SSAOProcessor = new SSAO(Size);
             ViewportSize = Size;
 
             initCallback?.Invoke();
@@ -173,17 +173,17 @@ namespace LeaderEngine
             SceneRender?.Invoke();
             RenderingGlobals.CurrentPass = RenderPass.World;
 
-            PostProcessor.Resize(ViewportSize.X, ViewportSize.Y);
-            PostProcessor.Begin();
+            SSAOProcessor.Resize(ViewportSize.X, ViewportSize.Y);
+            SSAOProcessor.Begin();
 
             Skybox.Main?.Render();
             RenderScene();
 
             PostSceneRender?.Invoke();
-            PostProcessor.End();
+            SSAOProcessor.End();
 
             PostProcess?.Invoke();
-            PostProcessor.Render();
+            SSAOProcessor.Render();
             PostPostProcess?.Invoke();
 
             GL.Disable(EnableCap.DepthTest);

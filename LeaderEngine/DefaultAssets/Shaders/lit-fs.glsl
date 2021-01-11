@@ -3,6 +3,8 @@
 layout (location = 0) out vec4 gAlbedoSpec;
 layout (location = 1) out vec3 gPosition;
 layout (location = 2) out vec3 gNormal;
+layout (location = 3) out vec3 gPositionViewSpace;
+layout (location = 4) out vec3 gNormalViewSpace;
 
 uniform bool useTexture;
 
@@ -19,6 +21,9 @@ in vec4 FragPosLightSpace;
 
 in vec3 NormalWorldSpace;
 in vec3 FragPosWorldSpace;
+
+in vec3 NormalViewSpace;
+in vec3 FragPosViewSpace;
 
 in vec3 FragPos;
 
@@ -55,4 +60,7 @@ void main()
 	gAlbedoSpec = vec4(result, 1.0);
 	gPosition = FragPosWorldSpace;
 	gNormal = normalize(NormalWorldSpace);
+
+	gPositionViewSpace = FragPosViewSpace;
+	gNormalViewSpace = NormalViewSpace;
 }
