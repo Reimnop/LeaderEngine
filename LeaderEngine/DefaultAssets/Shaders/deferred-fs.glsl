@@ -6,7 +6,7 @@ uniform sampler2D blurredSSAO;
 uniform sampler2D gAlbedoSpec;
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
-uniform sampler2D depthMap;
+uniform sampler2D depthTexture;
 
 uniform sampler2D shadowMap;
 
@@ -42,4 +42,6 @@ void main()
     vec3 result = (0.6 * texture(blurredSSAO, TexCoord).rgb + shadow * max(dot(Normal, lightDir) * intensity, 0.0)) * Albedo;
 
 	fragColor = vec4(result, 1.0);
+
+    gl_FragDepth = texture(depthTexture, TexCoord).r;
 }

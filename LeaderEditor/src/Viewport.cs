@@ -34,11 +34,11 @@ namespace LeaderEditor
 
         public override void EditorStart()
         {
-            framebuffer = new Framebuffer(1280, 720);
+            framebuffer = new Framebuffer(1600, 900);
 
             Application.Main.SceneRender += SceneRender;
-            Application.Main.PostSceneRender += PostSceneRender;
             Application.Main.PostProcess += PostProcess;
+            Application.Main.PostPostProcess += PostPostProcess;
             Application.Main.PostGuiRender += PostGuiRender;
 
             ImGuiController.AddImGuiFunc(OnImGui);
@@ -55,18 +55,8 @@ namespace LeaderEditor
             MainMenuBar.RegisterWindow("Viewport", this);
         }
 
-        private void SceneRender()
+        private void PostPostProcess()
         {
-            //resize viewport and postprocessor
-            if (ViewportSize != Vector2.Zero)
-                Application.Main.ResizeViewport((int)ViewportSize.X, (int)ViewportSize.Y);
-        }
-
-        private void PostSceneRender()
-        {
-            if (EditorController.Mode != EditorController.EditorMode.Editor)
-                return;
-
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
@@ -79,6 +69,13 @@ namespace LeaderEditor
             GL.DrawElements(PrimitiveType.Triangles, gridMesh.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
 
             GL.Disable(EnableCap.Blend);
+        }
+
+        private void SceneRender()
+        {
+            //resize viewport and postprocessor
+            if (ViewportSize != Vector2.Zero)
+                Application.Main.ResizeViewport((int)ViewportSize.X, (int)ViewportSize.Y);
         }
 
         private void PostProcess()
@@ -101,7 +98,6 @@ namespace LeaderEditor
 
             GL.Viewport(0, 0, Application.Main.Size.X, Application.Main.Size.Y);
         }
-
 
         private void OnImGui()
         {

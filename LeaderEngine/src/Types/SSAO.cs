@@ -251,6 +251,8 @@ namespace LeaderEngine
 
         public void Render()
         {
+            GL.Disable(EnableCap.DepthTest);
+
             mesh.Use();
             SSAOShader.Use();
 
@@ -295,6 +297,8 @@ namespace LeaderEngine
 
         public void RenderLightPass()
         {
+            GL.Enable(EnableCap.DepthTest);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
             DeferredProcessor.Render();
         }
 

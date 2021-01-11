@@ -213,6 +213,7 @@ namespace LeaderEngine
 
             GuiRender?.Invoke();
             RenderGui();
+
             PostGuiRender?.Invoke();
             
             FinishRender?.Invoke();
