@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
+using ErrorCode = OpenTK.Graphics.OpenGL4.ErrorCode;
+
 namespace LeaderEngine
 {
     public static class Time
@@ -79,6 +81,8 @@ namespace LeaderEngine
 
             this.initCallback = initCallback;
 
+            Logger.Log("Starting " + nws.Title);
+
             GLFW.SwapInterval(1);
         }
 
@@ -105,7 +109,9 @@ namespace LeaderEngine
 
         protected override void OnLoad()
         {
-            Debug.WriteLine("Base Directory: " + AppContext.BaseDirectory);
+            Logger.Log("Base Directory: " + AppContext.BaseDirectory);
+
+            Logger.Log("Initializing...");
 
             GL.ClearColor(0.005f, 0.005f, 0.005f, 1.0f);
 
@@ -126,6 +132,8 @@ namespace LeaderEngine
             ViewportSize = Size;
 
             initCallback?.Invoke();
+
+            Logger.Log("Done initializing");
 
             base.OnLoad();
         }
@@ -209,6 +217,14 @@ namespace LeaderEngine
             PostGuiRender?.Invoke();
             
             FinishRender?.Invoke();
+
+            ErrorCode error = GL.GetError();
+
+            while (error != ErrorCode.NoError) 
+            {
+                Logger.Log("ERROR: " + error.ToString());
+                error = GL.GetError();
+            }
 
             SwapBuffers();
 
