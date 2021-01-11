@@ -19,7 +19,7 @@ const float bias = 0.0005;
 uniform vec3 samples[kernelSize];
 uniform mat4 projection;
 
-uniform float power = 6.0;
+uniform float power = 5.0;
 
 uniform vec2 vSize;
 uniform vec2 nSize;
