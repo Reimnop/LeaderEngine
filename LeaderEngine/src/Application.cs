@@ -111,6 +111,12 @@ namespace LeaderEngine
         {
             Logger.Log("Base Directory: " + AppContext.BaseDirectory);
 
+            Logger.Log("Renderer: " + GL.GetString(StringName.Renderer));
+            Logger.Log("Vendor: " + GL.GetString(StringName.Vendor));
+            Logger.Log("Version: " + GL.GetString(StringName.Version) ?? "none");
+            Logger.Log("Extensions: " + GL.GetString(StringName.Extensions));
+            Logger.Log("Shading Language version: " + GL.GetString(StringName.ShadingLanguageVersion));
+
             Logger.Log("Initializing...");
 
             GL.ClearColor(0.005f, 0.005f, 0.005f, 1.0f);

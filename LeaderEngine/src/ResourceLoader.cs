@@ -117,7 +117,8 @@ namespace LeaderEngine
                     new VertexAttrib { location = 3, size = 2 }
                 });
 
-                LoadedMeshes.Add(meshName, mesh);
+                if (!LoadedMeshes.ContainsKey(meshName))
+                    LoadedMeshes.Add(meshName, mesh);
 
                 Assimp.Material aiMaterial = materials[aiMesh.MaterialIndex];
 
