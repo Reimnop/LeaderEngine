@@ -10,6 +10,9 @@ namespace LeaderEngine
 
         private int FBO, blurredSSAO, gAlbedoSpec, gPosition, gNormal, depthTexture;
 
+        public Vector3 AmbientColor = new Vector3(0.5f);
+        public Vector3 LightColor = new Vector3(1.0f);
+
         private Mesh mesh;
 
         public DeferredProcessor(int width, int height, int gAlbedoSpec, int gPosition, int gNormal, int depthTexture)
@@ -123,6 +126,9 @@ namespace LeaderEngine
             GL.BindTexture(TextureTarget.Texture2D, depthTexture);
 
             LightingController.LightingShaderSetup(DefShader);
+
+            DefShader.SetVector3("ambientColor", AmbientColor);
+            DefShader.SetVector3("lightColor", LightColor);
 
             GL.DrawElements(PrimitiveType.Triangles, mesh.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
         }

@@ -73,6 +73,8 @@ namespace LeaderEngine
 
             shader.SetVector3("lightDir", dir);
 
+            shader.SetFloat("intensity", DirectionalLight.Intensity);
+
             shader.SetInt("shadowMap", 5);
 
             GL.ActiveTexture(TextureUnit.Texture5);

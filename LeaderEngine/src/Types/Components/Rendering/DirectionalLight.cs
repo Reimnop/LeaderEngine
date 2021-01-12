@@ -4,6 +4,8 @@ namespace LeaderEngine
 {
     public class DirectionalLight : EditorComponent
     {
+        public float Intensity = 1.0f;
+
         public override void EditorStart()
         {
             LightingController.DirectionalLight = this;

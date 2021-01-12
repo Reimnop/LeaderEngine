@@ -26,6 +26,17 @@ namespace LeaderEditor
 
                     ImGui.DragInt("Blur Samples", ref Application.Main.SSAOProcessor.SSAOBlur.BlurSamples);
 
+                    ImGui.Text("Lighting");
+
+                    var defProcessor = Application.Main.SSAOProcessor.DeferredProcessor;
+                    var amColor = new System.Numerics.Vector3(defProcessor.AmbientColor.X, defProcessor.AmbientColor.Y, defProcessor.AmbientColor.Z);
+                    ImGui.ColorEdit3("Ambient Color", ref amColor);
+                    defProcessor.AmbientColor = new OpenTK.Mathematics.Vector3(amColor.X, amColor.Y, amColor.Z);
+
+                    var liColor = new System.Numerics.Vector3(defProcessor.LightColor.X, defProcessor.LightColor.Y, defProcessor.LightColor.Z);
+                    ImGui.ColorEdit3("Light Color", ref liColor);
+                    defProcessor.LightColor = new OpenTK.Mathematics.Vector3(liColor.X, liColor.Y, liColor.Z);
+
                     ImGui.End();
                 }
         }
