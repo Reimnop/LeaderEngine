@@ -21,14 +21,28 @@ uniform vec3 ambientColor = vec3(0.5);
 
 in vec2 TexCoord;
 
-float ShadowCalculation(vec4 fragPosLightSpace)
+float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal)
 {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w * 0.5 + 0.5;
 
 	if(projCoords.z > 1.0)
         return 1.0;
 
-    return projCoords.z - 0.0005 > texture(shadowMap, projCoords.xy).r ? 0.0 : 1.0;
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.0005);
+    
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+            shadow += projCoords.z - bias > pcfDepth ? 0.0 : 1.0;        
+        }    
+    }
+    shadow /= 9.0;
+
+    return shadow;
 }  
 
 void main() 
@@ -39,7 +53,7 @@ void main()
 
     vec4 FragPosLightSpace = vec4(FragPos, 1.0) * lightSpaceMatrix;
 
-    float shadow = ShadowCalculation(FragPosLightSpace);
+    float shadow = ShadowCalculation(FragPosLightSpace, Normal);
 
     vec3 result = (ambientColor * texture(blurredSSAO, TexCoord).rgb + shadow * max(dot(Normal, lightDir), 0.0) * lightColor * intensity) * Albedo;
 
