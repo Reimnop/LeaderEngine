@@ -13,7 +13,7 @@ namespace LeaderEngine
         public static void LoadModel(string path)
         {
             AssimpContext importer = new AssimpContext();
-            Scene scene = importer.ImportFile(path, PostProcessSteps.Triangulate | PostProcessSteps.FlipUVs | PostProcessSteps.FlipWindingOrder);
+            Scene scene = importer.ImportFile(path, PostProcessSteps.Triangulate | PostProcessSteps.FlipUVs | PostProcessSteps.FixInFacingNormals | PostProcessSteps.FlipWindingOrder);
 
             Assimp.Mesh[] meshes = scene.Meshes.ToArray();
             Assimp.Material[] materials = scene.Materials.ToArray();

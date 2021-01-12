@@ -27,10 +27,10 @@ void main()
 
 	TexCoord = aTexCoord;
 
-	NormalWorldSpace = mat3(transpose(inverse(model))) * aNormal;
+	NormalWorldSpace = aNormal * mat3(model);
 	FragPosWorldSpace = vec3(vec4(aPos, 1.0) * model);
 
-	NormalViewSpace = vec3(vec4(mat3(transpose(inverse(model))) * aNormal, 1.0) * view);
+	NormalViewSpace = vec3(vec4(aNormal * mat3(model), 1.0) * view);
 	FragPosViewSpace = vec3(vec4(aPos, 1.0) * model * view);
 
 	gl_Position = vec4(aPos, 1.0) * mvp;

@@ -28,7 +28,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal)
 	if(projCoords.z > 1.0)
         return 1.0;
 
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.0005);
+    float bias = max(0.0005 * (1.0 - dot(normal, lightDir)), 0.0005);
     
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
@@ -55,7 +55,7 @@ void main()
 
     float shadow = ShadowCalculation(FragPosLightSpace, Normal);
 
-    vec3 result = (ambientColor * texture(blurredSSAO, TexCoord).rgb + shadow * max(dot(Normal, lightDir), 0.0) * lightColor * intensity) * Albedo;
+    vec3 result = (ambientColor * texture(blurredSSAO, TexCoord).r + shadow * max(dot(Normal, -lightDir), 0.0) * lightColor * intensity) * Albedo;
 
 	fragColor = vec4(result, 1.0);
 

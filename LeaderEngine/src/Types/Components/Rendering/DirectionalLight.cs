@@ -15,11 +15,7 @@ namespace LeaderEngine
         {
             proj = Matrix4.CreateOrthographic(32.0f, 32.0f, -16.0f, 16.0f);
 
-            view = Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(-new Vector3(
-                MathHelper.DegreesToRadians(transform.RotationEuler.X),
-                MathHelper.DegreesToRadians(transform.RotationEuler.Y),
-                MathHelper.DegreesToRadians(transform.RotationEuler.Z))
-                ));
+            view = Matrix4.LookAt(Vector3.Zero, transform.Forward, transform.Up);
         }
 
         public override void EditorRemove()

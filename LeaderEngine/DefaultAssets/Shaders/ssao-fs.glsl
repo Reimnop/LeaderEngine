@@ -1,6 +1,6 @@
 ﻿#version 330 core
 
-layout (location = 0) out vec4 fragColor;
+layout (location = 0) out float fragColor;
 
 uniform sampler2D gAlbedoSpec;
 uniform sampler2D gPosition;
@@ -60,12 +60,12 @@ float calcOcclusion() {
 
 void main() 
 {
-    vec3 result;
+    float result;
 
     if (power > 0)
-        result = vec3(pow(calcOcclusion(), power));
+        result = pow(calcOcclusion(), power);
     else
-        result = vec3(1.0);
+        result = 1.0;
 
-	fragColor = vec4(result, 1.0);
+	fragColor = result;
 }
