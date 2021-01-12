@@ -64,12 +64,8 @@ namespace LeaderEngine
             }
 
             var dir = DirectionalLight.transform.Forward;
-            dir.Z = -dir.Z;
 
-            Matrix4 camModel = Matrix4.CreateTranslation(-CameraPos);
-
-            shader.SetMatrix4("modelLS", camModel);
-            shader.SetMatrix4("lightSpaceMatrix", camModel * lightView * lightProjection);
+            shader.SetMatrix4("lightSpaceMatrix", Matrix4.CreateTranslation(-CameraPos) * lightView * lightProjection);
 
             shader.SetVector3("lightDir", dir);
 

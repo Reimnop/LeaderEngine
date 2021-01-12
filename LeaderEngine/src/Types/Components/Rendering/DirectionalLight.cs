@@ -13,7 +13,7 @@ namespace LeaderEngine
 
         public void GenViewProject(out Matrix4 view, out Matrix4 proj)
         {
-            proj = Matrix4.CreateOrthographic(64.0f, 64.0f, -32.0f, 32.0f);
+            proj = Matrix4.CreateOrthographic(8.0f, 8.0f, -4.0f, 4.0f);
 
             view = Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(-new Vector3(
                 MathHelper.DegreesToRadians(transform.RotationEuler.X),

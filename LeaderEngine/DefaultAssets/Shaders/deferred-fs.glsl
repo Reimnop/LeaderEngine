@@ -12,7 +12,6 @@ uniform sampler2D shadowMap;
 
 uniform vec3 lightDir;
 
-uniform mat4 modelLS;
 uniform mat4 lightSpaceMatrix;
 
 uniform float intensity = 1.0;
@@ -42,9 +41,7 @@ void main()
 
     float shadow = ShadowCalculation(FragPosLightSpace);
 
-    vec3 norm = normalize(Normal * transpose(inverse(mat3(modelLS))));
-
-    vec3 result = (ambientColor * texture(blurredSSAO, TexCoord).rgb + shadow * max(dot(norm, lightDir), 0.0) * lightColor * intensity) * Albedo;
+    vec3 result = (ambientColor * texture(blurredSSAO, TexCoord).rgb + shadow * max(dot(Normal, lightDir), 0.0) * lightColor * intensity) * Albedo;
 
 	fragColor = vec4(result, 1.0);
 
