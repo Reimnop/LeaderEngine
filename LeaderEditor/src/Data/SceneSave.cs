@@ -32,39 +32,39 @@ namespace LeaderEditor.Data
         {
             SceneInfo sceneInfo = new SceneInfo();
             sceneInfo.Models = ResourceLoader.LoadedMeshes.Select(x => x.Key).ToArray();
-            sceneInfo.EditorCamPosition = EditorCamera.Main.transform.LocalPosition;
-            sceneInfo.EditorCamRotation = EditorCamera.Main.transform.RotationEuler;
+            sceneInfo.EditorCamPosition = EditorCamera.Main.Transform.LocalPosition;
+            sceneInfo.EditorCamRotation = EditorCamera.Main.Transform.RotationEuler;
 
-            var sceneObjectsSurf = SceneHierachy.SceneObjects.Where(x => x.Parent == null).ToArray();
+            var sceneEntitiesSurf = SceneHierachy.SceneEntities.Where(x => x.Parent == null).ToArray();
 
-            sceneInfo.GameObjects = new GameObjectInfo[sceneObjectsSurf.Length];
+            sceneInfo.Entities = new EntityInfo[sceneEntitiesSurf.Length];
 
-            for (int i = 0; i < sceneInfo.GameObjects.Length; i++)
-                sceneInfo.GameObjects[i] = ProcessGameObject(SceneHierachy.SceneObjects[i]);
+            for (int i = 0; i < sceneInfo.Entities.Length; i++)
+                sceneInfo.Entities[i] = ProcessEntity(SceneHierachy.SceneEntities[i]);
 
             return sceneInfo;
         }
 
-        private static GameObjectInfo ProcessGameObject(GameObject gameObject)
+        private static EntityInfo ProcessEntity(Entity Entity)
         {
-            GameObjectInfo gameObjectInfo = new GameObjectInfo();
-            gameObjectInfo.Name = gameObject.Name;
-            gameObjectInfo.Active = gameObject.ActiveSelf;
-            gameObjectInfo.RenderHint = gameObject.RenderHint;
+            EntityInfo EntityInfo = new EntityInfo();
+            EntityInfo.Name = Entity.Name;
+            EntityInfo.Active = Entity.ActiveSelf;
+            EntityInfo.RenderHint = Entity.RenderHint;
 
-            var components = gameObject.GetAllComponents();
+            var components = Entity.GetAllComponents();
 
-            gameObjectInfo.Components = new ComponentInfo[components.Count];
+            EntityInfo.Components = new ComponentInfo[components.Count];
 
             for (int i = 0; i < components.Count; i++)
-                gameObjectInfo.Components[i] = ProcessComponent(components[i]);
+                EntityInfo.Components[i] = ProcessComponent(components[i]);
 
-            gameObjectInfo.Children = new GameObjectInfo[gameObject.Children.Count];
+            EntityInfo.Children = new EntityInfo[Entity.Children.Count];
 
-            for (int i = 0; i < gameObject.Children.Count; i++)
-                gameObjectInfo.Children[i] = ProcessGameObject(gameObject.Children[i]);
+            for (int i = 0; i < Entity.Children.Count; i++)
+                EntityInfo.Children[i] = ProcessEntity(Entity.Children[i]);
 
-            return gameObjectInfo;
+            return EntityInfo;
         }
 
         private static ComponentInfo ProcessComponent(Component component)

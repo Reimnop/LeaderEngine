@@ -20,9 +20,9 @@ namespace LeaderEngine
 
             RecursivelyLoad(scene.RootNode, null);
 
-            void RecursivelyLoad(Node node, GameObject parent)
+            void RecursivelyLoad(Node node, Entity parent)
             {
-                GameObject go = new GameObject(node.Name);
+                Entity en = new Entity(node.Name);
 
                 if (node.HasMeshes)
                 {
@@ -30,7 +30,7 @@ namespace LeaderEngine
 
                     float[] vertices = LoadMesh(aiMesh);
 
-                    MakeGameObject(node.Name, vertices, aiMesh, go);
+                    MakeEntity(node.Name, vertices, aiMesh, en);
 
                     for (int i = 1; i < node.MeshIndices.Count; i++)
                     {
@@ -39,11 +39,11 @@ namespace LeaderEngine
 
                         string name = node.Name + "." + i;
 
-                        GameObject subGo = new GameObject(name);
+                        Entity subEn = new Entity(name);
 
-                        MakeGameObject(name, subVertices, subMesh, subGo);
+                        MakeEntity(name, subVertices, subMesh, subEn);
 
-                        subGo.Parent = go;
+                        subEn.Parent = en;
                     }
                 }
 
@@ -53,14 +53,14 @@ namespace LeaderEngine
 
                 node.Transform.Decompose(out scale, out rotation, out position);
 
-                go.transform.LocalPosition = new Vector3(position.X, position.Y, position.Z);
-                go.transform.Rotation = new OpenTK.Mathematics.Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
-                go.transform.Scale = new Vector3(scale.X, scale.Y, scale.Z);
+                en.Transform.LocalPosition = new Vector3(position.X, position.Y, position.Z);
+                en.Transform.Rotation = new OpenTK.Mathematics.Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
+                en.Transform.Scale = new Vector3(scale.X, scale.Y, scale.Z);
 
-                go.Parent = parent;
+                en.Parent = parent;
 
                 foreach (var item in node.Children)
-                    RecursivelyLoad(item, go);
+                    RecursivelyLoad(item, en);
             }
 
             float[] LoadMesh(Assimp.Mesh aiMesh)
@@ -107,7 +107,7 @@ namespace LeaderEngine
                 return vertices;
             }
 
-            void MakeGameObject(string meshName, float[] vertices, Assimp.Mesh aiMesh, GameObject go)
+            void MakeEntity(string meshName, float[] vertices, Assimp.Mesh aiMesh, Entity en)
             {
                 Mesh mesh = new Mesh(meshName, vertices, aiMesh.GetUnsignedIndices(), new VertexAttrib[]
                 {
@@ -149,10 +149,10 @@ namespace LeaderEngine
 
                 Color4D color = aiMaterial.ColorDiffuse;
 
-                mat.SetVector4("color", new OpenTK.Mathematics.Vector4(color.R, color.G, color.B, color.A));
+                mat.SetVector4("color", new Vector4(color.R, color.G, color.B, color.A));
 
-                go.AddComponent<MeshFilter>(mesh);
-                go.AddComponent<MeshRenderer>().Material = mat;
+                en.AddComponent<MeshFilter>(mesh);
+                en.AddComponent<MeshRenderer>().Material = mat;
             }
         }
 

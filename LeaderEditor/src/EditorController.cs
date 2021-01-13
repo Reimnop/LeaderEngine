@@ -22,13 +22,13 @@ namespace LeaderEditor
             }
         }
 
-        private GameObject ImGuiController;
-        private GameObject editorCamera;
+        private Entity ImGuiController;
+        private Entity editorCamera;
 
         public override void EditorStart()
         {
             //add all components
-            gameObject.AddComponents(
+            BaseEntity.AddComponents(
                 new Component[] {
                     new MainMenuBar(),
                     new Viewport(),
@@ -39,17 +39,17 @@ namespace LeaderEditor
                     new RenderingConfigWindow()
                 });
 
-            gameObject.Tag = "Editor";
+            BaseEntity.Tag = "Editor";
 
             //camera
-            editorCamera = new GameObject("EditorCamera");
+            editorCamera = new Entity("EditorCamera");
             editorCamera.AddComponent<EditorCamera>();
-            editorCamera.transform.LocalPosition = new OpenTK.Mathematics.Vector3(0.0f, 1.0f, 2.0f);
+            editorCamera.Transform.LocalPosition = new OpenTK.Mathematics.Vector3(0.0f, 1.0f, 2.0f);
 
             editorCamera.Tag = "Editor";
 
             //add gui controller
-            ImGuiController = new GameObject("Controller");
+            ImGuiController = new Entity("Controller");
             ImGuiController.AddComponent<ImGuiController>();
 
             ImGuiController.Tag = "Editor";

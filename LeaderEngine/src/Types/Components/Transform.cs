@@ -18,12 +18,12 @@ namespace LeaderEngine
         public Vector3 RotationEuler = Vector3.Zero;
         public Vector3 Scale = Vector3.One;
 
-        public Matrix4 ModelMatrix 
+        public Matrix4 ModelMatrix
         {
             get
             {
                 Matrix4 model;
-                if (gameObject.Parent == null)
+                if (BaseEntity.Parent == null)
                     model = Matrix4.CreateScale(Scale)
                         * Matrix4.CreateFromQuaternion(Rotation)
                         * Matrix4.CreateTranslation(LocalPosition + RenderingGlobals.GlobalPosition);
@@ -31,7 +31,7 @@ namespace LeaderEngine
                     model = Matrix4.CreateScale(Scale)
                         * Matrix4.CreateFromQuaternion(Rotation)
                         * Matrix4.CreateTranslation(LocalPosition)
-                        * gameObject.Parent.transform.ModelMatrix;
+                        * BaseEntity.Parent.Transform.ModelMatrix;
                 return model;
             }
         }

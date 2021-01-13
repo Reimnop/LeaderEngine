@@ -14,8 +14,8 @@ namespace LeaderEditor.Data
 
         public static void LoadProject(string prjPath)
         {
-            SceneHierachy.SceneObjects.ForEach(x => x.Destroy());
-            SceneHierachy.SceneObjects.Clear();
+            SceneHierachy.SceneEntities.ForEach(x => x.Destroy());
+            SceneHierachy.SceneEntities.Clear();
 
             loadedTypes.ForEach(x => Inspector.SerializeableComponents.Remove(x));
             loadedTypes.Clear();

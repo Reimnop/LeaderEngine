@@ -80,7 +80,7 @@ namespace LeaderEditor.Gui
                     Debug.Print($"The uniform '{uniform}' does not exist in the shader '{Name}'!");
                 }
             }
-            
+
             return location;
         }
 
@@ -129,7 +129,7 @@ namespace LeaderEditor.Gui
                 string Info = GL.GetShaderInfoLog(Shader);
                 Debug.WriteLine($"GL.CompileShader for shader '{Name}' [{type}] had info log:\n{Info}");
             }
-            
+
             return Shader;
         }
     }

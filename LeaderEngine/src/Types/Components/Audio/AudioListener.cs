@@ -6,7 +6,7 @@ namespace LeaderEngine
     {
         public override void Start()
         {
-            var pos = transform.Position;
+            var pos = Transform.Position;
 
             AL.Listener(ALListenerf.Gain, 1.0f);
             AL.Listener(ALListener3f.Position, ref pos);

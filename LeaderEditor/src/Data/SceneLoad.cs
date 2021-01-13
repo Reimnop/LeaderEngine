@@ -21,32 +21,32 @@ namespace LeaderEditor.Data
             for (int i = 0; i < sceneInfo.Models.Length; i++)
                 ResourceLoader.LoadModel(Path.Combine(AssetLoader.LoadedProjectDir, "Assets", sceneInfo.Models[i]));
 
-            EditorCamera.Main.transform.LocalPosition = sceneInfo.EditorCamPosition;
-            EditorCamera.Main.transform.RotationEuler = sceneInfo.EditorCamRotation;
-            GameObjectInfo[] gameObjectInfos = sceneInfo.GameObjects;
+            EditorCamera.Main.Transform.LocalPosition = sceneInfo.EditorCamPosition;
+            EditorCamera.Main.Transform.RotationEuler = sceneInfo.EditorCamRotation;
+            EntityInfo[] entityInfos = sceneInfo.Entities;
 
-            for (int i = 0; i < gameObjectInfos.Length; i++)
-                ProcessGameObject(gameObjectInfos[i], null);
+            for (int i = 0; i < entityInfos.Length; i++)
+                ProcessEntity(entityInfos[i], null);
         }
 
-        private static void ProcessGameObject(GameObjectInfo gameObjectInfo, GameObject parent)
+        private static void ProcessEntity(EntityInfo entityInfo, Entity parent)
         {
-            GameObject gameObject = new GameObject(gameObjectInfo.Name, gameObjectInfo.RenderHint);
-            gameObject.SetActive(gameObjectInfo.Active);
+            Entity Entity = new Entity(entityInfo.Name, entityInfo.RenderHint);
+            Entity.SetActive(entityInfo.Active);
 
-            ComponentInfo[] componentInfos = gameObjectInfo.Components;
+            ComponentInfo[] componentInfos = entityInfo.Components;
 
             for (int i = 0; i < componentInfos.Length; i++)
-                ProcessComponent(gameObject, componentInfos[i]);
+                ProcessComponent(Entity, componentInfos[i]);
 
             if (parent != null)
-                gameObject.Parent = parent;
+                Entity.Parent = parent;
 
-            for (int i = 0; i < gameObjectInfo.Children.Length; i++)
-                ProcessGameObject(gameObjectInfo.Children[i], gameObject);
+            for (int i = 0; i < entityInfo.Children.Length; i++)
+                ProcessEntity(entityInfo.Children[i], Entity);
         }
 
-        private static void ProcessComponent(GameObject gameObject, ComponentInfo componentInfo)
+        private static void ProcessComponent(Entity entity, ComponentInfo componentInfo)
         {
             Assembly asm = GetAssemblyByName(componentInfo.AssemblyName);
             Component component = (Component)Activator.CreateInstance(asm.GetType(componentInfo.Name));
@@ -57,9 +57,9 @@ namespace LeaderEditor.Data
                 ProcessField(component, componentFieldInfos[i]);
 
             if (component.GetType() != typeof(Transform))
-                gameObject.AddComponent(component);
+                entity.AddComponent(component);
             else
-                gameObject.ReplaceTransform((Transform)component);
+                entity.ReplaceTransform((Transform)component);
         }
 
         private static void ProcessField(Component component, ComponentFieldInfo componentFieldInfo)

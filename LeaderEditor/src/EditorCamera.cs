@@ -10,7 +10,7 @@ namespace LeaderEditor
 
         public float FOV = 1.04719755f; //60 degrees
 
-        public float Speed = 4.0f;
+        public float Speed = 2.0f;
         public float Sensitivity = 0.4f;
 
         private float speedMultiplier = 1.0f;
@@ -30,30 +30,30 @@ namespace LeaderEditor
         public void LookAt(Vector3 position)
         {
             Vector3 newPos = position + new Vector3(2.0f, 2.0f, 2.0f);
-            transform.LocalPosition = newPos;
-            transform.RotationEuler = new Vector3(30.0f, -45.0f, 0.0f);
+            Transform.LocalPosition = newPos;
+            Transform.RotationEuler = new Vector3(30.0f, -45.0f, 0.0f);
         }
 
         public void UpdateCamMove()
         {
             if (Input.GetKey(Keys.LeftShift))
-                speedMultiplier = 2.5f;
+                speedMultiplier = 4.0f;
             else speedMultiplier = 1.0f;
 
             float moveX = Input.GetAxis(Axis.Horizontal);
             float moveZ = Input.GetAxis(Axis.Vertical);
 
-            Vector3 move = transform.Forward * moveZ + transform.Right * moveX;
-            transform.LocalPosition += move * Time.deltaTime * Speed * speedMultiplier;
+            Vector3 move = Transform.Forward * moveZ + Transform.Right * moveX;
+            Transform.LocalPosition += move * Time.deltaTime * Speed * speedMultiplier;
 
             if (Input.GetMouse(MouseButton.Right))
             {
                 Vector2 delta = Input.GetMouseDelta() * Sensitivity;
-                transform.RotationEuler.X += delta.Y;
-                transform.RotationEuler.Y += delta.X;
+                Transform.RotationEuler.X += delta.Y;
+                Transform.RotationEuler.Y += delta.X;
             }
 
-            LightingController.CameraPos = transform.Position;
+            LightingController.CameraPos = Transform.Position;
         }
 
         private void SceneRender()
@@ -61,14 +61,14 @@ namespace LeaderEditor
             if (!Enabled)
                 return;
 
-            Vector3 pos = transform.Position;
+            Vector3 pos = Transform.Position;
 
             ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.Main.ViewportSize.X / (float)Application.Main.ViewportSize.Y, 0.02f, 512.0f);
 
             ViewMatrix = Matrix4.LookAt(
                     pos,
-                    pos + transform.Forward,
-                    transform.Up
+                    pos + Transform.Forward,
+                    Transform.Up
                 );
 
             RenderingGlobals.Projection = ProjectionMatrix;

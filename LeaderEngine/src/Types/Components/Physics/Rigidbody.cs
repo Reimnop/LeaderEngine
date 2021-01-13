@@ -11,11 +11,11 @@ namespace LeaderEngine
 
         public override void Start()
         {
-            collider = gameObject.GetComponent<Collider>();
+            collider = BaseEntity.GetComponent<Collider>();
             collider.Shape.ComputeInertia(1.0f, out var bodyInertia);
 
             handle = PhysicsController.Simulation.Bodies.Add(BodyDescription.CreateDynamic(
-                new System.Numerics.Vector3(transform.LocalPosition.X, transform.LocalPosition.Y, transform.LocalPosition.Z),
+                new System.Numerics.Vector3(Transform.LocalPosition.X, Transform.LocalPosition.Y, Transform.LocalPosition.Z),
                 bodyInertia,
                 new CollidableDescription(collider.ShapeIndex, 0.01f),
                 new BodyActivityDescription(0.05f)));
@@ -27,8 +27,8 @@ namespace LeaderEngine
         {
             BodyReference body = sim.Bodies.GetBodyReference(handle);
 
-            transform.LocalPosition = new OpenTK.Mathematics.Vector3(body.Pose.Position.X, body.Pose.Position.Y, body.Pose.Position.Z);
-            transform.Rotation = new OpenTK.Mathematics.Quaternion(body.Pose.Orientation.X, body.Pose.Orientation.Y, body.Pose.Orientation.Z, body.Pose.Orientation.W);
+            Transform.LocalPosition = new OpenTK.Mathematics.Vector3(body.Pose.Position.X, body.Pose.Position.Y, body.Pose.Position.Z);
+            Transform.Rotation = new OpenTK.Mathematics.Quaternion(body.Pose.Orientation.X, body.Pose.Orientation.Y, body.Pose.Orientation.Z, body.Pose.Orientation.W);
         }
 
         public override void OnRemove()

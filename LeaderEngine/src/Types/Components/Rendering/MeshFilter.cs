@@ -13,7 +13,7 @@
 
         public override void EditorStart()
         {
-            MeshRenderer mr = gameObject.GetComponent<MeshRenderer>();
+            MeshRenderer mr = BaseEntity.GetComponent<MeshRenderer>();
 
             if (mr != null)
                 mr.MeshFilter = this;

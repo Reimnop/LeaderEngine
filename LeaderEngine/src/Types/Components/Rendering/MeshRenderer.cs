@@ -11,10 +11,10 @@ namespace LeaderEngine
 
         public override void EditorStart()
         {
-            MeshFilter meshFilter = gameObject.GetComponent<MeshFilter>();
+            MeshFilter meshFilter = BaseEntity.GetComponent<MeshFilter>();
 
             if (meshFilter == null)
-                meshFilter = gameObject.AddComponent<MeshFilter>();
+                meshFilter = BaseEntity.AddComponent<MeshFilter>();
 
             MeshFilter = meshFilter;
         }
@@ -27,7 +27,7 @@ namespace LeaderEngine
             if (MeshFilter.Mesh == null)
                 return;
 
-            Matrix4 model = transform.ModelMatrix;
+            Matrix4 model = Transform.ModelMatrix;
 
             Material renderMat = Material;
             if (Material == null)

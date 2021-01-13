@@ -25,12 +25,12 @@ in vec3 FragPos;
 
 void main() 
 {
-	vec3 objectColor = VertCol * color.rgb;
+	vec3 color = VertCol * color.rgb;
 
 	if (useTexture)
-		objectColor *= texture(texture0, TexCoord).rgb;
+		color *= texture(texture0, TexCoord).rgb;
 
-	gAlbedoSpec = vec4(objectColor, 1.0);
+	gAlbedoSpec = vec4(color, 1.0);
 	gPosition = FragPosWorldSpace;
 	gNormal = normalize(NormalWorldSpace);
 

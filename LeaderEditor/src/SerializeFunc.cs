@@ -41,7 +41,7 @@ namespace LeaderEditor
             ImGui.InputText("Text", ref s, uint.MaxValue);
             uitext.Text = s;
             ImGui.PopID();
-        } 
+        }
 
         public static void MeshFilter(Component obj)
         {
@@ -51,7 +51,7 @@ namespace LeaderEditor
 
             if (ImGui.BeginCombo("Select Model", preview))
             {
-                foreach (var item in ResourceLoader.LoadedMeshes) 
+                foreach (var item in ResourceLoader.LoadedMeshes)
                 {
                     if (ImGui.Selectable(item.Key, meshFilter.Mesh == item.Value))
                         meshFilter.Mesh = item.Value;

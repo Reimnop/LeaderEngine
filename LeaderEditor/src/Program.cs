@@ -29,7 +29,7 @@ namespace LeaderEditor
         {
             Application.Main.EditorMode = true;
 
-            GameObject editorController = new GameObject("EditorController");
+            Entity editorController = new Entity("EditorController");
             editorController.AddComponent<EditorController>();
         }
     }

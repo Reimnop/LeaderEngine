@@ -63,7 +63,7 @@ namespace LeaderEngine
                 return;
             }
 
-            var dir = DirectionalLight.transform.Forward;
+            var dir = DirectionalLight.Transform.Forward;
 
             shader.SetMatrix4("lightSpaceMatrix", Matrix4.CreateTranslation(-CameraPos) * lightView * lightProjection);
 

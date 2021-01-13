@@ -24,14 +24,14 @@ namespace LeaderEngine
             if (!Enabled)
                 return;
 
-            Vector3 pos = transform.Position;
+            Vector3 pos = Transform.Position;
 
             ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, Application.Main.ViewportSize.X / (float)Application.Main.ViewportSize.Y, 0.02f, 512.0f);
 
             ViewMatrix = Matrix4.LookAt(
                     pos,
-                    pos + transform.Forward,
-                    transform.Up
+                    pos + Transform.Forward,
+                    Transform.Up
                 );
 
             RenderingGlobals.Projection = ProjectionMatrix;
@@ -40,7 +40,7 @@ namespace LeaderEngine
 
         public override void LateUpdate()
         {
-            LightingController.CameraPos = transform.LocalPosition;
+            LightingController.CameraPos = Transform.LocalPosition;
         }
 
         public override void OnRemove()

@@ -29,12 +29,12 @@ namespace LeaderEditor.Data
         public ComponentFieldInfo[] Fields { get; set; }
     }
 
-    public struct GameObjectInfo
+    public struct EntityInfo
     {
         public string Name { get; set; }
         public bool Active { get; set; }
         public RenderHint RenderHint { get; set; }
-        public GameObjectInfo[] Children;
+        public EntityInfo[] Children;
         public ComponentInfo[] Components { get; set; }
     }
 
@@ -43,6 +43,6 @@ namespace LeaderEditor.Data
         public string[] Models { get; set; }
         public Vector3 EditorCamPosition { get; set; }
         public Vector3 EditorCamRotation { get; set; }
-        public GameObjectInfo[] GameObjects { get; set; }
+        public EntityInfo[] Entities { get; set; }
     }
 }

@@ -10,16 +10,16 @@ namespace LeaderEngine
         Gui
     }
 
-    public class GameObject : IDisposable
+    public class Entity : IDisposable
     {
         public string Name;
         public RenderHint RenderHint;
         public bool ActiveSelf { private set; get; }
-        public Transform transform { private set; get; }
+        public Transform Transform { private set; get; }
 
         public string Tag = "Default";
 
-        public GameObject Parent
+        public Entity Parent
         {
             get => _parent;
             set
@@ -29,31 +29,31 @@ namespace LeaderEngine
                 _parent = value;
             }
         }
-        private GameObject _parent;
+        private Entity _parent;
 
-        public List<GameObject> Children { private set; get; } = new List<GameObject>();
+        public List<Entity> Children { private set; get; } = new List<Entity>();
 
         private List<Component> components = new List<Component>();
         private List<EditorComponent> editorComponents = new List<EditorComponent>();
 
-        public GameObject(string name, RenderHint renderHint = RenderHint.World)
+        public Entity(string name, RenderHint renderHint = RenderHint.World)
         {
             Name = name;
 
             RenderHint = renderHint;
 
-            List<GameObject> listToAdd = null;
+            List<Entity> listToAdd = null;
 
             switch (renderHint)
             {
                 case RenderHint.World:
-                    listToAdd = Application.Main.WorldGameObjects;
+                    listToAdd = Application.Main.WorldEntities;
                     break;
                 case RenderHint.Transparent:
-                    listToAdd = Application.Main.WorldGameObjects_Transparent;
+                    listToAdd = Application.Main.WorldEntities_Transparent;
                     break;
                 case RenderHint.Gui:
-                    listToAdd = Application.Main.GuiGameObjects;
+                    listToAdd = Application.Main.GuiEntities;
                     break;
             }
 
@@ -62,14 +62,14 @@ namespace LeaderEngine
             Init();
         }
 
-        ~GameObject()
+        ~Entity()
         {
             ThreadManager.ExecuteOnMainThread(() => Dispose());
         }
 
         private void Init()
         {
-            transform = AddComponent<Transform>();
+            Transform = AddComponent<Transform>();
             SetActive(true);
         }
 
@@ -131,14 +131,14 @@ namespace LeaderEngine
                 }
             }
 
-            transform.UpdateTransform();
+            Transform.UpdateTransform();
 
             LateUpdateLocal();
         }
 
         private void UpdateLocal()
         {
-            GameObject[] _children = Children.ToArray();
+            Entity[] _children = Children.ToArray();
 
             for (int i = 0; i < _children.Length; i++)
             {
@@ -148,7 +148,7 @@ namespace LeaderEngine
 
         private void LateUpdateLocal()
         {
-            GameObject[] _children = Children.ToArray();
+            Entity[] _children = Children.ToArray();
 
             for (int i = 0; i < _children.Length; i++)
             {
@@ -201,12 +201,12 @@ namespace LeaderEngine
 
         public T AddComponent<T>(params object[] args) where T : Component
         {
-            if (typeof(T) == typeof(Transform) && transform != null)
+            if (typeof(T) == typeof(Transform) && Transform != null)
                 return null;
 
             var comp = (T)Activator.CreateInstance(typeof(T), args);
             components.Add(comp);
-            comp.gameObject = this;
+            comp.BaseEntity = this;
 
             if (typeof(EditorComponent).IsAssignableFrom(typeof(T)))
             {
@@ -223,11 +223,11 @@ namespace LeaderEngine
 
         public Component AddComponent(Component component)
         {
-            if (component.GetType() == typeof(Transform) && transform != null)
+            if (component.GetType() == typeof(Transform) && Transform != null)
                 return null;
 
             components.Add(component);
-            component.gameObject = this;
+            component.BaseEntity = this;
 
             if (typeof(EditorComponent).IsAssignableFrom(component.GetType()))
             {
@@ -252,7 +252,7 @@ namespace LeaderEngine
 
             foreach (var co in components)
             {
-                co.gameObject = this;
+                co.BaseEntity = this;
 
                 if (typeof(EditorComponent).IsAssignableFrom(co.GetType()))
                 {
@@ -316,12 +316,12 @@ namespace LeaderEngine
 
         public void ReplaceTransform(Transform transform)
         {
-            transform.gameObject = this;
+            transform.BaseEntity = this;
 
-            components.Remove(this.transform);
+            components.Remove(this.Transform);
             components.Insert(0, transform);
 
-            this.transform = transform;
+            this.Transform = transform;
         }
 
         public void StartAll()
@@ -341,11 +341,11 @@ namespace LeaderEngine
 
         public void Dispose()
         {
-            GameObject[] _children = Children.ToArray();
+            Entity[] _children = Children.ToArray();
             for (int i = 0; i < _children.Length; i++)
                 _children[i].Parent = null;
 
-            Application.Main.WorldGameObjects.Remove(this);
+            Application.Main.WorldEntities.Remove(this);
             Parent = null;
             Cleanup();
 

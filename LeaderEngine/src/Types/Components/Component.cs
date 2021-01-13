@@ -2,8 +2,8 @@
 {
     public class Component
     {
-        public GameObject gameObject = null;
-        public Transform transform => gameObject.transform;
+        public Entity BaseEntity = null;
+        public Transform Transform => BaseEntity.Transform;
 
         public bool Enabled = true;
 

@@ -10,20 +10,21 @@ namespace LeaderEditor
 {
     public class SceneHierachy : WindowComponent
     {
-        public static List<GameObject> SceneObjects { 
-            get 
+        public static List<Entity> SceneEntities
+        {
+            get
             {
-                List<GameObject> gameObjects = new List<GameObject>();
+                List<Entity> entities = new List<Entity>();
 
-                gameObjects.AddRange(Application.Main.WorldGameObjects.Where(x => x.Tag != "Editor"));
-                gameObjects.AddRange(Application.Main.WorldGameObjects_Transparent);
-                gameObjects.AddRange(Application.Main.GuiGameObjects);
+                entities.AddRange(Application.Main.WorldEntities.Where(x => x.Tag != "Editor"));
+                entities.AddRange(Application.Main.WorldEntities_Transparent);
+                entities.AddRange(Application.Main.GuiEntities);
 
-                return gameObjects;
-            } 
+                return entities;
+            }
         }
 
-        public static GameObject SelectedObject = null;
+        public static Entity SelectedEntity = null;
 
         private static readonly Dictionary<RenderHint, string> renderHintText = new Dictionary<RenderHint, string>()
         {
@@ -32,7 +33,7 @@ namespace LeaderEditor
             { RenderHint.Gui, "[Gui]" }
         };
 
-        private string[] objectTypes = { "World", "Transparent", "Gui" };
+        private string[] entityTypes = { "World", "Transparent", "Gui" };
         private string currentType = "World";
 
         public override void EditorStart()
@@ -44,13 +45,13 @@ namespace LeaderEditor
 
         public override void EditorUpdate()
         {
-            //delete object
-            if (Input.GetKeyDown(Keys.Delete) && SelectedObject != null)
+            //delete entity
+            if (Input.GetKeyDown(Keys.Delete) && SelectedEntity != null)
             {
-                SelectedObject.Destroy();
-                SceneObjects.Remove(SelectedObject);
+                SelectedEntity.Destroy();
+                SceneEntities.Remove(SelectedEntity);
 
-                SelectedObject = null;
+                SelectedEntity = null;
             }
         }
 
@@ -65,7 +66,7 @@ namespace LeaderEditor
 
                     if (ImGui.BeginCombo("##combo", currentType))
                     {
-                        foreach (string typeStr in objectTypes)
+                        foreach (string typeStr in entityTypes)
                         {
                             if (ImGui.Selectable(typeStr, currentType == typeStr))
                                 currentType = typeStr;
@@ -73,23 +74,23 @@ namespace LeaderEditor
                         ImGui.EndCombo();
                     }
 
-                    if (SelectedObject != null)
+                    if (SelectedEntity != null)
                     {
                         ImGui.SameLine();
-                        if (ImGui.Button($"Go to {SelectedObject.Name}"))
+                        if (ImGui.Button($"Go to {SelectedEntity.Name}"))
                         {
-                            EditorCamera.Main.LookAt(SelectedObject.transform.Position);
+                            EditorCamera.Main.LookAt(SelectedEntity.Transform.Position);
                         }
                     }
 
-                    //draw all objects
-                    RenderObjectTree();
+                    //draw all entities
+                    RenderTree();
                     ImGui.End();
                 }
         }
 
-        //new object function
-        private void CreateNewObject(GameObject parent)
+        //new entity function
+        private void CreateNewEntity(Entity parent)
         {
             if (string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
                 return;
@@ -109,41 +110,41 @@ namespace LeaderEditor
                     break;
             }
 
-            GameObject go = new GameObject("New GameObject", renderHint);
+            Entity en = new Entity("New Entity", renderHint);
 
-            go.Parent = parent;
+            en.Parent = parent;
         }
 
         private int index = 0;
 
-        private void RenderObjectTree()
+        private void RenderTree()
         {
-            List<GameObject> _sceneObjects = SceneObjects;
+            List<Entity> _sceneEntities = SceneEntities;
 
             index = 0;
             if (ImGui.BeginChild("Scene"))
             {
-                for (int i = 0; i < SceneObjects.Count; i++)
+                for (int i = 0; i < SceneEntities.Count; i++)
                 {
-                    var go = _sceneObjects[i];
+                    var en = _sceneEntities[i];
 
-                    if (go.Parent == null)
-                        RecursivelyRender(go);
+                    if (en.Parent == null)
+                        RecursivelyRender(en);
                 }
 
                 if (!ImGui.IsAnyItemHovered() && ImGui.IsWindowHovered(ImGuiHoveredFlags.ChildWindows))
                 {
                     if (ImGui.IsMouseClicked(ImGuiMouseButton.Right))
-                        ImGui.OpenPopup("GameObject Menu");
+                        ImGui.OpenPopup("Entity Menu");
 
                     if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
-                        SelectedObject = null;
+                        SelectedEntity = null;
                 }
 
-                if (ImGui.BeginPopup("GameObject Menu")) 
-                { 
-                    if (ImGui.MenuItem("New GameObject"))
-                        Application.Main.ExecuteNextUpdate(() => CreateNewObject(null));
+                if (ImGui.BeginPopup("Entity Menu"))
+                {
+                    if (ImGui.MenuItem("New Entity"))
+                        Application.Main.ExecuteNextUpdate(() => CreateNewEntity(null));
 
                     ImGui.EndPopup();
                 }
@@ -152,29 +153,29 @@ namespace LeaderEditor
             }
         }
 
-        private void RecursivelyRender(GameObject go)
+        private void RecursivelyRender(Entity en)
         {
-            ImGui.PushID(go.Name + index);
+            ImGui.PushID(en.Name + index);
 
             index++;
 
             ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags.OpenOnArrow;
 
-            if (SelectedObject == go)
+            if (SelectedEntity == en)
                 nodeFlags |= ImGuiTreeNodeFlags.Selected;
 
-            bool nodeOpen = ImGui.TreeNodeEx(go.Name, nodeFlags);
+            bool nodeOpen = ImGui.TreeNodeEx(en.Name, nodeFlags);
 
             if (ImGui.IsItemClicked())
-                SelectedObject = go;
+                SelectedEntity = en;
 
-            if (ImGui.BeginPopupContextItem("GameObject Popup"))
+            if (ImGui.BeginPopupContextItem("Entity Popup"))
             {
-                if (ImGui.MenuItem("New GameObject"))
-                    Application.Main.ExecuteNextUpdate(() => CreateNewObject(go));
+                if (ImGui.MenuItem("New Entity"))
+                    Application.Main.ExecuteNextUpdate(() => CreateNewEntity(en));
 
                 if (ImGui.MenuItem("Delete"))
-                    Application.Main.ExecuteNextUpdate(() => go.Destroy());
+                    Application.Main.ExecuteNextUpdate(() => en.Destroy());
 
                 ImGui.EndPopup();
             }
@@ -182,13 +183,13 @@ namespace LeaderEditor
             ImGui.SameLine();
 
             ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(0.4f, 0.4f, 0.4f, 1.0f));
-            ImGui.Text(renderHintText[go.RenderHint]);
+            ImGui.Text(renderHintText[en.RenderHint]);
             ImGui.PopStyleColor();
 
             if (nodeOpen)
             {
-                for (int i = 0; i < go.Children.Count; i++)
-                    RecursivelyRender(go.Children[i]);
+                for (int i = 0; i < en.Children.Count; i++)
+                    RecursivelyRender(en.Children[i]);
 
                 ImGui.TreePop();
             }

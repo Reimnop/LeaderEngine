@@ -42,7 +42,7 @@ namespace LeaderEditor
             if (IsOpen)
                 if (ImGui.Begin("Inspector", ref IsOpen))
                 {
-                    if (SceneHierachy.SelectedObject != null)
+                    if (SceneHierachy.SelectedEntity != null)
                     {
                         if (ImGui.Button("Add Component"))
                             compMenuOpen = !compMenuOpen;
@@ -50,10 +50,10 @@ namespace LeaderEditor
                         ImGui.SameLine();
 
                         ImGui.SetNextItemWidth(127.5f);
-                        ImGui.InputText("Name", ref SceneHierachy.SelectedObject.Name, 255);
+                        ImGui.InputText("Name", ref SceneHierachy.SelectedEntity.Name, 255);
 
                         //get all components
-                        List<Component> components = SceneHierachy.SelectedObject.GetAllComponents();
+                        List<Component> components = SceneHierachy.SelectedEntity.GetAllComponents();
 
                         //add component menu
                         if (compMenuOpen)
@@ -66,14 +66,14 @@ namespace LeaderEditor
                                         if (ImGui.Button(comp.Key.Name))
                                         {
                                             //create new component and add
-                                            SceneHierachy.SelectedObject.AddComponent((Component)Activator.CreateInstance(comp.Key));
+                                            SceneHierachy.SelectedEntity.AddComponent((Component)Activator.CreateInstance(comp.Key));
                                         }
                                 }
                                 ImGui.ListBoxFooter();
                             }
                         }
 
-                        //serialize components in an object
+                        //serialize components in an entity
                         for (int i = 0; i < components.Count; i++)
                         {
                             ImGui.Separator();
@@ -98,7 +98,7 @@ namespace LeaderEditor
                                 ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - 120.0f);
                                 if (ImGui.Button("Remove Component"))
                                 {
-                                    SceneHierachy.SelectedObject.RemoveComponent(component);
+                                    SceneHierachy.SelectedEntity.RemoveComponent(component);
                                 }
                             }
                             ImGui.PopID();

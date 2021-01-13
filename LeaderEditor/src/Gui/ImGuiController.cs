@@ -30,7 +30,7 @@ namespace LeaderEditor.Gui
 
         private Texture _fontTexture;
         private Shader _shader;
-        
+
         private int _windowWidth { get { return Application.Main.Size.X; } }
         private int _windowHeight { get { return Application.Main.Size.Y; } }
 
@@ -91,7 +91,7 @@ namespace LeaderEditor.Gui
 
         public void DestroyDeviceObjects()
         {
-            gameObject.RemoveComponent<ImGuiController>();
+            BaseEntity.RemoveComponent<ImGuiController>();
         }
 
         public void CreateDeviceResources()
@@ -254,7 +254,7 @@ void main()
                 SetCursor(imCursor);
 
             lastCursor = imCursor;
-            
+
             foreach (Keys key in Enum.GetValues(typeof(Keys)))
             {
                 if (key != Keys.Unknown)
@@ -353,7 +353,7 @@ void main()
                 return;
             }
 
-            
+
             for (int i = 0; i < draw_data.CmdListsCount; i++)
             {
                 ImDrawListPtr cmd_list = draw_data.CmdListsRange[i];

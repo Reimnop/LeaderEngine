@@ -5,7 +5,7 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
-
+using System.Diagnostics;
 using ErrorCode = OpenTK.Graphics.OpenGL4.ErrorCode;
 
 namespace LeaderEngine
@@ -22,18 +22,18 @@ namespace LeaderEngine
     {
         public static Application Main = null;
 
-        public List<GameObject> WorldGameObjects = new List<GameObject>();
-        public List<GameObject> WorldGameObjects_Transparent = new List<GameObject>();
-        public List<GameObject> GuiGameObjects = new List<GameObject>();
+        public List<Entity> WorldEntities = new List<Entity>();
+        public List<Entity> WorldEntities_Transparent = new List<Entity>();
+        public List<Entity> GuiEntities = new List<Entity>();
 
-        private GameObject[] allObjects
+        private Entity[] allEntities
         {
             get
             {
-                List<GameObject> all = new List<GameObject>();
-                all.AddRange(WorldGameObjects);
-                all.AddRange(WorldGameObjects_Transparent);
-                all.AddRange(GuiGameObjects);
+                List<Entity> all = new List<Entity>();
+                all.AddRange(WorldEntities);
+                all.AddRange(WorldEntities_Transparent);
+                all.AddRange(GuiEntities);
                 return all.ToArray();
             }
         }
@@ -95,15 +95,15 @@ namespace LeaderEngine
         {
             if (!editorMode)
             {
-                WorldGameObjects.ForEach(go => go.StartAll());
-                WorldGameObjects_Transparent.ForEach(go => go.StartAll());
-                GuiGameObjects.ForEach(go => go.StartAll());
+                WorldEntities.ForEach(en => en.StartAll());
+                WorldEntities_Transparent.ForEach(en => en.StartAll());
+                GuiEntities.ForEach(en => en.StartAll());
             }
             else
             {
-                WorldGameObjects.ForEach(go => go.RemoveAll());
-                WorldGameObjects_Transparent.ForEach(go => go.RemoveAll());
-                GuiGameObjects.ForEach(go => go.RemoveAll());
+                WorldEntities.ForEach(en => en.RemoveAll());
+                WorldEntities_Transparent.ForEach(en => en.RemoveAll());
+                GuiEntities.ForEach(en => en.RemoveAll());
             }
         }
 
@@ -118,6 +118,8 @@ namespace LeaderEngine
             Logger.Log("Shading Language version: " + GL.GetString(StringName.ShadingLanguageVersion));
 
             Logger.Log("Initializing...");
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
             GL.ClearColor(0.005f, 0.005f, 0.005f, 1.0f);
 
@@ -139,7 +141,8 @@ namespace LeaderEngine
 
             initCallback?.Invoke();
 
-            Logger.Log("Done initializing");
+            stopwatch.Stop();
+            Logger.Log($"Done initializing ({stopwatch.ElapsedMilliseconds}ms)");
 
             base.OnLoad();
         }
@@ -160,17 +163,17 @@ namespace LeaderEngine
 
             ThreadManager.ExecuteAll();
 
-            GameObject[] gameObjects = allObjects;
+            Entity[] entities = allEntities;
 
-            for (int i = 0; i < gameObjects.Length; i++)
-                if (gameObjects[i] != null)
-                    if (gameObjects[i].Parent == null)
-                        gameObjects[i].Update();
+            for (int i = 0; i < entities.Length; i++)
+                if (entities[i] != null)
+                    if (entities[i].Parent == null)
+                        entities[i].Update();
 
-            for (int i = 0; i < gameObjects.Length; i++)
-                if (gameObjects[i] != null)
-                    if (gameObjects[i].Parent == null)
-                        gameObjects[i].LateUpdate();
+            for (int i = 0; i < entities.Length; i++)
+                if (entities[i] != null)
+                    if (entities[i].Parent == null)
+                        entities[i].LateUpdate();
 
             PhysicsController.Update();
         }
@@ -206,7 +209,7 @@ namespace LeaderEngine
             SSAOProcessor.RenderBlurPass();
 
             PostProcess?.Invoke();
-            
+
             SSAOProcessor.RenderLightPass();
             Skybox.Main?.Render();
             //TODO: post process here
@@ -223,12 +226,12 @@ namespace LeaderEngine
             RenderGui();
 
             PostGuiRender?.Invoke();
-            
+
             FinishRender?.Invoke();
 
             ErrorCode error = GL.GetError();
 
-            while (error != ErrorCode.NoError) 
+            while (error != ErrorCode.NoError)
             {
                 Logger.Log("ERROR: " + error.ToString());
                 error = GL.GetError();
@@ -245,14 +248,14 @@ namespace LeaderEngine
             if (!RenderingGlobals.RenderingEnabled)
                 return;
 
-            WorldGameObjects.ForEach(go => go.Render());
-            WorldGameObjects_Transparent.ForEach(go => go.Render());
+            WorldEntities.ForEach(en => en.Render());
+            WorldEntities_Transparent.ForEach(en => en.Render());
         }
 
         public void RenderGui()
         {
             if (RenderingGlobals.RenderingEnabled)
-                GuiGameObjects.ForEach(go => go.RenderGui());
+                GuiEntities.ForEach(en => en.RenderGui());
         }
 
         public void ResizeViewport(Vector2i newSize)

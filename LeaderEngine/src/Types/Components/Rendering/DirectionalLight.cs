@@ -15,7 +15,7 @@ namespace LeaderEngine
         {
             proj = Matrix4.CreateOrthographic(32.0f, 32.0f, -16.0f, 16.0f);
 
-            view = Matrix4.LookAt(Vector3.Zero, transform.Forward, transform.Up);
+            view = Matrix4.LookAt(Vector3.Zero, Transform.Forward, Transform.Up);
         }
 
         public override void EditorRemove()
