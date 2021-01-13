@@ -113,9 +113,11 @@ namespace LeaderEngine
 
             Logger.Log("Renderer: " + GL.GetString(StringName.Renderer));
             Logger.Log("Vendor: " + GL.GetString(StringName.Vendor));
-            Logger.Log("Version: " + GL.GetString(StringName.Version) ?? "none");
+            Logger.Log("Version: " + GL.GetString(StringName.Version));
             Logger.Log("Extensions: " + GL.GetString(StringName.Extensions));
             Logger.Log("Shading Language version: " + GL.GetString(StringName.ShadingLanguageVersion));
+
+            Extensions.CheckForError();
 
             Logger.Log("Initializing...");
             Stopwatch stopwatch = new Stopwatch();
@@ -140,6 +142,8 @@ namespace LeaderEngine
             SSAOProcessor = new SSAO(ViewportSize);
 
             initCallback?.Invoke();
+
+            Extensions.CheckForError();
 
             stopwatch.Stop();
             Logger.Log($"Done initializing ({stopwatch.ElapsedMilliseconds}ms)");

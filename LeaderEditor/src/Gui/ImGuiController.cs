@@ -7,6 +7,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace LeaderEditor.Gui
@@ -61,7 +62,7 @@ namespace LeaderEditor.Gui
 
             var io = ImGui.GetIO();
             //io.Fonts.AddFontDefault();
-            io.Fonts.AddFontFromFileTTF(AppContext.BaseDirectory + "Fonts/Inconsolata.ttf", 16);
+            io.Fonts.AddFontFromFileTTF(Path.Combine(AppContext.BaseDirectory, "Fonts/Inconsolata.ttf"), 16);
 
             io.BackendFlags |= ImGuiBackendFlags.HasMouseCursors;
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable | ImGuiConfigFlags.NavEnableKeyboard;
