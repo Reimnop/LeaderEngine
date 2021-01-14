@@ -13,7 +13,7 @@ namespace LeaderEngine
                 dictionary.Add(key, value);
         }
 
-        public static void CheckForError()
+        public static void CheckForErrors()
         {
             ErrorCode error;
             while ((error = GL.GetError()) != ErrorCode.NoError) {

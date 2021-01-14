@@ -5,6 +5,7 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using ErrorCode = OpenTK.Graphics.OpenGL4.ErrorCode;
 
@@ -114,10 +115,9 @@ namespace LeaderEngine
             Logger.Log("Renderer: " + GL.GetString(StringName.Renderer));
             Logger.Log("Vendor: " + GL.GetString(StringName.Vendor));
             Logger.Log("Version: " + GL.GetString(StringName.Version));
-            Logger.Log("Extensions: " + GL.GetString(StringName.Extensions));
             Logger.Log("Shading Language version: " + GL.GetString(StringName.ShadingLanguageVersion));
 
-            Extensions.CheckForError();
+            Extensions.CheckForErrors();
 
             Logger.Log("Initializing...");
             Stopwatch stopwatch = new Stopwatch();
@@ -143,7 +143,7 @@ namespace LeaderEngine
 
             initCallback?.Invoke();
 
-            Extensions.CheckForError();
+            Extensions.CheckForErrors();
 
             stopwatch.Stop();
             Logger.Log($"Done initializing ({stopwatch.ElapsedMilliseconds}ms)");
@@ -151,9 +151,11 @@ namespace LeaderEngine
             base.OnLoad();
         }
 
-        protected override void OnResize(ResizeEventArgs e)
+        protected override void OnClosing(CancelEventArgs e)
         {
-            base.OnResize(e);
+            Logger.Log("Shutting down");
+
+            base.OnClosing(e);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -233,13 +235,7 @@ namespace LeaderEngine
 
             FinishRender?.Invoke();
 
-            ErrorCode error = GL.GetError();
-
-            while (error != ErrorCode.NoError)
-            {
-                Logger.Log("ERROR: " + error.ToString());
-                error = GL.GetError();
-            }
+            Extensions.CheckForErrors();
 
             SwapBuffers();
 

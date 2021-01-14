@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using LeaderEngine;
+using OpenTK.Graphics.OpenGL4;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
@@ -19,7 +20,7 @@ namespace LeaderEditor.Gui
             var error = GL.GetError();
             if (error != ErrorCode.NoError)
             {
-                Debug.Print($"{title}: {error}");
+                Logger.LogError($"{title}: {error}");
             }
         }
 
