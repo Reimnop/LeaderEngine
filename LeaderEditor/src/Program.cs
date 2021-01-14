@@ -27,10 +27,14 @@ namespace LeaderEditor
 
         static void LoadEditor()
         {
+            Logger.Log("Starting Editor");
+
             Application.Main.EditorMode = true;
 
             Entity editorController = new Entity("EditorController");
             editorController.AddComponent<EditorController>();
+
+            Logger.Log("Ready");
         }
     }
 }

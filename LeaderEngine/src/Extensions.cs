@@ -17,7 +17,7 @@ namespace LeaderEngine
         {
             ErrorCode error;
             while ((error = GL.GetError()) != ErrorCode.NoError) {
-                Logger.Log("ERROR: " + error.ToString());
+                Logger.LogError("ERROR: " + error.ToString());
             }
         }
     }

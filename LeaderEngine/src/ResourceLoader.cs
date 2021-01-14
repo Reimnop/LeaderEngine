@@ -59,6 +59,8 @@ namespace LeaderEngine
 
                 en.Parent = parent;
 
+                Logger.Log("Loaded " + en.Name);
+
                 foreach (var item in node.Children)
                     RecursivelyLoad(item, en);
             }

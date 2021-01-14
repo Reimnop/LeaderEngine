@@ -14,6 +14,12 @@ namespace LeaderEditor.Data
 
         public static void LoadProject(string prjPath)
         {
+            LoadProjectInternal(prjPath);
+            Logger.Log("Loaded project " + Path.GetFileName(prjPath));
+        }
+
+        private static void LoadProjectInternal(string prjPath)
+        {
             SceneHierachy.SceneEntities.ForEach(x => x.Destroy());
             SceneHierachy.SceneEntities.Clear();
 
@@ -63,6 +69,8 @@ namespace LeaderEditor.Data
 
                 if (!File.Exists(newPath))
                     File.Copy(path, newPath);
+
+                Logger.Log(Path.GetFileName(path) + " copied to" + newPath);
 
                 return newPath;
             }
