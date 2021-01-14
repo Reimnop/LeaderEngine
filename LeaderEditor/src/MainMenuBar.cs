@@ -114,7 +114,7 @@ namespace LeaderEditor
                     if (!string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
                         using (OpenFileDialog ofd = new OpenFileDialog())
                         {
-                            ofd.Filter = "3D Model|*.fbx;*.obj";
+                            ofd.Filter = "3D Model|*.fbx;*.obj|All files (*.*)|*.*";
                             ofd.Multiselect = false;
 
                             ofd.ShowDialog();
