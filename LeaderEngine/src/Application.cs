@@ -83,7 +83,7 @@ namespace LeaderEngine
 
             ViewportSize = nws.Size;
 
-            GLFW.SwapInterval(1);
+            GLFW.SwapInterval(0);
         }
 
         public void ExecuteNextUpdate(Action action)
@@ -243,7 +243,7 @@ namespace LeaderEngine
 
             SwapBuffers();
 
-            Time.deltaTimeUnscaled = (float)GLFW.GetTime() - Time.time;
+            Time.deltaTimeUnscaled = (float)e.Time;
             Time.deltaTime = Time.deltaTimeUnscaled * Time.timeScale;
         }
 
