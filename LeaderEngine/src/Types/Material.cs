@@ -43,6 +43,8 @@ namespace LeaderEngine
             Lit = new Material(Shader.Lit);
             DepthOnly = new Material(Shader.DepthOnly);
             NoRender = new Material(Shader.NoRender);
+
+            Logger.Log("Materials loaded");
         }
 
         #region SetMethods

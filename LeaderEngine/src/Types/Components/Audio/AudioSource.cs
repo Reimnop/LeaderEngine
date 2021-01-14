@@ -27,6 +27,8 @@ namespace LeaderEngine
             context = ALC.CreateContext(device, (int[])null);
 
             ALC.MakeContextCurrent(context);
+
+            Logger.Log("OpenAL initialized");
         }
 
         public override void Start()
