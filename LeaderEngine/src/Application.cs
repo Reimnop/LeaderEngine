@@ -196,7 +196,7 @@ namespace LeaderEngine
             GL.Enable(EnableCap.DepthTest);
 
             RenderingGlobals.CurrentPass = RenderPass.Lighting;
-            LightingController.RenderDepth(RenderScene);
+            LightingController.RenderDepth();
 
             SceneRender?.Invoke();
             RenderingGlobals.CurrentPass = RenderPass.World;
@@ -252,14 +252,32 @@ namespace LeaderEngine
             if (!RenderingGlobals.RenderingEnabled)
                 return;
 
+            RenderOpaque();
+            RenderTransparent();
+        }
+
+        public void RenderOpaque()
+        {
+            if (!RenderingGlobals.RenderingEnabled)
+                return;
+
             WorldEntities.ForEach(en => en.Render());
+        }
+
+        public void RenderTransparent()
+        {
+            if (!RenderingGlobals.RenderingEnabled)
+                return;
+
             WorldEntities_Transparent.ForEach(en => en.Render());
         }
 
         public void RenderGui()
         {
-            if (RenderingGlobals.RenderingEnabled)
-                GuiEntities.ForEach(en => en.RenderGui());
+            if (!RenderingGlobals.RenderingEnabled)
+                return;    
+                
+            GuiEntities.ForEach(en => en.RenderGui());
         }
 
         public void ResizeViewport(Vector2i newSize)

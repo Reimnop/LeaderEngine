@@ -14,7 +14,7 @@ namespace LeaderEditor
 
             Application app = new Application(new GameWindowSettings(), new NativeWindowSettings()
             {
-                APIVersion = new Version(4, 0),
+                APIVersion = new Version(4, 5),
                 WindowBorder = WindowBorder.Resizable,
                 API = ContextAPI.OpenGL,
                 Flags = ContextFlags.ForwardCompatible,

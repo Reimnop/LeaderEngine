@@ -29,7 +29,7 @@ namespace LeaderEngine
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
-        public static void RenderDepth(Action renderFunc)
+        public static void RenderDepth()
         {
             if (DirectionalLight == null)
                 return;
@@ -46,7 +46,9 @@ namespace LeaderEngine
             depthBuffer.Begin();
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            renderFunc();
+            Application.Main.RenderOpaque();
+            Application.Main.RenderTransparent();
+
             depthBuffer.End();
 
             RenderingGlobals.GlobalPosition = Vector3.Zero;

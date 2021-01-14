@@ -14,7 +14,7 @@ namespace LeaderEngine
 
         private Mesh mesh;
 
-        public int BlurSamples = 4;
+        public int BlurSamples = 2;
 
         public SSAOBlur(Vector2i vSize)
         {
