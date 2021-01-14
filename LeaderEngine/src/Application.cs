@@ -83,7 +83,7 @@ namespace LeaderEngine
 
             ViewportSize = nws.Size;
 
-            GLFW.SwapInterval(0);
+            GLFW.SwapInterval(1);
         }
 
         public void ExecuteNextUpdate(Action action)
