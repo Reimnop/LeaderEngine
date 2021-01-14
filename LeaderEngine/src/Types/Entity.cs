@@ -73,7 +73,38 @@ namespace LeaderEngine
             SetActive(true);
         }
 
-        public void Update()
+        public void MoveTo(RenderHint newRenderHint)
+        {
+            switch (RenderHint)
+            {
+                case RenderHint.World:
+                    Application.Main.WorldEntities.Remove(this);
+                    break;
+                case RenderHint.Transparent:
+                    Application.Main.WorldEntities_Transparent.Remove(this);
+                    break;
+                case RenderHint.Gui:
+                    Application.Main.GuiEntities.Remove(this);
+                    break;
+            }
+
+            RenderHint = newRenderHint;
+
+            switch (newRenderHint)
+            {
+                case RenderHint.World:
+                    Application.Main.WorldEntities.Add(this);
+                    break;
+                case RenderHint.Transparent:
+                    Application.Main.WorldEntities_Transparent.Add(this);
+                    break;
+                case RenderHint.Gui:
+                    Application.Main.GuiEntities.Add(this);
+                    break;
+            }
+        }
+
+        internal void Update()
         {
             if (!ActiveSelf)
                 return;
@@ -110,7 +141,7 @@ namespace LeaderEngine
             UpdateLocal();
         }
 
-        public void LateUpdate()
+        internal void LateUpdate()
         {
             if (!ActiveSelf)
                 return;
@@ -156,7 +187,7 @@ namespace LeaderEngine
             }
         }
 
-        public void Render()
+        internal void Render()
         {
             if (!ActiveSelf)
                 return;
@@ -175,7 +206,7 @@ namespace LeaderEngine
             }
         }
 
-        public void RenderGui()
+        internal void RenderGui()
         {
             if (!ActiveSelf)
                 return;
@@ -321,15 +352,15 @@ namespace LeaderEngine
             components.Remove(this.Transform);
             components.Insert(0, transform);
 
-            this.Transform = transform;
+            Transform = transform;
         }
 
-        public void StartAll()
+        internal void StartAll()
         {
             components.ForEach(x => x.Start());
         }
 
-        public void RemoveAll()
+        internal void RemoveAll()
         {
             components.ForEach(x => x.OnRemove());
         }

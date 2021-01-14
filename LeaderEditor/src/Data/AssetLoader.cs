@@ -70,7 +70,7 @@ namespace LeaderEditor.Data
                 if (!File.Exists(newPath))
                     File.Copy(path, newPath);
 
-                Logger.Log(Path.GetFileName(path) + " copied to" + newPath);
+                Logger.Log(Path.GetFileName(path) + " copied to " + newPath);
 
                 return newPath;
             }

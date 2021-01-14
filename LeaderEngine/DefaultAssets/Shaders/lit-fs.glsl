@@ -30,7 +30,7 @@ void main()
 	if (useTexture)
 		outColor *= texture(texture0, TexCoord);
 
-	gAlbedoSpec = vec4(vec3(outColor), 1.0);
+	gAlbedoSpec = outColor;
 	gPosition = FragPosWorldSpace;
 	gNormal = normalize(NormalWorldSpace);
 
