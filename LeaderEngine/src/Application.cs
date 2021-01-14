@@ -174,12 +174,26 @@ namespace LeaderEngine
             for (int i = 0; i < entities.Length; i++)
                 if (entities[i] != null)
                     if (entities[i].Parent == null)
-                        entities[i].Update();
+                        try
+                        {
+                            entities[i].Update();
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogError(ex);
+                        }
 
             for (int i = 0; i < entities.Length; i++)
                 if (entities[i] != null)
                     if (entities[i].Parent == null)
-                        entities[i].LateUpdate();
+                        try
+                        {
+                            entities[i].LateUpdate();
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogError(ex);
+                        }
 
             PhysicsController.Update();
         }
