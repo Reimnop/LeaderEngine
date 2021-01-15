@@ -53,6 +53,11 @@ namespace LeaderEditor
 
                 SelectedEntity = null;
             }
+
+            if (Input.GetKeyDown(Keys.L) && SelectedEntity != null)
+            {
+                SelectedEntity.MoveTo(RenderHint.Transparent);
+            }
         }
 
         private void OnImGui()

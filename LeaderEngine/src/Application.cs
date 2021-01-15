@@ -153,7 +153,7 @@ namespace LeaderEngine
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            Logger.Log("Shutting down");
+            Logger.Log("Shutting down...");
 
             base.OnClosing(e);
         }
@@ -263,7 +263,16 @@ namespace LeaderEngine
                 return;
 
             RenderOpaque();
+
+            GL.DepthMask(false);
+            GL.Enable(EnableCap.Blend);
+
+            GL.BlendFuncSeparate(BlendingFactorSrc.One, BlendingFactorDest.One, BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+
             RenderTransparent();
+
+            GL.DepthMask(true);
+            GL.Disable(EnableCap.Blend);
         }
 
         public void RenderOpaque()

@@ -6,6 +6,8 @@ uniform sampler2D blurredSSAO;
 uniform sampler2D gAlbedoSpec;
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
+uniform sampler2D accumulation;
+uniform sampler2D revealage;
 uniform sampler2D depthTexture;
 
 uniform sampler2D shadowMap;
@@ -55,9 +57,16 @@ void main()
 
     float shadow = ShadowCalculation(FragPosLightSpace, Normal);
 
-    vec3 result = (ambientColor * texture(blurredSSAO, TexCoord).r + shadow * max(dot(Normal, -lightDir), 0.0) * lightColor * intensity) * Albedo;
+    vec3 resultLight = (ambientColor * texture(blurredSSAO, TexCoord).r + shadow * max(dot(Normal, -lightDir), 0.0) * lightColor * intensity) * Albedo;
 
-	fragColor = vec4(result, 1.0);
+    //alpha
+    vec4 accum = texture(accumulation, TexCoord);
+    float alpha = accum.a;
+    accum.a = texture(revealage, TexCoord).r;
+
+    vec4 result = clamp(vec4(accum.rgb / clamp(accum.a, 1e-4, 5e4), 1.0 - alpha), vec4(0.0), vec4(1.0)) * vec4(resultLight, 1.0);
+
+	fragColor = result;
 
     gl_FragDepth = texture(depthTexture, TexCoord).r;
 }

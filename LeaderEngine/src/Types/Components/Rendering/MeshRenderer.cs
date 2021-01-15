@@ -35,6 +35,8 @@ namespace LeaderEngine
 
             if (RenderingGlobals.CurrentPass == RenderPass.Lighting)
                 renderMat = Material.DepthOnly;
+            else if (BaseEntity.RenderHint == RenderHint.Transparent)
+                renderMat.Shader = Shader.LitTransparent;
 
             renderMat.Use();
             renderMat.Shader.SetMatrix4("mvp", model * RenderingGlobals.View * RenderingGlobals.Projection);

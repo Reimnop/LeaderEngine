@@ -9,11 +9,13 @@ namespace LeaderEngine
     {
         private Shader SSAOShader = Shader.SSAO;
 
-        private int FBO, gAlbedo, gPosition, gNormal, gPositionViewSpace, gNormalViewSpace, depthTexture;
+        private int FBO, gAlbedo, gPosition, gNormal, gPositionViewSpace, gNormalViewSpace, accumulation, revealage, depthTexture;
 
         private Vector2 currentSize;
 
         private Mesh mesh;
+
+        private Shader ClearTransparent;
 
         //SSAO
         private const int kernelSize = 64;
@@ -47,6 +49,8 @@ namespace LeaderEngine
 
         private void Setup(Vector2i size)
         {
+            ClearTransparent = Shader.FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/transparent-clear-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/transparent-clear-fs.glsl");
+
             currentSize = size;
 
             FBO = GL.GenFramebuffer();
@@ -106,9 +110,33 @@ namespace LeaderEngine
             GL.BindTexture(TextureTarget.Texture2D, 0);
 
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment4, TextureTarget.Texture2D, gNormalViewSpace, 0);
-
-            GL.DrawBuffers(5, new DrawBuffersEnum[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3, DrawBuffersEnum.ColorAttachment4 });
             #endregion
+
+            //accumulation (for alpha)
+            accumulation = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, accumulation);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment5, TextureTarget.Texture2D, accumulation, 0);
+
+            //revealage (for alpha)
+            revealage = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, revealage);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R16, size.X, size.Y, 0, PixelFormat.Red, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment6, TextureTarget.Texture2D, revealage, 0);
+
+            GL.DrawBuffers(7, new DrawBuffersEnum[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3, DrawBuffersEnum.ColorAttachment4, DrawBuffersEnum.ColorAttachment5, DrawBuffersEnum.ColorAttachment6 });
 
             //depth buffer
             depthTexture = GL.GenTexture();
@@ -145,7 +173,7 @@ namespace LeaderEngine
 
             SSAOSetup();
             SSAOBlur = new SSAOBlur(size);
-            DeferredProcessor = new DeferredProcessor(size, gAlbedo, gPosition, gNormal, depthTexture);
+            DeferredProcessor = new DeferredProcessor(size, gAlbedo, gPosition, gNormal, accumulation, revealage, depthTexture);
         }
 
         private void SSAOSetup()
@@ -212,6 +240,13 @@ namespace LeaderEngine
         {
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            GL.DepthMask(false);
+            ClearTransparent.Use();
+            mesh.Use();
+
+            GL.DrawElements(PrimitiveType.Triangles, mesh.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
+            GL.DepthMask(true);
         }
 
         public void End()
@@ -243,6 +278,12 @@ namespace LeaderEngine
 
             GL.BindTexture(TextureTarget.Texture2D, gNormalViewSpace);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+
+            GL.BindTexture(TextureTarget.Texture2D, accumulation);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+
+            GL.BindTexture(TextureTarget.Texture2D, revealage);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R16, size.X, size.Y, 0, PixelFormat.Red, PixelType.Float, IntPtr.Zero);
 
             GL.BindTexture(TextureTarget.Texture2D, depthTexture);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, size.X, size.Y, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);

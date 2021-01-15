@@ -28,7 +28,7 @@ namespace LeaderEngine
         public static Material NoRender;
         #endregion
 
-        public Shader Shader { private set; get; }
+        public Shader Shader;
 
         private Dictionary<string, MaterialProp> materialProps = new Dictionary<string, MaterialProp>();
         private Dictionary<TextureUnit, Texture> materialTextures = new Dictionary<TextureUnit, Texture>();

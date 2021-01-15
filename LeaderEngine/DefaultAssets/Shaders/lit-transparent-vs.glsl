@@ -15,6 +15,8 @@ out vec3 FragPosWorldSpace;
 out vec3 NormalViewSpace;
 out vec3 FragPosViewSpace;
 
+out float Depth;
+
 uniform mat4 mvp;
 
 uniform mat4 model;
@@ -32,6 +34,12 @@ void main()
 
 	NormalViewSpace = vec3(vec4(aNormal * mat3(model), 1.0) * view);
 	FragPosViewSpace = vec3(vec4(aPos, 1.0) * model * view);
+
+	vec4 projCoords4 = vec4(aPos, 1.0) * mvp;
+	vec3 projCoords = projCoords4.xyz / projCoords4.w;
+	projCoords = projCoords * 0.5 + 0.5;
+
+	Depth = projCoords.z;
 
 	gl_Position = vec4(aPos, 1.0) * mvp;
 }

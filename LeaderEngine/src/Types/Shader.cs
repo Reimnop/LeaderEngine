@@ -16,6 +16,7 @@ namespace LeaderEngine
         public static Shader SSAOBlur;
         public static Shader Deferred;
         public static Shader Lit;
+        public static Shader LitTransparent;
         public static Shader DepthOnly;
         public static Shader Skybox;
         public static Shader TextShader;
@@ -80,6 +81,7 @@ namespace LeaderEngine
             SSAOBlur = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/ssaoblur-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/ssaoblur-fs.glsl");
             Deferred = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/deferred-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/deferred-fs.glsl");
             Lit = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/lit-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/lit-fs.glsl");
+            LitTransparent = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/lit-transparent-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/lit-transparent-fs.glsl");
             DepthOnly = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/depth-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/depth-fs.glsl");
             Skybox = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/skybox-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/skybox-fs.glsl");
             TextShader = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/text-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/text-fs.glsl");

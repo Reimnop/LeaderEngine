@@ -20,7 +20,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="DefaultAssets\Shaders\transparent-clear-fs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\transparent-clear-vs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\lit-transparent-fs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="DefaultAssets\Shaders\lit-fs.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="DefaultAssets\Shaders\lit-transparent-vs.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="DefaultAssets\Shaders\lit-vs.glsl">
