@@ -6,8 +6,7 @@ uniform sampler2D blurredSSAO;
 uniform sampler2D gAlbedoSpec;
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
-uniform sampler2D accumulation;
-uniform sampler2D revealage;
+uniform sampler2D alpha;
 uniform sampler2D depthTexture;
 
 uniform sampler2D shadowMap;
@@ -60,11 +59,24 @@ void main()
     vec3 resultLight = (ambientColor * texture(blurredSSAO, TexCoord).r + shadow * max(dot(Normal, -lightDir), 0.0) * lightColor * intensity) * Albedo;
 
     //alpha
-    vec4 accum = texture(accumulation, TexCoord);
-    float alpha = accum.a;
-    accum.a = texture(revealage, TexCoord).r;
+    vec4 alphaTex = texture(alpha, TexCoord);
 
-    vec4 result = clamp(vec4(accum.rgb / clamp(accum.a, 1e-4, 5e4), 1.0 - alpha), vec4(0.0), vec4(1.0)) * vec4(resultLight, 1.0);
+    vec4 outColor = vec4(resultLight, alphaTex.r);
+    float depth = texture(depthTexture, TexCoord).r;
+
+    float weight = 
+        max(min(1.0, max(max(outColor.r, outColor.g), outColor.b) * outColor.a), outColor.a) *
+        clamp(0.03 / (1e-5 + pow(depth / 200.0, 4.0)), 1e-2, 3e3);
+
+	vec4 accum = vec4(outColor.rgb * outColor.a, outColor.a) * weight;
+
+	float revealage;
+    if (alphaTex.b >= 0.5)
+        revealage = alphaTex.a * weight;
+    else
+        revealage = 1.0;
+
+    vec4 result = vec4(accum.rgb / max(accum.a, 1e-5), revealage);
 
 	fragColor = result;
 

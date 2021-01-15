@@ -8,34 +8,32 @@ namespace LeaderEngine
     {
         public Shader DefShader = Shader.Deferred;
 
-        private int FBO, blurredSSAO, gAlbedoSpec, gPosition, gNormal, accumulation, revealage, depthTexture;
+        private int FBO, blurredSSAO, gAlbedoSpec, gPosition, gNormal, alpha, depthTexture;
 
         public Vector3 AmbientColor = new Vector3(0.5f);
         public Vector3 LightColor = new Vector3(1.0f);
 
         private Mesh mesh;
 
-        public DeferredProcessor(int width, int height, int gAlbedoSpec, int gPosition, int gNormal, int accumulation, int revealage, int depthTexture)
+        public DeferredProcessor(int width, int height, int gAlbedoSpec, int gPosition, int gNormal, int alpha, int depthTexture)
         {
             Setup(new Vector2i(width, height));
 
             this.gAlbedoSpec = gAlbedoSpec;
             this.gPosition = gPosition;
             this.gNormal = gNormal;
-            this.accumulation = accumulation;
-            this.revealage = revealage;
+            this.alpha = alpha;
             this.depthTexture = depthTexture;
         }
 
-        public DeferredProcessor(Vector2i vSize, int gAlbedoSpec, int gPosition, int gNormal, int accumulation, int revealage, int depthTexture)
+        public DeferredProcessor(Vector2i vSize, int gAlbedoSpec, int gPosition, int gNormal, int alpha, int depthTexture)
         {
             Setup(vSize);
 
             this.gAlbedoSpec = gAlbedoSpec;
             this.gPosition = gPosition;
             this.gNormal = gNormal;
-            this.accumulation = accumulation;
-            this.revealage = revealage;
+            this.alpha = alpha;
             this.depthTexture = depthTexture;
         }
 
@@ -125,16 +123,12 @@ namespace LeaderEngine
             GL.ActiveTexture(TextureUnit.Texture3);
             GL.BindTexture(TextureTarget.Texture2D, gPosition);
 
-            DefShader.SetInt("accumulation", 4);
+            DefShader.SetInt("alpha", 4);
             GL.ActiveTexture(TextureUnit.Texture4);
-            GL.BindTexture(TextureTarget.Texture2D, accumulation);
+            GL.BindTexture(TextureTarget.Texture2D, alpha);
 
-            DefShader.SetInt("revealage", 5);
+            DefShader.SetInt("depthTexture", 5);
             GL.ActiveTexture(TextureUnit.Texture5);
-            GL.BindTexture(TextureTarget.Texture2D, revealage);
-
-            DefShader.SetInt("depthTexture", 6);
-            GL.ActiveTexture(TextureUnit.Texture6);
             GL.BindTexture(TextureTarget.Texture2D, depthTexture);
 
             LightingController.LightingShaderSetup(DefShader);

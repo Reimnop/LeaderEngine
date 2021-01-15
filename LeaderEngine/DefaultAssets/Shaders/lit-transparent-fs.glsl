@@ -5,8 +5,7 @@ layout (location = 1) out vec3 gPosition;
 layout (location = 2) out vec3 gNormal;
 layout (location = 3) out vec3 gPositionViewSpace;
 layout (location = 4) out vec3 gNormalViewSpace;
-layout (location = 5) out vec4 accumulation;
-layout (location = 6) out float revealage;
+layout (location = 5) out vec4 alpha;
 
 uniform bool useTexture;
 
@@ -42,10 +41,5 @@ void main()
 	gNormalViewSpace = NormalViewSpace;
 
 	//alpha
-	float weight = 
-		max(min(1.0, max(max(outColor.r, outColor.g), outColor.b) * outColor.a), outColor.a) *
-		clamp(0.03 / (1e-5 + pow(Depth / 200.0, 4.0)), 1e-2, 3e3);
-
-	accumulation = vec4(outColor.rgb * outColor.a * weight, outColor.a);
-	revealage = outColor.a * weight;
+	alpha = vec4(outColor.a, 0.0, 1.0, outColor.a);
 }
