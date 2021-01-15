@@ -42,7 +42,9 @@ void main()
 	gNormalViewSpace = NormalViewSpace;
 
 	//alpha
-	float weight = pow(outColor.a + 0.01, 4.0) + max(0.01, min(3000.0, 0.3 / (0.00001 + pow(abs(Depth) / 200.0, 4.0))));
+	float weight = 
+		max(min(1.0, max(max(outColor.r, outColor.g), outColor.b) * outColor.a), outColor.a) *
+		clamp(0.03 / (1e-5 + pow(Depth / 200.0, 4.0)), 1e-2, 3e3);
 
 	accumulation = vec4(outColor.rgb * outColor.a * weight, outColor.a);
 	revealage = outColor.a * weight;
