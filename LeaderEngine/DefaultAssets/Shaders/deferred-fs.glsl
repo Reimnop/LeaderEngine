@@ -6,7 +6,8 @@ uniform sampler2D blurredSSAO;
 uniform sampler2D gAlbedoSpec;
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
-uniform sampler2D alpha;
+uniform sampler2D accumulation;
+uniform sampler2D revealage;
 uniform sampler2D depthTexture;
 
 uniform sampler2D shadowMap;
@@ -59,26 +60,25 @@ void main()
     vec3 resultLight = (ambientColor * texture(blurredSSAO, TexCoord).r + shadow * max(dot(Normal, -lightDir), 0.0) * lightColor * intensity) * Albedo;
 
     //alpha
-    vec4 alphaTex = texture(alpha, TexCoord);
+    ivec2 bufferCoords = ivec2(gl_FragCoord.xy);
+    vec4 accum = texelFetch(accumulation, bufferCoords, 0);
+    float reveal = accum.a;
 
-    vec4 outColor = vec4(resultLight, alphaTex.r);
-    float depth = texture(depthTexture, TexCoord).r;
+    accum.a = texelFetch(revealage, bufferCoords, 0).r;
 
-    float weight = 
-        max(min(1.0, max(max(outColor.r, outColor.g), outColor.b) * outColor.a), outColor.a) *
-        clamp(0.03 / (1e-5 + pow(depth / 200.0, 4.0)), 1e-2, 3e3);
+    // suppress underflow
+    if (isinf(accum.a)) {
+        accum.a = max(max(accum.r, accum.g), accum.b);
+    }
 
-	vec4 accum = vec4(outColor.rgb * outColor.a, outColor.a) * weight;
+    // suppress overflow
+    if (any(isinf(accum.rgb))) {
+        accum = vec4(isinf(accum.a) ? 1.0 : accum.a);
+    }
 
-	float revealage;
-    if (alphaTex.b >= 0.5)
-        revealage = alphaTex.a * weight;
-    else
-        revealage = 1.0;
+    vec3 avgColor = accum.rgb / max(accum.a, 1e-4);
 
-    vec4 result = vec4(accum.rgb / max(accum.a, 1e-5), revealage);
-
-	fragColor = result;
+	fragColor = vec4(avgColor * resultLight, reveal);
 
     gl_FragDepth = texture(depthTexture, TexCoord).r;
 }

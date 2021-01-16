@@ -235,7 +235,6 @@ namespace LeaderEngine
             GL.DepthFunc(DepthFunction.Less);
 
             Skybox.Main?.Render();
-
             //TODO: post process here
 
             PostPostProcess?.Invoke();
@@ -271,7 +270,8 @@ namespace LeaderEngine
             GL.DepthMask(false);
             GL.Enable(EnableCap.Blend);
 
-            GL.BlendFuncSeparate(BlendingFactorSrc.One, BlendingFactorDest.One, BlendingFactorSrc.Zero, BlendingFactorDest.OneMinusSrcAlpha);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendFuncSeparate(BlendingFactorSrc.One, BlendingFactorDest.One, BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 
             RenderTransparent();
 

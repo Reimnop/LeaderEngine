@@ -47,7 +47,6 @@ namespace LeaderEngine
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             Application.Main.RenderOpaque();
-            Application.Main.RenderTransparent();
 
             depthBuffer.End();
 
@@ -58,9 +57,9 @@ namespace LeaderEngine
         {
             if (DirectionalLight == null)
             {
-                shader.SetInt("shadowMap", 6);
+                shader.SetInt("shadowMap", 7);
 
-                GL.ActiveTexture(TextureUnit.Texture6);
+                GL.ActiveTexture(TextureUnit.Texture7);
                 GL.BindTexture(TextureTarget.Texture2D, 0);
                 return;
             }
@@ -73,9 +72,9 @@ namespace LeaderEngine
 
             shader.SetFloat("intensity", DirectionalLight.Intensity);
 
-            shader.SetInt("shadowMap", 6);
+            shader.SetInt("shadowMap", 7);
 
-            GL.ActiveTexture(TextureUnit.Texture6);
+            GL.ActiveTexture(TextureUnit.Texture7);
             GL.BindTexture(TextureTarget.Texture2D, depthBuffer.GetDepthTexture());
         }
     }
