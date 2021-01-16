@@ -1,8 +1,9 @@
 ﻿using LeaderEngine;
-using Newtonsoft.Json;
 using OpenTK.Mathematics;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using Newtonsoft.Json;
 using System.Linq;
 using System.Reflection;
 
@@ -32,39 +33,39 @@ namespace LeaderEditor.Data
         {
             SceneInfo sceneInfo = new SceneInfo();
             sceneInfo.Models = ResourceLoader.LoadedMeshes.Select(x => x.Key).ToArray();
-            sceneInfo.EditorCamPosition = EditorCamera.Main.Transform.LocalPosition;
-            sceneInfo.EditorCamRotation = EditorCamera.Main.Transform.RotationEuler;
+            sceneInfo.EditorCamPosition = EditorCamera.Main.BaseTransform.LocalPosition;
+            sceneInfo.EditorCamRotation = EditorCamera.Main.BaseTransform.RotationEuler;
 
-            var sceneEntitiesSurf = SceneHierachy.SceneEntities.Where(x => x.Parent == null).ToArray();
+            var sceneObjectsSurf = SceneHierachy.SceneObjects.Where(x => x.Parent == null).ToArray();
 
-            sceneInfo.Entities = new EntityInfo[sceneEntitiesSurf.Length];
+            sceneInfo.Entities = new EntityInfo[sceneObjectsSurf.Length];
 
             for (int i = 0; i < sceneInfo.Entities.Length; i++)
-                sceneInfo.Entities[i] = ProcessEntity(SceneHierachy.SceneEntities[i]);
+                sceneInfo.Entities[i] = ProcessEntity(SceneHierachy.SceneObjects[i]);
 
             return sceneInfo;
         }
 
-        private static EntityInfo ProcessEntity(Entity Entity)
+        private static EntityInfo ProcessEntity(Entity entity)
         {
-            EntityInfo EntityInfo = new EntityInfo();
-            EntityInfo.Name = Entity.Name;
-            EntityInfo.Active = Entity.ActiveSelf;
-            EntityInfo.RenderHint = Entity.RenderHint;
+            EntityInfo entityInfo = new EntityInfo();
+            entityInfo.Name = entity.Name;
+            entityInfo.Active = entity.ActiveSelf;
+            entityInfo.RenderHint = entity.RenderHint;
 
-            var components = Entity.GetAllComponents();
+            var components = entity.GetAllComponents();
 
-            EntityInfo.Components = new ComponentInfo[components.Count];
+            entityInfo.Components = new ComponentInfo[components.Count];
 
             for (int i = 0; i < components.Count; i++)
-                EntityInfo.Components[i] = ProcessComponent(components[i]);
+                entityInfo.Components[i] = ProcessComponent(components[i]);
 
-            EntityInfo.Children = new EntityInfo[Entity.Children.Count];
+            entityInfo.Children = new EntityInfo[entity.Children.Count];
 
-            for (int i = 0; i < Entity.Children.Count; i++)
-                EntityInfo.Children[i] = ProcessEntity(Entity.Children[i]);
+            for (int i = 0; i < entity.Children.Count; i++)
+                entityInfo.Children[i] = ProcessEntity(entity.Children[i]);
 
-            return EntityInfo;
+            return entityInfo;
         }
 
         private static ComponentInfo ProcessComponent(Component component)

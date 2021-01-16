@@ -2,6 +2,7 @@
 using LeaderEditor.Data;
 using LeaderEditor.Gui;
 using LeaderEngine;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,18 +11,17 @@ namespace LeaderEditor
 {
     public class SceneHierachy : WindowComponent
     {
-        public static List<Entity> SceneEntities
-        {
-            get
+        public static List<Entity> SceneObjects { 
+            get 
             {
-                List<Entity> entities = new List<Entity>();
+                List<Entity> entitys = new List<Entity>();
 
-                entities.AddRange(Application.Main.WorldEntities.Where(x => x.Tag != "Editor"));
-                entities.AddRange(Application.Main.WorldEntities_Transparent);
-                entities.AddRange(Application.Main.GuiEntities);
+                entitys.AddRange(Application.Main.WorldEntities.Where(x => x.Tag != "Editor"));
+                entitys.AddRange(Application.Main.WorldEntities_Transparent);
+                entitys.AddRange(Application.Main.GuiEntities);
 
-                return entities;
-            }
+                return entitys;
+            } 
         }
 
         public static Entity SelectedEntity = null;
@@ -33,7 +33,7 @@ namespace LeaderEditor
             { RenderHint.Gui, "[Gui]" }
         };
 
-        private string[] entityTypes = { "Opaque", "Transparent", "Gui" };
+        private string[] objectTypes = { "Opaque", "Transparent", "Gui" };
         private string currentType = "Opaque";
 
         public override void EditorStart()
@@ -45,11 +45,11 @@ namespace LeaderEditor
 
         public override void EditorUpdate()
         {
-            //delete entity
+            //delete object
             if (Input.GetKeyDown(Keys.Delete) && SelectedEntity != null)
             {
                 SelectedEntity.Destroy();
-                SceneEntities.Remove(SelectedEntity);
+                SceneObjects.Remove(SelectedEntity);
 
                 SelectedEntity = null;
             }
@@ -71,7 +71,7 @@ namespace LeaderEditor
 
                     if (ImGui.BeginCombo("##combo", currentType))
                     {
-                        foreach (string typeStr in entityTypes)
+                        foreach (string typeStr in objectTypes)
                         {
                             if (ImGui.Selectable(typeStr, currentType == typeStr))
                                 currentType = typeStr;
@@ -88,14 +88,14 @@ namespace LeaderEditor
                         }
                     }
 
-                    //draw all entities
-                    RenderTree();
+                    //draw all objects
+                    RenderObjectTree();
                     ImGui.End();
                 }
         }
 
-        //new entity function
-        private void CreateNewEntity(Entity parent)
+        //new object function
+        private void CreateNewObject(Entity parent)
         {
             if (string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
                 return;
@@ -104,7 +104,7 @@ namespace LeaderEditor
 
             switch (currentType)
             {
-                case "World":
+                case "Opaque":
                     renderHint = RenderHint.Opaque;
                     break;
                 case "Transparent":
@@ -115,26 +115,26 @@ namespace LeaderEditor
                     break;
             }
 
-            Entity en = new Entity("New Entity", renderHint);
+            Entity go = new Entity("New Entity", renderHint);
 
-            en.Parent = parent;
+            go.Parent = parent;
         }
 
         private int index = 0;
 
-        private void RenderTree()
+        private void RenderObjectTree()
         {
-            List<Entity> _sceneEntities = SceneEntities;
+            List<Entity> _sceneObjects = SceneObjects;
 
             index = 0;
             if (ImGui.BeginChild("Scene"))
             {
-                for (int i = 0; i < SceneEntities.Count; i++)
+                for (int i = 0; i < SceneObjects.Count; i++)
                 {
-                    var en = _sceneEntities[i];
+                    var go = _sceneObjects[i];
 
-                    if (en.Parent == null)
-                        RecursivelyRender(en);
+                    if (go.Parent == null)
+                        RecursivelyRender(go);
                 }
 
                 if (!ImGui.IsAnyItemHovered() && ImGui.IsWindowHovered(ImGuiHoveredFlags.ChildWindows))
@@ -146,10 +146,10 @@ namespace LeaderEditor
                         SelectedEntity = null;
                 }
 
-                if (ImGui.BeginPopup("Entity Menu"))
-                {
+                if (ImGui.BeginPopup("Entity Menu")) 
+                { 
                     if (ImGui.MenuItem("New Entity"))
-                        Application.Main.ExecuteNextUpdate(() => CreateNewEntity(null));
+                        Application.Main.ExecuteNextUpdate(() => CreateNewObject(null));
 
                     ImGui.EndPopup();
                 }
@@ -177,7 +177,7 @@ namespace LeaderEditor
             if (ImGui.BeginPopupContextItem("Entity Popup"))
             {
                 if (ImGui.MenuItem("New Entity"))
-                    Application.Main.ExecuteNextUpdate(() => CreateNewEntity(en));
+                    Application.Main.ExecuteNextUpdate(() => CreateNewObject(en));
 
                 if (ImGui.MenuItem("Delete"))
                     Application.Main.ExecuteNextUpdate(() => en.Destroy());

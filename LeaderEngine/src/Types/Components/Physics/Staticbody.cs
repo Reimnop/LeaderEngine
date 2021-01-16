@@ -14,24 +14,24 @@ namespace LeaderEngine
             collider = BaseEntity.GetComponent<Collider>();
 
             handle = PhysicsController.Simulation.Statics.Add(new StaticDescription(
-                new System.Numerics.Vector3(Transform.LocalPosition.X, Transform.LocalPosition.Y, Transform.LocalPosition.Z),
+                new System.Numerics.Vector3(BaseTransform.LocalPosition.X, BaseTransform.LocalPosition.Y, BaseTransform.LocalPosition.Z),
                 new CollidableDescription(collider.ShapeIndex, 0.01f)));
 
-            Transform.OnPositionChange += OnPositionChange;
+            BaseTransform.OnPositionChange += OnPositionChange;
         }
 
         private void OnPositionChange(OpenTK.Mathematics.Vector3 obj)
         {
             PhysicsController.Simulation.Statics.ApplyDescription(handle,
                 new StaticDescription(
-                    new System.Numerics.Vector3(Transform.LocalPosition.X, Transform.LocalPosition.Y, Transform.LocalPosition.Z),
+                    new System.Numerics.Vector3(BaseTransform.LocalPosition.X, BaseTransform.LocalPosition.Y, BaseTransform.LocalPosition.Z),
                     new CollidableDescription(collider.ShapeIndex, 0.01f))
                 );
         }
 
         public override void OnRemove()
         {
-            Transform.OnPositionChange -= OnPositionChange;
+            BaseTransform.OnPositionChange -= OnPositionChange;
             PhysicsController.Simulation.Statics.Remove(handle);
         }
     }

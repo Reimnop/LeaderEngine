@@ -26,13 +26,13 @@ class Program {
     static void LoadGame() {
 ";
 
-            for (int i = 0; i < SceneHierachy.SceneEntities.Count; i++)
+            for (int i = 0; i < SceneHierachy.SceneObjects.Count; i++)
             {
-                var en = SceneHierachy.SceneEntities[i];
-                output += $"        var en_{i} = new LeaderEngine.Entity(\"{en.Name}\");\n";
-                foreach (var comp in en.GetAllComponents())
+                var go = SceneHierachy.SceneObjects[i];
+                output += $"        var go_{i} = new LeaderEngine.Entity(\"{go.Name}\");\n";
+                foreach (var comp in go.GetAllComponents())
                 {
-                    output += $"        en_{i}.AddComponent<{comp.GetType().FullName}>();\n";
+                    output += $"        go_{i}.AddComponent<{comp.GetType().FullName}>();\n";
                 }
                 output += "\n";
             }

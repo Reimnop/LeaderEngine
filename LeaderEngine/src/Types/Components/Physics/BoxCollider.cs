@@ -11,7 +11,7 @@ namespace LeaderEngine
             set
             {
                 _scale = value;
-                UpdateShape(Transform.Scale);
+                UpdateShape(BaseTransform.Scale);
             }
         }
 
@@ -19,20 +19,20 @@ namespace LeaderEngine
 
         public override void Start()
         {
-            var box = new Box(_scale.X * Transform.Scale.X, _scale.Y * Transform.Scale.Y, _scale.Z * Transform.Scale.Z);
+            var box = new Box(_scale.X * BaseTransform.Scale.X, _scale.Y * BaseTransform.Scale.Y, _scale.Z * BaseTransform.Scale.Z);
             ShapeIndex = PhysicsController.Simulation.Shapes.Add(box);
 
             Shape = box;
 
-            Transform.OnScaleChange += UpdateShape;
-            Transform.OnPositionChange += UpdateShape;
+            BaseTransform.OnScaleChange += UpdateShape;
+            BaseTransform.OnPositionChange += UpdateShape;
         }
 
         private void UpdateShape(Vector3 obj)
         {
             PhysicsController.Simulation.Shapes.Remove(ShapeIndex);
 
-            var box = new Box(_scale.X * Transform.Scale.X, _scale.Y * Transform.Scale.Y, _scale.Z * Transform.Scale.Z);
+            var box = new Box(_scale.X * BaseTransform.Scale.X, _scale.Y * BaseTransform.Scale.Y, _scale.Z * BaseTransform.Scale.Z);
             ShapeIndex = PhysicsController.Simulation.Shapes.Add(box);
 
             Shape = box;
@@ -40,8 +40,8 @@ namespace LeaderEngine
 
         public override void OnRemove()
         {
-            Transform.OnScaleChange -= UpdateShape;
-            Transform.OnPositionChange -= UpdateShape;
+            BaseTransform.OnScaleChange -= UpdateShape;
+            BaseTransform.OnPositionChange -= UpdateShape;
 
             PhysicsController.Simulation.Shapes.Remove(ShapeIndex);
         }

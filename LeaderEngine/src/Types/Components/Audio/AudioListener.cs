@@ -1,4 +1,8 @@
 ﻿using OpenTK.Audio.OpenAL;
+using OpenTK.Mathematics;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace LeaderEngine
 {
@@ -6,7 +10,7 @@ namespace LeaderEngine
     {
         public override void Start()
         {
-            var pos = Transform.Position;
+            var pos = BaseTransform.Position;
 
             AL.Listener(ALListenerf.Gain, 1.0f);
             AL.Listener(ALListener3f.Position, ref pos);

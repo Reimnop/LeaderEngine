@@ -20,19 +20,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="DefaultAssets\Shaders\transparent-clear-fs.glsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="DefaultAssets\Shaders\transparent-clear-vs.glsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="DefaultAssets\Shaders\lit-transparent-fs.glsl">
+    <None Update="DefaultAssets\Shaders\transparent-fs.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="DefaultAssets\Shaders\lit-fs.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\lit-transparent-vs.glsl">
+    <None Update="DefaultAssets\Shaders\transparent-vs.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="DefaultAssets\Shaders\lit-vs.glsl">
@@ -45,18 +39,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="DefaultAssets\Shaders\immediatemode-vs.glsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="DefaultAssets\Shaders\deferred-fs.glsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="DefaultAssets\Shaders\deferred-vs.glsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="DefaultAssets\Shaders\ssaoblur-fs.glsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="DefaultAssets\Shaders\ssaoblur-vs.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="DefaultAssets\Shaders\skybox-fs.glsl">
@@ -77,13 +59,7 @@
     <None Update="DefaultAssets\Shaders\pp-fs.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\ssao-fs.glsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="DefaultAssets\Shaders\pp-vs.glsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="DefaultAssets\Shaders\ssao-vs.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="DefaultAssets\Shaders\text-fs.glsl">

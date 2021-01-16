@@ -18,7 +18,7 @@ namespace LeaderEngine
         public Vector3 RotationEuler = Vector3.Zero;
         public Vector3 Scale = Vector3.One;
 
-        public Matrix4 ModelMatrix
+        public Matrix4 ModelMatrix 
         {
             get
             {

@@ -3,6 +3,8 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace LeaderEditor
 {
@@ -14,7 +16,7 @@ namespace LeaderEditor
 
             Application app = new Application(new GameWindowSettings(), new NativeWindowSettings()
             {
-                APIVersion = new Version(4, 5),
+                APIVersion = new Version(4, 0),
                 WindowBorder = WindowBorder.Resizable,
                 API = ContextAPI.OpenGL,
                 Flags = ContextFlags.ForwardCompatible,
@@ -27,14 +29,10 @@ namespace LeaderEditor
 
         static void LoadEditor()
         {
-            Logger.Log("Starting Editor");
-
             Application.Main.EditorMode = true;
 
             Entity editorController = new Entity("EditorController");
             editorController.AddComponent<EditorController>();
-
-            Logger.Log("Ready");
         }
     }
 }

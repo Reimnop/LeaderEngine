@@ -1,9 +1,10 @@
 ﻿using LeaderEngine;
-using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json;
 
 namespace LeaderEditor.Data
 {
@@ -21,8 +22,8 @@ namespace LeaderEditor.Data
             for (int i = 0; i < sceneInfo.Models.Length; i++)
                 ResourceLoader.LoadModel(Path.Combine(AssetLoader.LoadedProjectDir, "Assets", sceneInfo.Models[i]));
 
-            EditorCamera.Main.Transform.LocalPosition = sceneInfo.EditorCamPosition;
-            EditorCamera.Main.Transform.RotationEuler = sceneInfo.EditorCamRotation;
+            EditorCamera.Main.BaseTransform.LocalPosition = sceneInfo.EditorCamPosition;
+            EditorCamera.Main.BaseTransform.RotationEuler = sceneInfo.EditorCamRotation;
             EntityInfo[] entityInfos = sceneInfo.Entities;
 
             for (int i = 0; i < entityInfos.Length; i++)
@@ -31,19 +32,19 @@ namespace LeaderEditor.Data
 
         private static void ProcessEntity(EntityInfo entityInfo, Entity parent)
         {
-            Entity Entity = new Entity(entityInfo.Name, entityInfo.RenderHint);
-            Entity.SetActive(entityInfo.Active);
+            Entity entity = new Entity(entityInfo.Name, entityInfo.RenderHint);
+            entity.SetActive(entityInfo.Active);
 
             ComponentInfo[] componentInfos = entityInfo.Components;
 
             for (int i = 0; i < componentInfos.Length; i++)
-                ProcessComponent(Entity, componentInfos[i]);
+                ProcessComponent(entity, componentInfos[i]);
 
             if (parent != null)
-                Entity.Parent = parent;
+                entity.Parent = parent;
 
             for (int i = 0; i < entityInfo.Children.Length; i++)
-                ProcessEntity(entityInfo.Children[i], Entity);
+                ProcessEntity(entityInfo.Children[i], entity);
         }
 
         private static void ProcessComponent(Entity entity, ComponentInfo componentInfo)

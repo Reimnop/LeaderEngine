@@ -67,12 +67,6 @@ namespace LeaderEngine
             ThreadManager.ExecuteOnMainThread(() => Dispose());
         }
 
-        private void Init()
-        {
-            Transform = AddComponent<Transform>();
-            SetActive(true);
-        }
-
         public void MoveTo(RenderHint newRenderHint)
         {
             switch (RenderHint)
@@ -104,7 +98,13 @@ namespace LeaderEngine
             }
         }
 
-        internal void Update()
+        private void Init()
+        {
+            Transform = AddComponent<Transform>();
+            SetActive(true);
+        }
+
+        public void Update()
         {
             if (!ActiveSelf)
                 return;
@@ -141,7 +141,7 @@ namespace LeaderEngine
             UpdateLocal();
         }
 
-        internal void LateUpdate()
+        public void LateUpdate()
         {
             if (!ActiveSelf)
                 return;
@@ -187,7 +187,7 @@ namespace LeaderEngine
             }
         }
 
-        internal void Render()
+        public void Render()
         {
             if (!ActiveSelf)
                 return;
@@ -206,7 +206,7 @@ namespace LeaderEngine
             }
         }
 
-        internal void RenderGui()
+        public void RenderGui()
         {
             if (!ActiveSelf)
                 return;
@@ -352,15 +352,15 @@ namespace LeaderEngine
             components.Remove(this.Transform);
             components.Insert(0, transform);
 
-            Transform = transform;
+            this.Transform = transform;
         }
 
-        internal void StartAll()
+        public void StartAll()
         {
             components.ForEach(x => x.Start());
         }
 
-        internal void RemoveAll()
+        public void RemoveAll()
         {
             components.ForEach(x => x.OnRemove());
         }
@@ -376,18 +376,7 @@ namespace LeaderEngine
             for (int i = 0; i < _children.Length; i++)
                 _children[i].Parent = null;
 
-            switch (RenderHint) 
-            {
-                case RenderHint.Opaque:
-                    Application.Main.WorldEntities.Remove(this);
-                    break;
-                case RenderHint.Transparent:
-                    Application.Main.WorldEntities_Transparent.Remove(this);
-                    break;
-                case RenderHint.Gui:
-                    Application.Main.GuiEntities.Remove(this);
-                    break;
-            }
+            Application.Main.WorldEntities.Remove(this);
             Parent = null;
             Cleanup();
 
@@ -397,7 +386,6 @@ namespace LeaderEngine
         private void Cleanup()
         {
             components.ForEach(co => co.OnRemove());
-            editorComponents.ForEach(co => co.EditorRemove());
         }
     }
 }

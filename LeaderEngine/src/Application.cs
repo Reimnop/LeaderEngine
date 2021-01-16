@@ -5,9 +5,7 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using ErrorCode = OpenTK.Graphics.OpenGL4.ErrorCode;
 
 namespace LeaderEngine
 {
@@ -27,7 +25,7 @@ namespace LeaderEngine
         public List<Entity> WorldEntities_Transparent = new List<Entity>();
         public List<Entity> GuiEntities = new List<Entity>();
 
-        private Entity[] allEntities
+        private Entity[] allObjects
         {
             get
             {
@@ -50,9 +48,6 @@ namespace LeaderEngine
         }
         private bool _editorMode = false;
 
-        public SSAO SSAOProcessor;
-
-        [Obsolete] //TODO: Fix post processing
         public PostProcessor PostProcessor;
 
         public Vector2i ViewportSize;
@@ -75,16 +70,12 @@ namespace LeaderEngine
             if (Main != null)
                 return;
 
-            Logger.Log("Starting " + nws.Title);
-
             Main = this;
             CursorVisible = true;
 
             this.initCallback = initCallback;
 
-            ViewportSize = nws.Size;
-
-            GLFW.SwapInterval(1);
+            GLFW.SwapInterval(0);
         }
 
         public void ExecuteNextUpdate(Action action)
@@ -123,7 +114,7 @@ namespace LeaderEngine
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            GL.ClearColor(0.005f, 0.005f, 0.005f, 1.0f);
+            GL.ClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 
             Shader.InitDefaults();
             Material.InitDefaults();
@@ -135,15 +126,10 @@ namespace LeaderEngine
 
             Input.InputUpdate(KeyboardState, MouseState);
 
-            //PostProcessor = new PostProcessor(Size);
-            //TODO: fix post processing
-            Size = ViewportSize;
-
-            SSAOProcessor = new SSAO(ViewportSize);
+            PostProcessor = new PostProcessor(Size);
+            ViewportSize = Size;
 
             initCallback?.Invoke();
-
-            Extensions.CheckForErrors();
 
             stopwatch.Stop();
             Logger.Log($"Done initializing ({stopwatch.ElapsedMilliseconds}ms)");
@@ -151,17 +137,8 @@ namespace LeaderEngine
             base.OnLoad();
         }
 
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            Logger.Log("Shutting down...");
-
-            base.OnClosing(e);
-        }
-
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            Time.time = (float)GLFW.GetTime();
-
             while (NextUpdateQueue.Count > 0)
                 NextUpdateQueue.Dequeue().Invoke();
 
@@ -169,31 +146,17 @@ namespace LeaderEngine
 
             ThreadManager.ExecuteAll();
 
-            Entity[] entities = allEntities;
+            Entity[] entitys = allObjects;
 
-            for (int i = 0; i < entities.Length; i++)
-                if (entities[i] != null)
-                    if (entities[i].Parent == null)
-                        try
-                        {
-                            entities[i].Update();
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.LogError(ex);
-                        }
+            for (int i = 0; i < entitys.Length; i++)
+                if (entitys[i] != null)
+                    if (entitys[i].Parent == null)
+                        entitys[i].Update();
 
-            for (int i = 0; i < entities.Length; i++)
-                if (entities[i] != null)
-                    if (entities[i].Parent == null)
-                        try
-                        {
-                            entities[i].LateUpdate();
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.LogError(ex);
-                        }
+            for (int i = 0; i < entitys.Length; i++)
+                if (entitys[i] != null)
+                    if (entitys[i].Parent == null)
+                        entitys[i].LateUpdate();
 
             PhysicsController.Update();
         }
@@ -212,30 +175,25 @@ namespace LeaderEngine
             GL.Enable(EnableCap.DepthTest);
 
             RenderingGlobals.CurrentPass = RenderPass.Lighting;
-            LightingController.RenderDepth();
+            LightingController.RenderDepth(RenderOpaque);
 
             SceneRender?.Invoke();
             RenderingGlobals.CurrentPass = RenderPass.World;
 
-            SSAOProcessor.Resize(ViewportSize.X, ViewportSize.Y);
-            SSAOProcessor.Begin();
+            PostProcessor.Resize(ViewportSize.X, ViewportSize.Y);
+            PostProcessor.Begin();
 
+            Skybox.Main?.Render();
             RenderScene();
 
             PostSceneRender?.Invoke();
-            SSAOProcessor.End();
-
-            SSAOProcessor.Render();
-            SSAOProcessor.RenderBlurPass();
+            PostProcessor.End();
 
             PostProcess?.Invoke();
 
             GL.DepthFunc(DepthFunction.Always);
-            SSAOProcessor.RenderLightPass();
+            PostProcessor.Render();
             GL.DepthFunc(DepthFunction.Less);
-
-            Skybox.Main?.Render();
-            //TODO: post process here
 
             PostPostProcess?.Invoke();
 
@@ -247,15 +205,13 @@ namespace LeaderEngine
 
             GuiRender?.Invoke();
             RenderGui();
-
             PostGuiRender?.Invoke();
-
+            
             FinishRender?.Invoke();
-
-            Extensions.CheckForErrors();
 
             SwapBuffers();
 
+            Time.time = (float)GLFW.GetTime();
             Time.deltaTimeUnscaled = (float)e.Time;
             Time.deltaTime = Time.deltaTimeUnscaled * Time.timeScale;
         }
@@ -266,17 +222,7 @@ namespace LeaderEngine
                 return;
 
             RenderOpaque();
-
-            GL.DepthMask(false);
-            GL.Enable(EnableCap.Blend);
-
-            GL.BlendEquation(BlendEquationMode.FuncAdd);
-            GL.BlendFuncSeparate(BlendingFactorSrc.One, BlendingFactorDest.One, BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-
             RenderTransparent();
-
-            GL.DepthMask(true);
-            GL.Disable(EnableCap.Blend);
         }
 
         public void RenderOpaque()
@@ -292,15 +238,20 @@ namespace LeaderEngine
             if (!RenderingGlobals.RenderingEnabled)
                 return;
 
+            GL.DepthMask(false);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFuncSeparate(BlendingFactorSrc.One, BlendingFactorDest.One, BlendingFactorSrc.Zero, BlendingFactorDest.OneMinusSrcAlpha);
+
             WorldEntities_Transparent.ForEach(en => en.Render());
+
+            GL.DepthMask(true);
+            GL.Disable(EnableCap.Blend);
         }
 
         public void RenderGui()
         {
-            if (!RenderingGlobals.RenderingEnabled)
-                return;    
-                
-            GuiEntities.ForEach(en => en.RenderGui());
+            if (RenderingGlobals.RenderingEnabled)
+                GuiEntities.ForEach(en => en.RenderGui());
         }
 
         public void ResizeViewport(Vector2i newSize)

@@ -28,7 +28,7 @@ namespace LeaderEngine
         public static Material NoRender;
         #endregion
 
-        public Shader Shader;
+        public Shader Shader { set; get; }
 
         private Dictionary<string, MaterialProp> materialProps = new Dictionary<string, MaterialProp>();
         private Dictionary<TextureUnit, Texture> materialTextures = new Dictionary<TextureUnit, Texture>();
@@ -43,8 +43,6 @@ namespace LeaderEngine
             Lit = new Material(Shader.Lit);
             DepthOnly = new Material(Shader.DepthOnly);
             NoRender = new Material(Shader.NoRender);
-
-            Logger.Log("Materials loaded");
         }
 
         #region SetMethods

@@ -34,11 +34,11 @@ namespace LeaderEditor
 
         public override void EditorStart()
         {
-            framebuffer = new Framebuffer(1600, 900);
+            framebuffer = new Framebuffer(1280, 720);
 
             Application.Main.SceneRender += SceneRender;
-            Application.Main.PostProcess += PostProcess;
             Application.Main.PostPostProcess += PostPostProcess;
+            Application.Main.PostProcess += PostProcess;
             Application.Main.PostGuiRender += PostGuiRender;
 
             ImGuiController.AddImGuiFunc(OnImGui);
@@ -55,8 +55,18 @@ namespace LeaderEditor
             MainMenuBar.RegisterWindow("Viewport", this);
         }
 
+        private void SceneRender()
+        {
+            //resize viewport and postprocessor
+            if (ViewportSize.X > 0.0f && ViewportSize.Y > 0.0f)
+                Application.Main.ResizeViewport((int)ViewportSize.X, (int)ViewportSize.Y);
+        }
+
         private void PostPostProcess()
         {
+            if (EditorController.Mode != EditorController.EditorMode.Editor)
+                return;
+
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
@@ -71,17 +81,10 @@ namespace LeaderEditor
             GL.Disable(EnableCap.Blend);
         }
 
-        private void SceneRender()
-        {
-            //resize viewport and postprocessor
-            if (ViewportSize != Vector2.Zero)
-                Application.Main.ResizeViewport((int)ViewportSize.X, (int)ViewportSize.Y);
-        }
-
         private void PostProcess()
         {
             //resize framebuffer to match viewport
-            if (ViewportSize != Vector2.Zero)
+            if (ViewportSize.X > 0.0f && ViewportSize.Y > 0.0f)
                 framebuffer.Resize((int)ViewportSize.X, (int)ViewportSize.Y);
 
             //render scene to a framebuffer
@@ -98,6 +101,7 @@ namespace LeaderEditor
 
             GL.Viewport(0, 0, Application.Main.Size.X, Application.Main.Size.Y);
         }
+
 
         private void OnImGui()
         {

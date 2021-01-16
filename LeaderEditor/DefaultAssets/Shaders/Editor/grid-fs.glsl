@@ -46,7 +46,7 @@ void main()
 	float t = -nearPoint.y / (farPoint.y - nearPoint.y);
     vec3 fragPos3D = nearPoint + t * (farPoint - nearPoint);
 
-    gl_FragDepth = computeDepth(fragPos3D) * 0.5 + 0.5;
+    gl_FragDepth = 0.5 * computeDepth(fragPos3D) + 0.5;
 
 	fragColor = grid(fragPos3D, 1.0) * float(t > 0.0);
 }

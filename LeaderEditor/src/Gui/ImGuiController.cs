@@ -1,5 +1,6 @@
 ﻿using ImGuiNET;
 using ImPlotNET;
+using ImNodesNET;
 using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace LeaderEditor.Gui
 {
@@ -31,7 +33,7 @@ namespace LeaderEditor.Gui
 
         private Texture _fontTexture;
         private Shader _shader;
-
+        
         private int _windowWidth { get { return Application.Main.Size.X; } }
         private int _windowHeight { get { return Application.Main.Size.Y; } }
 
@@ -62,7 +64,7 @@ namespace LeaderEditor.Gui
 
             var io = ImGui.GetIO();
             //io.Fonts.AddFontDefault();
-            io.Fonts.AddFontFromFileTTF(Path.Combine(AppContext.BaseDirectory, "Fonts/Inconsolata.ttf"), 16);
+            io.Fonts.AddFontFromFileTTF(AppContext.BaseDirectory + "Fonts/Inconsolata.ttf", 16);
 
             io.BackendFlags |= ImGuiBackendFlags.HasMouseCursors;
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable | ImGuiConfigFlags.NavEnableKeyboard;
@@ -255,7 +257,7 @@ void main()
                 SetCursor(imCursor);
 
             lastCursor = imCursor;
-
+            
             foreach (Keys key in Enum.GetValues(typeof(Keys)))
             {
                 if (key != Keys.Unknown)
@@ -354,7 +356,7 @@ void main()
                 return;
             }
 
-
+            
             for (int i = 0; i < draw_data.CmdListsCount; i++)
             {
                 ImDrawListPtr cmd_list = draw_data.CmdListsRange[i];

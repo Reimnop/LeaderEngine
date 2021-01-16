@@ -12,11 +12,8 @@ namespace LeaderEngine
         public static Shader NoRender;
         public static Shader SpriteShader;
         public static Shader PostProcessing;
-        public static Shader SSAO;
-        public static Shader SSAOBlur;
-        public static Shader Deferred;
         public static Shader Lit;
-        public static Shader LitTransparent;
+        public static Shader Transparent;
         public static Shader DepthOnly;
         public static Shader Skybox;
         public static Shader TextShader;
@@ -77,17 +74,12 @@ namespace LeaderEngine
             NoRender = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/norender-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/norender-fs.glsl");
             SpriteShader = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/sprite-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/sprite-fs.glsl");
             PostProcessing = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/pp-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/pp-fs.glsl");
-            SSAO = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/ssao-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/ssao-fs.glsl");
-            SSAOBlur = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/ssaoblur-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/ssaoblur-fs.glsl");
-            Deferred = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/deferred-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/deferred-fs.glsl");
             Lit = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/lit-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/lit-fs.glsl");
-            LitTransparent = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/lit-transparent-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/lit-transparent-fs.glsl");
+            Transparent = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/transparent-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/transparent-fs.glsl");
             DepthOnly = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/depth-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/depth-fs.glsl");
             Skybox = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/skybox-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/skybox-fs.glsl");
             TextShader = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/text-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/text-fs.glsl");
             ImmediateMode = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/immediatemode-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/immediatemode-fs.glsl");
-
-            Logger.Log("Shaders loaded");
         }
 
         private static void CompileShader(int shader)
@@ -162,18 +154,6 @@ namespace LeaderEngine
             GL.UseProgram(handle);
             if (uniformLocations.ContainsKey(name))
                 GL.UniformMatrix4(uniformLocations[name], true, ref data);
-        }
-
-        /// <summary>
-        /// Set a uniform Vector2 on this shader.
-        /// </summary>
-        /// <param name="name">The name of the uniform</param>
-        /// <param name="data">The data to set</param>
-        public void SetVector2(string name, Vector2 data)
-        {
-            GL.UseProgram(handle);
-            if (uniformLocations.ContainsKey(name))
-                GL.Uniform2(uniformLocations[name], data);
         }
 
         /// <summary>

@@ -12,6 +12,8 @@ out vec2 TexCoord;
 out vec3 FragPos;
 out vec4 FragPosLightSpace;
 
+out float Depth;
+
 uniform mat4 mvp;
 uniform mat4 model;
 
@@ -26,5 +28,9 @@ void main()
 	FragPos = vec3(vec4(aPos, 1.0) * model);
 	FragPosLightSpace = vec4(FragPos, 1.0) * lightSpaceMatrix;
 
-	gl_Position = vec4(aPos, 1.0) * mvp;
+	vec4 pos = vec4(aPos, 1.0) * mvp;
+
+	Depth = ((pos.xyz / pos.w) * 0.5 + 0.5).z;
+
+	gl_Position = pos;
 }

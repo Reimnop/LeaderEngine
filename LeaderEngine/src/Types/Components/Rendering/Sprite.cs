@@ -28,7 +28,7 @@ namespace LeaderEngine
                 1, 2, 3
             };
 
-            mesh = new Mesh("SpriteMesh", vertices, indices, new VertexAttrib[]
+            mesh = new Mesh("SpriteMesh", vertices, indices, new VertexAttrib[] 
             {
                 new VertexAttrib { location = 0, size = 3 },
                 new VertexAttrib { location = 1, size = 2 }
@@ -40,7 +40,7 @@ namespace LeaderEngine
             if (Texture == null)
                 return;
 
-            Matrix4 model = Transform.ModelMatrix;
+            Matrix4 model = BaseTransform.ModelMatrix;
 
             shader.SetMatrix4("mvp", model * RenderingGlobals.View * RenderingGlobals.Projection);
             shader.SetVector4("color", new Vector4(Color.R, Color.G, Color.B, Color.A));

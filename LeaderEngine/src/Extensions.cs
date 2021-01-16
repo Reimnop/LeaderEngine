@@ -16,7 +16,8 @@ namespace LeaderEngine
         public static void CheckForErrors()
         {
             ErrorCode error;
-            while ((error = GL.GetError()) != ErrorCode.NoError) {
+            while ((error = GL.GetError()) != ErrorCode.NoError)
+            {
                 Logger.LogError("ERROR: " + error.ToString());
             }
         }

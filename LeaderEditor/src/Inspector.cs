@@ -73,7 +73,7 @@ namespace LeaderEditor
                             }
                         }
 
-                        //serialize components in an entity
+                        //serialize components in an object
                         for (int i = 0; i < components.Count; i++)
                         {
                             ImGui.Separator();

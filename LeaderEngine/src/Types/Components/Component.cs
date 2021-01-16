@@ -3,7 +3,7 @@
     public class Component
     {
         public Entity BaseEntity = null;
-        public Transform Transform => BaseEntity.Transform;
+        public Transform BaseTransform => BaseEntity.Transform;
 
         public bool Enabled = true;
 

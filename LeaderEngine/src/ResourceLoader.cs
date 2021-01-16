@@ -1,7 +1,8 @@
 ﻿using Assimp;
-using OpenTK.Mathematics;
 using System.Collections.Generic;
 using System.IO;
+using OpenTK.Mathematics;
+using System.Linq;
 
 namespace LeaderEngine
 {
@@ -13,7 +14,7 @@ namespace LeaderEngine
         public static void LoadModel(string path)
         {
             AssimpContext importer = new AssimpContext();
-            Scene scene = importer.ImportFile(path, PostProcessSteps.Triangulate | PostProcessSteps.FlipUVs | PostProcessSteps.FixInFacingNormals | PostProcessSteps.FlipWindingOrder);
+            Scene scene = importer.ImportFile(path, PostProcessSteps.Triangulate | PostProcessSteps.FlipUVs | PostProcessSteps.FlipWindingOrder);
 
             Assimp.Mesh[] meshes = scene.Meshes.ToArray();
             Assimp.Material[] materials = scene.Materials.ToArray();
@@ -39,11 +40,11 @@ namespace LeaderEngine
 
                         string name = node.Name + "." + i;
 
-                        Entity subEn = new Entity(name);
+                        Entity subGo = new Entity(name);
 
-                        MakeEntity(name, subVertices, subMesh, subEn);
+                        MakeEntity(name, subVertices, subMesh, subGo);
 
-                        subEn.Parent = en;
+                        subGo.Parent = en;
                     }
                 }
 
@@ -59,7 +60,7 @@ namespace LeaderEngine
 
                 en.Parent = parent;
 
-                Logger.Log("Loaded " + en.Name);
+                Logger.Log("Loaded " + node.Name);
 
                 foreach (var item in node.Children)
                     RecursivelyLoad(item, en);
@@ -109,7 +110,7 @@ namespace LeaderEngine
                 return vertices;
             }
 
-            void MakeEntity(string meshName, float[] vertices, Assimp.Mesh aiMesh, Entity en)
+            void MakeEntity(string meshName, float[] vertices, Assimp.Mesh aiMesh, Entity go)
             {
                 Mesh mesh = new Mesh(meshName, vertices, aiMesh.GetUnsignedIndices(), new VertexAttrib[]
                 {
@@ -119,8 +120,7 @@ namespace LeaderEngine
                     new VertexAttrib { location = 3, size = 2 }
                 });
 
-                if (!LoadedMeshes.ContainsKey(meshName))
-                    LoadedMeshes.Add(meshName, mesh);
+                LoadedMeshes.Add(meshName, mesh);
 
                 Assimp.Material aiMaterial = materials[aiMesh.MaterialIndex];
 
@@ -151,10 +151,10 @@ namespace LeaderEngine
 
                 Color4D color = aiMaterial.ColorDiffuse;
 
-                mat.SetVector4("color", new Vector4(color.R, color.G, color.B, color.A));
+                mat.SetVector4("color", new OpenTK.Mathematics.Vector4(color.R, color.G, color.B, color.A));
 
-                en.AddComponent<MeshFilter>(mesh);
-                en.AddComponent<MeshRenderer>().Material = mat;
+                go.AddComponent<MeshFilter>(mesh);
+                go.AddComponent<MeshRenderer>().Material = mat;
             }
         }
 

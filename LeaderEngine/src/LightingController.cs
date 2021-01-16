@@ -18,6 +18,10 @@ namespace LeaderEngine
 
         public static Vector3 CameraPos;
 
+        public static Vector3 Ambient = new Vector3(0.4f);
+        public static Vector3 LightColor = new Vector3(1.0f);
+        public static float Intensity = 1.2f;
+
         public static void Init()
         {
             depthBuffer = new Framebuffer(ShadowWidth, ShadowHeight, true);
@@ -29,7 +33,7 @@ namespace LeaderEngine
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
-        public static void RenderDepth()
+        public static void RenderDepth(Action renderFunc)
         {
             if (DirectionalLight == null)
                 return;
@@ -46,35 +50,39 @@ namespace LeaderEngine
             depthBuffer.Begin();
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            Application.Main.RenderOpaque();
-
+            renderFunc();
             depthBuffer.End();
 
             RenderingGlobals.GlobalPosition = Vector3.Zero;
         }
 
-        public static void LightingShaderSetup(Shader shader)
+        public static void LightingShaderSetup(Shader shader, Matrix4 model)
         {
+            shader.SetVector3("ambient", Ambient);
+            shader.SetVector3("lightColor", LightColor);
+            shader.SetFloat("intensity", Intensity);
+
             if (DirectionalLight == null)
             {
-                shader.SetInt("shadowMap", 7);
+                shader.SetInt("shadowMap", 1);
 
-                GL.ActiveTexture(TextureUnit.Texture7);
+                GL.ActiveTexture(TextureUnit.Texture1);
                 GL.BindTexture(TextureTarget.Texture2D, 0);
                 return;
             }
 
-            var dir = DirectionalLight.Transform.Forward;
+            Matrix4 lightModel = model * Matrix4.CreateTranslation(-CameraPos);
 
-            shader.SetMatrix4("lightSpaceMatrix", Matrix4.CreateTranslation(-CameraPos) * lightView * lightProjection);
+            var dir = DirectionalLight.BaseTransform.Forward;
+
+            shader.SetMatrix4("model", lightModel);
+            shader.SetMatrix4("lightSpaceMatrix", lightView * lightProjection);
 
             shader.SetVector3("lightDir", dir);
 
-            shader.SetFloat("intensity", DirectionalLight.Intensity);
+            shader.SetInt("shadowMap", 1);
 
-            shader.SetInt("shadowMap", 7);
-
-            GL.ActiveTexture(TextureUnit.Texture7);
+            GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, depthBuffer.GetDepthTexture());
         }
     }

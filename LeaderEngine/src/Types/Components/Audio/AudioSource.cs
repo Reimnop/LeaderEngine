@@ -1,7 +1,11 @@
 ﻿using OpenTK.Audio.OpenAL;
 using System;
-using System.IO;
 using System.Linq;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace LeaderEngine
 {
@@ -27,8 +31,6 @@ namespace LeaderEngine
             context = ALC.CreateContext(device, (int[])null);
 
             ALC.MakeContextCurrent(context);
-
-            Logger.Log("OpenAL initialized");
         }
 
         public override void Start()
@@ -39,7 +41,7 @@ namespace LeaderEngine
 
             AL.BufferData(bufferHandle, GetSoundFormat(channels, bits_per_sample), ref sound_data[0], sound_data.Length, sample_rate);
 
-            var pos = Transform.Position;
+            var pos = BaseTransform.Position;
 
             sourceHandle = AL.GenSource();
             AL.Source(sourceHandle, ALSourcef.Gain, 1.0f);

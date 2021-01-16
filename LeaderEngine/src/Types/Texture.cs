@@ -79,7 +79,7 @@ namespace LeaderEngine
         public void SetMagFilter(TextureMagFilter textureMagFilter)
         {
             GL.BindTexture(TextureTarget.Texture2D, handle);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)textureMagFilter);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)textureMagFilter);
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 

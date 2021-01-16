@@ -27,7 +27,7 @@ namespace LeaderEngine
             if (MeshFilter.Mesh == null)
                 return;
 
-            Matrix4 model = Transform.ModelMatrix;
+            Matrix4 model = BaseTransform.ModelMatrix;
 
             Material renderMat = Material;
             if (Material == null)
@@ -36,14 +36,15 @@ namespace LeaderEngine
             if (RenderingGlobals.CurrentPass == RenderPass.Lighting)
                 renderMat = Material.DepthOnly;
             else if (BaseEntity.RenderHint == RenderHint.Transparent)
-                renderMat.Shader = Shader.LitTransparent;
+                renderMat.Shader = Shader.Transparent;
+            else
+                renderMat.Shader = Shader.Lit;
+
+            if (RenderingGlobals.CurrentPass != RenderPass.Lighting)
+                LightingController.LightingShaderSetup(renderMat.Shader, model);
 
             renderMat.Use();
             renderMat.Shader.SetMatrix4("mvp", model * RenderingGlobals.View * RenderingGlobals.Projection);
-
-            renderMat.Shader.SetMatrix4("model", model);
-            renderMat.Shader.SetMatrix4("view", RenderingGlobals.View);
-            renderMat.Shader.SetMatrix4("projection", RenderingGlobals.Projection);
 
             MeshFilter.Mesh.Use();
 
