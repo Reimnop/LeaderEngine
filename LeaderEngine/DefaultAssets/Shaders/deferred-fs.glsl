@@ -78,7 +78,7 @@ void main()
 
     vec3 avgColor = accum.rgb / max(accum.a, 1e-4);
 
-	fragColor = vec4(avgColor * resultLight, reveal);
+	fragColor = vec4(avgColor * resultLight * reveal, 1.0);
 
     gl_FragDepth = texture(depthTexture, TexCoord).r;
 }

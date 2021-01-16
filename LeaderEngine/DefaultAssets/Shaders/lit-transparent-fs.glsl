@@ -34,10 +34,11 @@ void writePixel(vec3 color, float alpha, float wsZ) {
     // linearize depth for proper depth weighting
     //See: https://stackoverflow.com/questions/7777913/how-to-render-depth-linearly-in-modern-opengl-with-gl-fragcoord-z-in-fragment-sh
     //or: https://stackoverflow.com/questions/11277501/how-to-recover-view-space-position-given-view-space-depth-value-and-ndc-xy
-    float linearZ = (projection[2][2] + 1.0) * wsZ / (projection[2][2] + ndcZ);
-    float tmp = (1.0 - linearZ) * alpha;
-    //float tmp = (1.0 - wsZ * 0.99) * alpha * 10.0; // <-- original weighting function from paper #2
-    float w = clamp(tmp * tmp * tmp * tmp * tmp * tmp, 0.2, 512.0);
+	mat4 proj = transpose(projection);
+    float linearZ = (proj[2][2] + 1.0) * wsZ / (proj[2][2] + ndcZ);
+    //float tmp = (1.0 - linearZ) * alpha;
+    float tmp = (linearZ * 0.99) * alpha * 10.0;
+    float w = clamp(pow(tmp, 10.0), 0.2, 512.0);
     accumulation = vec4(color * alpha * w, alpha);
     revealage = alpha * w;
 }

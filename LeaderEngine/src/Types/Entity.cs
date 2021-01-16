@@ -5,7 +5,7 @@ namespace LeaderEngine
 {
     public enum RenderHint
     {
-        World,
+        Opaque,
         Transparent,
         Gui
     }
@@ -36,7 +36,7 @@ namespace LeaderEngine
         private List<Component> components = new List<Component>();
         private List<EditorComponent> editorComponents = new List<EditorComponent>();
 
-        public Entity(string name, RenderHint renderHint = RenderHint.World)
+        public Entity(string name, RenderHint renderHint = RenderHint.Opaque)
         {
             Name = name;
 
@@ -46,7 +46,7 @@ namespace LeaderEngine
 
             switch (renderHint)
             {
-                case RenderHint.World:
+                case RenderHint.Opaque:
                     listToAdd = Application.Main.WorldEntities;
                     break;
                 case RenderHint.Transparent:
@@ -77,7 +77,7 @@ namespace LeaderEngine
         {
             switch (RenderHint)
             {
-                case RenderHint.World:
+                case RenderHint.Opaque:
                     Application.Main.WorldEntities.Remove(this);
                     break;
                 case RenderHint.Transparent:
@@ -92,7 +92,7 @@ namespace LeaderEngine
 
             switch (newRenderHint)
             {
-                case RenderHint.World:
+                case RenderHint.Opaque:
                     Application.Main.WorldEntities.Add(this);
                     break;
                 case RenderHint.Transparent:
@@ -376,7 +376,18 @@ namespace LeaderEngine
             for (int i = 0; i < _children.Length; i++)
                 _children[i].Parent = null;
 
-            Application.Main.WorldEntities.Remove(this);
+            switch (RenderHint) 
+            {
+                case RenderHint.Opaque:
+                    Application.Main.WorldEntities.Remove(this);
+                    break;
+                case RenderHint.Transparent:
+                    Application.Main.WorldEntities_Transparent.Remove(this);
+                    break;
+                case RenderHint.Gui:
+                    Application.Main.GuiEntities.Remove(this);
+                    break;
+            }
             Parent = null;
             Cleanup();
 

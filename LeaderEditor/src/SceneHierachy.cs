@@ -28,13 +28,13 @@ namespace LeaderEditor
 
         private static readonly Dictionary<RenderHint, string> renderHintText = new Dictionary<RenderHint, string>()
         {
-            { RenderHint.World, "[World]" },
-            { RenderHint.Transparent, "[World, Transparent]" },
+            { RenderHint.Opaque, "[Opaque]" },
+            { RenderHint.Transparent, "[Transparent]" },
             { RenderHint.Gui, "[Gui]" }
         };
 
-        private string[] entityTypes = { "World", "Transparent", "Gui" };
-        private string currentType = "World";
+        private string[] entityTypes = { "Opaque", "Transparent", "Gui" };
+        private string currentType = "Opaque";
 
         public override void EditorStart()
         {
@@ -100,12 +100,12 @@ namespace LeaderEditor
             if (string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
                 return;
 
-            RenderHint renderHint = RenderHint.World;
+            RenderHint renderHint = RenderHint.Opaque;
 
             switch (currentType)
             {
                 case "World":
-                    renderHint = RenderHint.World;
+                    renderHint = RenderHint.Opaque;
                     break;
                 case "Transparent":
                     renderHint = RenderHint.Transparent;
