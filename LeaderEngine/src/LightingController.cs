@@ -73,7 +73,7 @@ namespace LeaderEngine
 
             Matrix4 lightModel = model * Matrix4.CreateTranslation(-CameraPos);
 
-            var dir = DirectionalLight.BaseTransform.Forward;
+            var dir = -DirectionalLight.BaseTransform.Forward;
 
             shader.SetMatrix4("model", lightModel);
             shader.SetMatrix4("lightSpaceMatrix", lightView * lightProjection);

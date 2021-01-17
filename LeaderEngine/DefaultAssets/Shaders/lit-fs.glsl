@@ -57,7 +57,7 @@ void main()
 
 	float shadow = ShadowCalculation(FragPosLightSpace);
 
-	vec3 result = (ambient + shadow * max(dot(norm, -lightDir), 0.0) * lightColor * intensity) * vec3(objectColor);
+	vec3 result = (ambient + shadow * max(dot(norm, lightDir), 0.0) * lightColor * intensity) * vec3(objectColor);
 
 	fragColor = vec4(result, 1.0);
 }

@@ -53,15 +53,10 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 }
 
 void writePixel(vec3 color, float alpha, float wsZ) {
-	mat4 proj = transpose(projection);
+    float w = 
+		max(min(1.0, max(max(color.r, color.g), color.b) * alpha), alpha) *
+		clamp(0.03 / (1e-5 + pow(wsZ / 512.0, 4.0)), 1e-2, 3e3);
 
-    float ndcZ = 2.0 * wsZ - 1.0;
-    // linearize depth for proper depth weighting
-    //See: https://stackoverflow.com/questions/7777913/how-to-render-depth-linearly-in-modern-opengl-with-gl-fragcoord-z-in-fragment-sh
-    //or: https://stackoverflow.com/questions/11277501/how-to-recover-view-space-position-given-view-space-depth-value-and-ndc-xy
-    float linearZ = (proj[2][2] + 1.0) * wsZ / (proj[2][2] + ndcZ);
-    float tmp = (linearZ * 0.99) * alpha * 10.0;
-    float w = clamp(pow(tmp, 10.0), 0.2, 512.0);
     accumulation = vec4(color * alpha * w, alpha);
     revealage = alpha * w;
 }
@@ -77,7 +72,7 @@ void main()
 
 	float shadow = ShadowCalculation(FragPosLightSpace);
 
-	vec3 outColor = (ambient + shadow * max(dot(norm, -lightDir), 0.0) * lightColor * intensity) * objectColor.rgb;
+	vec3 outColor = (ambient + shadow * max(dot(norm, lightDir), 0.0) * lightColor * intensity) * objectColor.rgb;
 	
 	writePixel(outColor, objectColor.a, Depth);
 }
