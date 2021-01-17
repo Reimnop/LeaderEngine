@@ -209,6 +209,8 @@ namespace LeaderEngine
             
             FinishRender?.Invoke();
 
+            Extensions.CheckForErrors();
+
             SwapBuffers();
 
             Time.time = (float)GLFW.GetTime();
