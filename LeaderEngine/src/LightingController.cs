@@ -13,6 +13,8 @@ namespace LeaderEngine
         private static Matrix4 lightView;
         private static Matrix4 lightProjection;
 
+        private static int shadowMap;
+
         public const int ShadowWidth = 4096;
         public const int ShadowHeight = 4096;
 
@@ -24,13 +26,24 @@ namespace LeaderEngine
 
         public static void Init()
         {
-            depthBuffer = new Framebuffer(ShadowWidth, ShadowHeight, true);
-            depthBuffer.SetDepthMinFilter(TextureMinFilter.Linear);
-            depthBuffer.SetDepthMagFilter(TextureMagFilter.Linear);
+            depthBuffer = new Framebuffer(ShadowWidth, ShadowHeight, new Attachment[] 
+            {
+                new Attachment
+                {
+                    Draw = false,
+                    PixelInternalFormat = PixelInternalFormat.DepthComponent,
+                    PixelFormat = PixelFormat.DepthComponent,
+                    PixelType = PixelType.Float,
+                    FramebufferAttachment = FramebufferAttachment.DepthAttachment,
+                    TextureParams = new TextureParam[]
+                    {
+                        new TextureParam { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Nearest },
+                        new TextureParam { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Nearest }
+                    }
+                }
+            });
 
-            GL.BindTexture(TextureTarget.Texture2D, depthBuffer.GetDepthTexture());
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)TextureCompareMode.CompareRefToTexture);
-            GL.BindTexture(TextureTarget.Texture2D, 0);
+            shadowMap = depthBuffer.GetTexture(FramebufferAttachment.DepthAttachment);
         }
 
         public static void RenderDepth(Action renderFunc)
@@ -83,7 +96,7 @@ namespace LeaderEngine
             shader.SetInt("shadowMap", 1);
 
             GL.ActiveTexture(TextureUnit.Texture1);
-            GL.BindTexture(TextureTarget.Texture2D, depthBuffer.GetDepthTexture());
+            GL.BindTexture(TextureTarget.Texture2D, shadowMap);
         }
     }
 }

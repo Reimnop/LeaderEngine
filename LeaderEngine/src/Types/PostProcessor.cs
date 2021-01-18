@@ -6,9 +6,14 @@ namespace LeaderEngine
 {
     public class PostProcessor : IDisposable
     {
+        public Shader TransparentComposite = Shader.TransparentComposite;
         public Shader PPShader = Shader.PostProcessing;
 
-        private int FBO, albedo, accumulation, revealage, depthTexture;
+        private int colorTexture, accumulation, revealage, depthTexture;
+        private int ppColorTexture;
+
+        private Framebuffer framebuffer;
+        private Framebuffer ppFramebuffer;
 
         private Mesh mesh;
 
@@ -29,140 +34,185 @@ namespace LeaderEngine
 
         private void Setup(Vector2i size)
         {
+            framebuffer = new Framebuffer(size.X, size.Y, new Attachment[]
             {
-                FBO = GL.GenFramebuffer();
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
-
-                albedo = GL.GenTexture();
-                GL.BindTexture(TextureTarget.Texture2D, albedo);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-                GL.BindTexture(TextureTarget.Texture2D, 0);
-
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, albedo, 0);
-
-                #region OIT
-                accumulation = GL.GenTexture();
-                GL.BindTexture(TextureTarget.Texture2D, accumulation);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-                GL.BindTexture(TextureTarget.Texture2D, 0);
-
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, accumulation, 0);
-
-                revealage = GL.GenTexture();
-                GL.BindTexture(TextureTarget.Texture2D, revealage);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R16f, size.X, size.Y, 0, PixelFormat.Red, PixelType.Float, IntPtr.Zero);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-                GL.BindTexture(TextureTarget.Texture2D, 0);
-
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment2, TextureTarget.Texture2D, revealage, 0);
-                #endregion
-
-                GL.DrawBuffers(3, new DrawBuffersEnum[]
+                new Attachment
                 {
-                    DrawBuffersEnum.ColorAttachment0,
-                    DrawBuffersEnum.ColorAttachment1,
-                    DrawBuffersEnum.ColorAttachment2
-                });
+                    Draw = true,
+                    PixelInternalFormat = PixelInternalFormat.Rgba,
+                    PixelFormat = PixelFormat.Rgba,
+                    PixelType = PixelType.Float,
+                    FramebufferAttachment = FramebufferAttachment.ColorAttachment0,
+                    TextureParams = new TextureParam[]
+                    {
+                        new TextureParam { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Linear },
+                        new TextureParam { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Linear },
+                        new TextureParam { ParamName = TextureParameterName.TextureWrapS, Param = (int)TextureWrapMode.ClampToEdge },
+                        new TextureParam { ParamName = TextureParameterName.TextureWrapT, Param = (int)TextureWrapMode.ClampToEdge }
+                    }
+                },
+                new Attachment
+                {
+                    Draw = true,
+                    PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                    PixelFormat = PixelFormat.Rgba,
+                    PixelType = PixelType.Float,
+                    FramebufferAttachment = FramebufferAttachment.ColorAttachment1,
+                    TextureParams = new TextureParam[]
+                    {
+                        new TextureParam { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Linear },
+                        new TextureParam { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Linear },
+                        new TextureParam { ParamName = TextureParameterName.TextureWrapS, Param = (int)TextureWrapMode.ClampToEdge },
+                        new TextureParam { ParamName = TextureParameterName.TextureWrapT, Param = (int)TextureWrapMode.ClampToEdge }
+                    }
+                },
+                new Attachment
+                {
+                    Draw = true,
+                    PixelInternalFormat = PixelInternalFormat.R16f,
+                    PixelFormat = PixelFormat.Red,
+                    PixelType = PixelType.Float,
+                    FramebufferAttachment = FramebufferAttachment.ColorAttachment2,
+                    TextureParams = new TextureParam[]
+                    {
+                        new TextureParam { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Linear },
+                        new TextureParam { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Linear },
+                        new TextureParam { ParamName = TextureParameterName.TextureWrapS, Param = (int)TextureWrapMode.ClampToEdge },
+                        new TextureParam { ParamName = TextureParameterName.TextureWrapT, Param = (int)TextureWrapMode.ClampToEdge }
+                    }
+                },
+                new Attachment
+                {
+                    Draw = false,
+                    PixelInternalFormat = PixelInternalFormat.DepthComponent,
+                    PixelFormat = PixelFormat.DepthComponent,
+                    PixelType = PixelType.Float,
+                    FramebufferAttachment = FramebufferAttachment.DepthAttachment,
+                    TextureParams = new TextureParam[]
+                    {
+                        new TextureParam { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Nearest },
+                        new TextureParam { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Nearest },
+                        new TextureParam { ParamName = TextureParameterName.TextureWrapS, Param = (int)TextureWrapMode.ClampToEdge },
+                        new TextureParam { ParamName = TextureParameterName.TextureWrapT, Param = (int)TextureWrapMode.ClampToEdge }
+                    }
+                }
+            });
 
-                depthTexture = GL.GenTexture();
-                GL.BindTexture(TextureTarget.Texture2D, depthTexture);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, size.X, size.Y, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-                GL.BindTexture(TextureTarget.Texture2D, 0);
+            colorTexture = framebuffer.GetTexture(FramebufferAttachment.ColorAttachment0);
+            accumulation = framebuffer.GetTexture(FramebufferAttachment.ColorAttachment1);
+            revealage = framebuffer.GetTexture(FramebufferAttachment.ColorAttachment2);
+            depthTexture = framebuffer.GetTexture(FramebufferAttachment.DepthAttachment);
 
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, depthTexture, 0);
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            }
-
+            ppFramebuffer = new Framebuffer(size.X, size.Y, new Attachment[]
             {
-                float[] vertices =
+                new Attachment
                 {
-                    -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-                    -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-                     1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-                     1.0f, -1.0f, 0.0f, 1.0f, 0.0f
-                };
+                    Draw = false,
+                    PixelInternalFormat = PixelInternalFormat.Rgba,
+                    PixelFormat = PixelFormat.Rgba,
+                    PixelType = PixelType.Float,
+                    FramebufferAttachment = FramebufferAttachment.ColorAttachment0,
+                    TextureParams = new TextureParam[]
+                    {
+                        new TextureParam { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Linear },
+                        new TextureParam { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Linear },
+                        new TextureParam { ParamName = TextureParameterName.TextureWrapS, Param = (int)TextureWrapMode.ClampToEdge },
+                        new TextureParam { ParamName = TextureParameterName.TextureWrapT, Param = (int)TextureWrapMode.ClampToEdge }
+                    }
+                }
+            });
 
-                uint[] indices =
-                {
-                    0, 1, 3,
-                    1, 2, 3
-                };
+            ppColorTexture = ppFramebuffer.GetTexture(FramebufferAttachment.ColorAttachment0);
 
-                mesh = new Mesh("PPMesh", vertices, indices, new VertexAttrib[]
-                {
-                    new VertexAttrib { location = 0, size = 3 },
-                    new VertexAttrib { location = 1, size = 2 }
-                });
-            }
+            float[] vertices =
+            {
+                -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+                -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+                 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+                 1.0f, -1.0f, 0.0f, 1.0f, 0.0f
+            };
+
+            uint[] indices =
+            {
+                0, 1, 3,
+                1, 2, 3
+            };
+
+            mesh = new Mesh("PPMesh", vertices, indices, new VertexAttrib[]
+            {
+                new VertexAttrib { location = 0, size = 3 },
+                new VertexAttrib { location = 1, size = 2 }
+            });
         }
 
-        float[] clearRevealage = { 0.0f };
+        float[] clearAccumulation = { 0.0f, 0.0f, 0.0f, 1.0f };
+        float[] clearRevealage = { 1.0f };
 
         public void Begin()
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
+            framebuffer.Begin();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+            GL.ClearBuffer(ClearBuffer.Color, 1, clearAccumulation);
             GL.ClearBuffer(ClearBuffer.Color, 2, clearRevealage);
         }
 
         public void End()
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            framebuffer.End();
         }
 
         public void Resize(int width, int height)
         {
-            Update(new Vector2i(width, height));
-        }
-
-        private void Update(Vector2i size)
-        {
-            GL.BindTexture(TextureTarget.Texture2D, albedo);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-
-            GL.BindTexture(TextureTarget.Texture2D, revealage);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R16f, size.X, size.Y, 0, PixelFormat.Red, PixelType.Float, IntPtr.Zero);
-
-            GL.BindTexture(TextureTarget.Texture2D, depthTexture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, size.X, size.Y, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
-            GL.BindTexture(TextureTarget.Texture2D, 0);
+            framebuffer.Resize(width, height);
+            ppFramebuffer.Resize(width, height);
         }
 
         public void Render()
         {
+            GL.DepthFunc(DepthFunction.Always);
+
+            ppFramebuffer.Begin();
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            RenderStage1();
+            ppFramebuffer.End();
+
+            RenderStage2();
+
+            GL.DepthFunc(DepthFunction.Less);
+        }
+
+        private void RenderStage1()
+        {
             mesh.Use();
-            PPShader.Use();
+            TransparentComposite.Use();
 
-            PPShader.SetInt("albedo", 0);
+            TransparentComposite.SetInt("colorTexture", 0);
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, albedo);
+            GL.BindTexture(TextureTarget.Texture2D, colorTexture);
 
-            PPShader.SetInt("accumTex", 1);
+            TransparentComposite.SetInt("accumTex", 1);
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, accumulation);
 
-            PPShader.SetInt("revealTex", 2);
+            TransparentComposite.SetInt("revealTex", 2);
             GL.ActiveTexture(TextureUnit.Texture2);
             GL.BindTexture(TextureTarget.Texture2D, revealage);
 
-            PPShader.SetInt("depthMap", 3);
-            GL.ActiveTexture(TextureUnit.Texture3);
+            GL.DrawElements(PrimitiveType.Triangles, mesh.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
+        }
+
+        private void RenderStage2()
+        {
+            mesh.Use();
+            PPShader.Use();
+
+            PPShader.SetInt("colorTexture", 0);
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, ppColorTexture);
+
+            PPShader.SetInt("depthTexture", 1);
+            GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, depthTexture);
 
             GL.DrawElements(PrimitiveType.Triangles, mesh.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
@@ -170,10 +220,7 @@ namespace LeaderEngine
 
         public void Dispose()
         {
-            GL.DeleteFramebuffer(FBO);
-            GL.DeleteTexture(albedo);
-            GL.DeleteTexture(depthTexture);
-
+            framebuffer.Dispose();
             mesh.Dispose();
         }
     }

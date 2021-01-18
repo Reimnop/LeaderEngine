@@ -32,7 +32,7 @@ namespace LeaderEditor
         public override void EditorStart()
         {
             //register ImGui
-            ImGuiController.AddImGuiFunc(OnImGui);
+            ImGuiController.RegisterImGui(OnImGui);
 
             MainMenuBar.RegisterWindow("Inspector", this);
         }

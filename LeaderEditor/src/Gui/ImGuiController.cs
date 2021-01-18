@@ -41,7 +41,7 @@ namespace LeaderEditor.Gui
 
         private static List<Action> ImGuiFuncs = new List<Action>();
 
-        public static void AddImGuiFunc(Action action)
+        public static void RegisterImGui(Action action)
         {
             ImGuiFuncs.Add(action);
         }

@@ -374,9 +374,11 @@ namespace LeaderEngine
         {
             Entity[] _children = Children.ToArray();
             for (int i = 0; i < _children.Length; i++)
-                _children[i].Parent = null;
+                _children[i].Destroy();
 
             Application.Main.WorldEntities.Remove(this);
+            Application.Main.WorldEntities_Transparent.Remove(this);
+            Application.Main.GuiEntities.Remove(this);
             Parent = null;
             Cleanup();
 

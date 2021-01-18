@@ -34,7 +34,7 @@ namespace LeaderEditor
             if (main == null)
                 main = this;
 
-            ImGuiController.AddImGuiFunc(OnImGui);
+            ImGuiController.RegisterImGui(OnImGui);
 
             MainMenuBar.RegisterWindow("Console", this);
         }

@@ -32,16 +32,47 @@ namespace LeaderEditor
         private Mesh gridMesh;
         private Shader gridShader;
 
+        private int viewportTex;
+
         public override void EditorStart()
         {
-            framebuffer = new Framebuffer(1280, 720);
+            framebuffer = new Framebuffer(1280, 720, new Attachment[] 
+            {
+                new Attachment
+                {
+                    Draw = false,
+                    PixelInternalFormat = PixelInternalFormat.Rgba,
+                    PixelFormat = PixelFormat.Rgba,
+                    PixelType = PixelType.Float,
+                    FramebufferAttachment = FramebufferAttachment.ColorAttachment0,
+                    TextureParams = new TextureParam[]
+                    {
+                        new TextureParam { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Linear },
+                        new TextureParam { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Linear }
+                    }
+                },
+                new Attachment
+                {
+                    Draw = false,
+                    PixelInternalFormat = PixelInternalFormat.DepthComponent,
+                    PixelFormat = PixelFormat.DepthComponent,
+                    PixelType = PixelType.Float,
+                    FramebufferAttachment = FramebufferAttachment.DepthAttachment,
+                    TextureParams = new TextureParam[]
+                    {
+                        new TextureParam { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Nearest },
+                        new TextureParam { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Nearest }
+                    }
+                }
+            });
+
+            viewportTex = framebuffer.GetTexture(FramebufferAttachment.ColorAttachment0);
 
             Application.Main.SceneRender += SceneRender;
             Application.Main.PostPostProcess += PostPostProcess;
-            Application.Main.PostProcess += PostProcess;
             Application.Main.PostGuiRender += PostGuiRender;
 
-            ImGuiController.AddImGuiFunc(OnImGui);
+            ImGuiController.RegisterImGui(OnImGui);
 
             //setup grid rendering
             gridMesh = new Mesh("Grids", vertices, indices, new VertexAttrib[]
@@ -59,7 +90,16 @@ namespace LeaderEditor
         {
             //resize viewport and postprocessor
             if (ViewportSize.X > 0.0f && ViewportSize.Y > 0.0f)
+            {
                 Application.Main.ResizeViewport((int)ViewportSize.X, (int)ViewportSize.Y);
+                framebuffer.Resize((int)ViewportSize.X, (int)ViewportSize.Y);
+            }
+
+            //render scene to a framebuffer
+            framebuffer.Begin();
+
+            //clear buffers
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         }
 
         private void PostPostProcess()
@@ -79,19 +119,6 @@ namespace LeaderEditor
             GL.DrawElements(PrimitiveType.Triangles, gridMesh.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
 
             GL.Disable(EnableCap.Blend);
-        }
-
-        private void PostProcess()
-        {
-            //resize framebuffer to match viewport
-            if (ViewportSize.X > 0.0f && ViewportSize.Y > 0.0f)
-                framebuffer.Resize((int)ViewportSize.X, (int)ViewportSize.Y);
-
-            //render scene to a framebuffer
-            framebuffer.Begin();
-
-            //clear buffers
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         }
 
         private void PostGuiRender()
@@ -120,7 +147,7 @@ namespace LeaderEditor
                     }
 
                     //display to framebuffer texture on gui
-                    ImGui.Image((IntPtr)framebuffer.GetColorTexture(), ViewportSize = ImGui.GetContentRegionAvail(), new Vector2(0.0f, 1.0f), new Vector2(1.0f, 0.0f));
+                    ImGui.Image((IntPtr)viewportTex, ViewportSize = ImGui.GetContentRegionAvail(), new Vector2(0.0f, 1.0f), new Vector2(1.0f, 0.0f));
                     ImGui.End();
                 }
         }

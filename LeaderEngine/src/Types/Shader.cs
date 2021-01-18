@@ -12,6 +12,7 @@ namespace LeaderEngine
         public static Shader NoRender;
         public static Shader SpriteShader;
         public static Shader PostProcessing;
+        public static Shader TransparentComposite;
         public static Shader Lit;
         public static Shader Transparent;
         public static Shader DepthOnly;
@@ -74,6 +75,7 @@ namespace LeaderEngine
             NoRender = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/norender-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/norender-fs.glsl");
             SpriteShader = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/sprite-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/sprite-fs.glsl");
             PostProcessing = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/pp-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/pp-fs.glsl");
+            TransparentComposite = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/transparent-composite-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/transparent-composite-fs.glsl");
             Lit = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/lit-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/lit-fs.glsl");
             Transparent = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/transparent-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/transparent-fs.glsl");
             DepthOnly = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/depth-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/depth-fs.glsl");
