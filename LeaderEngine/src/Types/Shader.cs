@@ -12,10 +12,13 @@ namespace LeaderEngine
         public static Shader NoRender;
         public static Shader SpriteShader;
         public static Shader PostProcessing;
+        public static Shader TransparentComposite;
         public static Shader Lit;
+        public static Shader Transparent;
         public static Shader DepthOnly;
         public static Shader Skybox;
         public static Shader TextShader;
+        public static Shader ImmediateMode;
         #endregion
 
         private int handle;
@@ -72,10 +75,13 @@ namespace LeaderEngine
             NoRender = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/norender-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/norender-fs.glsl");
             SpriteShader = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/sprite-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/sprite-fs.glsl");
             PostProcessing = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/pp-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/pp-fs.glsl");
+            TransparentComposite = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/transparent-composite-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/transparent-composite-fs.glsl");
             Lit = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/lit-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/lit-fs.glsl");
+            Transparent = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/transparent-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/transparent-fs.glsl");
             DepthOnly = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/depth-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/depth-fs.glsl");
             Skybox = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/skybox-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/skybox-fs.glsl");
             TextShader = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/text-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/text-fs.glsl");
+            ImmediateMode = FromSourceFile(AppContext.BaseDirectory + "DefaultAssets/Shaders/immediatemode-vs.glsl", AppContext.BaseDirectory + "DefaultAssets/Shaders/immediatemode-fs.glsl");
         }
 
         private static void CompileShader(int shader)
@@ -121,8 +127,6 @@ namespace LeaderEngine
             GL.UseProgram(handle);
             if (uniformLocations.ContainsKey(name))
                 GL.Uniform1(uniformLocations[name], data);
-            else
-                Console.WriteLine($"Uniform \"{name}\" does not exist");
         }
 
         /// <summary>
@@ -135,8 +139,6 @@ namespace LeaderEngine
             GL.UseProgram(handle);
             if (uniformLocations.ContainsKey(name))
                 GL.Uniform1(uniformLocations[name], data);
-            else
-                Console.WriteLine($"Uniform \"{name}\" does not exist");
         }
 
         /// <summary>
@@ -154,8 +156,6 @@ namespace LeaderEngine
             GL.UseProgram(handle);
             if (uniformLocations.ContainsKey(name))
                 GL.UniformMatrix4(uniformLocations[name], true, ref data);
-            else
-                Console.WriteLine($"Uniform \"{name}\" does not exist");
         }
 
         /// <summary>
@@ -168,8 +168,6 @@ namespace LeaderEngine
             GL.UseProgram(handle);
             if (uniformLocations.ContainsKey(name))
                 GL.Uniform3(uniformLocations[name], data);
-            else
-                Console.WriteLine($"Uniform \"{name}\" does not exist");
         }
 
         public void SetVector4(string name, Vector4 data)
@@ -177,8 +175,6 @@ namespace LeaderEngine
             GL.UseProgram(handle);
             if (uniformLocations.ContainsKey(name))
                 GL.Uniform4(uniformLocations[name], data);
-            else
-                Console.WriteLine($"Uniform \"{name}\" does not exist");
         }
 
         public int GetHandle()

@@ -5,7 +5,6 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 
 namespace LeaderEngine
@@ -20,12 +19,34 @@ namespace LeaderEngine
 
     public class Application : GameWindow
     {
-        public static Application main = null;
+        public static Application Main = null;
 
-        public List<GameObject> WorldGameObjects = new List<GameObject>();
-        public List<GameObject> WorldGameObjects_Transparent = new List<GameObject>();
-        public List<GameObject> GuiGameObjects = new List<GameObject>();
-        public bool EditorMode = false;
+        public List<Entity> WorldEntities = new List<Entity>();
+        public List<Entity> WorldEntities_Transparent = new List<Entity>();
+        public List<Entity> GuiEntities = new List<Entity>();
+
+        private Entity[] allObjects
+        {
+            get
+            {
+                List<Entity> all = new List<Entity>();
+                all.AddRange(WorldEntities);
+                all.AddRange(WorldEntities_Transparent);
+                all.AddRange(GuiEntities);
+                return all.ToArray();
+            }
+        }
+
+        public bool EditorMode
+        {
+            get => _editorMode;
+            set
+            {
+                UpdateMode(value);
+                _editorMode = value;
+            }
+        }
+        private bool _editorMode = false;
 
         public PostProcessor PostProcessor;
 
@@ -38,6 +59,7 @@ namespace LeaderEngine
         public event Action SceneRender;
         public event Action PostSceneRender;
         public event Action PostProcess;
+        public event Action PostPostProcess;
         public event Action GuiRender;
         public event Action PostGuiRender;
         public event Action FinishRender;
@@ -45,15 +67,15 @@ namespace LeaderEngine
 
         public Application(GameWindowSettings gws, NativeWindowSettings nws, Action initCallback) : base(gws, nws)
         {
-            if (main != null)
+            if (Main != null)
                 return;
 
-            main = this;
+            Main = this;
             CursorVisible = true;
 
             this.initCallback = initCallback;
 
-            GLFW.SwapInterval(1);
+            GLFW.SwapInterval(0);
         }
 
         public void ExecuteNextUpdate(Action action)
@@ -61,42 +83,62 @@ namespace LeaderEngine
             NextUpdateQueue.Enqueue(action);
         }
 
-        public override void Run()
+        private void UpdateMode(bool editorMode)
         {
-            initCallback?.Invoke();
-
-            base.Run();
+            if (!editorMode)
+            {
+                WorldEntities.ForEach(en => en.StartAll());
+                WorldEntities_Transparent.ForEach(en => en.StartAll());
+                GuiEntities.ForEach(en => en.StartAll());
+            }
+            else
+            {
+                WorldEntities.ForEach(en => en.RemoveAll());
+                WorldEntities_Transparent.ForEach(en => en.RemoveAll());
+                GuiEntities.ForEach(en => en.RemoveAll());
+            }
         }
 
         protected override void OnLoad()
         {
-            Debug.WriteLine("Base Directory: " + AppContext.BaseDirectory);
+            Logger.Log("Base Directory: " + AppContext.BaseDirectory);
+
+            Logger.Log("Renderer: " + GL.GetString(StringName.Renderer));
+            Logger.Log("Vendor: " + GL.GetString(StringName.Vendor));
+            Logger.Log("Version: " + GL.GetString(StringName.Version));
+            Logger.Log("Shading Language version: " + GL.GetString(StringName.ShadingLanguageVersion));
+
+            Extensions.CheckForErrors();
+
+            Logger.Log("Initializing...");
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            GL.ClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 
             Shader.InitDefaults();
             Material.InitDefaults();
 
             LightingController.Init();
-
-            PostProcessor = new PostProcessor(Size);
+            IM.Init();
+            PhysicsController.Init();
+            AudioSource.Init();
 
             Input.InputUpdate(KeyboardState, MouseState);
 
-            GL.ClearColor(0.005f, 0.005f, 0.005f, 1.0f);
-
+            PostProcessor = new PostProcessor(Size);
             ViewportSize = Size;
+
+            initCallback?.Invoke();
+
+            stopwatch.Stop();
+            Logger.Log($"Done initializing ({stopwatch.ElapsedMilliseconds}ms)");
 
             base.OnLoad();
         }
 
-        protected override void OnResize(ResizeEventArgs e)
-        {
-            base.OnResize(e);
-        }
-
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            Time.time = (float)GLFW.GetTime();
-
             while (NextUpdateQueue.Count > 0)
                 NextUpdateQueue.Dequeue().Invoke();
 
@@ -104,16 +146,19 @@ namespace LeaderEngine
 
             ThreadManager.ExecuteAll();
 
-            if (!EditorMode)
-            {
-                WorldGameObjects.ForEach(go => go.Update());
-                WorldGameObjects_Transparent.ForEach(go => go.Update());
-                GuiGameObjects.ForEach(go => go.Update());
+            Entity[] entitys = allObjects;
 
-                WorldGameObjects.ForEach(go => go.LateUpdate());
-                WorldGameObjects_Transparent.ForEach(go => go.LateUpdate());
-                GuiGameObjects.ForEach(go => go.LateUpdate());
-            }
+            for (int i = 0; i < entitys.Length; i++)
+                if (entitys[i] != null)
+                    if (entitys[i].Parent == null)
+                        entitys[i].Update();
+
+            for (int i = 0; i < entitys.Length; i++)
+                if (entitys[i] != null)
+                    if (entitys[i].Parent == null)
+                        entitys[i].LateUpdate();
+
+            PhysicsController.Update();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -124,19 +169,19 @@ namespace LeaderEngine
 
             base.OnRenderFrame(e);
 
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.Disable(EnableCap.Blend);
             GL.Enable(EnableCap.DepthTest);
 
             RenderingGlobals.CurrentPass = RenderPass.Lighting;
-            LightingController.RenderDepth(RenderScene);
+            LightingController.RenderDepth(RenderOpaque);
 
             SceneRender?.Invoke();
             RenderingGlobals.CurrentPass = RenderPass.World;
 
+            PostProcessor.Resize(ViewportSize.X, ViewportSize.Y);
             PostProcessor.Begin();
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             Skybox.Main?.Render();
             RenderScene();
@@ -145,7 +190,12 @@ namespace LeaderEngine
             PostProcessor.End();
 
             PostProcess?.Invoke();
+
+            GL.DepthFunc(DepthFunction.Always);
             PostProcessor.Render();
+            GL.DepthFunc(DepthFunction.Less);
+
+            PostPostProcess?.Invoke();
 
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
@@ -156,12 +206,15 @@ namespace LeaderEngine
             GuiRender?.Invoke();
             RenderGui();
             PostGuiRender?.Invoke();
-
+            
             FinishRender?.Invoke();
+
+            Extensions.CheckForErrors();
 
             SwapBuffers();
 
-            Time.deltaTimeUnscaled = (float)GLFW.GetTime() - Time.time;
+            Time.time = (float)GLFW.GetTime();
+            Time.deltaTimeUnscaled = (float)e.Time;
             Time.deltaTime = Time.deltaTimeUnscaled * Time.timeScale;
         }
 
@@ -170,21 +223,37 @@ namespace LeaderEngine
             if (!RenderingGlobals.RenderingEnabled)
                 return;
 
-            WorldGameObjects.ForEach(go => go.Render());
-            WorldGameObjects_Transparent.ForEach(go => go.Render());
+            RenderOpaque();
+            RenderTransparent();
+        }
+
+        public void RenderOpaque()
+        {
+            if (!RenderingGlobals.RenderingEnabled)
+                return;
+
+            WorldEntities.ForEach(en => en.Render());
+        }
+
+        public void RenderTransparent()
+        {
+            if (!RenderingGlobals.RenderingEnabled)
+                return;
+
+            GL.DepthMask(false);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFuncSeparate(BlendingFactorSrc.One, BlendingFactorDest.One, BlendingFactorSrc.Zero, BlendingFactorDest.OneMinusSrcAlpha);
+
+            WorldEntities_Transparent.ForEach(en => en.Render());
+
+            GL.DepthMask(true);
+            GL.Disable(EnableCap.Blend);
         }
 
         public void RenderGui()
         {
             if (RenderingGlobals.RenderingEnabled)
-                GuiGameObjects.ForEach(go => go.RenderGui());
-        }
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            WorldGameObjects.ForEach(go => go.OnClosing());
-
-            base.OnClosing(e);
+                GuiEntities.ForEach(en => en.RenderGui());
         }
 
         public void ResizeViewport(Vector2i newSize)

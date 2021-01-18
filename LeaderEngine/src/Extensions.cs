@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using OpenTK.Graphics.OpenGL4;
+using System.Collections.Generic;
 
 namespace LeaderEngine
 {
@@ -10,6 +11,15 @@ namespace LeaderEngine
                 dictionary[key] = value;
             else
                 dictionary.Add(key, value);
+        }
+
+        public static void CheckForErrors()
+        {
+            ErrorCode error;
+            while ((error = GL.GetError()) != ErrorCode.NoError)
+            {
+                Logger.LogError("ERROR: " + error.ToString());
+            }
         }
     }
 }

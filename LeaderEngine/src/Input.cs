@@ -32,7 +32,7 @@ namespace LeaderEngine
 
         public static bool GetMouseDown(MouseButton button)
         {
-            if (!Application.main.IsFocused)
+            if (!Application.Main.IsFocused)
                 return false;
             if (!mouseState.WasButtonDown(button) && mouseState.IsButtonDown(button))
                 return true;
@@ -40,13 +40,13 @@ namespace LeaderEngine
         }
         public static bool GetMouse(MouseButton button)
         {
-            if (!Application.main.IsFocused)
+            if (!Application.Main.IsFocused)
                 return false;
             return mouseState.IsButtonDown(button);
         }
         public static bool GetMouseUp(MouseButton button)
         {
-            if (!Application.main.IsFocused)
+            if (!Application.Main.IsFocused)
                 return false;
             if (!mouseState.IsButtonDown(button) && mouseState.WasButtonDown(button))
                 return true;
@@ -54,7 +54,7 @@ namespace LeaderEngine
         }
         public static bool GetKeyDown(Keys key)
         {
-            if (!Application.main.IsFocused)
+            if (!Application.Main.IsFocused)
                 return false;
             if (!keyState.WasKeyDown(key) && keyState.IsKeyDown(key))
                 return true;
@@ -62,13 +62,13 @@ namespace LeaderEngine
         }
         public static bool GetKey(Keys key)
         {
-            if (!Application.main.IsFocused)
+            if (!Application.Main.IsFocused)
                 return false;
             return keyState.IsKeyDown(key);
         }
         public static bool GetKeyUp(Keys key)
         {
-            if (!Application.main.IsFocused)
+            if (!Application.Main.IsFocused)
                 return false;
             if (!keyState.IsKeyDown(key) && keyState.WasKeyDown(key))
                 return true;

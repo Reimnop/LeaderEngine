@@ -24,22 +24,24 @@ namespace LeaderEngine
     {
         #region DefaultMaterials
         public static Material Lit;
+        public static Material DepthOnly;
         public static Material NoRender;
         #endregion
 
-        public Shader Shader { private set; get; }
+        public Shader Shader { set; get; }
 
         private Dictionary<string, MaterialProp> materialProps = new Dictionary<string, MaterialProp>();
         private Dictionary<TextureUnit, Texture> materialTextures = new Dictionary<TextureUnit, Texture>();
 
         public Material(Shader shader)
         {
-            this.Shader = shader;
+            Shader = shader;
         }
 
         public static void InitDefaults()
         {
             Lit = new Material(Shader.Lit);
+            DepthOnly = new Material(Shader.DepthOnly);
             NoRender = new Material(Shader.NoRender);
         }
 
@@ -95,12 +97,24 @@ namespace LeaderEngine
         }
         #endregion
 
+        public Material Clone()
+        {
+            return new Material(Shader);
+        }
+
+        public static Material Clone(Material material)
+        {
+            return new Material(material.Shader);
+        }
+
+        public static void Clone(Material material, out Material newMaterial)
+        {
+            newMaterial = new Material(material.Shader);
+        }
+
         public void Use()
         {
             Shader usingShader = Shader;
-
-            if (RenderingGlobals.ForcedShader != null)
-                usingShader = RenderingGlobals.ForcedShader;
 
             usingShader.Use();
 

@@ -29,22 +29,53 @@ namespace LeaderEditor
             1, 2, 3
         };
 
-        private VertexArray gridVertArray;
+        private Mesh gridMesh;
         private Shader gridShader;
 
-        public override void Start()
+        private int viewportTex;
+
+        public override void EditorStart()
         {
-            framebuffer = new Framebuffer(1280, 720);
+            framebuffer = new Framebuffer(1280, 720, new Attachment[] 
+            {
+                new Attachment
+                {
+                    Draw = false,
+                    PixelInternalFormat = PixelInternalFormat.Rgba,
+                    PixelFormat = PixelFormat.Rgba,
+                    PixelType = PixelType.Float,
+                    FramebufferAttachment = FramebufferAttachment.ColorAttachment0,
+                    TextureParams = new TextureParam[]
+                    {
+                        new TextureParam { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Linear },
+                        new TextureParam { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Linear }
+                    }
+                },
+                new Attachment
+                {
+                    Draw = false,
+                    PixelInternalFormat = PixelInternalFormat.DepthComponent,
+                    PixelFormat = PixelFormat.DepthComponent,
+                    PixelType = PixelType.Float,
+                    FramebufferAttachment = FramebufferAttachment.DepthAttachment,
+                    TextureParams = new TextureParam[]
+                    {
+                        new TextureParam { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Nearest },
+                        new TextureParam { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Nearest }
+                    }
+                }
+            });
 
-            Application.main.SceneRender += SceneRender;
-            Application.main.PostSceneRender += PostSceneRender;
-            Application.main.PostProcess += PostProcess;
-            Application.main.PostGuiRender += PostGuiRender;
+            viewportTex = framebuffer.GetTexture(FramebufferAttachment.ColorAttachment0);
 
-            ImGuiController.main.OnImGui += OnImGui;
+            Application.Main.SceneRender += SceneRender;
+            Application.Main.PostPostProcess += PostPostProcess;
+            Application.Main.PostGuiRender += PostGuiRender;
+
+            ImGuiController.RegisterImGui(OnImGui);
 
             //setup grid rendering
-            gridVertArray = new VertexArray(vertices, indices, new VertexAttrib[]
+            gridMesh = new Mesh("Grids", vertices, indices, new VertexAttrib[]
             {
                 new VertexAttrib { location = 0, size = 3 }
             });
@@ -58,11 +89,20 @@ namespace LeaderEditor
         private void SceneRender()
         {
             //resize viewport and postprocessor
-            Application.main.ResizeViewport((int)ViewportSize.X, (int)ViewportSize.Y);
-            Application.main.PostProcessor.Resize((int)ViewportSize.X, (int)ViewportSize.Y);
+            if (ViewportSize.X > 0.0f && ViewportSize.Y > 0.0f)
+            {
+                Application.Main.ResizeViewport((int)ViewportSize.X, (int)ViewportSize.Y);
+                framebuffer.Resize((int)ViewportSize.X, (int)ViewportSize.Y);
+            }
+
+            //render scene to a framebuffer
+            framebuffer.Begin();
+
+            //clear buffers
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         }
 
-        private void PostSceneRender()
+        private void PostPostProcess()
         {
             if (EditorController.Mode != EditorController.EditorMode.Editor)
                 return;
@@ -74,23 +114,11 @@ namespace LeaderEditor
             gridShader.SetMatrix4("p", RenderingGlobals.Projection);
 
             gridShader.Use();
-            gridVertArray.Use();
+            gridMesh.Use();
 
-            GL.DrawElements(PrimitiveType.Triangles, gridVertArray.GetVerticesCount(), DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, gridMesh.GetIndicesCount(), DrawElementsType.UnsignedInt, 0);
 
             GL.Disable(EnableCap.Blend);
-        }
-
-        private void PostProcess()
-        {
-            //resize framebuffer to match viewport
-            framebuffer.Resize((int)ViewportSize.X, (int)ViewportSize.Y);
-
-            //render scene to a framebuffer
-            framebuffer.Begin();
-
-            //clear buffers
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         }
 
         private void PostGuiRender()
@@ -98,7 +126,7 @@ namespace LeaderEditor
             //end the render
             framebuffer.End();
 
-            GL.Viewport(0, 0, Application.main.Size.X, Application.main.Size.Y);
+            GL.Viewport(0, 0, Application.Main.Size.X, Application.Main.Size.Y);
         }
 
 
@@ -115,11 +143,11 @@ namespace LeaderEditor
                             else EditorController.Mode = EditorController.EditorMode.Editor;
 
                         if (EditorController.Mode == EditorController.EditorMode.Editor)
-                            EditorCamera.main.UpdateCamMove();
+                            EditorCamera.Main.UpdateCamMove();
                     }
 
                     //display to framebuffer texture on gui
-                    ImGui.Image((IntPtr)framebuffer.GetColorTexture(), ViewportSize = ImGui.GetContentRegionAvail(), new Vector2(0.0f, 1.0f), new Vector2(1.0f, 0.0f));
+                    ImGui.Image((IntPtr)viewportTex, ViewportSize = ImGui.GetContentRegionAvail(), new Vector2(0.0f, 1.0f), new Vector2(1.0f, 0.0f));
                     ImGui.End();
                 }
         }

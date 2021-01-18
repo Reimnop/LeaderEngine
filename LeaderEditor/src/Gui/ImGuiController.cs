@@ -1,4 +1,6 @@
 ﻿using ImGuiNET;
+using ImPlotNET;
+using ImNodesNET;
 using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -6,7 +8,9 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace LeaderEditor.Gui
 {
@@ -14,11 +18,9 @@ namespace LeaderEditor.Gui
     /// A modified version of Veldrid.ImGui's ImGuiRenderer.
     /// Manages input for ImGui and handles rendering ImGui's DrawLists with Veldrid.
     /// </summary>
-    public class ImGuiController : Component
+    public class ImGuiController : EditorComponent
     {
-        public static ImGuiController main;
-
-        public event Action OnImGui;
+        public static ImGuiController Main;
 
         private bool _frameBegun;
 
@@ -32,23 +34,34 @@ namespace LeaderEditor.Gui
         private Texture _fontTexture;
         private Shader _shader;
         
-        private int _windowWidth { get { return Application.main.Size.X; } }
-        private int _windowHeight { get { return Application.main.Size.Y; } }
+        private int _windowWidth { get { return Application.Main.Size.X; } }
+        private int _windowHeight { get { return Application.Main.Size.Y; } }
 
         private System.Numerics.Vector2 _scaleFactor = System.Numerics.Vector2.One;
 
-        public override void Start()
+        private static List<Action> ImGuiFuncs = new List<Action>();
+
+        public static void RegisterImGui(Action action)
         {
-            main = this;
+            ImGuiFuncs.Add(action);
+        }
 
-            Application.main.CursorVisible = false;
+        public unsafe override void EditorStart()
+        {
+            Main = this;
 
-            Application.main.TextInput += TextInput;
-            Application.main.FinishRender += FinishRender;
-            Application.main.UpdateFrame += UpdateImGui;
+            //Application.Main.CursorVisible = false;
+
+            Application.Main.TextInput += TextInput;
+            Application.Main.FinishRender += FinishRender;
 
             IntPtr context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
+
+            IntPtr plotContext = ImPlot.CreateContext();
+            ImPlot.SetCurrentContext(plotContext);
+            ImPlot.SetImGuiContext(context);
+
             var io = ImGui.GetIO();
             //io.Fonts.AddFontDefault();
             io.Fonts.AddFontFromFileTTF(AppContext.BaseDirectory + "Fonts/Inconsolata.ttf", 16);
@@ -56,7 +69,7 @@ namespace LeaderEditor.Gui
             io.BackendFlags |= ImGuiBackendFlags.HasMouseCursors;
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable | ImGuiConfigFlags.NavEnableKeyboard;
             io.ConfigWindowsResizeFromEdges = true;
-            io.MouseDrawCursor = true;
+            //io.MouseDrawCursor = false;
 
             ImGui.StyleColorsDark();
 
@@ -81,7 +94,7 @@ namespace LeaderEditor.Gui
 
         public void DestroyDeviceObjects()
         {
-            gameObject.RemoveComponent<ImGuiController>();
+            BaseEntity.RemoveComponent<ImGuiController>();
         }
 
         public void CreateDeviceResources()
@@ -98,7 +111,7 @@ namespace LeaderEditor.Gui
 
             RecreateFontDeviceTexture();
 
-            string VertexSource = @"#version 330 core
+            string VertexSource = @"#version 400 core
 
 uniform mat4 projection_matrix;
 
@@ -115,14 +128,14 @@ void main()
     color = in_color;
     texCoord = in_texCoord;
 }";
-            string FragmentSource = @"#version 330 core
+            string FragmentSource = @"#version 400 core
+
+layout(location = 0) out vec4 outputColor;
 
 uniform sampler2D in_fontTexture;
 
 in vec4 color;
 in vec2 texCoord;
-
-out vec4 outputColor;
 
 void main()
 {
@@ -174,7 +187,9 @@ void main()
         /// </summary>
         public void RenderImGui()
         {
-            OnImGui?.Invoke();
+            ImGui.DockSpaceOverViewport();
+
+            ImGuiFuncs.ForEach(x => x.Invoke());
 
             if (_frameBegun)
             {
@@ -187,7 +202,7 @@ void main()
         /// <summary>
         /// Updates ImGui input and IO configuration state.
         /// </summary>
-        public void UpdateImGui(FrameEventArgs e)
+        public override void EditorUpdate()
         {
             if (_frameBegun)
             {
@@ -212,17 +227,18 @@ void main()
                 _windowWidth / _scaleFactor.X,
                 _windowHeight / _scaleFactor.Y);
             io.DisplayFramebufferScale = _scaleFactor;
-            io.DeltaTime = Time.deltaTime; // DeltaTime is in seconds.
+            io.DeltaTime = Time.deltaTimeUnscaled; // DeltaTime is in seconds.
         }
 
         readonly List<char> PressedChars = new List<char>();
+        private ImGuiMouseCursor lastCursor;
 
         private void UpdateImGuiInput()
         {
             ImGuiIOPtr io = ImGui.GetIO();
 
-            MouseState MouseState = Application.main.MouseState;
-            KeyboardState KeyboardState = Application.main.KeyboardState;
+            MouseState MouseState = Application.Main.MouseState;
+            KeyboardState KeyboardState = Application.Main.KeyboardState;
 
             io.MouseDown[0] = MouseState.IsButtonDown(MouseButton.Left);
             io.MouseDown[1] = MouseState.IsButtonDown(MouseButton.Right);
@@ -233,6 +249,14 @@ void main()
 
             io.MouseWheel = MouseState.ScrollDelta.Y;
             io.MouseWheelH = MouseState.ScrollDelta.X;
+
+            //mouse cursors
+            ImGuiMouseCursor imCursor = ImGui.GetMouseCursor();
+
+            if (imCursor != lastCursor)
+                SetCursor(imCursor);
+
+            lastCursor = imCursor;
             
             foreach (Keys key in Enum.GetValues(typeof(Keys)))
             {
@@ -250,6 +274,49 @@ void main()
             io.KeyAlt = KeyboardState.IsKeyDown(Keys.LeftAlt) || KeyboardState.IsKeyDown(Keys.RightAlt);
             io.KeyShift = KeyboardState.IsKeyDown(Keys.LeftShift) || KeyboardState.IsKeyDown(Keys.RightShift);
             io.KeySuper = KeyboardState.IsKeyDown(Keys.LeftSuper) || KeyboardState.IsKeyDown(Keys.RightSuper);
+        }
+
+        private void SetCursor(ImGuiMouseCursor imCursor)
+        {
+            switch (imCursor)
+            {
+                case ImGuiMouseCursor.Arrow:
+                    SetGLCursor(CursorShape.Arrow);
+                    break;
+                case ImGuiMouseCursor.Hand:
+                    SetGLCursor(CursorShape.Hand);
+                    break;
+                case ImGuiMouseCursor.TextInput:
+                    SetGLCursor(CursorShape.IBeam);
+                    break;
+                case ImGuiMouseCursor.ResizeNS:
+                    SetGLCursor(CursorShape.VResize);
+                    break;
+                case ImGuiMouseCursor.ResizeEW:
+                    SetGLCursor(CursorShape.HResize);
+                    break;
+                case ImGuiMouseCursor.ResizeNESW:
+                    SetGLCursor(CursorShape.NESWResize);
+                    break;
+                case ImGuiMouseCursor.ResizeNWSE:
+                    SetGLCursor(CursorShape.NWSEResize);
+                    break;
+                case ImGuiMouseCursor.ResizeAll:
+                    SetGLCursor(CursorShape.ResizeAll);
+                    break;
+                case ImGuiMouseCursor.NotAllowed:
+                    SetGLCursor(CursorShape.NotAllowed);
+                    break;
+                default:
+                    SetGLCursor(CursorShape.Arrow);
+                    break;
+            }
+        }
+
+        private unsafe void SetGLCursor(CursorShape cursorShape)
+        {
+            Cursor* cursor = GLFW.CreateStandardCursor(cursorShape);
+            GLFW.SetCursor(Application.Main.WindowPtr, cursor);
         }
 
         internal void PressChar(char keyChar)
@@ -272,6 +339,7 @@ void main()
             io.KeyMap[(int)ImGuiKey.Delete] = (int)Keys.Delete;
             io.KeyMap[(int)ImGuiKey.Backspace] = (int)Keys.Backspace;
             io.KeyMap[(int)ImGuiKey.Enter] = (int)Keys.Enter;
+            io.KeyMap[(int)ImGuiKey.Space] = (int)Keys.Space;
             io.KeyMap[(int)ImGuiKey.Escape] = (int)Keys.Escape;
             io.KeyMap[(int)ImGuiKey.A] = (int)Keys.A;
             io.KeyMap[(int)ImGuiKey.C] = (int)Keys.C;
@@ -376,7 +444,7 @@ void main()
                         }
                         else
                         {
-                            GL.DrawElements(BeginMode.Triangles, (int)pcmd.ElemCount, DrawElementsType.UnsignedShort, (int)pcmd.IdxOffset * sizeof(ushort));
+                            GL.DrawElements(PrimitiveType.Triangles, (int)pcmd.ElemCount, DrawElementsType.UnsignedShort, (int)pcmd.IdxOffset * sizeof(ushort));
                         }
                         Util.CheckGLError("Draw");
                     }
@@ -395,15 +463,6 @@ void main()
             GL.Enable(EnableCap.DepthTest);
 
             GL.BindVertexArray(0);
-        }
-
-        /// <summary>
-        /// Frees all graphics resources used by the renderer.
-        /// </summary>
-        public override void OnRemove()
-        {
-            _fontTexture.Dispose();
-            _shader.Dispose();
         }
     }
 }

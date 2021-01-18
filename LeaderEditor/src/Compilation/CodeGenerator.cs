@@ -29,7 +29,7 @@ class Program {
             for (int i = 0; i < SceneHierachy.SceneObjects.Count; i++)
             {
                 var go = SceneHierachy.SceneObjects[i];
-                output += $"        var go_{i} = new LeaderEngine.GameObject(\"{go.Name}\");\n";
+                output += $"        var go_{i} = new LeaderEngine.Entity(\"{go.Name}\");\n";
                 foreach (var comp in go.GetAllComponents())
                 {
                     output += $"        go_{i}.AddComponent<{comp.GetType().FullName}>();\n";

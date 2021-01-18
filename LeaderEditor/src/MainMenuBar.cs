@@ -3,6 +3,7 @@ using LeaderEditor.Compilation;
 using LeaderEditor.Data;
 using LeaderEditor.Gui;
 using LeaderEngine;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
@@ -10,77 +11,132 @@ using Application = LeaderEngine.Application;
 
 namespace LeaderEditor
 {
-    public class MainMenuBar : Component
+    public class MainMenuBar : EditorComponent
     {
+        private static class Theme
+        {
+            public static string Light = "Light";
+            public static string Dark = "Dark";
+        }
+
+        private static Dictionary<string, Action> ImGuiMenuDrawers = new Dictionary<string, Action>()
+        {
+            { "File", DrawFileMenu },
+            { "Windows", DrawWindowsMenu }
+        };
+
+        private string theme = Theme.Dark;
+
         public static Dictionary<string, WindowComponent> windows = new Dictionary<string, WindowComponent>();
 
-        private List<LeaderEngine.Texture> textures = new List<LeaderEngine.Texture>();
-
-        public override void Start()
-        {
-            ImGuiController.main.OnImGui += OnImGui;
-        }
-
         public static void RegisterWindow(string name, WindowComponent window)
-        {
-            windows.Add(name, window);
-        }
+            => windows.Add(name, window);
+
+        public override void EditorStart()
+            => ImGuiController.RegisterImGui(OnImGui);
 
         private void OnImGui()
         {
             if (ImGui.BeginMainMenuBar())
             {
-                if (ImGui.BeginMenu("File"))
+                foreach (var item in ImGuiMenuDrawers)
+                    if (ImGui.BeginMenu(item.Key))
+                    {
+                        item.Value();
+                        ImGui.EndMenu();
+                    }
+
+                ImGui.SetNextItemWidth(120.0f);
+                if (ImGui.BeginCombo("Theme", theme))
                 {
-                    if (ImGui.MenuItem("Open Project", "Ctrl+O"))
+                    if (ImGui.Selectable(Theme.Dark, theme == Theme.Dark))
                     {
-                        OpenFileDialog ofd = new OpenFileDialog();
-                        ofd.Filter = "*.csproj|*.csproj";
-                        ofd.Multiselect = false;
-
-                        ofd.ShowDialog();
-
-                        if (!string.IsNullOrEmpty(ofd.FileName))
-                        {
-                            AssetLoader.LoadProject(ofd.FileName);
-                        }
+                        theme = Theme.Dark;
+                        ImGui.StyleColorsDark();
                     }
-
-                    if (ImGui.MenuItem("Save Project", "Ctrl+S"))
+                    if (ImGui.Selectable(Theme.Light, theme == Theme.Light))
                     {
-                        if (!string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
-                            SceneSerializer.SaveScene(Path.Combine(AssetLoader.LoadedProjectDir, "Assets", "scene.ldrscene"));
+                        theme = Theme.Light;
+                        ImGui.StyleColorsLight();
                     }
-
-                    //TODO: DEBUG CODE
-                    if (ImGui.MenuItem("Generate Code"))
-                    {
-                        DebugConsole.Log(CodeGenerator.GenerateCode());
-                    }
-                    if (ImGui.MenuItem("Recompile shaders"))
-                    {
-                        DebugConsole.Log("Recompiling!");
-                        LeaderEngine.Shader.InitDefaults();
-                    }
-                    //END OF DEBUG
-
-                    if (ImGui.MenuItem("Exit", "Alt+F4"))
-                    {
-                        Application.main.Close();
-                    }
-
-                    ImGui.EndMenu();
+                    ImGui.EndCombo();
                 }
 
-                if (ImGui.BeginMenu("Windows"))
-                {
-                    foreach (var window in windows)
-                        ImGui.MenuItem(window.Key, null, ref window.Value.IsOpen);
+                ImGui.EndMainMenuBar();
+            }
+        }
 
-                    ImGui.EndMenu();
+        private static void DrawFileMenu()
+        {
+            if (ImGui.MenuItem("Open Project", "Ctrl+O"))
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Filter = "*.csproj|*.csproj";
+                ofd.Multiselect = false;
+
+                ofd.ShowDialog();
+
+                if (!string.IsNullOrEmpty(ofd.FileName))
+                {
+                    AssetLoader.LoadProject(ofd.FileName);
+
+                    string path = Path.Combine(AssetLoader.LoadedProjectDir, "Assets", "scene.ldrscene");
+
+                    if (File.Exists(path))
+                        SceneLoad.LoadScene(path);
                 }
             }
-            ImGui.EndMainMenuBar();
+
+            if (ImGui.MenuItem("Save Project", "Ctrl+S"))
+            {
+                if (!string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
+                    SceneSave.SaveScene(Path.Combine(AssetLoader.LoadedProjectDir, "Assets", "scene.ldrscene"));
+            }
+
+#if DEBUG
+            if (ImGui.BeginMenu("DEBUG"))
+            {
+                if (ImGui.MenuItem("Generate Code"))
+                {
+                    DebugConsole.Log(CodeGenerator.GenerateCode());
+                }
+                if (ImGui.MenuItem("Recompile shaders"))
+                {
+                    DebugConsole.Log("Recompiling!");
+                    LeaderEngine.Shader.InitDefaults();
+                }
+                ImGui.EndMenu();
+            }
+#endif
+            if (ImGui.BeginMenu("Import"))
+            {
+                if (ImGui.MenuItem("Model"))
+                    if (!string.IsNullOrEmpty(AssetLoader.LoadedProjectDir))
+                        using (OpenFileDialog ofd = new OpenFileDialog())
+                        {
+                            ofd.Filter = "3D Model|*.fbx;*.obj";
+                            ofd.Multiselect = false;
+
+                            ofd.ShowDialog();
+
+                            if (!string.IsNullOrEmpty(ofd.FileName))
+                            {
+                                ResourceLoader.LoadModel(AssetLoader.LoadAsset(ofd.FileName));
+                            }
+                        }
+                ImGui.EndMenu();
+            }
+
+            if (ImGui.MenuItem("Exit", "Alt+F4"))
+            {
+                Application.Main.Close();
+            }
+        }
+
+        private static void DrawWindowsMenu()
+        {
+            foreach (var window in windows)
+                ImGui.MenuItem(window.Key, null, ref window.Value.IsOpen);
         }
     }
 }

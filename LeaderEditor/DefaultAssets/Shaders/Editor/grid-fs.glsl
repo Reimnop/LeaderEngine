@@ -19,11 +19,19 @@ vec4 grid(vec3 fragPos3D, float scale) {
     float minimumx = min(derivative.x, 1.0);
     vec4 color = vec4(0.2, 0.2, 0.2, 1.0 - min(line, 1.0));
 
+    vec2 coordMajor = coord / 10.0;
+    vec2 derivativeMajor = fwidth(coordMajor);
+    vec2 gridMajor = abs(fract(coordMajor - 0.5) - 0.5) / derivativeMajor;
+    float lineMajor = min(gridMajor.x, gridMajor.y);
+
+    if (int(lineMajor) == 0)
+        color.xyz = vec3(0.4);
+
     if(fragPos3D.x > -1.0 * minimumx && fragPos3D.x < 1.0 * minimumx)
-        color.z = 1.0;
+        color.xyz = vec3(0.2, 0.2, 1.0);
 
     if(fragPos3D.z > -1.0 * minimumz && fragPos3D.z < 1.0 * minimumz)
-        color.x = 1.0;
+        color.xyz = vec3(1.0, 0.2, 0.2);
 
     return color;
 }
@@ -37,6 +45,8 @@ void main()
 {
 	float t = -nearPoint.y / (farPoint.y - nearPoint.y);
     vec3 fragPos3D = nearPoint + t * (farPoint - nearPoint);
+
     gl_FragDepth = 0.5 * computeDepth(fragPos3D) + 0.5;
+
 	fragColor = grid(fragPos3D, 1.0) * float(t > 0.0);
 }

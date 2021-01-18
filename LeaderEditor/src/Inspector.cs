@@ -15,6 +15,11 @@ namespace LeaderEditor
             { typeof(Camera), null },
             { typeof(MeshFilter), SerializeFunc.MeshFilter },
             { typeof(MeshRenderer), null },
+            { typeof(AudioSource), null },
+            { typeof(AudioListener), null },
+            { typeof(BoxCollider), null },
+            { typeof(Rigidbody), null },
+            { typeof(Staticbody), null },
             { typeof(Skybox), SerializeFunc.Skybox },
             { typeof(Sprite), SerializeFunc.Sprite },
             { typeof(DirectionalLight), null },
@@ -24,10 +29,10 @@ namespace LeaderEditor
         //is the add component menu open?
         private bool compMenuOpen = false;
 
-        public override void Start()
+        public override void EditorStart()
         {
             //register ImGui
-            ImGuiController.main.OnImGui += OnImGui;
+            ImGuiController.RegisterImGui(OnImGui);
 
             MainMenuBar.RegisterWindow("Inspector", this);
         }
@@ -37,7 +42,7 @@ namespace LeaderEditor
             if (IsOpen)
                 if (ImGui.Begin("Inspector", ref IsOpen))
                 {
-                    if (SceneHierachy.SelectedObject != null)
+                    if (SceneHierachy.SelectedEntity != null)
                     {
                         if (ImGui.Button("Add Component"))
                             compMenuOpen = !compMenuOpen;
@@ -45,10 +50,10 @@ namespace LeaderEditor
                         ImGui.SameLine();
 
                         ImGui.SetNextItemWidth(127.5f);
-                        ImGui.InputText("Name", ref SceneHierachy.SelectedObject.Name, 255);
+                        ImGui.InputText("Name", ref SceneHierachy.SelectedEntity.Name, 255);
 
                         //get all components
-                        List<Component> components = SceneHierachy.SelectedObject.GetAllComponents();
+                        List<Component> components = SceneHierachy.SelectedEntity.GetAllComponents();
 
                         //add component menu
                         if (compMenuOpen)
@@ -61,7 +66,7 @@ namespace LeaderEditor
                                         if (ImGui.Button(comp.Key.Name))
                                         {
                                             //create new component and add
-                                            SceneHierachy.SelectedObject.AddComponent((Component)Activator.CreateInstance(comp.Key));
+                                            SceneHierachy.SelectedEntity.AddComponent((Component)Activator.CreateInstance(comp.Key));
                                         }
                                 }
                                 ImGui.ListBoxFooter();
@@ -93,7 +98,7 @@ namespace LeaderEditor
                                 ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - 120.0f);
                                 if (ImGui.Button("Remove Component"))
                                 {
-                                    SceneHierachy.SelectedObject.RemoveComponent(component);
+                                    SceneHierachy.SelectedEntity.RemoveComponent(component);
                                 }
                             }
                             ImGui.PopID();

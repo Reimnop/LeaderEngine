@@ -4,7 +4,7 @@ using LeaderEngine;
 
 namespace LeaderEditor
 {
-    public class EditorController : Component
+    public class EditorController : EditorComponent
     {
         public enum EditorMode
         {
@@ -15,10 +15,7 @@ namespace LeaderEditor
         private static EditorMode _mode;
         public static EditorMode Mode
         {
-            get
-            {
-                return _mode;
-            }
+            get => _mode;
             set
             {
                 _mode = value;
@@ -26,35 +23,37 @@ namespace LeaderEditor
             }
         }
 
-        private GameObject ImGuiController;
-        private GameObject editorCamera;
+        private Entity ImGuiController;
+        private Entity editorCamera;
 
-        public override void Start()
+        public override void EditorStart()
         {
-            //add gui controller
-            ImGuiController = new GameObject("Controller");
-            ImGuiController.AddComponent<ImGuiController>().OnImGui += OnImGui;
-
-            //camera
-            editorCamera = new GameObject("EditorCamera");
-            editorCamera.AddComponent<EditorCamera>();
-            editorCamera.transform.Position = new OpenTK.Mathematics.Vector3(0.0f, 1.0f, 2.0f);
-
             //add all components
-            gameObject.AddComponents(
+            BaseEntity.AddComponents(
                 new Component[] {
                     new MainMenuBar(),
                     new Viewport(),
                     new SceneHierachy(),
                     new Inspector(),
-                    new DebugConsole()
+                    new DebugConsole(),
+                    new StatsWindow(),
+                    new RenderingConfigWindow()
                 });
-        }
 
-        private void OnImGui()
-        {
-            //the dockspace
-            ImGui.DockSpaceOverViewport();
+            BaseEntity.Tag = "Editor";
+
+            //camera
+            editorCamera = new Entity("EditorCamera");
+            editorCamera.AddComponent<EditorCamera>();
+            editorCamera.Transform.LocalPosition = new OpenTK.Mathematics.Vector3(0.0f, 1.0f, 2.0f);
+
+            editorCamera.Tag = "Editor";
+
+            //add gui controller
+            ImGuiController = new Entity("Controller");
+            ImGuiController.AddComponent<ImGuiController>();
+
+            ImGuiController.Tag = "Editor";
         }
 
         private static void UpdateMode()
@@ -74,22 +73,16 @@ namespace LeaderEditor
         {
             DebugConsole.Log("Entering Editor Mode");
 
-            EditorCamera.main.Enabled = true;
-            if (Camera.main != null)
-                Camera.main.Enabled = false;
-            RenderingGlobals.RenderingEnabled = true;
-            Application.main.EditorMode = true;
+            EditorCamera.Main.Enabled = true;
+            Application.Main.EditorMode = true;
         }
 
         private static void SetupPlayMode()
         {
             DebugConsole.Log("Entering Play Mode");
 
-            EditorCamera.main.Enabled = false;
-            if (Camera.main != null)
-                Camera.main.Enabled = true;
-            else RenderingGlobals.RenderingEnabled = false;
-            Application.main.EditorMode = false;
+            EditorCamera.Main.Enabled = false;
+            Application.Main.EditorMode = false;
         }
     }
 }

@@ -2,12 +2,13 @@
 
 layout (location = 0) out vec4 fragColor;
 
-uniform int useTexture;
+uniform bool useTexture;
 
+uniform vec4 color;
 uniform vec3 lightDir;
 
 uniform sampler2D texture0;
-uniform sampler2DShadow shadowMap;
+uniform sampler2D shadowMap;
 
 in vec3 VertCol;
 in vec3 Normal;
@@ -16,10 +17,10 @@ in vec4 FragPosLightSpace;
 
 in vec3 FragPos;
 
-vec3 ambient = vec3(0.85, 0.85, 0.85);
-vec3 lightColor = vec3(1.0, 1.0, 0.98);
+uniform vec3 ambient = vec3(0.4);
+uniform vec3 lightColor = vec3(1.0);
 
-float intensity = 1.45;
+uniform float intensity = 1.;
 
 float ShadowCalculation(vec4 fragPosLightSpace)
 {
@@ -28,17 +29,29 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 	if(projCoords.z > 1.0)
         return 1.0;
 
-    return shadow2D(shadowMap, vec3(projCoords.xy, projCoords.z - 0.001), 0.0).r; 
+	vec3 norm = normalize(Normal);
+
+	float shadow = 0.0;
+	vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+	for(int x = -1; x <= 1; ++x)
+	{
+		for(int y = -1; y <= 1; ++y)
+		{
+			float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+			shadow += projCoords.z - 0.0005 > pcfDepth ? 0.0 : 1.0;        
+		}    
+	}
+	shadow /= 9.0;
+
+    return shadow;
 }  
 
 void main() 
 {
-	vec4 objectColor;
+	vec4 objectColor = vec4(VertCol, 1.0) * color;
 
-	if (useTexture == 1)
-		objectColor = texture(texture0, TexCoord) * vec4(VertCol, 1.0);
-	else 
-		objectColor = vec4(VertCol, 1.0);
+	if (useTexture)
+		objectColor *= texture(texture0, TexCoord);
 
 	vec3 norm = normalize(Normal);
 

@@ -2,7 +2,7 @@
 
 namespace LeaderEditor
 {
-    public class WindowComponent : Component
+    public class WindowComponent : EditorComponent
     {
         public bool IsOpen = true;
     }

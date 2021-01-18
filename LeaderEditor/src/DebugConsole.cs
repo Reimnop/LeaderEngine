@@ -29,12 +29,12 @@ namespace LeaderEditor
             { LogType.Error, "[ERROR] " }
         };
 
-        public override void Start()
+        public override void EditorStart()
         {
             if (main == null)
                 main = this;
 
-            ImGuiController.main.OnImGui += OnImGui;
+            ImGuiController.RegisterImGui(OnImGui);
 
             MainMenuBar.RegisterWindow("Console", this);
         }
