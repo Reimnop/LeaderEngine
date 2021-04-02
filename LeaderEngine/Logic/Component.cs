@@ -8,10 +8,10 @@ namespace LeaderEngine
     {
         public Entity BaseEntity { get; internal set; }
 
-        internal Action StartMethod;
-        internal Action UpdateMethod;
-        internal Action LateUpdateMethod;
-        internal Action RemoveMethod;
+        internal readonly Action StartMethod;
+        internal readonly Action UpdateMethod;
+        internal readonly Action LateUpdateMethod;
+        internal readonly Action RemoveMethod;
 
         public Component()
         {
