@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LeaderEngine.Rendering
+﻿namespace LeaderEngine
 {
     public enum DrawType
     {
@@ -12,7 +8,9 @@ namespace LeaderEngine.Rendering
 
     public struct GLDrawData
     {
-
+        public Mesh Mesh;
+        public Shader Shader;
+        public Texture Texture;
     }
 
     public abstract class GLRenderer

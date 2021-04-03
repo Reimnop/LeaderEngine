@@ -7,6 +7,7 @@ namespace LeaderEngine
     public class Component
     {
         public Entity BaseEntity { get; internal set; }
+        public Transform BaseTransform => BaseEntity.Transform;
 
         internal readonly Action StartMethod;
         internal readonly Action UpdateMethod;

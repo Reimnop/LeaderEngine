@@ -1,5 +1,4 @@
-﻿using LeaderEngine.Rendering;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -24,7 +23,7 @@ namespace LeaderEngine
 
         public static GLRenderer Renderer = new DefaultRenderer();
 
-        public static void Init(GameWindowSettings gws, NativeWindowSettings nws)
+        public static void Init(GameWindowSettings gws, NativeWindowSettings nws, Action initCallback = null)
         {
             MainWindow = new GameWindow(gws, nws);
 
@@ -44,7 +43,9 @@ namespace LeaderEngine
             Stopwatch stopwatch = new Stopwatch();
 
             Renderer.Init();
+            Input.Init(MainWindow.KeyboardState, MainWindow.MouseState);
 
+            initCallback?.Invoke();
 
             GLFW.SetErrorCallback(LogGLError);
 
@@ -70,8 +71,8 @@ namespace LeaderEngine
             Time.DeltaTime = t * Time.TimeScale;
             Time.UnscaledDeltaTime = t;
 
-            //updates entire scene hierachy
-            DataManager.CurrentScene.RootEntity.Update();
+            //update scene
+            DataManager.CurrentScene.UpdateSceneHierachy();
         }
 
         private static void RenderFrame(FrameEventArgs obj)
@@ -79,7 +80,7 @@ namespace LeaderEngine
             GL.Viewport(0, 0, MainWindow.ClientSize.X, MainWindow.ClientSize.Y);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
-
+            Renderer.Render();
 
             MainWindow.SwapBuffers();
         }

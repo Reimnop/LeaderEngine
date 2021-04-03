@@ -1,8 +1,8 @@
-﻿using System;
+﻿using OpenTK.Graphics.OpenGL4;
+using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace LeaderEngine.Rendering
+namespace LeaderEngine
 {
     public class DefaultRenderer : GLRenderer
     {
@@ -14,7 +14,7 @@ namespace LeaderEngine.Rendering
 
         public override void Init()
         {
-            throw new NotImplementedException();
+            Logger.Log("Renderer initialized.");
         }
 
         public override void PushDrawData(DrawType drawType, GLDrawData drawData)
@@ -24,8 +24,25 @@ namespace LeaderEngine.Rendering
 
         public override void Render()
         {
+            //call all render funcs
+            DataManager.CurrentScene.SceneEntities.ForEach(en => en.Render());
 
+            //render opaque
+            var opDrawList = drawList[DrawType.Opaque];
 
+            opDrawList.ForEach(drawData =>
+            {
+                Mesh mesh = drawData.Mesh;
+                Shader shader = drawData.Shader;
+
+                if (mesh == null || shader == null)
+                    return;
+
+                mesh.Use();
+                shader.Use();
+
+                GL.DrawElements(PrimitiveType.Triangles, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
+            });
 
             ClearDrawList();
         }
