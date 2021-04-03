@@ -1,4 +1,5 @@
 ﻿using LeaderEngine;
+using OpenTK.Windowing.Desktop;
 
 namespace TestProject
 {
@@ -6,9 +7,9 @@ namespace TestProject
     {
         static void Main(string[] args)
         {
-            Engine.Init(new OpenTK.Windowing.Desktop.GameWindowSettings(), new OpenTK.Windowing.Desktop.NativeWindowSettings()
+            Engine.Init(new GameWindowSettings(), new NativeWindowSettings()
             {
-
+                
             });
         }
     }

@@ -1,6 +1,12 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using LeaderEngine.Rendering;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using System;
+using System.Diagnostics;
+
+using ErrorCode = OpenTK.Windowing.GraphicsLibraryFramework.ErrorCode;
 
 namespace LeaderEngine
 {
@@ -16,16 +22,43 @@ namespace LeaderEngine
     {
         public static GameWindow MainWindow { get; private set; }
 
+        public static GLRenderer Renderer = new DefaultRenderer();
+
         public static void Init(GameWindowSettings gws, NativeWindowSettings nws)
         {
             MainWindow = new GameWindow(gws, nws);
+
+            //log basic info
+            Logger.Log("Base Directory: " + AppContext.BaseDirectory);
+            Logger.Log("Renderer: " + GL.GetString(StringName.Renderer));
+            Logger.Log("Vendor: " + GL.GetString(StringName.Vendor));
+            Logger.Log("Version: " + GL.GetString(StringName.Version));
+            Logger.Log("Shading Language version: " + GL.GetString(StringName.ShadingLanguageVersion));
 
             //subscribe to window events
             MainWindow.UpdateFrame += UpdateFrame;
             MainWindow.RenderFrame += RenderFrame;
 
+            //intialize engine
+            Logger.Log("Initializing LeaderEngine...");
+            Stopwatch stopwatch = new Stopwatch();
+
+            Renderer.Init();
+
+
+            GLFW.SetErrorCallback(LogGLError);
+
+            stopwatch.Stop();
+            //print init complete msg
+            Logger.Log($"LeaderEngine initialized. ({stopwatch.ElapsedMilliseconds}ms)");
+
             //open window
             MainWindow.Run();
+        }
+
+        private static void LogGLError(ErrorCode errorCode, string description)
+        {
+            Logger.LogError("OpenGL: " + errorCode.ToString() + ": " + description);
         }
 
         private static void UpdateFrame(FrameEventArgs obj)
