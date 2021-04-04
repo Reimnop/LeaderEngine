@@ -15,7 +15,13 @@ namespace LeaderEngine
             set
             {
                 internalRotation = value;
-                Quaternion.ToEulerAngles(value, out internalEulerAngles);
+                Quaternion.ToEulerAngles(value, out Vector3 euler);
+
+                //convert to degrees
+                internalEulerAngles = new Vector3(
+                    MathHelper.RadiansToDegrees(euler.X),
+                    MathHelper.RadiansToDegrees(euler.Y),
+                    MathHelper.RadiansToDegrees(euler.Z));
             }
         }
         public Vector3 EulerAngles
@@ -24,7 +30,14 @@ namespace LeaderEngine
             set
             {
                 internalEulerAngles = value;
-                Quaternion.FromEulerAngles(value, out internalRotation);
+
+                //convert to radians
+                Vector3 radEuler = new Vector3(
+                    MathHelper.DegreesToRadians(value.X),
+                    MathHelper.DegreesToRadians(value.Y),
+                    MathHelper.DegreesToRadians(value.Z));
+
+                Quaternion.FromEulerAngles(radEuler, out internalRotation);
             }
         }
 

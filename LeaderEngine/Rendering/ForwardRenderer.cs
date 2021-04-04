@@ -25,15 +25,23 @@ namespace LeaderEngine
 
         public override void Render()
         {
-            //set proper matrices
+            if (Camera.Main == null)
+                return;
+
+            //set matrices
             DataManager.CurrentScene.SceneEntities.ForEach(en => en.Transform.CalculateModelMatrixRecursively());
 
-            WorldProjection = Matrix4.CreateOrthographic(20.0f * Engine.MainWindow.ClientSize.X / Engine.MainWindow.ClientSize.Y, 20.0f, -1.0f, 1.0f);
+            Camera.Main.CalculateViewProjection(out Matrix4 view, out Matrix4 projection);
+
+            WorldView = view;
+            WorldProjection = projection;
 
             //call all render funcs
             DataManager.CurrentScene.SceneEntities.ForEach(en => en.Render());
 
             //render opaque
+            GL.Enable(EnableCap.DepthTest);
+
             var opDrawList = drawLists[DrawType.Opaque];
 
             opDrawList.ForEach(drawData =>
