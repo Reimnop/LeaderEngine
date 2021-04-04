@@ -46,7 +46,7 @@ namespace TestProject
             camera.AddComponent<CameraMove>();
             camera.AddComponent<Camera>();
 
-            for (int i = 0; i < 16; i++)
+            for (int i = 0; i < 4000; i++)
             {
                 Entity entity = new Entity("bruh");
                 entity.Transform.Position.X = i / 2.0f;
