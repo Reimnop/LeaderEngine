@@ -26,15 +26,14 @@ namespace TestProject
             Texture tex = Texture.FromFile("tex.png");
 
             Material material = new Material(shader);
-            material.SetTexture2D(OpenTK.Graphics.OpenGL4.TextureUnit.Texture0, tex);
 
             Mesh mesh = new Mesh();
             mesh.LoadMesh(new Vertex[]
             {
-                new Vertex { Position = new Vector3(1.0f, 1.0f, 0.0f), Color = new Vector3(1.0f, 0.0f, 0.0f) },
-                new Vertex { Position = new Vector3(1.0f, -1.0f, 0.0f), Color = new Vector3(0.0f, 1.0f, 0.0f) },
-                new Vertex { Position = new Vector3(-1.0f, -1.0f, 0.0f), Color = new Vector3(0.0f, 0.0f, 1.0f) },
-                new Vertex { Position = new Vector3(-1.0f, 1.0f, 0.0f), Color = new Vector3(1.0f, 1.0f, 0.0f) },
+                new Vertex { Position = new Vector3(1.0f, 1.0f, 0.0f), Color = new Vector3(1.0f, 0.0f, 0.0f), UV = new Vector2(1.0f, 0.0f) },
+                new Vertex { Position = new Vector3(1.0f, -1.0f, 0.0f), Color = new Vector3(0.0f, 1.0f, 0.0f), UV = new Vector2(1.0f, 1.0f) },
+                new Vertex { Position = new Vector3(-1.0f, -1.0f, 0.0f), Color = new Vector3(0.0f, 0.0f, 1.0f), UV = new Vector2(0.0f, 1.0f) },
+                new Vertex { Position = new Vector3(-1.0f, 1.0f, 0.0f), Color = new Vector3(1.0f, 1.0f, 0.0f), UV = new Vector2(0.0f, 0.0f) },
             }, 
             new uint[] 
             {
@@ -55,7 +54,10 @@ namespace TestProject
 
                 var mr = entity.AddComponent<MeshRenderer>();
 
-                mr.Material = material.Clone();
+                Material mat = material.Clone();
+                mat.SetTexture2D(OpenTK.Graphics.OpenGL4.TextureUnit.Texture0, tex);
+
+                mr.Material = mat;
                 mr.Mesh = mesh;
             }
         }
