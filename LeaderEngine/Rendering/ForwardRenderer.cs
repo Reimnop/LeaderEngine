@@ -28,7 +28,7 @@ namespace LeaderEngine
             //set proper matrices
             DataManager.CurrentScene.SceneEntities.ForEach(en => en.Transform.CalculateModelMatrixRecursively());
 
-            WorldProjection = Matrix4.CreateOrthographic(20.0f, 20.0f, -1.0f, 1.0f);
+            WorldProjection = Matrix4.CreateOrthographic(20.0f * Engine.MainWindow.ClientSize.X / Engine.MainWindow.ClientSize.Y, 20.0f, -1.0f, 1.0f);
 
             //call all render funcs
             DataManager.CurrentScene.SceneEntities.ForEach(en => en.Render());

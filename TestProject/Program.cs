@@ -39,10 +39,19 @@ namespace TestProject
             });
 
             Entity entity = new Entity("bruh");
+            entity.AddComponent<Move>();
             var mr = entity.AddComponent<MeshRenderer>();
 
             mr.Material = material;
             mr.Mesh = mesh;
+        }
+    }
+
+    public class Move : Component
+    {
+        void Update()
+        {
+            BaseTransform.Position += new Vector3(Input.GetAxis(Axis.Horizontal), Input.GetAxis(Axis.Vertical), 0.0f) * Time.DeltaTime * 8.0f;
         }
     }
 }

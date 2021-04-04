@@ -31,6 +31,11 @@ namespace LeaderEngine
         private Quaternion internalRotation = Quaternion.Identity;
         private Vector3 internalEulerAngles = Vector3.Zero;
 
+        //direction vectors
+        public Vector3 Forward => Vector3.Transform(-Vector3.UnitZ, Quaternion.Conjugate(internalRotation));
+        public Vector3 Right => Vector3.Transform(Vector3.UnitX, Quaternion.Conjugate(internalRotation));
+        public Vector3 Up => Vector3.Transform(Vector3.UnitY, Quaternion.Conjugate(internalRotation));
+
         internal Matrix4 ModelMatrix = Matrix4.Identity;
 
         private Entity baseEntity;
