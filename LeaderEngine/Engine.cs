@@ -21,7 +21,7 @@ namespace LeaderEngine
     {
         public static GameWindow MainWindow { get; private set; }
 
-        public static GLRenderer Renderer = new DefaultRenderer();
+        public static GLRenderer Renderer = new ForwardRenderer();
 
         public static void Init(GameWindowSettings gws, NativeWindowSettings nws, Action initCallback = null)
         {

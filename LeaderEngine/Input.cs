@@ -19,7 +19,7 @@ namespace LeaderEngine
             keyState = ks;
             mouseState = ms;
 
-            Logger.Log("Input intialized.");
+            Logger.Log("Input initialized.");
         }
 
         public static Vector2 GetMouseDelta()

@@ -1,9 +1,11 @@
-﻿namespace LeaderEngine
+﻿using OpenTK.Mathematics;
+
+namespace LeaderEngine
 {
     public class MeshRenderer : Renderer
     {
         public Mesh Mesh;
-        public Shader Shader;
+        public Material Material;
 
         private void Start()
         {
@@ -17,11 +19,17 @@
 
         public override void Render()
         {
+            GLRenderer renderer = Engine.Renderer;
+
+            Material.SetMatrix4("mvp", 
+                BaseTransform.ModelMatrix 
+                * renderer.WorldView 
+                * renderer.WorldProjection);
+
             Engine.Renderer.PushDrawData(DrawType.Opaque, new GLDrawData
             {
                 Mesh = Mesh,
-                Shader = Shader,
-                Texture = null
+                Material = Material
             });
         }
     }

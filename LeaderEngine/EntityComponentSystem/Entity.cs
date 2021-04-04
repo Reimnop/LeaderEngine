@@ -63,9 +63,9 @@ namespace LeaderEngine
             component.BaseEntity = this;
             component.StartMethod?.Invoke();
         }
-        public Component AddComponent<T>(params object[] args) where T : Component
+        public T AddComponent<T>(params object[] args) where T : Component
         {
-            Component comp = (T)Activator.CreateInstance(typeof(T), args);
+            T comp = (T)Activator.CreateInstance(typeof(T), args);
             AddComponent(comp);
             return comp;
         }

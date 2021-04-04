@@ -1,15 +1,16 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using System;
+using OpenTK.Mathematics;
 using System.Collections.Generic;
 
 namespace LeaderEngine
 {
-    public class DefaultRenderer : GLRenderer
+    public class ForwardRenderer : GLRenderer
     {
-        private Dictionary<DrawType, List<GLDrawData>> drawList = new Dictionary<DrawType, List<GLDrawData>>()
+        private Dictionary<DrawType, List<GLDrawData>> drawLists = new Dictionary<DrawType, List<GLDrawData>>()
         {
             { DrawType.Opaque, new List<GLDrawData>() },
-            { DrawType.Transparent, new List<GLDrawData>() }
+            { DrawType.Transparent, new List<GLDrawData>() },
+            { DrawType.GUI, new List<GLDrawData>() }
         };
 
         public override void Init()
@@ -19,27 +20,32 @@ namespace LeaderEngine
 
         public override void PushDrawData(DrawType drawType, GLDrawData drawData)
         {
-            drawList[drawType].Add(drawData);
+            drawLists[drawType].Add(drawData);
         }
 
         public override void Render()
         {
+            //set proper matrices
+            DataManager.CurrentScene.SceneEntities.ForEach(en => en.Transform.CalculateModelMatrixRecursively());
+
+            WorldProjection = Matrix4.CreateOrthographic(20.0f, 20.0f, -1.0f, 1.0f);
+
             //call all render funcs
             DataManager.CurrentScene.SceneEntities.ForEach(en => en.Render());
 
             //render opaque
-            var opDrawList = drawList[DrawType.Opaque];
+            var opDrawList = drawLists[DrawType.Opaque];
 
             opDrawList.ForEach(drawData =>
             {
                 Mesh mesh = drawData.Mesh;
-                Shader shader = drawData.Shader;
+                Material mat = drawData.Material;
 
-                if (mesh == null || shader == null)
+                if (mesh == null || mat == null)
                     return;
 
                 mesh.Use();
-                shader.Use();
+                mat.Use();
 
                 GL.DrawElements(PrimitiveType.Triangles, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
             });
@@ -49,7 +55,7 @@ namespace LeaderEngine
 
         private void ClearDrawList()
         {
-            foreach (var kvp in drawList)
+            foreach (var kvp in drawLists)
                 kvp.Value.Clear();
         }
     }

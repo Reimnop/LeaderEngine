@@ -22,6 +22,8 @@ namespace TestProject
                 Path.Combine(AppContext.BaseDirectory, "shader.vert"),
                 Path.Combine(AppContext.BaseDirectory, "shader.frag"));
 
+            Material material = new Material(shader);
+
             Mesh mesh = new Mesh();
             mesh.LoadMesh(new Vertex[]
             {
@@ -36,12 +38,11 @@ namespace TestProject
                 1, 2, 3
             });
 
-            MeshRenderer meshRenderer = new MeshRenderer();
-            meshRenderer.Shader = shader;
-            meshRenderer.Mesh = mesh;
-
             Entity entity = new Entity("bruh");
-            entity.AddComponent(meshRenderer);
+            var mr = entity.AddComponent<MeshRenderer>();
+
+            mr.Material = material;
+            mr.Mesh = mesh;
         }
     }
 }
