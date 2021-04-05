@@ -42,10 +42,10 @@ namespace LeaderEngine
             Logger.Log("Initializing LeaderEngine...");
             Stopwatch stopwatch = new Stopwatch();
 
+            initCallback?.Invoke();
+
             Renderer.Init();
             Input.Init(MainWindow.KeyboardState, MainWindow.MouseState);
-
-            initCallback?.Invoke();
 
             GLFW.SetErrorCallback(LogGLError);
 
@@ -73,6 +73,9 @@ namespace LeaderEngine
 
             //update scene
             DataManager.CurrentScene.UpdateSceneHierachy();
+
+            //update renderer
+            Renderer.Update();
         }
 
         private static void RenderFrame(FrameEventArgs obj)

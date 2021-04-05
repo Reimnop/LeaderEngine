@@ -1,10 +1,11 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System.Collections.Generic;
+using LeaderEngine;
 
-namespace LeaderEngine
+namespace LeaderEditor
 {
-    public class ForwardRenderer : GLRenderer
+    public class EditorRenderer : GLRenderer
     {
         private Dictionary<DrawType, List<GLDrawData>> drawLists = new Dictionary<DrawType, List<GLDrawData>>()
         {
@@ -13,9 +14,19 @@ namespace LeaderEngine
             { DrawType.GUI, new List<GLDrawData>() }
         };
 
+        public static ImGuiController ImGuiController { get; } = new ImGuiController();
+
         public override void Init()
         {
+            ImGuiController.Init();
+            ImGuiController.RegisterImGui(imgui);
+
             Logger.Log("Renderer initialized.");
+        }
+
+        private void imgui()
+        {
+            ImGuiNET.ImGui.ShowDemoWindow();
         }
 
         public override void PushDrawData(DrawType drawType, GLDrawData drawData)
@@ -25,7 +36,7 @@ namespace LeaderEngine
 
         public override void Update()
         {
-            
+            ImGuiController.Update(Time.DeltaTime);
         }
 
         public override void Render()
@@ -64,6 +75,8 @@ namespace LeaderEngine
             });
 
             ClearDrawList();
+            
+            ImGuiController.RenderImGui();
         }
 
         private void ClearDrawList()

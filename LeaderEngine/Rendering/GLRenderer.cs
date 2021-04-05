@@ -23,6 +23,7 @@ namespace LeaderEngine
 
         public abstract void Init();
         public abstract void PushDrawData(DrawType drawType, GLDrawData drawData);
+        public abstract void Update();
         public abstract void Render();
     }
 }
