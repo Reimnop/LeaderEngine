@@ -28,6 +28,9 @@ namespace LeaderEngine
             //set matrices
             DataManager.CurrentScene.SceneEntities.ForEach(en => en.Transform.CalculateModelMatrixRecursively());
 
+            if (Camera.Main == null)
+                return;
+
             Camera.Main.CalculateViewProjection(out Matrix4 view, out Matrix4 projection);
 
             WorldView = view;

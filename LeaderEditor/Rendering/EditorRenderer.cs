@@ -19,7 +19,7 @@ namespace LeaderEditor
         public override void Update()
         {
             base.Update();
-
+            
             ImGuiController.Update(Time.DeltaTime);
         }
 

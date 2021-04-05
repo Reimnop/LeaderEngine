@@ -5,14 +5,12 @@ VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeaderEngine", "LeaderEngine\LeaderEngine.csproj", "{B13C7E5B-3D1C-4DC0-BE09-7E604267581A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestProject", "TestProject\TestProject.csproj", "{CCE81667-4655-41D5-B808-5939959E8800}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8FA199A3-7035-49BC-B786-D7C2B9A91142}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeaderEditor", "LeaderEditor\LeaderEditor.csproj", "{CBA9E378-F00D-4298-80EB-B6CCABBA8991}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeaderEditor", "LeaderEditor\LeaderEditor.csproj", "{CBA9E378-F00D-4298-80EB-B6CCABBA8991}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,10 +22,6 @@ Global
 		{B13C7E5B-3D1C-4DC0-BE09-7E604267581A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B13C7E5B-3D1C-4DC0-BE09-7E604267581A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B13C7E5B-3D1C-4DC0-BE09-7E604267581A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CCE81667-4655-41D5-B808-5939959E8800}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CCE81667-4655-41D5-B808-5939959E8800}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CCE81667-4655-41D5-B808-5939959E8800}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CCE81667-4655-41D5-B808-5939959E8800}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CBA9E378-F00D-4298-80EB-B6CCABBA8991}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CBA9E378-F00D-4298-80EB-B6CCABBA8991}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBA9E378-F00D-4298-80EB-B6CCABBA8991}.Release|Any CPU.ActiveCfg = Release|Any CPU
