@@ -41,12 +41,6 @@ namespace LeaderEditor
 
         public int VAO, VBO, EBO;
 
-        public ImMesh(string name, float[] vertices, uint[] indices, VertexAttrib[] attribs, BufferUsageHint bufferUsageHint = BufferUsageHint.StaticDraw)
-        {
-            Name = name;
-            Init(attribs, vertices, indices, bufferUsageHint);
-        }
-
         public ImMesh(string name, IntPtr vertices, IntPtr indices, int vertexSize, int indexSize, VertexAttrib[] attribs, BufferUsageHint bufferUsageHint = BufferUsageHint.StaticDraw)
         {
             Name = name;
@@ -89,66 +83,6 @@ namespace LeaderEditor
             GL.BindVertexArray(0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-        }
-
-        private void Init(VertexAttrib[] attribs, float[] vertices, uint[] indices, BufferUsageHint bufferUsageHint = BufferUsageHint.StaticDraw)
-        {
-            int vertexSize = vertices.Length * sizeof(float);
-            int indexSize = indices.Length * sizeof(uint);
-
-            oldVertexSize = vertexSize;
-            oldIndexSize = indexSize;
-
-            VAO = GL.GenVertexArray();
-            VBO = GL.GenBuffer();
-            EBO = GL.GenBuffer();
-
-            GL.BindVertexArray(VAO);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertexSize, vertices, bufferUsageHint);
-
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, indexSize, indices, bufferUsageHint);
-
-            int size = 0;
-            foreach (VertexAttrib attrib in attribs)
-                size += attrib.Size * attrib.SizeOfType;
-
-            int c = 0;
-            for (int i = 0; i < attribs.Length; i++)
-            {
-                GL.VertexAttribPointer(attribs[i].Location, attribs[i].Size, attribs[i].PointerType, attribs[i].Normalized, size, c);
-                GL.EnableVertexAttribArray(attribs[i].Location);
-                c += attribs[i].Size * attribs[i].SizeOfType;
-            }
-
-            GL.ObjectLabel(ObjectLabelIdentifier.VertexArray, VAO, Name.Length, Name);
-            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, VBO, Name.Length, Name);
-            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, EBO, Name.Length, Name);
-
-            GL.BindVertexArray(0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-        }
-
-        public void UpdateMeshData(float[] vertices, uint[] indices)
-        {
-            int vertexSize = vertices.Length * sizeof(float);
-            int indexSize = indices.Length * sizeof(uint);
-
-            if (vertexSize > oldVertexSize)
-                GL.NamedBufferData(VBO, vertexSize, vertices, BufferUsageHint.DynamicDraw);
-            else
-                GL.NamedBufferSubData(VBO, IntPtr.Zero, vertexSize, vertices);
-
-            if (indexSize > oldIndexSize)
-                GL.NamedBufferData(EBO, indexSize, indices, BufferUsageHint.DynamicDraw);
-            else
-                GL.NamedBufferSubData(EBO, IntPtr.Zero, indexSize, indices);
-
-            oldVertexSize = vertexSize;
-            oldIndexSize = indexSize;
         }
 
         public void UpdateMeshData(IntPtr vertices, IntPtr indices, int vertexSize, int indexSize)
