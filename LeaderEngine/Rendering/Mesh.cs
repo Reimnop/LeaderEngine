@@ -84,6 +84,10 @@ namespace LeaderEngine
             GL.ObjectLabel(ObjectLabelIdentifier.VertexArray, VAO, Name.Length, Name);
             GL.ObjectLabel(ObjectLabelIdentifier.Buffer, VBO, Name.Length, Name);
             GL.ObjectLabel(ObjectLabelIdentifier.Buffer, EBO, Name.Length, Name);
+
+            GL.BindVertexArray(0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
         }
 
         public void Use()

@@ -25,14 +25,6 @@ namespace LeaderEngine
 
         public override void Update()
         {
-            
-        }
-
-        public override void Render()
-        {
-            if (Camera.Main == null)
-                return;
-
             //set matrices
             DataManager.CurrentScene.SceneEntities.ForEach(en => en.Transform.CalculateModelMatrixRecursively());
 
@@ -40,6 +32,12 @@ namespace LeaderEngine
 
             WorldView = view;
             WorldProjection = projection;
+        }
+
+        public override void Render()
+        {
+            if (Camera.Main == null)
+                return;
 
             //call all render funcs
             DataManager.CurrentScene.SceneEntities.ForEach(en => en.Render());

@@ -123,9 +123,7 @@ void main()
     fragColor = texture(in_fontTexture, texCoord) * color;
 }";
 
-            shader = new Shader(VertexSource, FragmentSource);
-
-            Util.CheckGLError("End of ImGui setup");
+            shader = new Shader("ImGui Shader", VertexSource, FragmentSource);
         }
 
         /// <summary>
@@ -136,7 +134,7 @@ void main()
             ImGuiIOPtr io = ImGui.GetIO();
             io.Fonts.GetTexDataAsRGBA32(out IntPtr pixels, out int width, out int height, out _);
 
-            fontTexture = Texture.FromIntPtr(width, height, pixels,
+            fontTexture = Texture.FromIntPtr("ImGui Font Texture", width, height, pixels,
                 PixelInternalFormat.Rgba,
                 PixelFormat.Rgba,
                 PixelType.UnsignedByte);

@@ -19,15 +19,15 @@ namespace TestProject
 
         static void Init()
         {
-            Shader shader = Shader.FromSourceFile(
+            Shader shader = Shader.FromSourceFile("shader",
                 Path.Combine(AppContext.BaseDirectory, "shader.vert"),
                 Path.Combine(AppContext.BaseDirectory, "shader.frag"));
 
-            Texture tex = Texture.FromFile("tex.png");
+            Texture tex = Texture.FromFile("texture", "tex.png");
 
             Material material = new Material(shader);
 
-            Mesh mesh = new Mesh();
+            Mesh mesh = new Mesh("shit");
             mesh.LoadMesh(new Vertex[]
             {
                 new Vertex { Position = new Vector3(1.0f, 1.0f, 0.0f), Color = new Vector3(1.0f, 0.0f, 0.0f), UV = new Vector2(1.0f, 0.0f) },

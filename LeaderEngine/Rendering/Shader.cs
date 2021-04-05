@@ -12,7 +12,9 @@ namespace LeaderEngine
 
         private readonly Dictionary<string, int> uniformLocations;
 
-        public Shader(string vertSource, string fragSource)
+        public readonly string Name;
+
+        public Shader(string name, string vertSource, string fragSource)
         {
             var vertexShader = GL.CreateShader(ShaderType.VertexShader);
             GL.ShaderSource(vertexShader, vertSource);
@@ -45,11 +47,13 @@ namespace LeaderEngine
 
                 uniformLocations.Add(key, location);
             }
+
+            GL.ObjectLabel(ObjectLabelIdentifier.Shader, handle, name.Length, name);
         }
 
-        public static Shader FromSourceFile(string vertPath, string fragPath)
+        public static Shader FromSourceFile(string name, string vertPath, string fragPath)
         {
-            return new Shader(File.ReadAllText(vertPath), File.ReadAllText(fragPath));
+            return new Shader(name, File.ReadAllText(vertPath), File.ReadAllText(fragPath));
         }
 
         private static void CompileShader(int shader)

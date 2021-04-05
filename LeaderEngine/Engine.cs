@@ -44,6 +44,7 @@ namespace LeaderEngine
             //intialize engine
             Logger.Log("Initializing LeaderEngine...");
             Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
             initCallback?.Invoke();
 
@@ -72,21 +73,21 @@ namespace LeaderEngine
             Logger.LogError("GLFW: " + errorCode.ToString() + ": " + description);
         }
 
-        private static void DebugCallback(DebugSource source,
-                                  DebugType type,
-                                  int id,
-                                  DebugSeverity severity,
-                                  int length,
-                                  IntPtr message,
-                                  IntPtr userParam)
+        private static void DebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
         {
             string messageString = Marshal.PtrToStringAnsi(message, length);
 
-            Logger.Log($"OpenGL: {severity} {type} | {messageString}");
-
-            if (type == DebugType.DebugTypeError)
+            switch (severity)
             {
-                throw new Exception(messageString);
+                case DebugSeverity.DebugSeverityMedium:
+                    Logger.LogWarning($"OpenGL: {messageString}");
+                    break;
+                case DebugSeverity.DebugSeverityHigh:
+                    Logger.LogError($"OpenGL: {messageString}");
+                    break;
+                default:
+                    Logger.Log($"OpenGL: {messageString}");
+                    break;
             }
         }
 

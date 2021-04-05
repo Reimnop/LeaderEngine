@@ -13,28 +13,35 @@ namespace LeaderEngine
 
         public Vector2 Size;
 
-        public static Texture FromFile(string path)
+        public readonly string Name;
+
+        internal Texture(string name)
+        {
+            Name = name;
+        }
+
+        public static Texture FromFile(string name, string path)
         {
             Bitmap bitmap = new Bitmap(path);
             BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            Texture tex = FromIntPtr(bitmap.Width, bitmap.Height, data.Scan0);
+            Texture tex = FromIntPtr(name, bitmap.Width, bitmap.Height, data.Scan0);
             bitmap.UnlockBits(data);
             bitmap.Dispose();
             return tex;
         }
 
-        public static Texture FromBitmap(Bitmap bitmap)
+        public static Texture FromBitmap(string name, Bitmap bitmap)
         {
             BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            Texture tex = FromIntPtr(bitmap.Width, bitmap.Height, data.Scan0);
+            Texture tex = FromIntPtr(name, bitmap.Width, bitmap.Height, data.Scan0);
             bitmap.UnlockBits(data);
             bitmap.Dispose();
             return tex;
         }
 
-        public static Texture FromIntPtr(int width, int height, IntPtr data, PixelInternalFormat internalFormat = PixelInternalFormat.SrgbAlpha, PixelFormat format = PixelFormat.Bgra, PixelType pixelType = PixelType.UnsignedByte)
+        public static Texture FromIntPtr(string name, int width, int height, IntPtr data, PixelInternalFormat internalFormat = PixelInternalFormat.SrgbAlpha, PixelFormat format = PixelFormat.Bgra, PixelType pixelType = PixelType.UnsignedByte)
         {
-            Texture texture = new Texture();
+            Texture texture = new Texture(name);
 
             texture.handle = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, texture.handle);
@@ -43,6 +50,9 @@ namespace LeaderEngine
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+
+            GL.ObjectLabel(ObjectLabelIdentifier.Texture, texture.handle, name.Length, name);
+
             GL.BindTexture(TextureTarget.Texture2D, 0);
 
             texture.Size = new Vector2(width, height);
