@@ -1,8 +1,8 @@
-﻿using LeaderEngine;
+﻿using ImGuiNET;
+using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
-using ImGuiNET;
-using System;
 using OpenTK.Mathematics;
+using System;
 
 namespace LeaderEditor
 {
@@ -25,6 +25,7 @@ namespace LeaderEditor
 
             editorCamera = new Entity("EditorCamera");
             editorCamera.AddComponent<Camera>();
+            editorCamera.AddComponent<CameraMove>();
         }
 
         private void ImGuiRenderer()

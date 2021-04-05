@@ -1,10 +1,8 @@
-﻿using System;
-using OpenTK.Windowing.Desktop;
-using LeaderEngine;
-using OpenTK.Windowing.Common;
+﻿using LeaderEngine;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-using System.IO;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
+using System;
 
 namespace LeaderEditor
 {

@@ -1,6 +1,4 @@
-﻿using OpenTK.Mathematics;
-
-namespace LeaderEngine
+﻿namespace LeaderEngine
 {
     public class MeshRenderer : Renderer
     {

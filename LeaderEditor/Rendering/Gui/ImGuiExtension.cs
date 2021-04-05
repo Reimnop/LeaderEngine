@@ -1,6 +1,5 @@
 ﻿using ImGuiNET;
 using OpenTK.Mathematics;
-using System.Collections.Generic;
 
 namespace LeaderEditor
 {
