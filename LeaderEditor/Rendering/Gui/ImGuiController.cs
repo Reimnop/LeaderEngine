@@ -43,7 +43,7 @@ namespace LeaderEditor
             ImGuiFuncs.Remove(action);
         }
 
-        public void Init()
+        internal void Init()
         {
             Main = this;
 
@@ -79,7 +79,7 @@ namespace LeaderEditor
             PressChar((char)obj.Unicode);
         }
 
-        public void CreateDeviceResources()
+        private void CreateDeviceResources()
         {
             mesh = new ImMesh("ImGui", IntPtr.Zero, IntPtr.Zero, 0, 0, new VertexAttrib[] 
             {
@@ -131,7 +131,7 @@ void main()
         /// <summary>
         /// Recreates the device texture used to render text.
         /// </summary>
-        public void RecreateFontDeviceTexture()
+        private void RecreateFontDeviceTexture()
         {
             ImGuiIOPtr io = ImGui.GetIO();
             io.Fonts.GetTexDataAsRGBA32(out IntPtr pixels, out int width, out int height, out _);
@@ -149,7 +149,7 @@ void main()
             io.Fonts.ClearTexData();
         }
 
-        public void RenderImGui()
+        internal void RenderImGui()
         {
             ImGuiFuncs.ForEach(x => x.Invoke());
 
@@ -164,7 +164,7 @@ void main()
         /// <summary>
         /// Updates ImGui input and IO configuration state.
         /// </summary>
-        public void Update(float dt)
+        internal void Update(float dt)
         {
             if (frameBegun)
             {
@@ -178,16 +178,12 @@ void main()
             ImGui.NewFrame();
         }
 
-        /// <summary>
-        /// Sets per-frame data based on the associated window.
-        /// This is called by Update(float).
-        /// </summary>
         private void SetPerFrameImGuiData(float dt)
         {
             ImGuiIOPtr io = ImGui.GetIO();
             io.DisplaySize = new Vector2(windowWidth, windowHeight);
             io.DisplayFramebufferScale = Vector2.One;
-            io.DeltaTime = dt; // DeltaTime is in seconds.
+            io.DeltaTime = dt;
         }
 
         readonly List<char> PressedChars = new List<char>();

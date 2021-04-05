@@ -1,6 +1,8 @@
 ﻿using System;
 using OpenTK.Windowing.Desktop;
 using LeaderEngine;
+using OpenTK.Windowing.Common;
+using OpenTK.Mathematics;
 
 namespace LeaderEditor
 {
@@ -11,7 +13,12 @@ namespace LeaderEditor
             Engine.Init(new GameWindowSettings(), new NativeWindowSettings()
             {
                 APIVersion = new Version(4, 3),
-                Size = new OpenTK.Mathematics.Vector2i(1600, 900)
+                WindowBorder = WindowBorder.Resizable,
+                API = ContextAPI.OpenGL,
+                Flags = ContextFlags.ForwardCompatible,
+                Profile = ContextProfile.Core,
+                NumberOfSamples = 2,
+                Size = new Vector2i(1600, 900)
             }, InitEditor);
         }
 

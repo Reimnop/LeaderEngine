@@ -4,7 +4,7 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Diagnostics;
-
+using System.Runtime.InteropServices;
 using ErrorCode = OpenTK.Windowing.GraphicsLibraryFramework.ErrorCode;
 
 namespace LeaderEngine
@@ -22,6 +22,9 @@ namespace LeaderEngine
         public static GameWindow MainWindow { get; private set; }
 
         public static GLRenderer Renderer = new ForwardRenderer();
+
+        private static DebugProc debugProcCallback = DebugCallback;
+        private static GCHandle debugProcCallbackHandle;
 
         public static void Init(GameWindowSettings gws, NativeWindowSettings nws, Action initCallback = null)
         {
@@ -47,7 +50,14 @@ namespace LeaderEngine
             Renderer.Init();
             Input.Init(MainWindow.KeyboardState, MainWindow.MouseState);
 
-            GLFW.SetErrorCallback(LogGLError);
+            //init debug callbacks
+            GLFW.SetErrorCallback(LogGLFWError);
+
+            debugProcCallbackHandle = GCHandle.Alloc(debugProcCallback);
+
+            GL.DebugMessageCallback(debugProcCallback, IntPtr.Zero);
+            GL.Enable(EnableCap.DebugOutput);
+            GL.Enable(EnableCap.DebugOutputSynchronous);
 
             stopwatch.Stop();
             //print init complete msg
@@ -57,9 +67,27 @@ namespace LeaderEngine
             MainWindow.Run();
         }
 
-        private static void LogGLError(ErrorCode errorCode, string description)
+        private static void LogGLFWError(ErrorCode errorCode, string description)
         {
-            Logger.LogError("OpenGL: " + errorCode.ToString() + ": " + description);
+            Logger.LogError("GLFW: " + errorCode.ToString() + ": " + description);
+        }
+
+        private static void DebugCallback(DebugSource source,
+                                  DebugType type,
+                                  int id,
+                                  DebugSeverity severity,
+                                  int length,
+                                  IntPtr message,
+                                  IntPtr userParam)
+        {
+            string messageString = Marshal.PtrToStringAnsi(message, length);
+
+            Logger.Log($"OpenGL: {severity} {type} | {messageString}");
+
+            if (type == DebugType.DebugTypeError)
+            {
+                throw new Exception(messageString);
+            }
         }
 
         private static void UpdateFrame(FrameEventArgs obj)
