@@ -67,6 +67,7 @@ namespace LeaderEditor
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             base.Render();
+
             Framebuffer.End();
 
             //restore viewport
