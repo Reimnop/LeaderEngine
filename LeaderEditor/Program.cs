@@ -28,7 +28,12 @@ namespace LeaderEditor
         {
             Engine.Renderer = new EditorRenderer();
 
-            Logger.Log("Editor initialized.");
+            Logger.IgnoreInfo = true;
+
+            Entity editorScripts = new Entity("EditorScriptHolder");
+            editorScripts.AddComponent<EditorController>();
+
+            Logger.Log("Editor initialized.", true);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace LeaderEngine
 
         public override void Init()
         {
-            Logger.Log("Renderer initialized.");
+            Logger.Log("Renderer initialized.", true);
         }
 
         public override void PushDrawData(DrawType drawType, GLDrawData drawData)

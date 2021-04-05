@@ -31,18 +31,18 @@ namespace LeaderEngine
             MainWindow = new GameWindow(gws, nws);
 
             //log basic info
-            Logger.Log("Base Directory: " + AppContext.BaseDirectory);
-            Logger.Log("Renderer: " + GL.GetString(StringName.Renderer));
-            Logger.Log("Vendor: " + GL.GetString(StringName.Vendor));
-            Logger.Log("Version: " + GL.GetString(StringName.Version));
-            Logger.Log("Shading Language version: " + GL.GetString(StringName.ShadingLanguageVersion));
+            Logger.Log("Base Directory: " + AppContext.BaseDirectory, true);
+            Logger.Log("Renderer: " + GL.GetString(StringName.Renderer), true);
+            Logger.Log("Vendor: " + GL.GetString(StringName.Vendor), true);
+            Logger.Log("Version: " + GL.GetString(StringName.Version), true);
+            Logger.Log("Shading Language version: " + GL.GetString(StringName.ShadingLanguageVersion), true);
 
             //subscribe to window events
             MainWindow.UpdateFrame += UpdateFrame;
             MainWindow.RenderFrame += RenderFrame;
 
             //intialize engine
-            Logger.Log("Initializing LeaderEngine...");
+            Logger.Log("Initializing LeaderEngine...", true);
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
@@ -62,7 +62,7 @@ namespace LeaderEngine
 
             stopwatch.Stop();
             //print init complete msg
-            Logger.Log($"LeaderEngine initialized. ({stopwatch.ElapsedMilliseconds}ms)");
+            Logger.Log($"LeaderEngine initialized. ({stopwatch.ElapsedMilliseconds}ms)", true);
 
             //open window
             MainWindow.Run();

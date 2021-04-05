@@ -52,8 +52,12 @@ namespace LeaderEngine
 
         private int oldWidth, oldHeight;
 
-        public Framebuffer(int width, int height, Attachment[] attachments)
+        public readonly string Name;
+
+        public Framebuffer(string name, int width, int height, Attachment[] attachments)
         {
+            Name = name;
+
             oldWidth = width;
             oldHeight = height;
 
@@ -99,7 +103,9 @@ namespace LeaderEngine
             var fboStatus = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
 
             if (fboStatus != FramebufferErrorCode.FramebufferComplete)
-                Logger.LogError("FRAMEBUFFER: " + fboStatus);
+                Logger.LogError("FRAMEBUFFER: " + Name + ": " + fboStatus);
+
+            GL.ObjectLabel(ObjectLabelIdentifier.Framebuffer, handle, name.Length, name);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
