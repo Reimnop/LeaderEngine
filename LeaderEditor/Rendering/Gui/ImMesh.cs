@@ -62,6 +62,10 @@ namespace LeaderEditor
             VBO = GL.GenBuffer();
             EBO = GL.GenBuffer();
 
+            GL.ObjectLabel(ObjectLabelIdentifier.VertexArray, VAO, Name.Length, Name);
+            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, VBO, Name.Length, Name);
+            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, EBO, Name.Length, Name);
+
             GL.BindVertexArray(VAO);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
@@ -98,6 +102,10 @@ namespace LeaderEditor
             VAO = GL.GenVertexArray();
             VBO = GL.GenBuffer();
             EBO = GL.GenBuffer();
+
+            GL.ObjectLabel(ObjectLabelIdentifier.VertexArray, VAO, Name.Length, Name);
+            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, VBO, Name.Length, Name);
+            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, EBO, Name.Length, Name);
 
             GL.BindVertexArray(VAO);
 

@@ -42,16 +42,27 @@ namespace LeaderEngine
 
         private int VAO, VBO, EBO;
 
-        public void LoadMesh<T>(T[] vertices, uint[] indices) where T : struct
+        public readonly string Name;
+
+        public Mesh(string name)
         {
-            //update vertices and indices counts
-            VerticesCount = vertices.Length;
-            IndicesCount = indices.Length;
+            Name = name;
 
             //generate buffers
             VAO = GL.GenVertexArray();
             VBO = GL.GenBuffer();
             EBO = GL.GenBuffer();
+
+            GL.ObjectLabel(ObjectLabelIdentifier.VertexArray, VAO, name.Length, name);
+            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, VBO, name.Length, name);
+            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, EBO, name.Length, name);
+        }
+
+        public void LoadMesh<T>(T[] vertices, uint[] indices) where T : struct
+        {
+            //update vertices and indices counts
+            VerticesCount = vertices.Length;
+            IndicesCount = indices.Length;
 
             GL.BindVertexArray(VAO);
 
