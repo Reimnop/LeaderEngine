@@ -52,10 +52,6 @@ namespace LeaderEngine
             VAO = GL.GenVertexArray();
             VBO = GL.GenBuffer();
             EBO = GL.GenBuffer();
-
-            GL.ObjectLabel(ObjectLabelIdentifier.VertexArray, VAO, name.Length, name);
-            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, VBO, name.Length, name);
-            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, EBO, name.Length, name);
         }
 
         public void LoadMesh<T>(T[] vertices, uint[] indices) where T : struct
@@ -84,6 +80,10 @@ namespace LeaderEngine
                 GL.VertexAttribPointer(i, attrib.Size, attrib.PointerType, attrib.Normalized, Unsafe.SizeOf<T>(), Marshal.OffsetOf<T>(fields[i].Name));
                 GL.EnableVertexAttribArray(i);
             }
+
+            GL.ObjectLabel(ObjectLabelIdentifier.VertexArray, VAO, Name.Length, Name);
+            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, VBO, Name.Length, Name);
+            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, EBO, Name.Length, Name);
         }
 
         public void Use()
