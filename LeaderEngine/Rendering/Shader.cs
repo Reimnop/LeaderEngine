@@ -96,7 +96,6 @@ namespace LeaderEngine
         /// <param name="data">The data to set</param>
         public void SetInt(string name, int data)
         {
-            GL.UseProgram(handle);
             if (uniformLocations.TryGetValue(name, out int loc))
                 GL.Uniform1(loc, data);
         }
@@ -108,7 +107,6 @@ namespace LeaderEngine
         /// <param name="data">The data to set</param>
         public void SetFloat(string name, float data)
         {
-            GL.UseProgram(handle);
             if (uniformLocations.TryGetValue(name, out int loc))
                 GL.Uniform1(loc, data);
         }
@@ -125,7 +123,6 @@ namespace LeaderEngine
         /// </remarks>
         public void SetMatrix4(string name, Matrix4 data)
         {
-            GL.UseProgram(handle);
             if (uniformLocations.TryGetValue(name, out int loc))
                 GL.UniformMatrix4(loc, true, ref data);
         }
@@ -137,14 +134,12 @@ namespace LeaderEngine
         /// <param name="data">The data to set</param>
         public void SetVector3(string name, Vector3 data)
         {
-            GL.UseProgram(handle);
             if (uniformLocations.TryGetValue(name, out int loc))
                 GL.Uniform3(loc, data);
         }
 
         public void SetVector4(string name, Vector4 data)
         {
-            GL.UseProgram(handle);
             if (uniformLocations.TryGetValue(name, out int loc))
                 GL.Uniform4(loc, data);
         }
