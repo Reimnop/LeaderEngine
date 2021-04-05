@@ -11,8 +11,6 @@ namespace LeaderEditor
 
         public Framebuffer Framebuffer;
 
-        public Vector2i ViewportSize;
-
         public override void Init()
         {
             Framebuffer = new Framebuffer("ViewportFBO", 1600, 900, new Attachment[]

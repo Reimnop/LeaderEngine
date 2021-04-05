@@ -21,6 +21,8 @@ namespace LeaderEngine
         public Matrix4 WorldView { get; protected set; } = Matrix4.Identity;
         public Matrix4 GUIProjection { get; protected set; } = Matrix4.Identity;
 
+        public Vector2i ViewportSize = new Vector2i(1600, 900);
+
         public abstract void Init();
         public abstract void PushDrawData(DrawType drawType, GLDrawData drawData);
         public abstract void Update();
