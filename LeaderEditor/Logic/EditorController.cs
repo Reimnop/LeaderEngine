@@ -32,6 +32,9 @@ namespace LeaderEditor
 
         private void ImGuiRenderer()
         {
+            //dockspace
+            ImGui.DockSpaceOverViewport();
+
             ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, new System.Numerics.Vector2(160.0f, 90.0f));
             if (ImGui.Begin("Viewport"))
             {

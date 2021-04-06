@@ -20,6 +20,11 @@ namespace LeaderEngine
                 //add to new parent
                 _parent = value;
                 _parent?.Children.Add(this);
+
+                if (value == null)
+                    DataManager.CurrentScene.SceneEntities.Add(this);
+                else
+                    DataManager.CurrentScene.SceneEntities.Remove(this);
             }
         }
 
@@ -46,6 +51,15 @@ namespace LeaderEngine
         internal void Render()
         {
             Renderers.ForEach(x => x.Render());
+        }
+
+        public void Destroy()
+        {
+            _parent?.Children.Remove(this);
+            DataManager.CurrentScene.SceneEntities.Remove(this);
+
+            while (Children.Count > 0)
+                Children[0].Destroy();
         }
 
         #region ComponentGettersSetters

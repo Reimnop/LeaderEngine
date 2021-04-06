@@ -15,11 +15,9 @@ namespace LeaderEngine
 
         internal void UpdateSceneHierachy()
         {
-            SceneEntities.ForEach(x =>
-            {
-                if (x.Parent == null)
-                    x.Update();
-            });
+            for (int i = 0; i < SceneEntities.Count; i++)
+                if (SceneEntities[i].Parent == null)
+                    SceneEntities[i].Update();
         }
     }
 

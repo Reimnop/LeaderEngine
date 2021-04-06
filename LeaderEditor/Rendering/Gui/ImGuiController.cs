@@ -13,10 +13,6 @@ using Vector2 = System.Numerics.Vector2;
 
 namespace LeaderEditor
 {
-    /// <summary>
-    /// A modified version of Veldrid.ImGui's ImGuiRenderer.
-    /// Manages input for ImGui and handles rendering ImGui's DrawLists with Veldrid.
-    /// </summary>
     public class ImGuiController
     {
         public static ImGuiController Main;
@@ -81,7 +77,7 @@ namespace LeaderEditor
 
         private void CreateDeviceResources()
         {
-            mesh = new ImMesh("ImGui", IntPtr.Zero, IntPtr.Zero, 0, 0, new VertexAttrib[] 
+            mesh = new ImMesh("ImGui Mesh", IntPtr.Zero, IntPtr.Zero, 0, 0, new VertexAttrib[] 
             {
                 new VertexAttrib(0, 2),
                 new VertexAttrib(1, 2),
