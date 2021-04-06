@@ -1,7 +1,7 @@
-﻿using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Runtime.InteropServices;
 
@@ -101,8 +101,6 @@ namespace LeaderEngine
         public void Dispose()
         {
             GL.DeleteTexture(handle);
-
-            GC.SuppressFinalize(this);
         }
     }
 }

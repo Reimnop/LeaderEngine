@@ -152,8 +152,6 @@ namespace LeaderEngine
         public void Dispose()
         {
             GL.DeleteShader(handle);
-
-            GC.SuppressFinalize(this);
         }
     }
 }

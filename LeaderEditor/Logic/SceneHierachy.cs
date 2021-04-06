@@ -2,7 +2,6 @@
 using LeaderEngine;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace LeaderEditor
 {

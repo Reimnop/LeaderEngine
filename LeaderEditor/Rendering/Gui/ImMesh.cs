@@ -111,8 +111,6 @@ namespace LeaderEditor
             GL.DeleteVertexArray(VAO);
             GL.DeleteBuffer(VBO);
             GL.DeleteBuffer(EBO);
-
-            GC.SuppressFinalize(this);
         }
     }
 }
