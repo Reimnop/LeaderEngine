@@ -30,7 +30,7 @@ namespace LeaderEditor
 
         private void ImGuiRenderer()
         {
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, new System.Numerics.Vector2(240.0f, 160.0f));
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, new System.Numerics.Vector2(160.0f, 90.0f));
             if (ImGui.Begin("Viewport"))
             {
                 var vSize = ImGui.GetContentRegionAvail();
