@@ -1,9 +1,9 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using PixelFormat = OpenTK.Graphics.OpenGL4.PixelFormat;
+using System.Runtime.InteropServices;
 
 namespace LeaderEngine
 {
@@ -22,24 +22,23 @@ namespace LeaderEngine
 
         public static Texture FromFile(string name, string path)
         {
-            Bitmap bitmap = new Bitmap(path);
-            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            Texture tex = FromIntPtr(name, bitmap.Width, bitmap.Height, data.Scan0);
-            bitmap.UnlockBits(data);
-            bitmap.Dispose();
-            return tex;
+            return FromImage(name, (Image<Rgba32>)Image.Load(path));
         }
 
-        public static Texture FromBitmap(string name, Bitmap bitmap)
+        public static Texture FromImage(string name, Image<Rgba32> image)
         {
-            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            Texture tex = FromIntPtr(name, bitmap.Width, bitmap.Height, data.Scan0);
-            bitmap.UnlockBits(data);
-            bitmap.Dispose();
+            Span<Rgba32> pixelSpan;
+            if (!image.TryGetSinglePixelSpan(out pixelSpan))
+                return null;
+
+            GCHandle handle = GCHandle.Alloc(pixelSpan.ToArray(), GCHandleType.Pinned);
+            Texture tex = FromPointer(name, image.Width, image.Height, handle.AddrOfPinnedObject());
+            handle.Free();
+
             return tex;
         }
 
-        public static Texture FromIntPtr(string name, int width, int height, IntPtr data, PixelInternalFormat internalFormat = PixelInternalFormat.SrgbAlpha, PixelFormat format = PixelFormat.Bgra, PixelType pixelType = PixelType.UnsignedByte)
+        public static Texture FromPointer(string name, int width, int height, IntPtr data, PixelInternalFormat internalFormat = PixelInternalFormat.SrgbAlpha, PixelFormat format = PixelFormat.Rgba, PixelType pixelType = PixelType.UnsignedByte)
         {
             Texture texture = new Texture(name);
 
