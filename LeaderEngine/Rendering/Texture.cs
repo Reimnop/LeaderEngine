@@ -22,7 +22,7 @@ namespace LeaderEngine
 
         public static Texture FromFile(string name, string path)
         {
-            return FromImage(name, (Image<Rgba32>)Image.Load(path));
+            return FromImage(name, Image.Load<Rgba32>(path));
         }
 
         public static Texture FromImage(string name, Image<Rgba32> image)
