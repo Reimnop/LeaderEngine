@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
-using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 namespace LeaderEngine
 {
@@ -25,15 +25,13 @@ namespace LeaderEngine
             return FromImage(name, Image.Load<Rgba32>(path));
         }
 
-        public static Texture FromImage(string name, Image<Rgba32> image)
+        public unsafe static Texture FromImage(string name, Image<Rgba32> image)
         {
             Span<Rgba32> pixelSpan;
             if (!image.TryGetSinglePixelSpan(out pixelSpan))
-                return null;
+                throw new NotImplementedException();
 
-            GCHandle handle = GCHandle.Alloc(pixelSpan.ToArray(), GCHandleType.Pinned);
-            Texture tex = FromPointer(name, image.Width, image.Height, handle.AddrOfPinnedObject());
-            handle.Free();
+            Texture tex = FromPointer(name, image.Width, image.Height, (IntPtr)Unsafe.AsPointer(ref pixelSpan[0]));
 
             return tex;
         }
