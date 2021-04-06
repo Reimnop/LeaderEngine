@@ -23,6 +23,8 @@ namespace LeaderEditor
             //init editor gui
             ImGuiController.RegisterImGui(ImGuiRenderer);
 
+            BaseEntity.AddComponent<SceneHierachy>();
+
             editorCamera = new Entity("EditorCamera");
             editorCamera.AddComponent<Camera>();
             editorCamera.AddComponent<CameraMove>();
