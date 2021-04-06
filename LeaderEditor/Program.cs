@@ -28,7 +28,7 @@ namespace LeaderEditor
 
             Logger.IgnoreInfo = true;
 
-            Entity editorScripts = new Entity("EditorScriptHolder");
+            Entity editorScripts = new Entity("EditorEntity");
             editorScripts.AddComponent<EditorController>();
 
             Logger.Log("Editor initialized.", true);
