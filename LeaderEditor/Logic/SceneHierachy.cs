@@ -9,7 +9,7 @@ namespace LeaderEditor
     {
         public static Entity SelectedEntity = null;
 
-        private static List<Entity> currentSceneEntities => DataManager.CurrentScene.SceneEntities;
+        private static List<Entity> currentSceneEntities => DataManager.CurrentScene.SceneRootEntities;
 
         private void Start()
         {
@@ -75,12 +75,16 @@ namespace LeaderEditor
 
             if (SelectedEntity == en)
                 nodeFlags |= ImGuiTreeNodeFlags.Selected;
-             
+
+            if (!en.Active)
+                ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(0.4f, 0.4f, 0.4f, 1.0f));
+            
             bool nodeOpen = ImGui.TreeNodeEx(en.Name, nodeFlags);
 
             if (ImGui.IsItemClicked())
                 SelectedEntity = en;
 
+            //new entity delete menu
             if (ImGui.BeginPopupContextItem("Entity Popup"))
             {
                 if (ImGui.MenuItem("New Entity"))
@@ -102,6 +106,9 @@ namespace LeaderEditor
 
                 ImGui.TreePop();
             }
+
+            if (!en.Active)
+                ImGui.PopStyleColor();
 
             ImGui.PopID();
         }

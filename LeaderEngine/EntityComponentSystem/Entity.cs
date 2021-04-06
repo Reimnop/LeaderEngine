@@ -22,11 +22,13 @@ namespace LeaderEngine
                 _parent?.Children.Add(this);
 
                 if (value == null)
-                    DataManager.CurrentScene.SceneEntities.Add(this);
+                    DataManager.CurrentScene.SceneRootEntities.Add(this);
                 else
-                    DataManager.CurrentScene.SceneEntities.Remove(this);
+                    DataManager.CurrentScene.SceneRootEntities.Remove(this);
             }
         }
+
+        public bool Active = true;
 
         internal List<Entity> Children { get; } = new List<Entity>();
         private List<Component> components { get; } = new List<Component>();
@@ -38,25 +40,33 @@ namespace LeaderEngine
             Name = name;
             Transform = new Transform(this);
 
-            DataManager.CurrentScene.SceneEntities.Add(this);
+            DataManager.CurrentScene.SceneRootEntities.Add(this);
         }
 
-        internal void Update()
+        internal void RecursivelyUpdate()
         {
-            components.ForEach(x => x.UpdateMethod?.Invoke());
+            if (!Active)
+                return;
 
-            Children.ForEach(child => child.Update());
+            components.ForEach(x => { if (x.Enabled) x.UpdateMethod?.Invoke(); });
+
+            Children.ForEach(child => child.RecursivelyUpdate());
         }
 
-        internal void Render()
+        internal void RecursivelyRender()
         {
+            if (!Active)
+                return;
+
             Renderers.ForEach(x => x.Render());
+
+            Children.ForEach(child => child.RecursivelyRender());
         }
 
         public void Destroy()
         {
             _parent?.Children.Remove(this);
-            DataManager.CurrentScene.SceneEntities.Remove(this);
+            DataManager.CurrentScene.SceneRootEntities.Remove(this);
 
             while (Children.Count > 0)
                 Children[0].Destroy();

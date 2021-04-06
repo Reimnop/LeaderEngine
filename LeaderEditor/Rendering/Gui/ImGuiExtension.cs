@@ -7,6 +7,8 @@ namespace LeaderEditor
     {
         public static void DragVector2(string label, ref Vector2 value, Vector2 defaultValue, float speed = 1.0f)
         {
+            ImGui.PushID(label);
+
             ImGui.PushID("X-btn");
             if (ImGui.Button("X"))
             {
@@ -37,9 +39,13 @@ namespace LeaderEditor
 
             ImGui.SameLine();
             ImGui.Text(label);
+
+            ImGui.PopID();
         }
         public static void DragVector3(string label, ref Vector3 value, Vector3 defaultValue, float speed = 1.0f)
         {
+            ImGui.PushID(label);
+
             ImGui.PushID("X-btn");
             if (ImGui.Button("X"))
             {
@@ -85,9 +91,13 @@ namespace LeaderEditor
 
             ImGui.SameLine();
             ImGui.Text(label);
+
+            ImGui.PopID();
         }
         public static void DragVector4(string label, ref Vector4 value, Vector4 defaultValue, float speed = 1.0f)
         {
+            ImGui.PushID(label);
+
             ImGui.PushID("X-btn");
             if (ImGui.Button("X"))
             {
@@ -148,6 +158,8 @@ namespace LeaderEditor
 
             ImGui.SameLine();
             ImGui.Text(label);
+
+            ImGui.PopID();
         }
         public static void BeginGlobalDocking()
         {

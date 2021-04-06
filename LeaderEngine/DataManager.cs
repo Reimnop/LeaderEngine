@@ -6,7 +6,7 @@ namespace LeaderEngine
     {
         public string Name;
 
-        public List<Entity> SceneEntities = new List<Entity>();
+        public List<Entity> SceneRootEntities = new List<Entity>();
 
         public Scene(string name)
         {
@@ -15,9 +15,9 @@ namespace LeaderEngine
 
         internal void UpdateSceneHierachy()
         {
-            for (int i = 0; i < SceneEntities.Count; i++)
-                if (SceneEntities[i].Parent == null)
-                    SceneEntities[i].Update();
+            for (int i = 0; i < SceneRootEntities.Count; i++)
+                if (SceneRootEntities[i].Parent == null)
+                    SceneRootEntities[i].RecursivelyUpdate();
         }
     }
 

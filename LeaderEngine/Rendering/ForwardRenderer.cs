@@ -89,7 +89,7 @@ namespace LeaderEngine
                 return;
 
             //set matrices
-            DataManager.CurrentScene.SceneEntities.ForEach(en => en.Transform.CalculateModelMatrixRecursively());
+            DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.Transform.CalculateModelMatrixRecursively());
 
             Camera.Main.CalculateViewProjection(out Matrix4 view, out Matrix4 projection);
 
@@ -97,7 +97,7 @@ namespace LeaderEngine
             WorldProjection = projection;
 
             //call all render funcs
-            DataManager.CurrentScene.SceneEntities.ForEach(en => en.Render());
+            DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRender());
 
             //render opaque
             GL.Enable(EnableCap.DepthTest);

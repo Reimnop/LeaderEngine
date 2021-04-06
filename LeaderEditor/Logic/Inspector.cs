@@ -3,6 +3,7 @@ using LeaderEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OpenTK.Mathematics;
 
 namespace LeaderEditor
 {
@@ -41,11 +42,9 @@ namespace LeaderEditor
                 ImGui.SetNextItemWidth(150.0f);
                 ImGui.InputText("Name", ref SceneHierachy.SelectedEntity.Name, 255);
 
-                //ImGui.SameLine();
+                ImGui.SameLine();
 
-                //bool active = SceneHierachy.SelectedEntity.ActiveSelf;
-                //ImGui.Checkbox("Enabled", ref active);
-                //SceneHierachy.SelectedEntity.SetActive(active);
+                ImGui.Checkbox("Enabled", ref SceneHierachy.SelectedEntity.Active);
 
                 //get all components
                 Component[] components = SceneHierachy.SelectedEntity.GetComponents<Component>();
@@ -68,7 +67,19 @@ namespace LeaderEditor
                     }
                 }
 
-                //serialize components in an object
+                //render transform editor
+                ImGui.Separator();
+                ImGui.Text("Transform");
+
+                ImGuiExtension.DragVector3("Position", ref SceneHierachy.SelectedEntity.Transform.Position, Vector3.Zero);
+
+                Vector3 euler = SceneHierachy.SelectedEntity.Transform.EulerAngles;
+                ImGuiExtension.DragVector3("Rotation", ref euler, Vector3.Zero);
+                SceneHierachy.SelectedEntity.Transform.EulerAngles = euler;
+
+                ImGuiExtension.DragVector3("Scale", ref SceneHierachy.SelectedEntity.Transform.Scale, Vector3.One);
+
+                //serialize components in an entity
                 for (int i = 0; i < components.Length; i++)
                 {
                     ImGui.Separator();
@@ -88,12 +99,12 @@ namespace LeaderEditor
                             serializeFunc.Invoke(component);
 
                         //enable/disable button
-                        //ImGui.Checkbox("Enabled", ref component.Enabled);
+                        ImGui.Checkbox("Enabled", ref component.Enabled);
 
-                        //ImGui.SameLine();
+                        ImGui.SameLine();
 
                         //remove component button
-                        ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - 125.0f);
+                        ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - 30.0f);
                         if (ImGui.Button("Remove Component"))
                         {
                             SceneHierachy.SelectedEntity.RemoveComponent(component);

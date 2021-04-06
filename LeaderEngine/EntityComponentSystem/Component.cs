@@ -9,6 +9,8 @@ namespace LeaderEngine
         public Entity BaseEntity { get; internal set; }
         public Transform BaseTransform => BaseEntity.Transform;
 
+        public bool Enabled = true;
+
         internal readonly Action StartMethod;
         internal readonly Action UpdateMethod;
         internal readonly Action LateUpdateMethod;
