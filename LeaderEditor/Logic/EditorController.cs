@@ -30,13 +30,14 @@ namespace LeaderEditor
 
         private void ImGuiRenderer()
         {
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, new System.Numerics.Vector2(240.0f, 160.0f));
             if (ImGui.Begin("Viewport"))
             {
                 var vSize = ImGui.GetContentRegionAvail();
 
                 ERenderer.ViewportSize = new Vector2i((int)vSize.X, (int)vSize.Y);
 
-                //display framebuffer texture on gui
+                //display framebuffer texture on window
                 ImGui.Image(
                     (IntPtr)ERenderer.Framebuffer.GetTexture(FramebufferAttachment.ColorAttachment0),
                     vSize, 
@@ -45,6 +46,7 @@ namespace LeaderEditor
 
                 ImGui.End();
             }
+            ImGui.PopStyleVar();
         }
     }
 }
