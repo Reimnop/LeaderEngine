@@ -12,6 +12,7 @@ namespace LeaderEngine
     public struct GLDrawData
     {
         public Mesh Mesh;
+        public UniformData Uniforms;
         public Material Material;
     }
 

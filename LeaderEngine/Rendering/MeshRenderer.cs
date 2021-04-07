@@ -5,6 +5,8 @@
         public Mesh Mesh;
         public Material Material;
 
+        private UniformData uniforms = new UniformData();
+
         private void Start()
         {
             BaseEntity.Renderers.Add(this);
@@ -19,10 +21,10 @@
         {
             GLRenderer renderer = Engine.Renderer;
 
-            Material.SetMatrix4("mvp", 
-                BaseTransform.ModelMatrix 
-                * renderer.WorldView 
-                * renderer.WorldProjection);
+            uniforms.SetUniform("mvp", new Uniform(UniformType.Matrix4,
+                BaseTransform.ModelMatrix
+                * renderer.WorldView
+                * renderer.WorldProjection));
 
             Engine.Renderer.PushDrawData(DrawType.Opaque, new GLDrawData
             {

@@ -108,13 +108,16 @@ namespace LeaderEngine
             opDrawList.ForEach(drawData =>
             {
                 Mesh mesh = drawData.Mesh;
+                UniformData unis = drawData.Uniforms;
                 Material mat = drawData.Material;
 
                 if (mesh == null || mat == null)
                     return;
 
                 mesh.Use();
+
                 mat.Use();
+                unis.Use(mat.Shader);
 
                 GL.DrawElements(PrimitiveType.Triangles, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
             });

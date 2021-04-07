@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using System;
 using System.Collections.Generic;
 
 namespace LeaderEngine
@@ -20,7 +21,7 @@ namespace LeaderEngine
         public object Data;
     }
 
-    public sealed class Material
+    public sealed class Material : IDisposable
     {
         public Shader Shader { set; get; }
 
@@ -30,6 +31,8 @@ namespace LeaderEngine
         public Material(Shader shader)
         {
             Shader = shader;
+
+            DataManager.CurrentScene.SceneMaterials.Add(this);
         }
 
         #region SetMethods
@@ -127,6 +130,11 @@ namespace LeaderEngine
 
             foreach (var tex in materialTextures)
                 tex.Value.Use(tex.Key);
+        }
+
+        public void Dispose()
+        {
+            DataManager.CurrentScene.SceneMaterials.Remove(this);
         }
     }
 }

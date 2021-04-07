@@ -15,9 +15,11 @@ namespace LeaderEngine
 
         public readonly string Name;
 
-        internal Texture(string name)
+        private Texture(string name)
         {
             Name = name;
+
+            DataManager.CurrentScene.SceneTextures.Add(this);
         }
 
         public static Texture FromFile(string name, string path)
@@ -99,6 +101,8 @@ namespace LeaderEngine
         public void Dispose()
         {
             GL.DeleteTexture(handle);
+
+            DataManager.CurrentScene.SceneTextures.Remove(this);
         }
     }
 }

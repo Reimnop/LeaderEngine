@@ -52,6 +52,8 @@ namespace LeaderEngine
             VAO = GL.GenVertexArray();
             VBO = GL.GenBuffer();
             EBO = GL.GenBuffer();
+
+            DataManager.CurrentScene.SceneMeshes.Add(this);
         }
 
         public void LoadMesh<T>(T[] vertices, uint[] indices) where T : struct
@@ -100,6 +102,8 @@ namespace LeaderEngine
             GL.DeleteVertexArray(VAO);
             GL.DeleteBuffer(VBO);
             GL.DeleteBuffer(EBO);
+
+            DataManager.CurrentScene.SceneMeshes.Remove(this);
         }
     }
 }
