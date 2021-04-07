@@ -59,7 +59,7 @@ namespace LeaderEngine
                 materials[i] = mat;
 
                 //reset values
-                mat.SetInt("useTexture", 0);
+                mat.SetInt("hasDiffuse", 0);
 
                 if (aiMaterial.HasTextureDiffuse)
                 {
@@ -76,7 +76,7 @@ namespace LeaderEngine
                     texture.SetWrapS((TextureWrapMode)aiTexture.WrapModeU);
                     texture.SetWrapT((TextureWrapMode)aiTexture.WrapModeV);
 
-                    mat.SetInt("useTexture", 1);
+                    mat.SetInt("hasDiffuse", 1);
                 }
             }
 
