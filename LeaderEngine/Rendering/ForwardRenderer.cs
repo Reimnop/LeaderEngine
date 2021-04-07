@@ -111,7 +111,7 @@ namespace LeaderEngine
                 UniformData unis = drawData.Uniforms;
                 Material mat = drawData.Material;
 
-                if (mesh == null || mat == null)
+                if (mesh == null || mat == null || unis == null)
                     return;
 
                 mesh.Use();

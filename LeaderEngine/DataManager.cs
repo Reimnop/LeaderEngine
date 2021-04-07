@@ -4,6 +4,7 @@ using System.IO;
 using Assimp;
 
 using TextureWrapMode = OpenTK.Graphics.OpenGL4.TextureWrapMode;
+using Quaternion = OpenTK.Mathematics.Quaternion;
 
 namespace LeaderEngine
 {
@@ -81,18 +82,30 @@ namespace LeaderEngine
             }
 
             //load model
-            RecursivelyLoadAssimpNode(aiMeshes, aiMaterials, scene.RootNode);
+            RecursivelyLoadAssimpNode(aiMeshes, materials, scene.RootNode, null);
         }
 
-        private static void RecursivelyLoadAssimpNode(List<Assimp.Mesh> meshes, List<Assimp.Material> materials, Node node)
+        private static void RecursivelyLoadAssimpNode(List<Assimp.Mesh> aiMeshes, Material[] materials, Node node, Entity parent)
         {
+            //create Entity
+            //TODO: switch to prefabs
+            Entity entity = new Entity(node.Name);
+            entity.Parent = parent;
+
             if (!node.HasMeshes)
                 goto LoadChildren;
+
+            //set transform
+            node.Transform.Decompose(out var scale, out var rotation, out var position);
+
+            entity.Transform.Position = new Vector3(position.X, position.Y, position.Z);
+            entity.Transform.Rotation = new Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
+            entity.Transform.Scale = new Vector3(scale.X, scale.Y, scale.Z);
 
             int rIndex = 0;
             foreach (int ind in node.MeshIndices)
             {
-                var aiMesh = meshes[ind];
+                var aiMesh = aiMeshes[ind];
 
                 Vertex[] vertices = new Vertex[aiMesh.VertexCount];
 
@@ -119,12 +132,21 @@ namespace LeaderEngine
                 //create mesh
                 Mesh mesh = new Mesh(node.Name + "-" + rIndex);
                 mesh.LoadMesh(vertices, aiMesh.GetUnsignedIndices());
+
+                //create entity
+                Entity mEntity = new Entity(node.Name + "-" + rIndex);
+                mEntity.Parent = entity;
+
+                var mr = mEntity.AddComponent<MeshRenderer>();
+
+                mr.Mesh = mesh;
+                mr.Material = materials[aiMesh.MaterialIndex];
             }
 
             //load children
             LoadChildren:
             foreach (var child in node.Children)
-                RecursivelyLoadAssimpNode(meshes, materials, child);
+                RecursivelyLoadAssimpNode(aiMeshes, materials, child, entity);
         }
     }
 }
