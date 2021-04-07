@@ -105,6 +105,8 @@ namespace LeaderEngine
             var opDrawList = drawLists[DrawType.Opaque];
 
             ppFramebuffer.Begin();
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
             opDrawList.ForEach(drawData =>
             {
                 Mesh mesh = drawData.Mesh;

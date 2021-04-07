@@ -1,10 +1,11 @@
-﻿using OpenTK.Mathematics;
+﻿using Assimp;
+using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using Assimp;
-
-using TextureWrapMode = OpenTK.Graphics.OpenGL4.TextureWrapMode;
 using Quaternion = OpenTK.Mathematics.Quaternion;
+using TextureWrapMode = OpenTK.Graphics.OpenGL4.TextureWrapMode;
 
 namespace LeaderEngine
 {
@@ -49,15 +50,22 @@ namespace LeaderEngine
             var aiMaterials = scene.Materials;
 
             //load materials
+            //TODO: remove shader
+            Shader shader = Shader.FromSourceFile("Lit",
+                Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/lit.vert"),
+                Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/lit.frag"));
+
             Material[] materials = new Material[aiMaterials.Count];
 
             for (int i = 0; i < scene.Materials.Count; i++)
             {
                 var aiMaterial = aiMaterials[i];
 
-                Material mat = new Material(null); //TODO: replace with shader
+                Material mat = new Material(shader); //TODO: replace with shader
 
                 materials[i] = mat;
+
+                mat.SetVector3("color", new Vector3(aiMaterial.ColorDiffuse.R, aiMaterial.ColorDiffuse.G, aiMaterial.ColorDiffuse.B));
 
                 //reset values
                 mat.SetInt("hasDiffuse", 0);
@@ -74,10 +82,11 @@ namespace LeaderEngine
 
                     Texture texture = Texture.FromFile(aiMaterial.Name + "-Diffuse", texPath);
 
-                    texture.SetWrapS((TextureWrapMode)aiTexture.WrapModeU);
-                    texture.SetWrapT((TextureWrapMode)aiTexture.WrapModeV);
+                    texture.SetWrapS(ConvertWrapModeToOTK(aiTexture.WrapModeU));
+                    texture.SetWrapT(ConvertWrapModeToOTK(aiTexture.WrapModeV));
 
                     mat.SetInt("hasDiffuse", 1);
+                    mat.SetTexture2D(TextureUnit.Texture0, texture);
                 }
             }
 
@@ -90,7 +99,9 @@ namespace LeaderEngine
             //create Entity
             //TODO: switch to prefabs
             Entity entity = new Entity(node.Name);
-            entity.Parent = parent;
+
+            if (parent != null)
+                entity.Parent = parent;
 
             if (!node.HasMeshes)
                 goto LoadChildren;
@@ -113,10 +124,13 @@ namespace LeaderEngine
                 for (int i = 0; i < aiMesh.VertexCount; i++)
                 {
                     var aiVert = aiMesh.Vertices[i];
+                    var aiNormal = aiMesh.Normals[i];
 
                     vertices[i] = new Vertex
                     {
                         Position = new Vector3(aiVert.X, aiVert.Y, aiVert.Z),
+
+                        Normal = new Vector3(aiNormal.X, aiNormal.Y, aiNormal.Z),
 
                         Color = aiMesh.HasVertexColors(0) ? new Vector3(
                             aiMesh.VertexColorChannels[0][i].R, 
@@ -147,6 +161,23 @@ namespace LeaderEngine
             LoadChildren:
             foreach (var child in node.Children)
                 RecursivelyLoadAssimpNode(aiMeshes, materials, child, entity);
+        }
+
+        private static TextureWrapMode ConvertWrapModeToOTK(Assimp.TextureWrapMode textureWrapMode)
+        {
+            switch (textureWrapMode)
+            {
+                case Assimp.TextureWrapMode.Clamp:
+                    return TextureWrapMode.ClampToBorder;
+                case Assimp.TextureWrapMode.Decal:
+                    return TextureWrapMode.ClampToEdge;
+                case Assimp.TextureWrapMode.Mirror:
+                    return TextureWrapMode.MirroredRepeat;
+                case Assimp.TextureWrapMode.Wrap:
+                    return TextureWrapMode.Repeat;
+                default:
+                    return TextureWrapMode.ClampToBorder;
+            }
         }
     }
 }

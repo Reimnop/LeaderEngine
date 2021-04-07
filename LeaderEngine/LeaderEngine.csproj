@@ -23,6 +23,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="EngineAssets\Shaders\lit.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="EngineAssets\Shaders\lit.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="EngineAssets\Shaders\post-process.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

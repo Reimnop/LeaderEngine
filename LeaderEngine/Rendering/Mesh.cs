@@ -29,6 +29,9 @@ namespace LeaderEngine
         public Vector3 Position;
 
         [VertexAttrib(VertexAttribPointerType.Float, 3, false)]
+        public Vector3 Normal;
+
+        [VertexAttrib(VertexAttribPointerType.Float, 3, false)]
         public Vector3 Color;
 
         [VertexAttrib(VertexAttribPointerType.Float, 2, false)]

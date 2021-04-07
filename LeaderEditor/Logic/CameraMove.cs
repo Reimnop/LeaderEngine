@@ -26,7 +26,7 @@ namespace LeaderEditor
             if (Input.GetMouse(MouseButton.Right))
             {
                 Vector2 delta = Input.GetMouseDelta() * Sensitivity;
-                BaseTransform.EulerAngles += new Vector3(delta.Y, delta.X, 0.0f);
+                BaseTransform.EulerAngles += new Vector3(-delta.Y, delta.X, 0.0f);
             }
         }
     }
