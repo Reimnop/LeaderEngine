@@ -23,6 +23,7 @@ namespace LeaderEditor
             //init editor gui
             ImGuiController.RegisterImGui(ImGuiRenderer);
 
+            BaseEntity.AddComponent<GridRenderer>();
             BaseEntity.AddComponent<SceneHierachy>();
             BaseEntity.AddComponent<Inspector>();
 

@@ -7,6 +7,8 @@
 
         private UniformData uniforms = new UniformData();
 
+        public Shader Shader = DefaultShaders.Lit;
+
         private void Start()
         {
             BaseEntity.Renderers.Add(this);
@@ -41,6 +43,7 @@
             Engine.Renderer.PushDrawData(DrawType.Opaque, new GLDrawData
             {
                 Mesh = Mesh,
+                Shader = Shader,
                 Material = Material,
                 Uniforms = uniforms
             });

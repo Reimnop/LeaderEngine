@@ -49,10 +49,6 @@ namespace LeaderEngine
             var aiMaterials = scene.Materials;
 
             //load materials
-            //TODO: remove shader
-            Shader shader = Shader.FromSourceFile("Lit",
-                Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/lit.vert"),
-                Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/lit.frag"));
 
             Material[] materials = new Material[aiMaterials.Count];
 
@@ -60,9 +56,8 @@ namespace LeaderEngine
             {
                 var aiMaterial = aiMaterials[i];
 
-                Material mat = new Material(shader); //TODO: replace with shader
-
-                materials[i] = mat;
+                materials[i] = new Material(aiMaterial.Name);
+                Material mat = materials[i];
 
                 mat.SetVector3("color", new Vector3(aiMaterial.ColorDiffuse.R, aiMaterial.ColorDiffuse.G, aiMaterial.ColorDiffuse.B));
 

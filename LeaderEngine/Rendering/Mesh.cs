@@ -42,6 +42,7 @@ namespace LeaderEngine
     {
         public int VerticesCount { get; private set; }
         public int IndicesCount { get; private set; }
+        public PrimitiveType PrimitiveType { get; private set; }
 
         private int VAO, VBO, EBO;
 
@@ -59,8 +60,10 @@ namespace LeaderEngine
             DataManager.CurrentScene.SceneMeshes.Add(this);
         }
 
-        public void LoadMesh<T>(T[] vertices, uint[] indices) where T : struct
+        public void LoadMesh<T>(T[] vertices, uint[] indices, PrimitiveType primitiveType = PrimitiveType.Triangles) where T : struct
         {
+            PrimitiveType = primitiveType;
+
             //update vertices and indices counts
             VerticesCount = vertices.Length;
             IndicesCount = indices.Length;

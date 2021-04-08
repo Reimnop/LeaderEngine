@@ -46,6 +46,8 @@ namespace LeaderEngine
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
+            DefaultShaders.Init();
+
             initCallback?.Invoke();
 
             Renderer.Init();

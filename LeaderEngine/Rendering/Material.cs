@@ -23,14 +23,14 @@ namespace LeaderEngine
 
     public sealed class Material : IDisposable
     {
-        public Shader Shader { set; get; }
+        public readonly string Name;
 
         private Dictionary<string, MaterialProp> materialProps = new Dictionary<string, MaterialProp>();
         private Dictionary<TextureUnit, Texture> materialTextures = new Dictionary<TextureUnit, Texture>();
 
-        public Material(Shader shader)
+        public Material(string name)
         {
-            Shader = shader;
+            Name = name;
 
             DataManager.CurrentScene.SceneMaterials.Add(this);
         }
@@ -87,44 +87,25 @@ namespace LeaderEngine
         }
         #endregion
 
-        public Material Clone()
+        public void Use(Shader shader)
         {
-            return new Material(Shader);
-        }
-
-        public static Material Clone(Material material)
-        {
-            return new Material(material.Shader);
-        }
-
-        public static void Clone(Material material, out Material newMaterial)
-        {
-            newMaterial = new Material(material.Shader);
-        }
-
-        public void Use()
-        {
-            Shader usingShader = Shader;
-
-            usingShader.Use();
-
             foreach (var prop in materialProps)
                 switch (prop.Value.PropType)
                 {
                     case MaterialPropType.Int:
-                        usingShader.SetInt(prop.Key, (int)prop.Value.Data);
+                        shader.SetInt(prop.Key, (int)prop.Value.Data);
                         break;
                     case MaterialPropType.Float:
-                        usingShader.SetFloat(prop.Key, (float)prop.Value.Data);
+                        shader.SetFloat(prop.Key, (float)prop.Value.Data);
                         break;
                     case MaterialPropType.Vector3:
-                        usingShader.SetVector3(prop.Key, (Vector3)prop.Value.Data);
+                        shader.SetVector3(prop.Key, (Vector3)prop.Value.Data);
                         break;
                     case MaterialPropType.Vector4:
-                        usingShader.SetVector4(prop.Key, (Vector4)prop.Value.Data);
+                        shader.SetVector4(prop.Key, (Vector4)prop.Value.Data);
                         break;
                     case MaterialPropType.Matrix4:
-                        usingShader.SetMatrix4(prop.Key, (Matrix4)prop.Value.Data);
+                        shader.SetMatrix4(prop.Key, (Matrix4)prop.Value.Data);
                         break;
                 }
 

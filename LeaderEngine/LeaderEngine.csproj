@@ -23,6 +23,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="EngineAssets\Shaders\single-color.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="EngineAssets\Shaders\single-color.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="EngineAssets\Shaders\lit.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

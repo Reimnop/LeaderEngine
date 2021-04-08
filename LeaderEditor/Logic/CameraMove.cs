@@ -11,6 +11,11 @@ namespace LeaderEditor
 
         private float speedMultiplier = 1.0f;
 
+        private void Start()
+        {
+            BaseTransform.Position.Y = 2.0f;
+        }
+
         private void Update()
         {
             if (Input.GetKey(Keys.LeftShift))

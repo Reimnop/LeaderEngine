@@ -37,7 +37,7 @@ namespace LeaderEngine
         internal List<Entity> Children { get; } = new List<Entity>();
         private List<Component> components { get; } = new List<Component>();
 
-        internal List<Renderer> Renderers { get; } = new List<Renderer>();
+        public List<Renderer> Renderers { get; } = new List<Renderer>();
 
         public Entity(string name, Entity parent = null)
         {

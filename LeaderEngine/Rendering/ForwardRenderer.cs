@@ -114,18 +114,20 @@ namespace LeaderEngine
             opDrawList.ForEach(drawData =>
             {
                 Mesh mesh = drawData.Mesh;
-                UniformData unis = drawData.Uniforms;
-                Material mat = drawData.Material;
+                Shader shader = drawData.Shader;
+                Material material = drawData.Material;
+                UniformData uniforms = drawData.Uniforms;
 
-                if (mesh == null || mat == null || unis == null)
+                if (mesh == null || shader == null || uniforms == null)
                     return;
 
                 mesh.Use();
+                shader.Use();
 
-                mat.Use();
-                unis.Use(mat.Shader);
+                material?.Use(shader);
+                uniforms.Use(shader);
 
-                GL.DrawElements(PrimitiveType.Triangles, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
+                GL.DrawElements(mesh.PrimitiveType, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
             });
             ppFramebuffer.End();
 
