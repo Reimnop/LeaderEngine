@@ -9,8 +9,6 @@ namespace LeaderEngine
         public string Name;
         public readonly Transform Transform;
 
-        private List<Entity> entityCollection;
-
         private Entity _parent;
         public Entity Parent
         {
@@ -28,9 +26,9 @@ namespace LeaderEngine
                 _parent?.Children.Add(this);
 
                 if (value == null)
-                    entityCollection.Add(this);
+                    DataManager.CurrentScene.SceneRootEntities.Add(this);
                 else
-                    entityCollection.Remove(this);
+                    DataManager.CurrentScene.SceneRootEntities.Remove(this);
             }
         }
 
@@ -46,32 +44,16 @@ namespace LeaderEngine
             Name = name;
             Transform = new Transform(this);
 
-            entityCollection = DataManager.CurrentScene.SceneRootEntities;
-
             if (parent == null)
-                entityCollection.Add(this);
-        }
-
-        internal Entity(string name, List<Entity> customCollection, Entity parent = null)
-        {
-            Name = name;
-            Transform = new Transform(this);
-
-            entityCollection = customCollection;
-
-            if (parent == null)
-                entityCollection.Add(this);
-        }
-
-        internal void SwitchCollection(List<Entity> newCollection)
-        {
-            if (_parent == null)
             {
-                entityCollection.Remove(this);
-                newCollection.Add(this);
+                DataManager.CurrentScene.SceneRootEntities.Add(this);
+            }
+            else
+            {
+                _parent = parent;
+                parent.Children.Add(this);
             }
 
-            entityCollection = newCollection;
         }
 
         internal void RecursivelyUpdate()
@@ -97,7 +79,7 @@ namespace LeaderEngine
         public void Destroy()
         {
             _parent?.Children.Remove(this);
-            entityCollection.Remove(this);
+            DataManager.CurrentScene.SceneRootEntities.Remove(this);
 
             while (Children.Count > 0)
                 Children[0].Destroy();

@@ -1,52 +1,67 @@
-﻿using System;
+﻿using OpenTK.Mathematics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace LeaderEngine
 {
+    public class PrefabEntity
+    {
+        public string Name;
+        public List<PrefabEntity> Children { get; } = new List<PrefabEntity>();
+
+        public Vector3 Position = Vector3.Zero;
+        public Quaternion Rotation = Quaternion.Identity;
+        public Vector3 Scale = Vector3.One;
+        public Vector3 OriginOffset = Vector3.Zero;
+
+        public Mesh Mesh;
+        public Material Material;
+
+        public PrefabEntity(string name)
+        {
+            Name = name;
+        }
+    }
+
     public class Prefab
     {
-        private List<Entity> prefabEntities = new List<Entity>();
+        public readonly string Name;
+        public readonly PrefabEntity RootPrefabEntity;
 
-        public void Instantiate()
+        public Prefab(string name, PrefabEntity rootEntity) 
         {
-            while (prefabEntities.Count > 0)
-                RecursivelySwitchCollection(prefabEntities[0]);
+            Name = name;
+            RootPrefabEntity = rootEntity;
         }
 
-        private void RecursivelySwitchCollection(Entity entity)
+        public Entity Instantiate(Entity parent = null)
         {
-            entity.SwitchCollection(DataManager.CurrentScene.SceneRootEntities);
-
-            foreach (var en in entity.Children)
-                RecursivelySwitchCollection(en);
+            return RecursivelySpawnEntities(RootPrefabEntity, parent);
         }
 
-        public static Prefab FromEntityList(List<Entity> entities)
+        private Entity RecursivelySpawnEntities(PrefabEntity prefabEntity, Entity parent)
         {
-            Prefab prefab = new Prefab();
+            Entity entity = new Entity(prefabEntity.Name, parent);
 
-            int min = entities.Min(x => FindDepth(x));
-            var topEntities = entities.Where(x => FindDepth(x) == min);
+            entity.Transform.Position = prefabEntity.Position;
+            entity.Transform.Rotation = prefabEntity.Rotation;
+            entity.Transform.Scale = prefabEntity.Scale;
+            entity.Transform.OriginOffset = prefabEntity.OriginOffset;
 
-            foreach (var entity in topEntities)
-                entity.Parent = null;
-
-            entities.ForEach(x => x.SwitchCollection(prefab.prefabEntities));
-
-            return prefab;
-        }
-
-        private static int FindDepth(Entity entity)
-        {
-            int o = 0;
-            while (entity.Parent != null)
+            if (prefabEntity.Material != null && prefabEntity.Mesh != null)
             {
-                entity = entity.Parent;
-                o++;
+                var renderer = entity.AddComponent<MeshRenderer>();
+
+                renderer.Mesh = prefabEntity.Mesh;
+                renderer.Material = prefabEntity.Material;
             }
-            return o;
+
+            foreach (var child in prefabEntity.Children)
+                RecursivelySpawnEntities(child, entity);
+
+            return entity;
         }
     }
 }

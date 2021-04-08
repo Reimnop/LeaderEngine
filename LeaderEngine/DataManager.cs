@@ -90,21 +90,15 @@ namespace LeaderEngine
             }
 
             //load model
-            List<Entity> entities = new List<Entity>()
-            {
-                RecursivelyLoadAssimpNode(aiMeshes, materials, scene.RootNode, null)
-            };
+            PrefabEntity rootEntity = RecursivelyLoadAssimpNode(aiMeshes, materials, scene.RootNode);
 
-            return Prefab.FromEntityList(entities);
+            return new Prefab(rootEntity.Name, rootEntity);
         }
 
-        private static Entity RecursivelyLoadAssimpNode(List<Assimp.Mesh> aiMeshes, Material[] materials, Node node, Entity parent)
+        private static PrefabEntity RecursivelyLoadAssimpNode(List<Assimp.Mesh> aiMeshes, Material[] materials, Node node)
         {
             //create Entity
-            Entity entity = new Entity(node.Name);
-
-            if (parent != null)
-                entity.Parent = parent;
+            PrefabEntity entity = new PrefabEntity(node.Name);
 
             if (!node.HasMeshes)
                 goto LoadChildren;
@@ -112,9 +106,9 @@ namespace LeaderEngine
             //set transform
             node.Transform.Decompose(out var scale, out var rotation, out var position);
 
-            entity.Transform.Position = new Vector3(position.X, position.Y, position.Z);
-            entity.Transform.Rotation = new Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
-            entity.Transform.Scale = new Vector3(scale.X, scale.Y, scale.Z);
+            entity.Position = new Vector3(position.X, position.Y, position.Z);
+            entity.Rotation = new Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
+            entity.Scale = new Vector3(scale.X, scale.Y, scale.Z);
 
             int rIndex = 0;
             foreach (int ind in node.MeshIndices)
@@ -151,19 +145,17 @@ namespace LeaderEngine
                 mesh.LoadMesh(vertices, aiMesh.GetUnsignedIndices());
 
                 //create entity
-                Entity mEntity = new Entity(node.Name + "-" + rIndex);
-                mEntity.Parent = entity;
+                PrefabEntity mEntity = new PrefabEntity(node.Name + "-" + rIndex);
+                mEntity.Mesh = mesh;
+                mEntity.Material = materials[aiMesh.MaterialIndex];
 
-                var mr = mEntity.AddComponent<MeshRenderer>();
-
-                mr.Mesh = mesh;
-                mr.Material = materials[aiMesh.MaterialIndex];
+                entity.Children.Add(mEntity);
             }
 
             //load children
             LoadChildren:
             foreach (var child in node.Children)
-                RecursivelyLoadAssimpNode(aiMeshes, materials, child, entity);
+                entity.Children.Add(RecursivelyLoadAssimpNode(aiMeshes, materials, child));
 
             return entity;
         }
