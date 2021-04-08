@@ -32,7 +32,7 @@ namespace LeaderEditor
             editorScripts.AddComponent<EditorController>();
 
             //TODO: remove debug code
-            DataManager.LoadModelFromFile("gallery.obj").Instantiate();
+            DataManager.LoadModelFromFile("pp.fbx").Instantiate();
 
             Logger.Log("Editor initialized.", true);
         }
