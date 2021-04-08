@@ -31,7 +31,18 @@ namespace LeaderEngine
         {
             Span<Rgba32> pixelSpan;
             if (!image.TryGetSinglePixelSpan(out pixelSpan))
-                throw new NotImplementedException();
+            {
+                Rgba32[] pixelArray = new Rgba32[image.Width * image.Height];
+                for (int i = 0; i < image.Height; i++)
+                {
+                    var row = image.GetPixelRowSpan(i);
+                    for (int j = 0; j < image.Width; j++)
+                    {
+                        pixelArray[i * image.Height + j] = row[j];
+                    }
+                }
+                pixelSpan = new Span<Rgba32>(pixelArray);
+            }
 
             Texture tex = FromPointer(name, image.Width, image.Height, (IntPtr)Unsafe.AsPointer(ref pixelSpan[0]));
 
