@@ -32,7 +32,7 @@ namespace LeaderEditor
             editorScripts.AddComponent<EditorController>();
 
             //TODO: remove debug code
-            DataManager.LoadModelFromFile("suzanne.obj");
+            DataManager.LoadModelFromFile("suzanne.obj").Instantiate();
 
             Logger.Log("Editor initialized.", true);
         }

@@ -11,8 +11,8 @@ namespace LeaderEngine
 
         public void Instantiate()
         {
-            foreach (var entity in prefabEntities)
-                RecursivelySwitchCollection(entity);
+            while (prefabEntities.Count > 0)
+                RecursivelySwitchCollection(prefabEntities[0]);
         }
 
         private void RecursivelySwitchCollection(Entity entity)

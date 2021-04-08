@@ -36,14 +36,13 @@ namespace LeaderEngine
     {
         public static Scene CurrentScene { get; private set; } = new Scene("Untitled Scene");
 
-        public static void LoadModelFromFile(string path)
+        public static Prefab LoadModelFromFile(string path)
         {
             //import file
             AssimpContext importer = new AssimpContext();
             var scene = importer.ImportFile(path, 
                 PostProcessSteps.Triangulate | 
                 PostProcessSteps.FlipUVs | 
-                PostProcessSteps.FlipWindingOrder | 
                 PostProcessSteps.CalculateTangentSpace);
 
             var aiMeshes = scene.Meshes;
@@ -91,13 +90,17 @@ namespace LeaderEngine
             }
 
             //load model
-            RecursivelyLoadAssimpNode(aiMeshes, materials, scene.RootNode, null);
+            List<Entity> entities = new List<Entity>()
+            {
+                RecursivelyLoadAssimpNode(aiMeshes, materials, scene.RootNode, null)
+            };
+
+            return Prefab.FromEntityList(entities);
         }
 
-        private static void RecursivelyLoadAssimpNode(List<Assimp.Mesh> aiMeshes, Material[] materials, Node node, Entity parent)
+        private static Entity RecursivelyLoadAssimpNode(List<Assimp.Mesh> aiMeshes, Material[] materials, Node node, Entity parent)
         {
             //create Entity
-            //TODO: switch to prefabs
             Entity entity = new Entity(node.Name);
 
             if (parent != null)
@@ -161,6 +164,8 @@ namespace LeaderEngine
             LoadChildren:
             foreach (var child in node.Children)
                 RecursivelyLoadAssimpNode(aiMeshes, materials, child, entity);
+
+            return entity;
         }
 
         private static TextureWrapMode ConvertWrapModeToOTK(Assimp.TextureWrapMode textureWrapMode)

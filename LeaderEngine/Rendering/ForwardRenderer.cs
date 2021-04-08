@@ -102,6 +102,10 @@ namespace LeaderEngine
             //render opaque
             GL.Enable(EnableCap.DepthTest);
 
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+            GL.FrontFace(FrontFaceDirection.Ccw);
+
             var opDrawList = drawLists[DrawType.Opaque];
 
             ppFramebuffer.Begin();
@@ -124,6 +128,10 @@ namespace LeaderEngine
                 GL.DrawElements(PrimitiveType.Triangles, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
             });
             ppFramebuffer.End();
+
+            //reset states
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
 
             //post process
             ppMesh.Use();
