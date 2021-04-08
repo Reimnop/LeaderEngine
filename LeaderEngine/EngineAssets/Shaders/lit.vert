@@ -21,7 +21,7 @@ void main() {
 	Color = aColor;
 	TexCoord = aTexCoord;
 
-	Normal = aNormal;
+	Normal = aNormal * mat3(transpose(inverse(model)));
 	FragCoord = vec3(vec4(aPosition, 1.0) * model);
 
 	gl_Position = vec4(aPosition, 1.0) * mvp; 

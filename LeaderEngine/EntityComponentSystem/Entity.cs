@@ -9,12 +9,18 @@ namespace LeaderEngine
         public string Name;
         public readonly Transform Transform;
 
+        private List<Entity> entityCollection;
+
         private Entity _parent;
         public Entity Parent
         {
             get => _parent;
             set
             {
+                //check equal
+                if (value == _parent)
+                    return;
+
                 //remove from old parent
                 _parent?.Children.Remove(this);
                 //add to new parent
@@ -22,9 +28,9 @@ namespace LeaderEngine
                 _parent?.Children.Add(this);
 
                 if (value == null)
-                    DataManager.CurrentScene.SceneRootEntities.Add(this);
+                    entityCollection.Add(this);
                 else
-                    DataManager.CurrentScene.SceneRootEntities.Remove(this);
+                    entityCollection.Remove(this);
             }
         }
 
@@ -35,12 +41,37 @@ namespace LeaderEngine
 
         internal List<Renderer> Renderers { get; } = new List<Renderer>();
 
-        public Entity(string name)
+        public Entity(string name, Entity parent = null)
         {
             Name = name;
             Transform = new Transform(this);
 
-            DataManager.CurrentScene.SceneRootEntities.Add(this);
+            entityCollection = DataManager.CurrentScene.SceneRootEntities;
+
+            if (parent == null)
+                entityCollection.Add(this);
+        }
+
+        internal Entity(string name, List<Entity> customCollection, Entity parent = null)
+        {
+            Name = name;
+            Transform = new Transform(this);
+
+            entityCollection = customCollection;
+
+            if (parent == null)
+                entityCollection.Add(this);
+        }
+
+        internal void SwitchCollection(List<Entity> newCollection)
+        {
+            if (_parent == null)
+            {
+                entityCollection.Remove(this);
+                newCollection.Add(this);
+            }
+
+            entityCollection = newCollection;
         }
 
         internal void RecursivelyUpdate()
@@ -66,7 +97,7 @@ namespace LeaderEngine
         public void Destroy()
         {
             _parent?.Children.Remove(this);
-            DataManager.CurrentScene.SceneRootEntities.Remove(this);
+            entityCollection.Remove(this);
 
             while (Children.Count > 0)
                 Children[0].Destroy();

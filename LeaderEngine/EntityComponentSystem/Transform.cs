@@ -14,6 +14,10 @@ namespace LeaderEngine
             get => internalRotation;
             set
             {
+                //check equal
+                if (internalRotation == value)
+                    return;
+
                 internalRotation = value;
                 Quaternion.ToEulerAngles(value, out Vector3 euler);
 
@@ -29,6 +33,9 @@ namespace LeaderEngine
             get => internalEulerAngles;
             set
             {
+                if (internalEulerAngles == value)
+                    return;
+
                 internalEulerAngles = value;
 
                 //convert to radians
