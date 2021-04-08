@@ -31,9 +31,6 @@ namespace LeaderEditor
             Entity editorScripts = new Entity("EditorEntity");
             editorScripts.AddComponent<EditorController>();
 
-            //TODO: remove debug code
-            DataManager.LoadModelFromFile("pp.fbx").Instantiate();
-
             Logger.Log("Editor initialized.", true);
         }
     }
