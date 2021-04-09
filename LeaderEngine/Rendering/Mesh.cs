@@ -96,6 +96,13 @@ namespace LeaderEngine
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
         }
 
+        public void UpdateMesh<T>(T[] vertices, uint[] indices) where T : struct
+        {
+            //upload buffers
+            GL.NamedBufferData(VBO, vertices.Length * Unsafe.SizeOf<T>(), vertices, BufferUsageHint.DynamicCopy);
+            GL.NamedBufferData(EBO, indices.Length * sizeof(uint), indices, BufferUsageHint.DynamicCopy);
+        }
+
         public void Use()
         {
             GL.BindVertexArray(VAO);
