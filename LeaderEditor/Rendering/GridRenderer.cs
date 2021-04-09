@@ -12,6 +12,8 @@ namespace LeaderEditor
 
         private UniformData uniforms = new UniformData();
 
+        const int gridSize = 100;
+
         //init grid mesh
         private void Start()
         {
@@ -19,33 +21,49 @@ namespace LeaderEditor
 
             List<Vertex> vertices = new List<Vertex>();
 
-            for (int i = -10; i <= 10; i++)
+            for (int i = -gridSize; i <= gridSize; i++)
             {
+                Vector3 color = Vector3.One * 0.2f;
+
+                if (i % 10 == 0)
+                    color = Vector3.One * 0.6f;
+
+                if (i == 0)
+                    color = new Vector3(1.0f, 0.0f, 0.0f);
+
                 vertices.Add(new Vertex
                 {
-                    Position = new Vector3(i, 0.0f, -10.0f),
-                    Color = i == 0 ? new Vector3(1.0f, 0.0f, 0.0f) : Vector3.One * 0.75f
+                    Position = new Vector3(i, 0.0f, -gridSize),
+                    Color = color
                 });
 
                 vertices.Add(new Vertex
                 {
-                    Position = new Vector3(i, 0.0f, 10.0f),
-                    Color = i == 0 ? new Vector3(1.0f, 0.0f, 0.0f) : Vector3.One * 0.75f
+                    Position = new Vector3(i, 0.0f, gridSize),
+                    Color = color
                 });
             }
 
-            for (int i = -10; i <= 10; i++)
+            for (int i = -gridSize; i <= gridSize; i++)
             {
+                Vector3 color = Vector3.One * 0.2f;
+
+                if (i % 10 == 0)
+                    color = Vector3.One * 0.6f;
+
+                if (i == 0)
+                    color = new Vector3(0.0f, 1.0f, 0.0f);
+
                 vertices.Add(new Vertex
                 {
-                    Position = new Vector3(-10.0f, 0.0f, i),
-                    Color = i == 0 ? new Vector3(0.0f, 1.0f, 0.0f) : Vector3.One * 0.75f
+                    Position = new Vector3(-gridSize, 0.0f, i),
+                    Color = color
                 });
 
                 vertices.Add(new Vertex
                 {
-                    Position = new Vector3(10.0f, 0.0f, i),
-                    Color = i == 0 ? new Vector3(0.0f, 1.0f, 0.0f) : Vector3.One * 0.75f
+                    Position = new Vector3(gridSize, 0.0f, i),
+                    Color = color
                 });
             }
 
