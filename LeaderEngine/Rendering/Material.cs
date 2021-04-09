@@ -21,7 +21,7 @@ namespace LeaderEngine
         public object Data;
     }
 
-    public sealed class Material : IDisposable
+    public sealed class Material
     {
         public readonly string Name;
 
@@ -31,8 +31,6 @@ namespace LeaderEngine
         public Material(string name)
         {
             Name = name;
-
-            DataManager.CurrentScene.SceneMaterials.Add(this);
         }
 
         #region SetMethods
@@ -111,11 +109,6 @@ namespace LeaderEngine
 
             foreach (var tex in materialTextures)
                 tex.Value.Use(tex.Key);
-        }
-
-        public void Dispose()
-        {
-            DataManager.CurrentScene.SceneMaterials.Remove(this);
         }
     }
 }

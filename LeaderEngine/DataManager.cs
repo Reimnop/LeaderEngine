@@ -13,10 +13,6 @@ namespace LeaderEngine
     {
         public string Name;
 
-        public List<Material> SceneMaterials { get; } = new List<Material>();
-        public List<Texture> SceneTextures { get; } = new List<Texture>();
-        public List<Mesh> SceneMeshes { get; } = new List<Mesh>();
-
         public List<Entity> SceneRootEntities { get; } = new List<Entity>();
 
         public Scene(string name)
