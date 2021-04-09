@@ -8,6 +8,8 @@
   <ItemGroup>
     <PackageReference Include="AssimpNet" Version="4.1.0" />
     <PackageReference Include="ImGui.NET" Version="1.78.0" />
+    <PackageReference Include="SharpFont.Dependencies" Version="2.6.0" />
+    <PackageReference Include="SpaceWizards.SharpFont" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
