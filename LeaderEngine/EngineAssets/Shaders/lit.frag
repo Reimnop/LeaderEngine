@@ -24,7 +24,7 @@ void main() {
 	if (hasDiffuse)
 		outColor *= texture(diffuse, TexCoord).rgb;
 
-	float shade = max(dot(Normal, normalize(camPos - FragCoord)), 0.2);
+	float shade = max(dot(normalize(Normal), normalize(camPos - FragCoord)), 0.2);
 
 	fragColor = vec4(gammaCorrect(2.2, outColor * shade), 1.0);
 }
