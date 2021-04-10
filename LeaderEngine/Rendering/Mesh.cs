@@ -48,6 +48,8 @@ namespace LeaderEngine
 
         public readonly string Name;
 
+        public bool Initialized { get; private set; } = false;
+
         public Mesh(string name)
         {
             Name = name;
@@ -94,6 +96,8 @@ namespace LeaderEngine
             GL.BindVertexArray(0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+
+            Initialized = true;
         }
 
         public void UpdateMesh<T>(T[] vertices, uint[] indices) where T : struct
