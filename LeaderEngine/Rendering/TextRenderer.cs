@@ -1,10 +1,6 @@
-﻿using OpenTK.Mathematics;
-using OpenTK.Graphics.OpenGL4;
-using SharpFont;
+﻿using OpenTK.Graphics.OpenGL4;
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Collections.Generic;
 
 namespace LeaderEngine
 {
