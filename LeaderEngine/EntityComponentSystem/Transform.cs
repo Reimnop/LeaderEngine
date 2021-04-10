@@ -69,7 +69,7 @@ namespace LeaderEngine
         {
             //calculate the model matrix;
             Matrix4 res = 
-                Matrix4.CreateTranslation(OriginOffset)
+                Matrix4.CreateTranslation(-OriginOffset)
                 * Matrix4.CreateScale(Scale)
                 * Matrix4.CreateFromQuaternion(internalRotation)
                 * Matrix4.CreateTranslation(Position);
