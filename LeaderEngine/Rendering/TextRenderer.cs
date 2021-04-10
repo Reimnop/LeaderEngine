@@ -179,7 +179,7 @@ namespace LeaderEngine
 
             for (int i = 0; i < characterDatas.Length; i++)
             {
-                atlasSize.X += characterDatas[i].Width;
+                atlasSize.X += characterDatas[i].Width + 1;
             }
 
             //calculate buffer
@@ -210,7 +210,7 @@ namespace LeaderEngine
                     Advance = c.Advance
                 };
 
-                pos += c.Width;
+                pos += c.Width + 1;
             }
 
             //generate texture
