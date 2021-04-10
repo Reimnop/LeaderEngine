@@ -153,19 +153,14 @@ namespace LeaderEngine
 
         private static TextureWrapMode ConvertWrapModeToOTK(Assimp.TextureWrapMode textureWrapMode)
         {
-            switch (textureWrapMode)
+            return textureWrapMode switch
             {
-                case Assimp.TextureWrapMode.Clamp:
-                    return TextureWrapMode.ClampToBorder;
-                case Assimp.TextureWrapMode.Decal:
-                    return TextureWrapMode.ClampToEdge;
-                case Assimp.TextureWrapMode.Mirror:
-                    return TextureWrapMode.MirroredRepeat;
-                case Assimp.TextureWrapMode.Wrap:
-                    return TextureWrapMode.Repeat;
-                default:
-                    return TextureWrapMode.ClampToBorder;
-            }
+                Assimp.TextureWrapMode.Clamp => TextureWrapMode.ClampToBorder,
+                Assimp.TextureWrapMode.Decal => TextureWrapMode.ClampToEdge,
+                Assimp.TextureWrapMode.Mirror => TextureWrapMode.MirroredRepeat,
+                Assimp.TextureWrapMode.Wrap => TextureWrapMode.Repeat,
+                _ => TextureWrapMode.ClampToBorder,
+            };
         }
     }
 }

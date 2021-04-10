@@ -40,7 +40,7 @@
             uniforms.SetUniform("camPos", new Uniform(UniformType.Vector3,
                 Camera.Main.BaseTransform.Position));
 
-            Engine.Renderer.PushDrawData(DrawType.Opaque, new GLDrawData
+            renderer.PushDrawData(DrawType.Opaque, new GLDrawData
             {
                 Mesh = Mesh,
                 Shader = Shader,

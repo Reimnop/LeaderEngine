@@ -101,6 +101,9 @@ namespace LeaderEngine
             //upload buffers
             GL.NamedBufferData(VBO, vertices.Length * Unsafe.SizeOf<T>(), vertices, BufferUsageHint.DynamicCopy);
             GL.NamedBufferData(EBO, indices.Length * sizeof(uint), indices, BufferUsageHint.DynamicCopy);
+
+            VerticesCount = vertices.Length;
+            IndicesCount = indices.Length;
         }
 
         public void Use()

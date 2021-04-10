@@ -28,6 +28,7 @@ namespace LeaderEngine
 
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($"[{Assembly.GetCallingAssembly().GetName().Name}] " + msg.ToString());
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -38,6 +39,7 @@ namespace LeaderEngine
 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"[{Assembly.GetCallingAssembly().GetName().Name}] " + msg.ToString());
+            Console.ForegroundColor = ConsoleColor.White;
         }
     }
 }

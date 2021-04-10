@@ -18,7 +18,7 @@ namespace LeaderEngine
             Name = name;
         }
 
-        public static TextureArray FromPointer(string name, int[] width, int[] height, IntPtr[] data, PixelInternalFormat internalFormat = PixelInternalFormat.SrgbAlpha, PixelFormat format = PixelFormat.Rgba, PixelType pixelType = PixelType.UnsignedByte)
+        public static TextureArray FromPointer(string name, int width, int height, IntPtr[] data, PixelInternalFormat internalFormat = PixelInternalFormat.SrgbAlpha, PixelFormat format = PixelFormat.Rgba, PixelType pixelType = PixelType.UnsignedByte)
         {
             TextureArray textureArray = new TextureArray(name);
 
@@ -27,7 +27,7 @@ namespace LeaderEngine
 
             for (int i = 0; i < data.Length; i++)
             {
-                GL.TexImage3D(TextureTarget.Texture2DArray, i, internalFormat, width[i], height[i], data.Length, 0, format, pixelType, data[i]);
+                GL.TexImage3D(TextureTarget.Texture2DArray, i, internalFormat, width, height, data.Length, 0, format, pixelType, data[i]);
             }
 
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
@@ -37,7 +37,7 @@ namespace LeaderEngine
 
             GL.ObjectLabel(ObjectLabelIdentifier.Texture, textureArray.handle, name.Length, name);
 
-            GL.BindTexture(TextureTarget.Texture2D, 0);
+            GL.BindTexture(TextureTarget.Texture2DArray, 0);
 
             return textureArray;
         }

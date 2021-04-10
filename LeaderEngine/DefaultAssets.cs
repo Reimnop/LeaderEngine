@@ -6,6 +6,7 @@ namespace LeaderEngine
     public static class DefaultShaders
     {
         public static Shader SingleColor;
+        public static Shader Text;
         public static Shader Lit;
 
         internal static void Init()
@@ -15,6 +16,10 @@ namespace LeaderEngine
             SingleColor = Shader.FromSourceFile("single-color",
                 Path.Combine(baseDir, "single-color.vert"),
                 Path.Combine(baseDir, "single-color.frag"));
+
+            Text = Shader.FromSourceFile("text",
+                Path.Combine(baseDir, "text.vert"),
+                Path.Combine(baseDir, "text.frag"));
 
             Lit = Shader.FromSourceFile("lit",
                 Path.Combine(baseDir, "lit.vert"),

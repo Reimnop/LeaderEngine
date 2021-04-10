@@ -99,6 +99,9 @@ namespace LeaderEngine
             //call all render funcs
             DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRender());
 
+            ppFramebuffer.Begin();
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
             //render opaque
             GL.Enable(EnableCap.DepthTest);
 
@@ -107,9 +110,6 @@ namespace LeaderEngine
             GL.FrontFace(FrontFaceDirection.Ccw);
 
             var opDrawList = drawLists[DrawType.Opaque];
-
-            ppFramebuffer.Begin();
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             opDrawList.ForEach(drawData =>
             {
@@ -129,6 +129,35 @@ namespace LeaderEngine
 
                 GL.DrawElements(mesh.PrimitiveType, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
             });
+
+            //render transparent
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
+
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+            var trDrawList = drawLists[DrawType.Transparent];
+
+            trDrawList.ForEach(drawData =>
+            {
+                Mesh mesh = drawData.Mesh;
+                Shader shader = drawData.Shader;
+                Material material = drawData.Material;
+                UniformData uniforms = drawData.Uniforms;
+
+                if (mesh == null || shader == null || uniforms == null)
+                    return;
+
+                mesh.Use();
+                shader.Use();
+
+                material?.Use(shader);
+                uniforms.Use(shader);
+
+                GL.DrawElements(mesh.PrimitiveType, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
+            });
+
             ppFramebuffer.End();
 
             //reset states

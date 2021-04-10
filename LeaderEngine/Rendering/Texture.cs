@@ -9,11 +9,10 @@ namespace LeaderEngine
 {
     public sealed class Texture : IDisposable
     {
-        public int handle;
+        public readonly string Name;
+        private int handle;
 
         public Vector2 Size;
-
-        public readonly string Name;
 
         private Texture(string name)
         {

@@ -51,13 +51,11 @@ namespace LeaderEditor
             ImGui.SetCurrentContext(context);
 
             var io = ImGui.GetIO();
-            //io.Fonts.AddFontDefault();
-            io.Fonts.AddFontFromFileTTF(Path.Combine(AppContext.BaseDirectory, "Fonts/Inconsolata.ttf"), 16);
+            io.Fonts.AddFontFromFileTTF(Path.Combine(AppContext.BaseDirectory, "EngineAssets/Fonts/Inconsolata.ttf"), 16);
 
             io.BackendFlags |= ImGuiBackendFlags.HasMouseCursors | ImGuiBackendFlags.RendererHasVtxOffset;
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable | ImGuiConfigFlags.NavEnableKeyboard;
             io.ConfigWindowsResizeFromEdges = true;
-            //io.MouseDrawCursor = false;
 
             ImGui.StyleColorsDark();
 
