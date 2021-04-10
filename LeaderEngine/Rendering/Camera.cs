@@ -18,7 +18,7 @@ namespace LeaderEngine
         {
             GLRenderer renderer = Engine.Renderer;
 
-            projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(FOV), renderer.ViewportSize.X / (float)renderer.ViewportSize.Y, 0.02f, 200.0f);
+            projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(FOV), renderer.ViewportSize.X / (float)renderer.ViewportSize.Y, 0.02f, 800.0f);
 
             view = Matrix4.LookAt(
                     BaseTransform.Position,

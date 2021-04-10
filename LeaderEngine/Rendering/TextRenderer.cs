@@ -2,6 +2,7 @@
 using OpenTK.Graphics.OpenGL4;
 using SharpFont;
 using System;
+using System.IO;
 
 namespace LeaderEngine
 {
@@ -9,7 +10,6 @@ namespace LeaderEngine
     {
         private struct Character
         {
-            public Texture Texture;
             public Vector2i Size;
             public Vector2i Bearing;
             public int Advance;
@@ -29,10 +29,14 @@ namespace LeaderEngine
             }
         }
 
+        private TextureArray fontTexture;
+
         private Character[] characters = new Character[128];
 
         private void Start()
         {
+            InitFont(Path.Combine(AppContext.BaseDirectory, "Fonts/Inconsolata.ttf"));
+
             BaseEntity.Renderers.Add(this);
         }
 
@@ -43,7 +47,7 @@ namespace LeaderEngine
 
         public override void Render()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         private void UpdateTextMesh()
@@ -53,6 +57,12 @@ namespace LeaderEngine
 
         private void InitFont(string path)
         {
+            const int glyphs = 128;
+
+            int[] width = new int[glyphs];
+            int[] height = new int[glyphs];
+            IntPtr[] data = new IntPtr[glyphs];
+
             using (Library ft = new Library())
             {
                 using (Face face = new Face(ft, path))
@@ -61,23 +71,18 @@ namespace LeaderEngine
 
                     GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
 
-                    for (uint i = 0; i < 128; i++)
+                    for (uint i = 0; i < glyphs; i++)
                     {
                         face.LoadChar(i, LoadFlags.Render, LoadTarget.Normal);
 
                         var bitmap = face.Glyph.Bitmap;
 
-                        Texture texture = Texture.FromPointer("char-" + (char)i,
-                            bitmap.Width,
-                            bitmap.Rows,
-                            bitmap.Buffer,
-                            (PixelInternalFormat)All.Red,
-                            PixelFormat.Red,
-                            PixelType.UnsignedByte);
+                        width[i] = bitmap.Width;
+                        height[i] = bitmap.Rows;
+                        data[i] = bitmap.Buffer;
 
                         characters[i] = new Character
                         {
-                            Texture = texture,
                             Size = new Vector2i(bitmap.Width, bitmap.Rows),
                             Bearing = new Vector2i(face.Glyph.BitmapLeft, face.Glyph.BitmapTop),
                             Advance = face.Glyph.Advance.X.Value
@@ -85,6 +90,11 @@ namespace LeaderEngine
                     }
                 }
             }
+
+            fontTexture = TextureArray.FromPointer("FontTexture", width, height, data,
+                (PixelInternalFormat)All.Red,
+                PixelFormat.Red,
+                PixelType.UnsignedByte);
         }
     }
 }

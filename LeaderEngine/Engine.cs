@@ -23,6 +23,8 @@ namespace LeaderEngine
 
         public static GLRenderer Renderer = new ForwardRenderer();
 
+        public static bool IgnoreGLInfo = false;
+
         private static DebugProc debugProcCallback = DebugCallback;
         private static GCHandle debugProcCallbackHandle;
 
@@ -88,7 +90,8 @@ namespace LeaderEngine
                     Logger.LogError($"OpenGL: {messageString}");
                     break;
                 default:
-                    Logger.Log($"OpenGL: {messageString}");
+                    if (!IgnoreGLInfo)
+                        Logger.Log($"OpenGL: {messageString}");
                     break;
             }
         }

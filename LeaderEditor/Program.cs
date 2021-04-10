@@ -26,7 +26,7 @@ namespace LeaderEditor
         {
             Engine.Renderer = new EditorRenderer();
 
-            Logger.IgnoreInfo = true;
+            Engine.IgnoreGLInfo = true;
 
             Entity editorScripts = new Entity("EditorEntity");
             editorScripts.AddComponent<EditorController>();

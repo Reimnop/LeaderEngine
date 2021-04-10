@@ -3,13 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AssimpNet" Version="4.1.0" />
     <PackageReference Include="ImGui.NET" Version="1.78.0" />
-    <PackageReference Include="SharpFont.Dependencies" Version="2.6.0" />
-    <PackageReference Include="SpaceWizards.SharpFont" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -13,15 +13,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="C:\Users\rayng\.nuget\packages\sharpfont.dependencies\2.6.0\build\..\bin\msvc10\x86\freetype6.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AssimpNet" Version="4.1.0" />
     <PackageReference Include="OpenTK" Version="4.6.3" />
-    <PackageReference Include="SharpFont.Dependencies" Version="2.6.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
-    <PackageReference Include="SpaceWizards.SharpFont" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="SharpFont">
+      <HintPath>SharpFont.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +49,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="EngineAssets\Shaders\post-process.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="freetype6.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
