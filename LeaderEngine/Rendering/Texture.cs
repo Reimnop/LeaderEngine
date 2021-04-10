@@ -21,7 +21,8 @@ namespace LeaderEngine
 
         public static Texture FromFile(string name, string path)
         {
-            return FromImage(name, Image.Load<Rgba32>(path));
+            using (var image = Image.Load<Rgba32>(path))
+                return FromImage(name, image);
         }
 
         public unsafe static Texture FromImage(string name, Image<Rgba32> image)
