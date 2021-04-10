@@ -55,7 +55,7 @@ namespace LeaderEngine
             }
         }
 
-        private Character[] characters = new Character[256];
+        private Character[] characters = new Character[glyphs];
 
         private Texture fontTexture;
         private Mesh textMesh;
