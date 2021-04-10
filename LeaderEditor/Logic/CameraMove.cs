@@ -9,6 +9,8 @@ namespace LeaderEditor
         public float Speed = 2.0f;
         public float Sensitivity = 0.4f;
 
+        public bool Focus = false;
+
         private float speedMultiplier = 1.0f;
 
         private void Start()
@@ -18,6 +20,9 @@ namespace LeaderEditor
 
         private void Update()
         {
+            if (!Focus)
+                return;
+
             if (Input.GetKey(Keys.LeftShift))
                 speedMultiplier = 3.0f;
             else speedMultiplier = 1.0f;

@@ -26,4 +26,17 @@ namespace LeaderEngine
                 Path.Combine(baseDir, "lit.frag"));
         }
     }
+
+    public static class DefaultFonts
+    {
+        public static Font Inconsolata;
+
+        public static void Init()
+        {
+            string baseDir = Path.Combine(AppContext.BaseDirectory, "EngineAssets/Fonts/");
+
+            Inconsolata = new Font("Inconsolata", 
+                Path.Combine(baseDir, "Inconsolata.ttf"));
+        }
+    }
 }

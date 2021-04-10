@@ -136,14 +136,22 @@ namespace LeaderEngine
             List<TextVertex> vertices = new List<TextVertex>();
             List<uint> indices = new List<uint>();
 
-            int pos = 0;
+            int xOffset = 0;
+            int yOffset = 0;
             uint ind = 0;
             for (int i = 0; i < text.Length; i++)
             {
-                Character ch = characters[text[i]];
+                if (text[i] == '\n')
+                {
+                    xOffset = 0;
+                    yOffset -= fontHeight;
+                    continue;
+                }
 
-                float xpos = pos + ch.Bearing.X;
-                float ypos = ch.Bearing.Y - ch.Size.Y;
+                Character ch = characters[text[i] >= glyphs ? '?' : text[i]];
+
+                float xpos = xOffset + ch.Bearing.X;
+                float ypos = yOffset + ch.Bearing.Y - ch.Size.Y;
 
                 float w = ch.Size.X;
                 float h = ch.Size.Y;
@@ -163,7 +171,7 @@ namespace LeaderEngine
                 });
 
                 ind += 4;
-                pos += ch.Advance >> 6;
+                xOffset += ch.Advance >> 6;
             }
 
             if (mesh.Initialized)

@@ -6,8 +6,10 @@ namespace LeaderEngine
 {
     public class TextRenderer : Renderer
     {
+        public string Text = "New Text";
+
         private string _text;
-        public string Text 
+        private string internalText 
         { 
             get => _text; 
             set
@@ -16,11 +18,11 @@ namespace LeaderEngine
                     return;
 
                 _text = value;
-                font.GenTextMesh(textMesh, value);
+                Font.GenTextMesh(textMesh, value);
             }
         }
 
-        private Font font;
+        public Font Font = DefaultFonts.Inconsolata;
         
         private Mesh textMesh;
 
@@ -29,16 +31,14 @@ namespace LeaderEngine
 
         private void Start()
         {
-            font = new Font("Inconsolata", Path.Combine(AppContext.BaseDirectory, "EngineAssets/Fonts/Inconsolata.ttf"));
-
-            textMesh = new Mesh("Inconsolate-mesh");
+            textMesh = new Mesh("text mesh");
 
             BaseEntity.Renderers.Add(this);
         }
 
         private void Update()
         {
-            Text = "According to all known laws of aviation, there is no way a bee should be able to fly.";
+            internalText = Text;
         }
 
         private void OnRemove()
@@ -55,7 +55,7 @@ namespace LeaderEngine
                 * renderer.WorldView
                 * renderer.WorldProjection));
 
-            textMaterial.SetTexture2D(TextureUnit.Texture0, font.GetTexture());
+            textMaterial.SetTexture2D(TextureUnit.Texture0, Font.GetTexture());
 
             renderer.PushDrawData(DrawType.Transparent, new GLDrawData
             {

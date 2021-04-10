@@ -13,6 +13,8 @@ namespace LeaderEditor
 
         private Entity editorCamera;
 
+        private CameraMove cm;
+
         private void Start()
         {
             if (Main == null)
@@ -29,7 +31,7 @@ namespace LeaderEditor
 
             editorCamera = new Entity("EditorCamera");
             editorCamera.AddComponent<Camera>();
-            editorCamera.AddComponent<CameraMove>();
+            cm = editorCamera.AddComponent<CameraMove>();
         }
 
         private void ImGuiRenderer()
@@ -40,6 +42,8 @@ namespace LeaderEditor
             ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, new System.Numerics.Vector2(160.0f, 90.0f));
             if (ImGui.Begin("Viewport"))
             {
+                cm.Focus = ImGui.IsWindowFocused();
+
                 var vSize = ImGui.GetContentRegionAvail();
 
                 ERenderer.ViewportSize = new Vector2i((int)vSize.X, (int)vSize.Y);

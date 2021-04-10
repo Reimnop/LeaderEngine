@@ -49,6 +49,7 @@ namespace LeaderEngine
             stopwatch.Start();
 
             DefaultShaders.Init();
+            DefaultFonts.Init();
 
             initCallback?.Invoke();
 
