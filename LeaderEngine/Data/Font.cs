@@ -127,6 +127,8 @@ namespace LeaderEngine
                 PixelFormat.Red,
                 PixelType.UnsignedByte);
             handle.Free();
+
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, 4);
         }
 
         public void GenTextMesh(Mesh mesh, string text)

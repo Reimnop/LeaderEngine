@@ -2,6 +2,7 @@
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 
 namespace LeaderEditor
@@ -17,7 +18,6 @@ namespace LeaderEditor
                 API = ContextAPI.OpenGL,
                 Flags = ContextFlags.ForwardCompatible,
                 Profile = ContextProfile.Core,
-                NumberOfSamples = 2,
                 Size = new Vector2i(1600, 900)
             }, InitEditor);
         }
