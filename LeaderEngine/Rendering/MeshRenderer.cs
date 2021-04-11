@@ -62,9 +62,9 @@ namespace LeaderEngine
             uniforms.SetUniform("camPos", new Uniform(UniformType.Vector3,
                 Camera.Main.BaseTransform.Position));
 
-            if (DirectinalLight.Main != null)
+            if (DirectionalLight.Main != null)
                 uniforms.SetUniform("lightDir", new Uniform(UniformType.Vector3,
-                    -DirectinalLight.Main.BaseTransform.Forward));
+                    -DirectionalLight.Main.BaseTransform.Forward));
 
             uniforms.SetUniform("lightSpaceMat", new Uniform(UniformType.Matrix4, LightingGlobals.LightView * LightingGlobals.LightProjection));
 

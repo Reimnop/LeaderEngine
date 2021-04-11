@@ -2,9 +2,9 @@
 
 namespace LeaderEngine
 {
-    public class DirectinalLight : Component
+    public class DirectionalLight : Component
     {
-        public static DirectinalLight Main;
+        public static DirectionalLight Main;
 
         private void Start()
         {

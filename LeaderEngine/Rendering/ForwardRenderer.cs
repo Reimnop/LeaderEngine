@@ -132,11 +132,11 @@ namespace LeaderEngine
             DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRender(view, projection));
 
             //shadow mapping
-            if (DirectinalLight.Main == null)
+            if (DirectionalLight.Main == null)
                 goto RenderOpaque;
 
             Matrix4 lView; Matrix4 lProjection;
-            DirectinalLight.Main.CalculateViewProjection(out lView, out lProjection, shadowMapSize);
+            DirectionalLight.Main.CalculateViewProjection(out lView, out lProjection, shadowMapSize);
             LightingGlobals.LightView = lView;
             LightingGlobals.LightProjection = lProjection;
 
