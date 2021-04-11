@@ -153,24 +153,7 @@ namespace LeaderEngine
             GL.CullFace(CullFaceMode.Back);
             GL.FrontFace(FrontFaceDirection.Ccw);
 
-            var smDrawList = drawLists[DrawType.ShadowMap];
-
-            smDrawList.ForEach(drawData =>
-            {
-                Mesh mesh = drawData.Mesh;
-                Shader shader = drawData.Shader;
-                UniformData uniforms = drawData.Uniforms;
-
-                if (mesh == null || uniforms == null)
-                    return;
-
-                mesh.Use();
-                shader.Use();
-
-                uniforms.Use(shader);
-
-                GL.DrawElements(mesh.PrimitiveType, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
-            });
+            DrawDrawList(drawLists[DrawType.ShadowMap]);
 
             shadowMapFramebuffer.End();
 
@@ -189,26 +172,7 @@ namespace LeaderEngine
             GL.CullFace(CullFaceMode.Back);
             GL.FrontFace(FrontFaceDirection.Ccw);
 
-            var opDrawList = drawLists[DrawType.Opaque];
-
-            opDrawList.ForEach(drawData =>
-            {
-                Mesh mesh = drawData.Mesh;
-                Shader shader = drawData.Shader;
-                Material material = drawData.Material;
-                UniformData uniforms = drawData.Uniforms;
-
-                if (mesh == null || shader == null || uniforms == null)
-                    return;
-
-                mesh.Use();
-                shader.Use();
-
-                material?.Use(shader);
-                uniforms.Use(shader);
-
-                GL.DrawElements(mesh.PrimitiveType, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
-            });
+            DrawDrawList(drawLists[DrawType.Opaque]);
 
             //render transparent
             GL.DepthMask(false);
@@ -218,27 +182,8 @@ namespace LeaderEngine
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            var trDrawList = drawLists[DrawType.Transparent];
+            DrawDrawList(drawLists[DrawType.Transparent]);
 
-            trDrawList.ForEach(drawData =>
-            {
-                Mesh mesh = drawData.Mesh;
-                Shader shader = drawData.Shader;
-                Material material = drawData.Material;
-                UniformData uniforms = drawData.Uniforms;
-
-                if (mesh == null || shader == null || uniforms == null)
-                    return;
-
-                mesh.Use();
-                shader.Use();
-
-                material?.Use(shader);
-                uniforms.Use(shader);
-
-                GL.DrawElements(mesh.PrimitiveType, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
-            });
-            
             ppFramebuffer.End();
 
             //reset states
@@ -256,6 +201,37 @@ namespace LeaderEngine
             GL.DrawElements(PrimitiveType.Triangles, ppMesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
 
             ClearDrawList();
+        }
+
+        private void DrawDrawList(List<GLDrawData> drawDatas)
+        {
+            Mesh oldMesh = null;
+            Shader oldShader = null;
+
+            drawDatas.ForEach(drawData =>
+            {
+                Mesh mesh = drawData.Mesh;
+                Shader shader = drawData.Shader;
+                Material material = drawData.Material;
+                UniformData uniforms = drawData.Uniforms;
+
+                if (mesh == null || shader == null || uniforms == null)
+                    return;
+
+                if (mesh != oldMesh)
+                    mesh.Use();
+
+                if (shader != oldShader)
+                    shader.Use();
+
+                oldMesh = mesh;
+                oldShader = shader;
+
+                material?.Use(shader);
+                uniforms.Use(shader);
+
+                GL.DrawElements(mesh.PrimitiveType, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
+            });
         }
 
         private void ClearDrawList()
