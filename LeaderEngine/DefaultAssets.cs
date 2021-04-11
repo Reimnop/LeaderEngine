@@ -5,9 +5,10 @@ namespace LeaderEngine
 {
     public static class DefaultShaders
     {
-        public static Shader SingleColor;
-        public static Shader Text;
-        public static Shader Lit;
+        public static Shader SingleColor { get; private set; }
+        public static Shader ShadowMap { get; private set; }
+        public static Shader Text { get; private set; }
+        public static Shader Lit { get; private set; }
 
         internal static void Init()
         {
@@ -16,6 +17,10 @@ namespace LeaderEngine
             SingleColor = Shader.FromSourceFile("single-color",
                 Path.Combine(baseDir, "single-color.vert"),
                 Path.Combine(baseDir, "single-color.frag"));
+
+            ShadowMap = Shader.FromSourceFile("shadowmap",
+                Path.Combine(baseDir, "shadowmap.vert"),
+                Path.Combine(baseDir, "shadowmap.frag"));
 
             Text = Shader.FromSourceFile("text",
                 Path.Combine(baseDir, "text.vert"),
@@ -29,7 +34,7 @@ namespace LeaderEngine
 
     public static class DefaultFonts
     {
-        public static Font Inconsolata;
+        public static Font Inconsolata { get; private set; }
 
         public static void Init()
         {

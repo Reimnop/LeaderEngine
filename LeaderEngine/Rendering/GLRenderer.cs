@@ -19,10 +19,6 @@ namespace LeaderEngine
 
     public abstract class GLRenderer
     {
-        public Matrix4 WorldProjection { get; protected set; } = Matrix4.Identity;
-        public Matrix4 WorldView { get; protected set; } = Matrix4.Identity;
-        public Matrix4 GUIProjection { get; protected set; } = Matrix4.Identity;
-
         public Vector2i ViewportSize = new Vector2i(1600, 900);
 
         public abstract void Init();

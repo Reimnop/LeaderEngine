@@ -93,11 +93,8 @@ namespace LeaderEngine
 
             Camera.Main.CalculateViewProjection(out Matrix4 view, out Matrix4 projection);
 
-            WorldView = view;
-            WorldProjection = projection;
-
             //call all render funcs
-            DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRender());
+            DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRender(view, projection));
 
             ppFramebuffer.Begin();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);

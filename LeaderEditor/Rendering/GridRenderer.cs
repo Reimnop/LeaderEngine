@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace LeaderEditor
 {
-    internal class GridRenderer : Renderer
+    internal class GridRenderer : Component, IRenderer
     {
         private Mesh mesh;
         private Shader shader = DefaultShaders.SingleColor;
@@ -82,13 +82,12 @@ namespace LeaderEditor
             BaseEntity.Renderers.Remove(this);
         }
 
-        public override void Render()
+        public void Render(Matrix4 view, Matrix4 projection)
         {
             GLRenderer renderer = Engine.Renderer;
 
             uniforms.SetUniform("mvp", new Uniform(UniformType.Matrix4,
-                renderer.WorldView
-                * renderer.WorldProjection));
+                view * projection));
 
             renderer.PushDrawData(DrawType.Opaque, new GLDrawData
             {

@@ -1,10 +1,11 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using System;
 using System.IO;
 
 namespace LeaderEngine
 {
-    public class TextRenderer : Renderer
+    public class TextRenderer : Component, IRenderer
     {
         public string Text = "New Text";
 
@@ -46,14 +47,13 @@ namespace LeaderEngine
             BaseEntity.Renderers.Remove(this);
         }
 
-        public override void Render()
+        public void Render(Matrix4 view, Matrix4 projection)
         {
             GLRenderer renderer = Engine.Renderer;
 
             uniforms.SetUniform("mvp", new Uniform(UniformType.Matrix4,
                 BaseTransform.ModelMatrix
-                * renderer.WorldView
-                * renderer.WorldProjection));
+                * view * projection));
 
             textMaterial.SetTexture2D(TextureUnit.Texture0, Font.GetTexture());
 

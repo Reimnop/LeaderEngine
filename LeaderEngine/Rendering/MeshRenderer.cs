@@ -1,6 +1,8 @@
-﻿namespace LeaderEngine
+﻿using OpenTK.Mathematics;
+
+namespace LeaderEngine
 {
-    public class MeshRenderer : Renderer
+    public class MeshRenderer : Component, IRenderer, IShadowMapRenderer
     {
         public Mesh Mesh;
         public Material Material;
@@ -19,23 +21,25 @@
             BaseEntity.Renderers.Remove(this);
         }
 
-        public override void Render()
+        public void RenderShadowMap(Matrix4 view, Matrix4 projection)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Render(Matrix4 view, Matrix4 projection)
         {
             GLRenderer renderer = Engine.Renderer;
 
             uniforms.SetUniform("model", new Uniform(UniformType.Matrix4,
                 BaseTransform.ModelMatrix));
 
-            uniforms.SetUniform("view", new Uniform(UniformType.Matrix4,
-                renderer.WorldView));
+            uniforms.SetUniform("view", new Uniform(UniformType.Matrix4, view));
 
-            uniforms.SetUniform("projection", new Uniform(UniformType.Matrix4,
-                renderer.WorldProjection));
+            uniforms.SetUniform("projection", new Uniform(UniformType.Matrix4, projection));
 
             uniforms.SetUniform("mvp", new Uniform(UniformType.Matrix4,
                 BaseTransform.ModelMatrix
-                * renderer.WorldView
-                * renderer.WorldProjection));
+                * view * projection));
 
             uniforms.SetUniform("camPos", new Uniform(UniformType.Vector3,
                 Camera.Main.BaseTransform.Position));

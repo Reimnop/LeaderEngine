@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK.Mathematics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -37,7 +38,8 @@ namespace LeaderEngine
         internal List<Entity> Children { get; } = new List<Entity>();
         private List<Component> components { get; } = new List<Component>();
 
-        public List<Renderer> Renderers { get; } = new List<Renderer>();
+        public List<IRenderer> Renderers { get; } = new List<IRenderer>();
+        public List<IShadowMapRenderer> ShadowMapRenderers { get; } = new List<IShadowMapRenderer>();
 
         public Entity(string name, Entity parent = null)
         {
@@ -66,14 +68,14 @@ namespace LeaderEngine
             Children.ForEach(child => child.RecursivelyUpdate());
         }
 
-        internal void RecursivelyRender()
+        internal void RecursivelyRender(Matrix4 view, Matrix4 projection)
         {
             if (!Active)
                 return;
 
-            Renderers.ForEach(x => x.Render());
+            Renderers.ForEach(x => x.Render(view, projection));
 
-            Children.ForEach(child => child.RecursivelyRender());
+            Children.ForEach(child => child.RecursivelyRender(view, projection));
         }
 
         public void Destroy()

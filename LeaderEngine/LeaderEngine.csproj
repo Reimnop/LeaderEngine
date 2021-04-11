@@ -36,6 +36,12 @@
     <None Update="EngineAssets\Fonts\Inconsolata.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="EngineAssets\Shaders\shadowmap.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="EngineAssets\Shaders\shadowmap.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="EngineAssets\Shaders\text.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
