@@ -49,6 +49,9 @@ namespace LeaderEngine
 
         public void Render(Matrix4 view, Matrix4 projection)
         {
+            if (!Enabled)
+                return;
+
             GLRenderer renderer = Engine.Renderer;
 
             uniforms.SetUniform("mvp", new Uniform(UniformType.Matrix4,

@@ -75,6 +75,8 @@ namespace LeaderEngine
                     texture.SetWrapT(ConvertWrapModeToOTK(aiTexture.WrapModeV));
 
                     mat.SetInt("hasDiffuse", 1);
+
+                    mat.SetInt("diffuse", 0);
                     mat.SetTexture2D(TextureUnit.Texture0, texture);
                 }
             }

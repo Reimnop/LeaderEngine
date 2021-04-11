@@ -4,6 +4,7 @@ namespace LeaderEngine
 {
     public enum DrawType
     {
+        ShadowMap,
         Opaque,
         Transparent,
         GUI

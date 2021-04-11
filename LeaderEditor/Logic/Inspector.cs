@@ -12,6 +12,7 @@ namespace LeaderEditor
         //all serializeable components
         public static Dictionary<Type, Action<Component>> SerializeableComponents = new Dictionary<Type, Action<Component>>()
         {
+            { typeof(DirectinalLight), null },
             { typeof(TextRenderer), null }
         };
 

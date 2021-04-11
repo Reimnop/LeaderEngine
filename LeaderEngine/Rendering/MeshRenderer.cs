@@ -1,4 +1,5 @@
-﻿using OpenTK.Mathematics;
+﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace LeaderEngine
 {
@@ -6,28 +7,45 @@ namespace LeaderEngine
     {
         public Mesh Mesh;
         public Material Material;
-
-        private UniformData uniforms = new UniformData();
-
         public Shader Shader = DefaultShaders.Lit;
+
+        private UniformData shadowMapUniforms = new UniformData();
+        private UniformData uniforms = new UniformData();
 
         private void Start()
         {
+            BaseEntity.ShadowMapRenderers.Add(this);
             BaseEntity.Renderers.Add(this);
         }
 
         private void OnRemove()
         {
+            BaseEntity.ShadowMapRenderers.Remove(this);
             BaseEntity.Renderers.Remove(this);
         }
 
         public void RenderShadowMap(Matrix4 view, Matrix4 projection)
         {
-            throw new System.NotImplementedException();
+            if (!Enabled)
+                return;
+
+            shadowMapUniforms.SetUniform("mvp", new Uniform(UniformType.Matrix4,
+                BaseTransform.ModelMatrix
+                * view * projection));
+
+            Engine.Renderer.PushDrawData(DrawType.ShadowMap, new GLDrawData
+            {
+                Mesh = Mesh,
+                Shader = DefaultShaders.ShadowMap,
+                Uniforms = shadowMapUniforms
+            });
         }
 
         public void Render(Matrix4 view, Matrix4 projection)
         {
+            if (!Enabled)
+                return;
+
             GLRenderer renderer = Engine.Renderer;
 
             uniforms.SetUniform("model", new Uniform(UniformType.Matrix4,
@@ -43,6 +61,15 @@ namespace LeaderEngine
 
             uniforms.SetUniform("camPos", new Uniform(UniformType.Vector3,
                 Camera.Main.BaseTransform.Position));
+
+            if (DirectinalLight.Main != null)
+                uniforms.SetUniform("lightDir", new Uniform(UniformType.Vector3,
+                    -DirectinalLight.Main.BaseTransform.Forward));
+
+            uniforms.SetUniform("lightSpaceMat", new Uniform(UniformType.Matrix4, LightingGlobals.LightView * LightingGlobals.LightProjection));
+
+            Material.SetInt("shadowMap", 1);
+            Material.SetTexture2D(TextureUnit.Texture1, LightingGlobals.ShadowMap);
 
             renderer.PushDrawData(DrawType.Opaque, new GLDrawData
             {

@@ -58,8 +58,6 @@ namespace LeaderEditor
 
         public override void Render()
         {
-            GL.Viewport(0, 0, ViewportSize.X, ViewportSize.Y);
-
             //begin fbo
             Framebuffer.Begin();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);

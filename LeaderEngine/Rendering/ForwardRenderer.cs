@@ -6,15 +6,27 @@ using System.IO;
 
 namespace LeaderEngine
 {
+    public static class LightingGlobals
+    {
+        public static Matrix4 LightView { get; internal set; }
+        public static Matrix4 LightProjection { get; internal set; }
+        public static int ShadowMap { get; internal set; }
+    }
+
     public class ForwardRenderer : GLRenderer
     {
         private Dictionary<DrawType, List<GLDrawData>> drawLists = new Dictionary<DrawType, List<GLDrawData>>()
         {
+            { DrawType.ShadowMap, new List<GLDrawData>() },
             { DrawType.Opaque, new List<GLDrawData>() },
             { DrawType.Transparent, new List<GLDrawData>() },
             { DrawType.GUI, new List<GLDrawData>() }
         };
 
+        const int shadowMapRes = 4096;
+        const float shadowMapSize = 32.0f;
+
+        private Framebuffer shadowMapFramebuffer;
         private Framebuffer ppFramebuffer;
 
         private Mesh ppMesh;
@@ -22,6 +34,29 @@ namespace LeaderEngine
 
         public override void Init()
         {
+            shadowMapFramebuffer = new Framebuffer("ShadowMapFBO", shadowMapRes, shadowMapRes, new Attachment[]
+            {
+                new Attachment
+                {
+                    Draw = false,
+                    PixelInternalFormat = PixelInternalFormat.DepthComponent,
+                    PixelFormat = PixelFormat.DepthComponent,
+                    PixelType = PixelType.Float,
+                    FramebufferAttachment = FramebufferAttachment.DepthAttachment,
+                    TextureParamsInt = new TextureParamInt[]
+                    {
+                        new TextureParamInt { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Nearest },
+                        new TextureParamInt { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Nearest },
+                        new TextureParamInt { ParamName = TextureParameterName.TextureWrapS, Param = (int)TextureWrapMode.ClampToBorder },
+                        new TextureParamInt { ParamName = TextureParameterName.TextureWrapT, Param = (int)TextureWrapMode.ClampToBorder }
+                    },
+                    TextureParamsFloatArr = new TextureParamFloatArr[]
+                    {
+                        new TextureParamFloatArr { ParamName = TextureParameterName.TextureBorderColor, Params = new float[] { 1.0f, 1.0f, 1.0f, 1.0f } }
+                    }
+                }
+            });
+
             ppFramebuffer = new Framebuffer("PostProcessFBO", ViewportSize.X, ViewportSize.Y, new Attachment[]
             {
                 new Attachment
@@ -96,10 +131,58 @@ namespace LeaderEngine
             //call all render funcs
             DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRender(view, projection));
 
+            //shadow mapping
+            if (DirectinalLight.Main == null)
+                goto RenderOpaque;
+
+            Matrix4 lView; Matrix4 lProjection;
+            DirectinalLight.Main.CalculateViewProjection(out lView, out lProjection, shadowMapSize);
+            LightingGlobals.LightView = lView;
+            LightingGlobals.LightProjection = lProjection;
+
+            DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRenderShadowMap(LightingGlobals.LightView, LightingGlobals.LightProjection));
+
+            GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
+
+            shadowMapFramebuffer.Begin();
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            GL.Enable(EnableCap.DepthTest);
+
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+            GL.FrontFace(FrontFaceDirection.Ccw);
+
+            var smDrawList = drawLists[DrawType.ShadowMap];
+
+            smDrawList.ForEach(drawData =>
+            {
+                Mesh mesh = drawData.Mesh;
+                Shader shader = drawData.Shader;
+                UniformData uniforms = drawData.Uniforms;
+
+                if (mesh == null || uniforms == null)
+                    return;
+
+                mesh.Use();
+                shader.Use();
+
+                uniforms.Use(shader);
+
+                GL.DrawElements(mesh.PrimitiveType, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
+            });
+
+            shadowMapFramebuffer.End();
+
+            LightingGlobals.ShadowMap = shadowMapFramebuffer.GetTexture(FramebufferAttachment.DepthAttachment);
+
+            //render opaque
+            RenderOpaque:
+            GL.Viewport(0, 0, ViewportSize.X, ViewportSize.Y);
+
             ppFramebuffer.Begin();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            //render opaque
             GL.Enable(EnableCap.DepthTest);
 
             GL.Enable(EnableCap.CullFace);
@@ -128,7 +211,8 @@ namespace LeaderEngine
             });
 
             //render transparent
-            GL.Disable(EnableCap.DepthTest);
+            GL.DepthMask(false);
+            
             GL.Disable(EnableCap.CullFace);
 
             GL.Enable(EnableCap.Blend);
@@ -154,10 +238,11 @@ namespace LeaderEngine
 
                 GL.DrawElements(mesh.PrimitiveType, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
             });
-
+            
             ppFramebuffer.End();
 
             //reset states
+            GL.DepthMask(true);
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
 

@@ -25,7 +25,7 @@ namespace LeaderEngine
         public readonly string Name;
 
         private Dictionary<string, MaterialProp> materialProps = new Dictionary<string, MaterialProp>();
-        private Dictionary<TextureUnit, Texture> materialTextures = new Dictionary<TextureUnit, Texture>();
+        private Dictionary<TextureUnit, int> materialTextures = new Dictionary<TextureUnit, int>();
 
         public Material(string name)
         {
@@ -78,9 +78,14 @@ namespace LeaderEngine
             });
         }
 
+        public void SetTexture2D(TextureUnit unit, int handle)
+        {
+            materialTextures.SetOrAdd(unit, handle);
+        }
+
         public void SetTexture2D(TextureUnit unit, Texture texture)
         {
-            materialTextures.SetOrAdd(unit, texture);
+            materialTextures.SetOrAdd(unit, texture.GetHandle());
         }
         #endregion
 
@@ -107,7 +112,10 @@ namespace LeaderEngine
                 }
 
             foreach (var tex in materialTextures)
-                tex.Value.Use(tex.Key);
+            {
+                GL.ActiveTexture(tex.Key);
+                GL.BindTexture(TextureTarget.Texture2D, tex.Value);
+            }
         }
     }
 }

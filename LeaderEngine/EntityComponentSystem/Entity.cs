@@ -78,6 +78,16 @@ namespace LeaderEngine
             Children.ForEach(child => child.RecursivelyRender(view, projection));
         }
 
+        internal void RecursivelyRenderShadowMap(Matrix4 view, Matrix4 projection)
+        {
+            if (!Active)
+                return;
+
+            ShadowMapRenderers.ForEach(x => x.RenderShadowMap(view, projection));
+
+            Children.ForEach(child => child.RecursivelyRenderShadowMap(view, projection));
+        }
+
         public void Destroy()
         {
             _parent?.Children.Remove(this);

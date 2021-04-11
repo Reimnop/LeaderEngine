@@ -6,7 +6,7 @@ in vec3 Color;
 in vec2 TexCoord;
 
 in vec3 Normal;
-in vec3 FragCoord;
+in vec3 FragPos;
 
 uniform bool hasDiffuse;
 uniform sampler2D diffuse;
@@ -15,16 +15,53 @@ uniform vec3 color;
 
 uniform vec3 camPos;
 
+//light uniforms
+uniform sampler2D shadowMap;
+uniform vec3 lightDir;
+uniform float bBias = 0.005;
+
+in vec4 FragPosLightSpace;
+
 vec3 gammaCorrect(float gamma, vec3 col) {
 	return pow(col, vec3(1 / gamma));
 }
 
+float calculateShadow(vec4 fragPosLightSpace) {
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w * 0.5 + 0.5;
+
+	if(projCoords.z > 1.0)
+        return 1.0;
+
+	vec3 norm = normalize(Normal);
+
+	float bias = max(bBias * (1.0 - dot(norm, lightDir)), bBias);
+
+	float shadow = 0.0;
+	vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+	for(int x = -1; x <= 1; ++x)
+	{
+		for(int y = -1; y <= 1; ++y)
+		{
+			float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+			shadow += projCoords.z - bias > pcfDepth ? 0.0 : 1.0;        
+		}    
+	}
+	shadow /= 9.0;
+
+    return shadow;
+}
+
 void main() {
-	vec3 outColor = color;
+	vec3 obColor = color;
 	if (hasDiffuse)
-		outColor *= texture(diffuse, TexCoord).rgb;
+		obColor *= texture(diffuse, TexCoord).rgb;
 
-	float shade = max(dot(normalize(Normal), normalize(camPos - FragCoord)), 0.2);
+	vec3 norm = normalize(Normal);
 
-	fragColor = vec4(gammaCorrect(2.2, outColor * shade), 1.0);
+	vec3 diffuse = max(dot(norm, lightDir), 0.0) * vec3(1.0);
+	vec3 shadow = (calculateShadow(FragPosLightSpace)) * vec3(1.0);
+
+	vec3 outColor = (vec3(0.1) + diffuse * shadow) * obColor;
+
+	fragColor = vec4(gammaCorrect(2.2, outColor), 1.0);
 }
