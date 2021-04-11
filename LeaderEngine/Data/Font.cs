@@ -79,11 +79,13 @@ namespace LeaderEngine
             }
 
             //calculate atlas size
+            const int padding = 2;
+
             Vector2i atlasSize = new Vector2i(0, fontHeight);
 
             for (int i = 0; i < characterDatas.Length; i++)
             {
-                atlasSize.X += characterDatas[i].Width + 1;
+                atlasSize.X += characterDatas[i].Width + padding;
             }
 
             //calculate buffer
@@ -114,11 +116,12 @@ namespace LeaderEngine
                     Advance = c.Advance
                 };
 
-                pos += c.Width + 1;
+                pos += c.Width + padding;
             }
 
             //generate texture
             GCHandle handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+
             fontTexture = Texture.FromPointer(name + "-font",
                 atlasSize.X,
                 atlasSize.Y,
@@ -126,6 +129,10 @@ namespace LeaderEngine
                 (PixelInternalFormat)All.Red,
                 PixelFormat.Red,
                 PixelType.UnsignedByte);
+
+            fontTexture.SetWrapS(TextureWrapMode.ClampToBorder);
+            fontTexture.SetWrapT(TextureWrapMode.ClampToBorder);
+
             handle.Free();
 
             GL.PixelStore(PixelStoreParameter.UnpackAlignment, 4);
@@ -136,25 +143,28 @@ namespace LeaderEngine
             List<TextVertex> vertices = new List<TextVertex>();
             List<uint> indices = new List<uint>();
 
-            int xOffset = 0;
-            int yOffset = 0;
+            float xOffset = 0;
+            float yOffset = 0;
             uint ind = 0;
+
+            float scale = 1.0f / fontHeight;
+
             for (int i = 0; i < text.Length; i++)
             {
                 if (text[i] == '\n')
                 {
                     xOffset = 0;
-                    yOffset -= fontHeight;
+                    yOffset -= fontHeight * scale;
                     continue;
                 }
 
                 Character ch = characters[text[i] >= glyphs ? '?' : text[i]];
 
-                float xpos = xOffset + ch.Bearing.X;
-                float ypos = yOffset + ch.Bearing.Y - ch.Size.Y;
+                float xpos = xOffset + ch.Bearing.X * scale;
+                float ypos = yOffset + (ch.Bearing.Y - ch.Size.Y) * scale;
 
-                float w = ch.Size.X;
-                float h = ch.Size.Y;
+                float w = ch.Size.X * scale;
+                float h = ch.Size.Y * scale;
 
                 vertices.AddRange(
                     new TextVertex[] {
@@ -171,7 +181,7 @@ namespace LeaderEngine
                 });
 
                 ind += 4;
-                xOffset += ch.Advance >> 6;
+                xOffset += (ch.Advance >> 6) * scale;
             }
 
             if (mesh.Initialized)
