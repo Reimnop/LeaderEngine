@@ -28,7 +28,7 @@ namespace LeaderEngine
         private static DebugProc debugProcCallback = DebugCallback;
         private static GCHandle debugProcCallbackHandle;
 
-        public static void Init(GameWindowSettings gws, NativeWindowSettings nws, Action initCallback = null)
+        public static void Init(GameWindowSettings gws, NativeWindowSettings nws, Action initCallback = null, GLRenderer renderer = null)
         {
             MainWindow = new GameWindow(gws, nws);
 
@@ -48,14 +48,6 @@ namespace LeaderEngine
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            DefaultShaders.Init();
-            DefaultFonts.Init();
-
-            initCallback?.Invoke();
-
-            Renderer.Init();
-            Input.Init(MainWindow.KeyboardState, MainWindow.MouseState);
-
             //init debug callbacks
             GLFW.SetErrorCallback(LogGLFWError);
 
@@ -64,6 +56,18 @@ namespace LeaderEngine
             GL.DebugMessageCallback(debugProcCallback, IntPtr.Zero);
             GL.Enable(EnableCap.DebugOutput);
             GL.Enable(EnableCap.DebugOutputSynchronous);
+
+            //init modules
+            DefaultShaders.Init();
+            DefaultFonts.Init();
+
+            Renderer = renderer != null ? renderer : Renderer;
+            Renderer.Init();
+
+            Input.Init(MainWindow.KeyboardState, MainWindow.MouseState);
+
+            //init main application
+            initCallback?.Invoke();
 
             stopwatch.Stop();
             //print init complete msg

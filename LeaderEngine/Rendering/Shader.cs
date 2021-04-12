@@ -48,7 +48,7 @@ namespace LeaderEngine
                 uniformLocations.Add(key, location);
             }
 
-            GL.ObjectLabel(ObjectLabelIdentifier.Shader, handle, name.Length, name);
+            GL.ObjectLabel(ObjectLabelIdentifier.Program, handle, name.Length, name);
         }
 
         public static Shader FromSourceFile(string name, string vertPath, string fragPath)

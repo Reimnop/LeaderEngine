@@ -18,13 +18,11 @@ namespace LeaderEditor
                 Flags = ContextFlags.ForwardCompatible,
                 Profile = ContextProfile.Core,
                 Size = new Vector2i(1600, 900)
-            }, InitEditor);
+            }, InitEditor, new EditorRenderer());
         }
 
         private static void InitEditor()
         {
-            Engine.Renderer = new EditorRenderer();
-
             Engine.IgnoreGLInfo = true;
 
             Entity editorScripts = new Entity("EditorEntity");
