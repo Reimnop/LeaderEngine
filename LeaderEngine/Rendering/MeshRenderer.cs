@@ -68,8 +68,7 @@ namespace LeaderEngine
 
             uniforms.SetUniform("lightSpaceMat", new Uniform(UniformType.Matrix4, LightingGlobals.LightView * LightingGlobals.LightProjection));
 
-            Material.SetInt("shadowMap", 1);
-            Material.SetTexture2D(TextureUnit.Texture1, LightingGlobals.ShadowMap);
+            uniforms.SetUniform("shadowMap", new Uniform(UniformType.Texture2D, new TextureData(TextureUnit.Texture1, LightingGlobals.ShadowMap)));
 
             renderer.PushDrawData(DrawType.Opaque, new GLDrawData
             {

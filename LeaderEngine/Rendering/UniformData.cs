@@ -1,4 +1,5 @@
-﻿using OpenTK.Mathematics;
+﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using System.Collections.Generic;
 
 namespace LeaderEngine
@@ -9,7 +10,8 @@ namespace LeaderEngine
         Float,
         Vector3,
         Vector4,
-        Matrix4
+        Matrix4,
+        Texture2D
     }
 
     public struct Uniform
@@ -21,6 +23,18 @@ namespace LeaderEngine
         {
             UniformType = type;
             Data = data;
+        }
+    }
+
+    public struct TextureData
+    {
+        public TextureUnit TextureUnit;
+        public int TextureHandle;
+
+        public TextureData(TextureUnit unit, int handle)
+        {
+            TextureUnit = unit;
+            TextureHandle = handle;
         }
     }
 
@@ -53,6 +67,12 @@ namespace LeaderEngine
                         break;
                     case UniformType.Matrix4:
                         shader.SetMatrix4(kvp.Key, (Matrix4)kvp.Value.Data);
+                        break;
+                    case UniformType.Texture2D:
+                        var texture = (TextureData)kvp.Value.Data;
+                        shader.SetInt(kvp.Key, (int)texture.TextureUnit - 33984);
+                        GL.ActiveTexture(texture.TextureUnit);
+                        GL.BindTexture(TextureTarget.Texture2D, texture.TextureHandle);
                         break;
                 }
             }

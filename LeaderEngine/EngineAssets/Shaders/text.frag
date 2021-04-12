@@ -4,9 +4,6 @@ layout (location = 0) out vec4 fragColor;
 
 in vec2 TexCoord;
 
-uniform float t_buffer = 0.7;
-uniform float t_gamma = 0.0;
-
 uniform sampler2D fontAtlas;
 
 void main() {
