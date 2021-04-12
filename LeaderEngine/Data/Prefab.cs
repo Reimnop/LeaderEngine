@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using System;
 using System.Collections.Generic;
 
 namespace LeaderEngine
@@ -22,7 +23,7 @@ namespace LeaderEngine
         }
     }
 
-    public class Prefab
+    public class Prefab : IDisposable
     {
         public readonly string Name;
         public readonly PrefabEntity RootPrefabEntity;
@@ -31,6 +32,8 @@ namespace LeaderEngine
         {
             Name = name;
             RootPrefabEntity = rootEntity;
+
+            DataManager.Prefabs.Add(this);
         }
 
         public Entity Instantiate(Entity parent = null)
@@ -59,6 +62,11 @@ namespace LeaderEngine
                 RecursivelySpawnEntities(child, entity);
 
             return entity;
+        }
+
+        public void Dispose()
+        {
+            DataManager.Prefabs.Remove(this);
         }
     }
 }

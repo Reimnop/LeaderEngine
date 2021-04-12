@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using System;
 using System.Collections.Generic;
 
 namespace LeaderEngine
@@ -20,7 +21,7 @@ namespace LeaderEngine
         public object Data;
     }
 
-    public sealed class Material
+    public sealed class Material : IDisposable
     {
         public readonly string Name;
 
@@ -30,6 +31,8 @@ namespace LeaderEngine
         public Material(string name)
         {
             Name = name;
+
+            DataManager.Materials.Add(this);
         }
 
         #region SetMethods
@@ -116,6 +119,11 @@ namespace LeaderEngine
                 GL.ActiveTexture(tex.Key);
                 GL.BindTexture(TextureTarget.Texture2D, tex.Value);
             }
+        }
+
+        public void Dispose()
+        {
+            DataManager.Materials.Remove(this);
         }
     }
 }

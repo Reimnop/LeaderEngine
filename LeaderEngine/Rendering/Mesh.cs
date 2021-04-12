@@ -58,6 +58,8 @@ namespace LeaderEngine
             VAO = GL.GenVertexArray();
             VBO = GL.GenBuffer();
             EBO = GL.GenBuffer();
+
+            DataManager.Meshes.Add(this);
         }
 
         public void LoadMesh<T>(T[] vertices, uint[] indices, PrimitiveType primitiveType = PrimitiveType.Triangles) where T : struct
@@ -120,6 +122,8 @@ namespace LeaderEngine
             GL.DeleteVertexArray(VAO);
             GL.DeleteBuffer(VBO);
             GL.DeleteBuffer(EBO);
+
+            DataManager.Meshes.Remove(this);
         }
     }
 }

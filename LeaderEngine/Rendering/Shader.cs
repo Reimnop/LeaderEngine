@@ -48,6 +48,8 @@ namespace LeaderEngine
                 uniformLocations.Add(key, location);
             }
 
+            Name = name;
+
             GL.ObjectLabel(ObjectLabelIdentifier.Program, handle, name.Length, name);
         }
 

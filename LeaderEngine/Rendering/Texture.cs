@@ -17,6 +17,8 @@ namespace LeaderEngine
         private Texture(string name)
         {
             Name = name;
+
+            DataManager.Textures.Add(this);
         }
 
         public static Texture FromFile(string name, string path)
@@ -110,6 +112,8 @@ namespace LeaderEngine
         public void Dispose()
         {
             GL.DeleteTexture(handle);
+
+            DataManager.Textures.Remove(this);
         }
     }
 }

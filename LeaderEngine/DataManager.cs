@@ -3,8 +3,12 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System.Collections.Generic;
 using System.IO;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+
 using Quaternion = OpenTK.Mathematics.Quaternion;
 using TextureWrapMode = OpenTK.Graphics.OpenGL4.TextureWrapMode;
+using System.Runtime.InteropServices;
 
 namespace LeaderEngine
 {
@@ -30,6 +34,11 @@ namespace LeaderEngine
     public static class DataManager
     {
         public static Scene CurrentScene { get; private set; } = new Scene("Untitled Scene");
+
+        public static List<Material> Materials { get; } = new List<Material>();
+        public static List<Prefab> Prefabs { get; } = new List<Prefab>();
+        public static List<Mesh> Meshes { get; } = new List<Mesh>();
+        public static List<Texture> Textures { get; } = new List<Texture>();
 
         public static Prefab LoadModelFromFile(string path)
         {
@@ -65,11 +74,38 @@ namespace LeaderEngine
 
                     //load texture
                     string texPath = aiTexture.FilePath;
+                    string texName = aiMaterial.Name + "-Diffuse";
 
-                    if (!Path.IsPathRooted(texPath))
-                        texPath = Path.Combine(Path.GetDirectoryName(path), texPath);
+                    Texture texture;
+                    if (!texPath.StartsWith('*'))
+                    {
+                        if (!Path.IsPathRooted(texPath))
+                            texPath = Path.Combine(Path.GetDirectoryName(path), texPath);
 
-                    Texture texture = Texture.FromFile(aiMaterial.Name + "-Diffuse", texPath);
+                        texture = Texture.FromFile(texName, texPath);
+                    }
+                    else
+                    {
+                        int index = int.Parse(texPath.Substring(1));
+                        var embedTexture = scene.Textures[index];
+
+                        if (embedTexture.IsCompressed)
+                        {
+                            texture = Texture.FromImage(texName, Image.Load<Rgba32>(embedTexture.CompressedData));
+                        }
+                        else
+                        {
+                            GCHandle handle = GCHandle.Alloc(embedTexture.NonCompressedData, GCHandleType.Pinned);
+
+                            texture = Texture.FromPointer(
+                                texName,
+                                embedTexture.Width,
+                                embedTexture.Height,
+                                handle.AddrOfPinnedObject());
+
+                            handle.Free();
+                        }
+                    }    
 
                     texture.SetWrapS(ConvertWrapModeToOTK(aiTexture.WrapModeU));
                     texture.SetWrapT(ConvertWrapModeToOTK(aiTexture.WrapModeV));
@@ -84,7 +120,7 @@ namespace LeaderEngine
             //load model
             PrefabEntity rootEntity = RecursivelyLoadAssimpNode(aiMeshes, materials, scene.RootNode);
 
-            return new Prefab(rootEntity.Name, rootEntity);
+            return new Prefab(Path.GetFileNameWithoutExtension(path), rootEntity);
         }
 
         private static PrefabEntity RecursivelyLoadAssimpNode(List<Assimp.Mesh> aiMeshes, Material[] materials, Node node)

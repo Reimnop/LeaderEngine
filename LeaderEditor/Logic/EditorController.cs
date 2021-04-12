@@ -28,6 +28,7 @@ namespace LeaderEditor
             BaseEntity.AddComponent<GridRenderer>();
             BaseEntity.AddComponent<SceneHierachy>();
             BaseEntity.AddComponent<Inspector>();
+            BaseEntity.AddComponent<AssetManager>();
 
             editorCamera = new Entity("EditorCamera");
             editorCamera.AddComponent<Camera>();

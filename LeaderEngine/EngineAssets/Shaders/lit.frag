@@ -18,7 +18,10 @@ uniform vec3 camPos;
 //light uniforms
 uniform sampler2D shadowMap;
 uniform vec3 lightDir;
-uniform float bBias = 0.005;
+uniform float bBias = 0.002;
+
+uniform vec3 ambient = vec3(0.05);
+uniform vec3 shadeColor = vec3(0.15);
 
 in vec4 FragPosLightSpace;
 
@@ -58,10 +61,12 @@ void main() {
 
 	vec3 norm = normalize(Normal);
 
-	vec3 diffuse = max(dot(norm, lightDir), 0.0) * vec3(1.0);
-	vec3 shadow = (calculateShadow(FragPosLightSpace)) * vec3(1.0);
+	float diffuse = max(dot(norm, lightDir), 0.0);
+	float shadow = (calculateShadow(FragPosLightSpace));
 
-	vec3 outColor = (vec3(0.1) + diffuse * shadow) * obColor;
+	float shade = max(min(dot(norm, normalize(camPos - FragPos)), 1.0), 0.0);
+
+	vec3 outColor = (ambient + shade * shadeColor + diffuse * shadow) * obColor;
 
 	fragColor = vec4(gammaCorrect(2.2, outColor), 1.0);
 }

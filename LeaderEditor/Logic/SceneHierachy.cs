@@ -88,10 +88,7 @@ namespace LeaderEditor
             if (ImGui.BeginPopupContextItem("Entity Popup"))
             {
                 if (ImGui.MenuItem("New Entity"))
-                {
-                    var newEntity = new Entity("New Entity");
-                    newEntity.Parent = en;
-                }
+                    _ = new Entity("New Entity", en);
 
                 if (ImGui.MenuItem("Delete"))
                     en.Destroy();
