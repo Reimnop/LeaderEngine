@@ -23,8 +23,8 @@ namespace LeaderEngine
             { DrawType.GUI, new List<GLDrawData>() }
         };
 
-        const int shadowMapRes = 4096;
-        const float shadowMapSize = 32.0f;
+        const int shadowMapRes = 8192;
+        const float shadowMapSize = 128.0f;
 
         private Framebuffer shadowMapFramebuffer;
         private Framebuffer ppFramebuffer;
@@ -123,20 +123,15 @@ namespace LeaderEngine
             if (Camera.Main == null)
                 return;
 
-            //set matrices
             DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.Transform.CalculateModelMatrixRecursively());
-
-            Camera.Main.CalculateViewProjection(out Matrix4 view, out Matrix4 projection);
-
-            //call all render funcs
-            DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRender(view, projection));
 
             //shadow mapping
             if (DirectionalLight.Main == null)
                 goto RenderOpaque;
 
-            Matrix4 lView; Matrix4 lProjection;
-            DirectionalLight.Main.CalculateViewProjection(out lView, out lProjection, shadowMapSize);
+            Matrix4 lView; 
+            Matrix4 lProjection;
+            DirectionalLight.Main.CalculateViewProjection(out lView, out lProjection, shadowMapSize, Camera.Main.BaseTransform.Position);
             LightingGlobals.LightView = lView;
             LightingGlobals.LightProjection = lProjection;
 
@@ -161,6 +156,11 @@ namespace LeaderEngine
 
             //render opaque
             RenderOpaque:
+            Camera.Main.CalculateViewProjection(out Matrix4 view, out Matrix4 projection);
+
+            //call all render funcs
+            DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRender(view, projection));
+
             GL.Viewport(0, 0, ViewportSize.X, ViewportSize.Y);
 
             ppFramebuffer.Begin();

@@ -12,20 +12,13 @@ namespace LeaderEngine
                 Main = this;
         }
 
-        public void CalculateViewProjection(out Matrix4 view, out Matrix4 projection, float size)
+        public void CalculateViewProjection(out Matrix4 view, out Matrix4 projection, float size, Vector3 cameraPos)
         {
-            if (Camera.Main == null)
-            {
-                view = Matrix4.Identity;
-                projection = Matrix4.Identity;
-                return;
-            }
-
             projection = Matrix4.CreateOrthographic(size, size, -size / 2.0f, size / 2.0f);
 
             view = Matrix4.LookAt(
-                    Camera.Main.BaseTransform.Position,
-                    Camera.Main.BaseTransform.Position + BaseTransform.Forward,
+                    cameraPos,
+                    cameraPos + BaseTransform.Forward,
                     BaseTransform.Up
                 );
         }
