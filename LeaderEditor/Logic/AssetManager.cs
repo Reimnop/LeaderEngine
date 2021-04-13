@@ -1,7 +1,6 @@
 ﻿using ImGuiNET;
 using LeaderEngine;
 using System.Numerics;
-using System.Windows.Forms;
 using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 
 namespace LeaderEditor
@@ -31,18 +30,13 @@ namespace LeaderEditor
                     ImGui.Text("Prefabs");
                     ImGui.SameLine();
                     ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - 25.0f);
-                    if (ImGui.Button("Import Model"))
-                    {
-                        using (var ofd = new OpenFileDialog())
-                        {
-                            ofd.Filter = "3D Model|*.fbx;*.obj";
-                            ofd.ShowDialog();
 
-                            if (!string.IsNullOrEmpty(ofd.FileName))
-                            {
-                                DataManager.LoadModelFromFile(ofd.FileName);
-                            }
-                        }
+                    FilePicker fp = FilePicker.GetFilePicker(this, null);
+
+                    if (fp.Draw("Import Model"))
+                    {
+                        if (!string.IsNullOrEmpty(fp.SelectedFile))
+                            DataManager.LoadModelFromFile(fp.SelectedFile);
                     }
 
                     ImGui.Separator();
