@@ -4,14 +4,16 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows;
+using LeaderEngine;
 
 namespace LeaderEditor
 {
     public class FilePicker
     {
-        private static readonly Dictionary<object, FilePicker> s_filePickers = new Dictionary<object, FilePicker>();
-        private static readonly System.Numerics.Vector2 DefaultFilePickerSize = new System.Numerics.Vector2(600, 400);
+        private static readonly Dictionary<string, FilePicker> filePickers = new Dictionary<string, FilePicker>();
+
+        private static readonly System.Numerics.Vector2 defaultFilePickerSize = new System.Numerics.Vector2(600.0f, 400.0f);
+        private static readonly System.Numerics.Vector2 minFilePickerSize = new System.Numerics.Vector2(400.0f, 300.0f);
 
         public string Title = "Select File";
 
@@ -25,7 +27,7 @@ namespace LeaderEditor
 
         private FilePicker() { }
 
-        public static FilePicker GetFilePicker(object o, string startingPath, string filter)
+        public static FilePicker GetFilePicker(string id, string startingPath, string filter)
         {
             if (File.Exists(startingPath))
             {
@@ -36,13 +38,13 @@ namespace LeaderEditor
                 startingPath = AppContext.BaseDirectory;
             }
 
-            if (!s_filePickers.TryGetValue(o, out FilePicker fp))
+            if (!filePickers.TryGetValue(id, out FilePicker fp))
             {
                 fp = new FilePicker();
                 fp.currentFolder = startingPath;
                 fp.Filter = filter;
                 fp.UpdateDisplay(startingPath);
-                s_filePickers.Add(o, fp);
+                filePickers.Add(id, fp);
             }
 
             return fp;
@@ -56,12 +58,14 @@ namespace LeaderEditor
         public bool Draw()
         {
             bool result = false;
-            ImGui.SetNextWindowSize(DefaultFilePickerSize, ImGuiCond.FirstUseEver);
+            ImGui.SetNextWindowSize(defaultFilePickerSize, ImGuiCond.FirstUseEver);
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, minFilePickerSize);
             if (ImGui.BeginPopupModal(Title))
             {
                 result = DrawFolder();
                 ImGui.EndPopup();
             }
+            ImGui.PopStyleVar();
 
             return result;
         }
@@ -97,11 +101,30 @@ namespace LeaderEditor
             if (di.Exists)
             {
                 float availY = ImGui.GetContentRegionAvail().Y;
-                if (ImGui.BeginChildFrame(1, new System.Numerics.Vector2(0, availY - 30.0f)))
+                if (ImGui.BeginChildFrame(1, new System.Numerics.Vector2(120.0f, availY - 30.0f)))
+                {
+                    var drives = DriveInfo.GetDrives();
+
+                    ImGui.Text("Drives");
+                    ImGui.Separator();
+                    foreach (var drive in drives)
+                    {
+                        if (ImGui.Selectable(drive.Name))
+                        {
+                            SelectedFile = null;
+                            currentFolder = drive.Name;
+                            UpdateDisplay(drive.Name);
+                        }
+                    }
+
+                    ImGui.EndChildFrame();
+                }
+
+                ImGui.SameLine();
+                if (ImGui.BeginChildFrame(2, new System.Numerics.Vector2(0, availY - 30.0f)))
                 {
                     //file picker
                     ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(1.0f, 1.0f, 0.0f, 1.0f));
-
                     if (di.Parent != null && ImGui.Selectable("../", false, ImGuiSelectableFlags.DontClosePopups))
                     {
                         currentFolder = di.Parent.FullName;
@@ -112,7 +135,6 @@ namespace LeaderEditor
                     foreach (var f in displayFolders)
                     {
                         string name = Path.GetFileName(f);
-
                         if (ImGui.Selectable(name + "/", false, ImGuiSelectableFlags.DontClosePopups))
                         {
                             currentFolder = f;
@@ -120,12 +142,12 @@ namespace LeaderEditor
                             UpdateDisplay(f);
                         }
                     }
+
                     ImGui.PopStyleColor();
 
                     foreach (var f in displayFiles)
                     {
                         string name = Path.GetFileName(f);
-
                         if (ImGui.Selectable(name, SelectedFile == f, ImGuiSelectableFlags.DontClosePopups))
                             SelectedFile = f;
                     }
@@ -135,7 +157,7 @@ namespace LeaderEditor
 
             float availX = ImGui.GetContentRegionMax().X;
 
-            ImGui.SetNextItemWidth(availX - 158.0f);
+            ImGui.SetNextItemWidth(availX - 144.0f);
 
             string dis = string.IsNullOrEmpty(SelectedFile) ? currentFolder : SelectedFile;
             ImGui.InputText(string.Empty, ref dis, 32786);
@@ -149,8 +171,8 @@ namespace LeaderEditor
                 }
                 else if (File.Exists(dis))
                 {
-                    currentFolder = Path.GetDirectoryName(dis);
                     SelectedFile = dis;
+                    currentFolder = Path.GetDirectoryName(dis);
                     UpdateDisplay(currentFolder);
                 }
                 else

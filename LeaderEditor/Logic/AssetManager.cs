@@ -33,7 +33,9 @@ namespace LeaderEditor
                     
                     ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - 100.0f);
 
-                    FilePicker fp = FilePicker.GetFilePicker(this, null, ".fbx;.obj");
+                    FilePicker fp = FilePicker.GetFilePicker("prefab-model", null, ".fbx;.obj");
+
+                    fp.Title = "Select File (*.fbx; *.obj)";
 
                     if (ImGui.Button("Import Model", new Vector2(100.0f, 0.0f)))
                         fp.Open();
