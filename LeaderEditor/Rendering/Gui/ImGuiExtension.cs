@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using OpenTK.Mathematics;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
@@ -13,11 +14,18 @@ namespace LeaderEditor
         private static readonly System.Numerics.Vector2 DefaultFilePickerSize = new System.Numerics.Vector2(600, 400);
 
         public string Title = "Select File";
+
+        public string Filter = null;
         public string SelectedFile = null;
 
         private string currentFolder = "/";
 
-        public static FilePicker GetFilePicker(object o, string startingPath)
+        private string[] displayFolders;
+        private string[] displayFiles;
+
+        private FilePicker() { }
+
+        public static FilePicker GetFilePicker(object o, string startingPath, string filter)
         {
             if (File.Exists(startingPath))
             {
@@ -32,6 +40,8 @@ namespace LeaderEditor
             {
                 fp = new FilePicker();
                 fp.currentFolder = startingPath;
+                fp.Filter = filter;
+                fp.UpdateDisplay(startingPath);
                 s_filePickers.Add(o, fp);
             }
 
@@ -56,42 +66,63 @@ namespace LeaderEditor
             return result;
         }
 
-        private bool TryGetFileInfo(string path, out FileInfo info)
+        private bool CheckFilter(string path)
         {
-            if (File.Exists(path))
+            string[] filters = Filter.Split(';');
+            string ext = Path.GetExtension(path);
+            return filters.Contains(ext);
+        }
+
+        private void UpdateDisplay(string path)
+        {
+            DirectoryInfo directoryInfo = new DirectoryInfo(path);
+            displayFolders = Directory.GetDirectories(directoryInfo.FullName);
+
+            string[] files = Directory.GetFiles(directoryInfo.FullName);
+
+            if (!string.IsNullOrEmpty(Filter))
             {
-                info = new FileInfo(path);
-                return true;
+                displayFiles = files.Where(x => CheckFilter(x)).ToArray();
+                return;
             }
-            info = null;
-            return false;
+
+            displayFiles = files;
         }
 
         private bool DrawFolder()
         {
             bool result = false;
-            
+
             DirectoryInfo di = new DirectoryInfo(currentFolder);
             if (di.Exists)
             {
                 float availY = ImGui.GetContentRegionAvail().Y;
                 if (ImGui.BeginChildFrame(1, new System.Numerics.Vector2(0, availY - 30.0f)))
                 {
+                    //file picker
                     ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(1.0f, 1.0f, 0.0f, 1.0f));
-                    if (di.Parent != null)
-                        if (ImGui.Selectable("../", false, ImGuiSelectableFlags.DontClosePopups))
-                            currentFolder = di.Parent.FullName;
 
-                    foreach (var f in Directory.GetDirectories(di.FullName))
+                    if (di.Parent != null && ImGui.Selectable("../", false, ImGuiSelectableFlags.DontClosePopups))
+                    {
+                        currentFolder = di.Parent.FullName;
+                        SelectedFile = null;
+                        UpdateDisplay(di.Parent.FullName);
+                    }
+
+                    foreach (var f in displayFolders)
                     {
                         string name = Path.GetFileName(f);
-                        
+
                         if (ImGui.Selectable(name + "/", false, ImGuiSelectableFlags.DontClosePopups))
+                        {
                             currentFolder = f;
+                            SelectedFile = null;
+                            UpdateDisplay(f);
+                        }
                     }
                     ImGui.PopStyleColor();
 
-                    foreach (var f in Directory.GetFiles(di.FullName))
+                    foreach (var f in displayFiles)
                     {
                         string name = Path.GetFileName(f);
 
@@ -102,21 +133,49 @@ namespace LeaderEditor
                 }
             }
 
+            float availX = ImGui.GetContentRegionMax().X;
 
-            if (ImGui.Button("Cancel"))
+            ImGui.SetNextItemWidth(availX - 158.0f);
+
+            string dis = string.IsNullOrEmpty(SelectedFile) ? currentFolder : SelectedFile;
+            ImGui.InputText(string.Empty, ref dis, 32786);
+
+            if (ImGui.IsKeyDown(ImGui.GetKeyIndex(ImGuiKey.Enter)))
+            {
+                if (Directory.Exists(dis))
+                {
+                    currentFolder = dis;
+                    UpdateDisplay(dis);
+                }
+                else if (File.Exists(dis))
+                {
+                    currentFolder = Path.GetDirectoryName(dis);
+                    SelectedFile = dis;
+                    UpdateDisplay(currentFolder);
+                }
+                else
+                {
+                    ImGui.OpenPopup("path-invalid");
+                }
+            }
+
+            if (ImGui.BeginPopup("path-invalid", ImGuiWindowFlags.NoTitleBar))
+            {
+                ImGui.Text("Specified path does not exist!");
+                ImGui.EndPopup();
+            }
+
+            ImGui.SameLine();
+            if (ImGui.Button("Open", new System.Numerics.Vector2(60.0f, 0.0f)) && !string.IsNullOrEmpty(SelectedFile) && File.Exists(SelectedFile))
+            {
+                result = true;
+                ImGui.CloseCurrentPopup();
+            }
+            ImGui.SameLine();
+            if (ImGui.Button("Cancel", new System.Numerics.Vector2(60.0f, 0.0f)))
             {
                 result = false;
                 ImGui.CloseCurrentPopup();
-            }
-
-            if (!string.IsNullOrEmpty(SelectedFile))
-            {
-                ImGui.SameLine();
-                if (ImGui.Button("Open"))
-                {
-                    result = true;
-                    ImGui.CloseCurrentPopup();
-                }
             }
 
             return result;

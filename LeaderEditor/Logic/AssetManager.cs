@@ -28,12 +28,14 @@ namespace LeaderEditor
                 if (ImGui.BeginChild("prefabs", new Vector2(210.0f, 0.0f), true))
                 {
                     ImGui.Text("Prefabs");
+
                     ImGui.SameLine();
-                    ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - 25.0f);
+                    
+                    ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - 100.0f);
 
-                    FilePicker fp = FilePicker.GetFilePicker(this, null);
+                    FilePicker fp = FilePicker.GetFilePicker(this, null, ".fbx;.obj");
 
-                    if (ImGui.Button("Import Model"))
+                    if (ImGui.Button("Import Model", new Vector2(100.0f, 0.0f)))
                         fp.Open();
 
                     if (fp.Draw())
