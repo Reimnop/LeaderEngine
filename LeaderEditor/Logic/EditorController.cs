@@ -52,8 +52,8 @@ namespace LeaderEditor
                 //display framebuffer texture on window
                 ImGui.Image(
                     (IntPtr)ERenderer.Framebuffer.GetTexture(FramebufferAttachment.ColorAttachment0),
-                    vSize, 
-                    new System.Numerics.Vector2(0.0f, 1.0f), 
+                    vSize,
+                    new System.Numerics.Vector2(0.0f, 1.0f),
                     new System.Numerics.Vector2(1.0f, 0.0f));
 
                 ImGui.End();

@@ -40,7 +40,7 @@ namespace LeaderEngine
         {
             string baseDir = Path.Combine(AppContext.BaseDirectory, "EngineAssets/Fonts/");
 
-            Inconsolata = new Font("Inconsolata", 
+            Inconsolata = new Font("Inconsolata",
                 Path.Combine(baseDir, "Inconsolata.ttf"));
         }
     }

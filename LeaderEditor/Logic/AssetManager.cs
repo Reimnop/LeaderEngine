@@ -1,9 +1,7 @@
-﻿using LeaderEngine;
+﻿using ImGuiNET;
+using LeaderEngine;
 using System.Numerics;
-using ImGuiNET;
-using System;
 using System.Windows.Forms;
-
 using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 
 namespace LeaderEditor

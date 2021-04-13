@@ -28,7 +28,7 @@ namespace LeaderEngine
         public readonly string Name;
         public readonly PrefabEntity RootPrefabEntity;
 
-        public Prefab(string name, PrefabEntity rootEntity) 
+        public Prefab(string name, PrefabEntity rootEntity)
         {
             Name = name;
             RootPrefabEntity = rootEntity;

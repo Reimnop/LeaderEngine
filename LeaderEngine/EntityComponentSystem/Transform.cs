@@ -9,7 +9,7 @@ namespace LeaderEngine
         public Vector3 Position = Vector3.Zero;
         public Vector3 Scale = Vector3.One;
 
-        public Quaternion Rotation 
+        public Quaternion Rotation
         {
             get => internalRotation;
             set
@@ -68,7 +68,7 @@ namespace LeaderEngine
         internal void CalculateModelMatrixRecursively()
         {
             //calculate the model matrix;
-            Matrix4 res = 
+            Matrix4 res =
                 Matrix4.CreateTranslation(-OriginOffset)
                 * Matrix4.CreateScale(Scale)
                 * Matrix4.CreateFromQuaternion(internalRotation)

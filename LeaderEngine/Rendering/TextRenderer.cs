@@ -8,9 +8,9 @@ namespace LeaderEngine
         public string Text = "New Text";
 
         private string _text;
-        private string internalText 
-        { 
-            get => _text; 
+        private string internalText
+        {
+            get => _text;
             set
             {
                 if (_text == value)
@@ -22,7 +22,7 @@ namespace LeaderEngine
         }
 
         public Font Font = DefaultFonts.Inconsolata;
-        
+
         private Mesh textMesh;
 
         private UniformData uniforms = new UniformData();

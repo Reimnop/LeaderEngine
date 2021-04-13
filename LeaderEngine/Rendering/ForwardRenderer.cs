@@ -88,7 +88,7 @@ namespace LeaderEngine
             });
 
             ppMesh = new Mesh("PostProcessQuad");
-            ppMesh.LoadMesh(new Vertex[] 
+            ppMesh.LoadMesh(new Vertex[]
             {
                 new Vertex { Position = new Vector3(1.0f, 1.0f, 0.0f), UV = new Vector2(1.0f, 1.0f) },
                 new Vertex { Position = new Vector3(1.0f, -1.0f, 0.0f), UV = new Vector2(1.0f, 0.0f) },
@@ -129,7 +129,7 @@ namespace LeaderEngine
             if (DirectionalLight.Main == null)
                 goto RenderOpaque;
 
-            Matrix4 lView; 
+            Matrix4 lView;
             Matrix4 lProjection;
             DirectionalLight.Main.CalculateViewProjection(out lView, out lProjection, shadowMapSize, Camera.Main.BaseTransform.Position);
             LightingGlobals.LightView = lView;
@@ -154,8 +154,8 @@ namespace LeaderEngine
 
             LightingGlobals.ShadowMap = shadowMapFramebuffer.GetTexture(FramebufferAttachment.DepthAttachment);
 
-            //render opaque
-            RenderOpaque:
+        //render opaque
+        RenderOpaque:
             Camera.Main.CalculateViewProjection(out Matrix4 view, out Matrix4 projection);
 
             //call all render funcs
@@ -176,7 +176,7 @@ namespace LeaderEngine
 
             //render transparent
             GL.DepthMask(false);
-            
+
             GL.Disable(EnableCap.CullFace);
 
             GL.Enable(EnableCap.Blend);

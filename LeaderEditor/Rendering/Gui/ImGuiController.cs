@@ -23,7 +23,7 @@ namespace LeaderEditor
 
         private Texture fontTexture;
         private Shader shader;
-        
+
         private int windowWidth => Engine.MainWindow.ClientSize.X;
         private int windowHeight => Engine.MainWindow.ClientSize.Y;
 
@@ -75,7 +75,7 @@ namespace LeaderEditor
 
         private void CreateDeviceResources()
         {
-            mesh = new ImMesh("ImGui Mesh", IntPtr.Zero, IntPtr.Zero, 0, 0, new VertexAttrib[] 
+            mesh = new ImMesh("ImGui Mesh", IntPtr.Zero, IntPtr.Zero, 0, 0, new VertexAttrib[]
             {
                 new VertexAttrib(0, 2),
                 new VertexAttrib(1, 2),
@@ -84,7 +84,7 @@ namespace LeaderEditor
 
             RecreateFontDeviceTexture();
 
-            string VertexSource = 
+            string VertexSource =
 @"#version 430 core
 
 layout(location = 0) in vec2 in_position;
@@ -102,7 +102,7 @@ void main()
     texCoord = in_texCoord;
     gl_Position = vec4(in_position, 0.0, 1.0) * projection_matrix;
 }";
-            string FragmentSource = 
+            string FragmentSource =
 @"#version 430 core
 
 layout(location = 0) out vec4 fragColor;
@@ -196,7 +196,7 @@ void main()
 
             io.MouseWheel = MouseState.ScrollDelta.Y;
             io.MouseWheelH = MouseState.ScrollDelta.X;
-            
+
             foreach (Keys key in Enum.GetValues(typeof(Keys)))
             {
                 if (key != Keys.Unknown)

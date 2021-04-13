@@ -78,7 +78,7 @@ namespace LeaderEditor
 
             if (!en.Active)
                 ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(0.4f, 0.4f, 0.4f, 1.0f));
-            
+
             bool nodeOpen = ImGui.TreeNodeEx(en.Name, nodeFlags);
 
             if (ImGui.IsItemClicked())
@@ -95,7 +95,7 @@ namespace LeaderEditor
 
                 ImGui.EndPopup();
             }
-            
+
             if (nodeOpen)
             {
                 for (int i = 0; i < en.Children.Count; i++)

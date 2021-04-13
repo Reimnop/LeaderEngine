@@ -1,14 +1,13 @@
 ﻿using Assimp;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using System.Collections.Generic;
-using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.InteropServices;
 using Quaternion = OpenTK.Mathematics.Quaternion;
 using TextureWrapMode = OpenTK.Graphics.OpenGL4.TextureWrapMode;
-using System.Runtime.InteropServices;
 
 namespace LeaderEngine
 {
@@ -44,9 +43,9 @@ namespace LeaderEngine
         {
             //import file
             AssimpContext importer = new AssimpContext();
-            var scene = importer.ImportFile(path, 
-                PostProcessSteps.Triangulate | 
-                PostProcessSteps.FlipUVs | 
+            var scene = importer.ImportFile(path,
+                PostProcessSteps.Triangulate |
+                PostProcessSteps.FlipUVs |
                 PostProcessSteps.CalculateTangentSpace);
 
             var aiMeshes = scene.Meshes;
@@ -105,7 +104,7 @@ namespace LeaderEngine
 
                             handle.Free();
                         }
-                    }    
+                    }
 
                     texture.SetWrapS(ConvertWrapModeToOTK(aiTexture.WrapModeU));
                     texture.SetWrapT(ConvertWrapModeToOTK(aiTexture.WrapModeV));
@@ -158,12 +157,12 @@ namespace LeaderEngine
                         Normal = new Vector3(aiNormal.X, aiNormal.Y, aiNormal.Z),
 
                         Color = aiMesh.HasVertexColors(0) ? new Vector3(
-                            aiMesh.VertexColorChannels[0][i].R, 
-                            aiMesh.VertexColorChannels[0][i].G, 
+                            aiMesh.VertexColorChannels[0][i].R,
+                            aiMesh.VertexColorChannels[0][i].G,
                             aiMesh.VertexColorChannels[0][i].B) : Vector3.One,
 
                         UV = aiMesh.HasTextureCoords(0) ? new Vector2(
-                            aiMesh.TextureCoordinateChannels[0][i].X, 
+                            aiMesh.TextureCoordinateChannels[0][i].X,
                             aiMesh.TextureCoordinateChannels[0][i].Y) : Vector2.Zero
                     };
                 }
@@ -180,8 +179,8 @@ namespace LeaderEngine
                 entity.Children.Add(mEntity);
             }
 
-            //load children
-            LoadChildren:
+        //load children
+        LoadChildren:
             foreach (var child in node.Children)
                 entity.Children.Add(RecursivelyLoadAssimpNode(aiMeshes, materials, child));
 
