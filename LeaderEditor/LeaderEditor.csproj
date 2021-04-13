@@ -15,10 +15,4 @@
     <ProjectReference Include="..\LeaderEngine\LeaderEngine.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="EditorAssets\folder-icon-editor.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
