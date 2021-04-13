@@ -33,11 +33,11 @@ namespace LeaderEditor
 
                     FilePicker fp = FilePicker.GetFilePicker(this, null);
 
-                    if (fp.Draw("Import Model"))
-                    {
-                        if (!string.IsNullOrEmpty(fp.SelectedFile))
-                            DataManager.LoadModelFromFile(fp.SelectedFile);
-                    }
+                    if (ImGui.Button("Import Model"))
+                        fp.Open();
+
+                    if (fp.Draw())
+                        DataManager.LoadModelFromFile(fp.SelectedFile);
 
                     ImGui.Separator();
 

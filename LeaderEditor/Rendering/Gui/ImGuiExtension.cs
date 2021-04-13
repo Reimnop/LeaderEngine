@@ -9,14 +9,13 @@ namespace LeaderEditor
 {
     public class FilePicker
     {
-        private const string FilePickerID = "###FilePicker";
         private static readonly Dictionary<object, FilePicker> s_filePickers = new Dictionary<object, FilePicker>();
         private static readonly System.Numerics.Vector2 DefaultFilePickerSize = new System.Numerics.Vector2(600, 400);
 
-        public string CurrentFolder { get; set; }
-        public string SelectedFile { get; set; }
+        public string Title = "Select File";
+        public string SelectedFile = null;
 
-        private string selected = string.Empty;
+        private string currentFolder = "/";
 
         public static FilePicker GetFilePicker(object o, string startingPath)
         {
@@ -32,26 +31,25 @@ namespace LeaderEditor
             if (!s_filePickers.TryGetValue(o, out FilePicker fp))
             {
                 fp = new FilePicker();
-                fp.CurrentFolder = startingPath;
+                fp.currentFolder = startingPath;
                 s_filePickers.Add(o, fp);
             }
 
             return fp;
         }
 
-        public bool Draw(string label)
+        public void Open()
         {
-            if (ImGui.Button(label))
-            {
-                ImGui.OpenPopup(FilePickerID);
-            }
+            ImGui.OpenPopup(Title);
+        }
 
+        public bool Draw()
+        {
             bool result = false;
-            bool a = true;
             ImGui.SetNextWindowSize(DefaultFilePickerSize, ImGuiCond.FirstUseEver);
-            if (ImGui.BeginPopupModal(FilePickerID, ref a, ImGuiWindowFlags.NoTitleBar))
+            if (ImGui.BeginPopupModal(Title))
             {
-                result = DrawFolder(ref selected, false);
+                result = DrawFolder();
                 ImGui.EndPopup();
             }
 
@@ -69,63 +67,40 @@ namespace LeaderEditor
             return false;
         }
 
-        private bool DrawFolder(ref string selected, bool returnOnSelection = false)
+        private bool DrawFolder()
         {
-            ImGui.Text("Current Folder: " + CurrentFolder);
             bool result = false;
-
-            float availY = ImGui.GetContentRegionAvail().Y;
-            if (ImGui.BeginChildFrame(1, new System.Numerics.Vector2(0, availY - 30.0f)))
+            
+            DirectoryInfo di = new DirectoryInfo(currentFolder);
+            if (di.Exists)
             {
-                DirectoryInfo di = new DirectoryInfo(CurrentFolder);
-                if (di.Exists)
+                float availY = ImGui.GetContentRegionAvail().Y;
+                if (ImGui.BeginChildFrame(1, new System.Numerics.Vector2(0, availY - 30.0f)))
                 {
+                    ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(1.0f, 1.0f, 0.0f, 1.0f));
                     if (di.Parent != null)
-                    {
-                        ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(1.0f, 1.0f, 0.0f, 1.0f));
                         if (ImGui.Selectable("../", false, ImGuiSelectableFlags.DontClosePopups))
-                        {
-                            CurrentFolder = di.Parent.FullName;
-                        }
-                        ImGui.PopStyleColor();
-                    }
-                    foreach (var fse in Directory.EnumerateFileSystemEntries(di.FullName))
-                    {
-                        if (Directory.Exists(fse))
-                        {
-                            string name = Path.GetFileName(fse);
-                            ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(1.0f, 1.0f, 0.0f, 1.0f));
-                            if (ImGui.Selectable(name + "/", false, ImGuiSelectableFlags.DontClosePopups))
-                            {
-                                CurrentFolder = fse;
-                            }
-                            ImGui.PopStyleColor();
-                        }
-                        else
-                        {
-                            string name = Path.GetFileName(fse);
-                            bool isSelected = SelectedFile == fse;
-                            if (ImGui.Selectable(name, isSelected, ImGuiSelectableFlags.DontClosePopups))
-                            {
-                                SelectedFile = fse;
-                                if (returnOnSelection)
-                                {
-                                    result = true;
-                                    selected = SelectedFile;
-                                }
-                            }
-                            if (ImGui.IsMouseDoubleClicked(0))
-                            {
-                                result = true;
-                                selected = SelectedFile;
-                                ImGui.CloseCurrentPopup();
-                            }
-                        }
-                    }
-                }
+                            currentFolder = di.Parent.FullName;
 
+                    foreach (var f in Directory.GetDirectories(di.FullName))
+                    {
+                        string name = Path.GetFileName(f);
+                        
+                        if (ImGui.Selectable(name + "/", false, ImGuiSelectableFlags.DontClosePopups))
+                            currentFolder = f;
+                    }
+                    ImGui.PopStyleColor();
+
+                    foreach (var f in Directory.GetFiles(di.FullName))
+                    {
+                        string name = Path.GetFileName(f);
+
+                        if (ImGui.Selectable(name, SelectedFile == f, ImGuiSelectableFlags.DontClosePopups))
+                            SelectedFile = f;
+                    }
+                    ImGui.EndChildFrame();
+                }
             }
-            ImGui.EndChildFrame();
 
 
             if (ImGui.Button("Cancel"))
@@ -134,13 +109,12 @@ namespace LeaderEditor
                 ImGui.CloseCurrentPopup();
             }
 
-            if (SelectedFile != null)
+            if (!string.IsNullOrEmpty(SelectedFile))
             {
                 ImGui.SameLine();
                 if (ImGui.Button("Open"))
                 {
                     result = true;
-                    selected = SelectedFile;
                     ImGui.CloseCurrentPopup();
                 }
             }
