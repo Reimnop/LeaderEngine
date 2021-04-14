@@ -55,8 +55,7 @@ namespace LeaderEngine
                 }
             });
 
-            string postProcessPath = Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/PostProcess");
-
+            /*string postProcessPath = Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/PostProcess");
             postProcessor = new PostProcessor(new Shader[] {
                 Shader.FromSourceFile("post-process",
                     Path.Combine(postProcessPath, "post-process.vert"),
@@ -70,7 +69,8 @@ namespace LeaderEngine
                 Shader.FromSourceFile("post-process",
                     Path.Combine(postProcessPath, "post-process.vert"),
                     Path.Combine(postProcessPath, "compose.frag"))
-            });
+            });*/
+            //TODO: reenable post processor
 
             Logger.Log("Renderer initialized.", true);
         }
@@ -82,7 +82,8 @@ namespace LeaderEngine
 
         public override void Update()
         {
-            postProcessor.Resize(ViewportSize);
+            //postProcessor.Resize(ViewportSize);
+            //TODO: reenable post processor
         }
 
         public override void Render()
@@ -130,7 +131,8 @@ namespace LeaderEngine
 
             GL.Viewport(0, 0, ViewportSize.X, ViewportSize.Y);
 
-            postProcessor.Begin();
+            //postProcessor.Begin();
+            //TODO: reenable post processor
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.Enable(EnableCap.DepthTest);
@@ -150,14 +152,16 @@ namespace LeaderEngine
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             DrawDrawList(drawLists[DrawType.Transparent]);
-            postProcessor.End();
+            //postProcessor.End();
+            //TODO: reenable post processor
 
             //reset states
             GL.DepthMask(true);
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
 
-            postProcessor.Render();
+            //postProcessor.Render();
+            //TODO: reenable post processor
 
             ClearDrawList();
         }
