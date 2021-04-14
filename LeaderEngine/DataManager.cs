@@ -75,44 +75,51 @@ namespace LeaderEngine
                     string texPath = aiTexture.FilePath;
                     string texName = aiMaterial.Name + "-Diffuse";
 
-                    Texture texture;
-                    if (!texPath.StartsWith('*'))
+                    try
                     {
-                        if (!Path.IsPathRooted(texPath))
-                            texPath = Path.Combine(Path.GetDirectoryName(path), texPath);
-
-                        texture = Texture.FromFile(texName, texPath);
-                    }
-                    else
-                    {
-                        int index = int.Parse(texPath.Substring(1));
-                        var embedTexture = scene.Textures[index];
-
-                        if (embedTexture.IsCompressed)
+                        Texture texture;
+                        if (!texPath.StartsWith('*'))
                         {
-                            texture = Texture.FromImage(texName, Image.Load<Rgba32>(embedTexture.CompressedData));
+                            if (!Path.IsPathRooted(texPath))
+                                texPath = Path.Combine(Path.GetDirectoryName(path), texPath);
+
+                            texture = Texture.FromFile(texName, texPath);
                         }
                         else
                         {
-                            GCHandle handle = GCHandle.Alloc(embedTexture.NonCompressedData, GCHandleType.Pinned);
+                            int index = int.Parse(texPath.Substring(1));
+                            var embedTexture = scene.Textures[index];
 
-                            texture = Texture.FromPointer(
-                                texName,
-                                embedTexture.Width,
-                                embedTexture.Height,
-                                handle.AddrOfPinnedObject());
+                            if (embedTexture.IsCompressed)
+                            {
+                                texture = Texture.FromImage(texName, Image.Load<Rgba32>(embedTexture.CompressedData));
+                            }
+                            else
+                            {
+                                GCHandle handle = GCHandle.Alloc(embedTexture.NonCompressedData, GCHandleType.Pinned);
 
-                            handle.Free();
+                                texture = Texture.FromPointer(
+                                    texName,
+                                    embedTexture.Width,
+                                    embedTexture.Height,
+                                    handle.AddrOfPinnedObject());
+
+                                handle.Free();
+                            }
                         }
+
+                        texture.SetWrapS(ConvertWrapModeToOTK(aiTexture.WrapModeU));
+                        texture.SetWrapT(ConvertWrapModeToOTK(aiTexture.WrapModeV));
+
+                        mat.SetInt("hasDiffuse", 1);
+
+                        mat.SetInt("diffuse", 0);
+                        mat.SetTexture2D(TextureUnit.Texture0, texture);
                     }
-
-                    texture.SetWrapS(ConvertWrapModeToOTK(aiTexture.WrapModeU));
-                    texture.SetWrapT(ConvertWrapModeToOTK(aiTexture.WrapModeV));
-
-                    mat.SetInt("hasDiffuse", 1);
-
-                    mat.SetInt("diffuse", 0);
-                    mat.SetTexture2D(TextureUnit.Texture0, texture);
+                    catch
+                    {
+                        Logger.LogError($"Could not load texture {texName}!");
+                    }
                 }
             }
 
