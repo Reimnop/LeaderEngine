@@ -80,7 +80,7 @@ namespace LeaderEditor
         private void UpdateDisplay(string path)
         {
             DirectoryInfo directoryInfo = new DirectoryInfo(path);
-            displayFolders = Directory.GetDirectories(directoryInfo.FullName);
+            displayFolders = Directory.GetDirectories(directoryInfo.FullName).Where(x => !new DirectoryInfo(x).Attributes.HasFlag(FileAttributes.System)).ToArray();
 
             string[] files = Directory.GetFiles(directoryInfo.FullName);
 
@@ -101,7 +101,7 @@ namespace LeaderEditor
             if (di.Exists)
             {
                 float availY = ImGui.GetContentRegionAvail().Y;
-                if (ImGui.BeginChildFrame(1, new System.Numerics.Vector2(120.0f, availY - 30.0f)))
+                if (ImGui.BeginChildFrame(1, new System.Numerics.Vector2(160.0f, availY - 30.0f)))
                 {
                     var drives = DriveInfo.GetDrives();
 
@@ -109,7 +109,7 @@ namespace LeaderEditor
                     ImGui.Separator();
                     foreach (var drive in drives)
                     {
-                        if (ImGui.Selectable(drive.Name))
+                        if (ImGui.Selectable(drive.Name + $" ({drive.VolumeLabel})"))
                         {
                             SelectedFile = null;
                             currentFolder = drive.Name;
