@@ -11,7 +11,7 @@ namespace LeaderEditor
 
         public override void Init()
         {
-            Framebuffer = new Framebuffer("ViewportFBO", 1600, 900, new Attachment[]
+            Framebuffer = new Framebuffer("viewport-fbo", 1, 1, new Attachment[]
             {
                 new Attachment
                 {

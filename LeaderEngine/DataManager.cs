@@ -198,8 +198,8 @@ namespace LeaderEngine
         {
             return textureWrapMode switch
             {
-                Assimp.TextureWrapMode.Clamp => TextureWrapMode.ClampToBorder,
-                Assimp.TextureWrapMode.Decal => TextureWrapMode.ClampToEdge,
+                Assimp.TextureWrapMode.Clamp => TextureWrapMode.ClampToEdge,
+                Assimp.TextureWrapMode.Decal => TextureWrapMode.ClampToBorder,
                 Assimp.TextureWrapMode.Mirror => TextureWrapMode.MirroredRepeat,
                 Assimp.TextureWrapMode.Wrap => TextureWrapMode.Repeat,
                 _ => TextureWrapMode.ClampToBorder,

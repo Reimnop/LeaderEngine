@@ -27,14 +27,12 @@ namespace LeaderEngine
         const float shadowMapSize = 128.0f;
 
         private Framebuffer shadowMapFramebuffer;
-        private Framebuffer ppFramebuffer;
 
-        private Mesh ppMesh;
-        private Shader ppShader;
+        private PostProcessor postProcessor;
 
         public override void Init()
         {
-            shadowMapFramebuffer = new Framebuffer("ShadowMapFBO", shadowMapRes, shadowMapRes, new Attachment[]
+            shadowMapFramebuffer = new Framebuffer("shadowmap-fbo", shadowMapRes, shadowMapRes, new Attachment[]
             {
                 new Attachment
                 {
@@ -57,53 +55,22 @@ namespace LeaderEngine
                 }
             });
 
-            ppFramebuffer = new Framebuffer("PostProcessFBO", ViewportSize.X, ViewportSize.Y, new Attachment[]
-            {
-                new Attachment
-                {
-                    Draw = false,
-                    PixelInternalFormat = PixelInternalFormat.Rgba,
-                    PixelFormat = PixelFormat.Rgba,
-                    PixelType = PixelType.Float,
-                    FramebufferAttachment = FramebufferAttachment.ColorAttachment0,
-                    TextureParamsInt = new TextureParamInt[]
-                    {
-                        new TextureParamInt { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Linear },
-                        new TextureParamInt { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Linear }
-                    }
-                },
-                new Attachment
-                {
-                    Draw = false,
-                    PixelInternalFormat = PixelInternalFormat.DepthComponent,
-                    PixelFormat = PixelFormat.DepthComponent,
-                    PixelType = PixelType.Float,
-                    FramebufferAttachment = FramebufferAttachment.DepthAttachment,
-                    TextureParamsInt = new TextureParamInt[]
-                    {
-                        new TextureParamInt { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Nearest },
-                        new TextureParamInt { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Nearest }
-                    }
-                }
-            });
+            string postProcessPath = Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/PostProcess");
 
-            ppMesh = new Mesh("PostProcessQuad");
-            ppMesh.LoadMesh(new Vertex[]
-            {
-                new Vertex { Position = new Vector3(1.0f, 1.0f, 0.0f), UV = new Vector2(1.0f, 1.0f) },
-                new Vertex { Position = new Vector3(1.0f, -1.0f, 0.0f), UV = new Vector2(1.0f, 0.0f) },
-                new Vertex { Position = new Vector3(-1.0f, -1.0f, 0.0f), UV = new Vector2(0.0f, 0.0f) },
-                new Vertex { Position = new Vector3(-1.0f, 1.0f, 0.0f), UV = new Vector2(0.0f, 1.0f) }
-            },
-            new uint[]
-            {
-                0, 1, 3,
-                1, 2, 3
+            postProcessor = new PostProcessor(new Shader[] {
+                Shader.FromSourceFile("post-process",
+                    Path.Combine(postProcessPath, "post-process.vert"),
+                    Path.Combine(postProcessPath, "extract-bright.frag")),
+                Shader.FromSourceFile("post-process",
+                    Path.Combine(postProcessPath, "post-process.vert"),
+                    Path.Combine(postProcessPath, "horizontal-blur.frag")),
+                Shader.FromSourceFile("post-process",
+                    Path.Combine(postProcessPath, "post-process.vert"),
+                    Path.Combine(postProcessPath, "vertical-blur.frag")),
+                Shader.FromSourceFile("post-process",
+                    Path.Combine(postProcessPath, "post-process.vert"),
+                    Path.Combine(postProcessPath, "compose.frag"))
             });
-
-            ppShader = Shader.FromSourceFile("PostProcessShader",
-                Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/post-process.vert"),
-                Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/post-process.frag"));
 
             Logger.Log("Renderer initialized.", true);
         }
@@ -115,7 +82,7 @@ namespace LeaderEngine
 
         public override void Update()
         {
-            ppFramebuffer.Resize(ViewportSize.X, ViewportSize.Y);
+            postProcessor.Resize(ViewportSize);
         }
 
         public override void Render()
@@ -154,8 +121,8 @@ namespace LeaderEngine
 
             LightingGlobals.ShadowMap = shadowMapFramebuffer.GetTexture(FramebufferAttachment.DepthAttachment);
 
-        //render opaque
-        RenderOpaque:
+            //render opaque
+            RenderOpaque:
             Camera.Main.CalculateViewProjection(out Matrix4 view, out Matrix4 projection);
 
             //call all render funcs
@@ -163,7 +130,7 @@ namespace LeaderEngine
 
             GL.Viewport(0, 0, ViewportSize.X, ViewportSize.Y);
 
-            ppFramebuffer.Begin();
+            postProcessor.Begin();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.Enable(EnableCap.DepthTest);
@@ -183,22 +150,14 @@ namespace LeaderEngine
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             DrawDrawList(drawLists[DrawType.Transparent]);
-
-            ppFramebuffer.End();
+            postProcessor.End();
 
             //reset states
             GL.DepthMask(true);
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
 
-            //post process
-            ppMesh.Use();
-            ppShader.Use();
-
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, ppFramebuffer.GetTexture(FramebufferAttachment.ColorAttachment0));
-
-            GL.DrawElements(PrimitiveType.Triangles, ppMesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
+            postProcessor.Render();
 
             ClearDrawList();
         }
