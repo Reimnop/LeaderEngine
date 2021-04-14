@@ -14,9 +14,9 @@ namespace LeaderEngine
         private Mesh mesh;
 
         private Framebuffer framebuffer;
-        private Framebuffer stageFramebuffer;
 
-        private int readTextureHandle;
+        private Framebuffer stageReadFramebuffer;
+        private Framebuffer stageDrawFramebuffer;
 
         public PostProcessor(Shader[] shaders)
         {
@@ -65,7 +65,7 @@ namespace LeaderEngine
                     }
                 }
             });
-            stageFramebuffer = new Framebuffer("stage-post-process-fbo", framebufferSize.X, framebufferSize.Y, new Attachment[]
+            stageReadFramebuffer = new Framebuffer("stage-post-process-fbo", framebufferSize.X, framebufferSize.Y, new Attachment[]
             {
                 new Attachment
                 {
@@ -81,15 +81,22 @@ namespace LeaderEngine
                     }
                 }
             });
-
-            readTextureHandle = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, readTextureHandle);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, framebufferSize.X, framebufferSize.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            GL.BindTexture(TextureTarget.Texture2D, 0);
+            stageDrawFramebuffer = new Framebuffer("stage-post-process-fbo", framebufferSize.X, framebufferSize.Y, new Attachment[]
+            {
+                new Attachment
+                {
+                    Draw = false,
+                    PixelInternalFormat = PixelInternalFormat.Rgba,
+                    PixelFormat = PixelFormat.Rgba,
+                    PixelType = PixelType.Float,
+                    FramebufferAttachment = FramebufferAttachment.ColorAttachment0,
+                    TextureParamsInt = new TextureParamInt[]
+                    {
+                        new TextureParamInt { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Linear },
+                        new TextureParamInt { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Linear }
+                    }
+                }
+            });
         }
 
         public void Resize(Vector2i newSize)
@@ -98,11 +105,8 @@ namespace LeaderEngine
                 return;
 
             framebuffer.Resize(newSize.X, newSize.Y);
-            stageFramebuffer.Resize(newSize.X, newSize.Y);
-
-            GL.BindTexture(TextureTarget.Texture2D, readTextureHandle);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, newSize.X, newSize.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-            GL.BindTexture(TextureTarget.Texture2D, 0);
+            stageReadFramebuffer.Resize(newSize.X, newSize.Y);
+            stageDrawFramebuffer.Resize(newSize.X, newSize.Y);
 
             framebufferSize = newSize;
         }
@@ -123,14 +127,6 @@ namespace LeaderEngine
             {
                 Shader shader = shaders[i];
 
-                if (i != 0)
-                {
-                    GL.CopyImageSubData(
-                        stageFramebuffer.GetTexture(FramebufferAttachment.ColorAttachment0), ImageTarget.Texture2D, 0, 0, 0, 0,
-                        readTextureHandle, ImageTarget.Texture2D, 0, 0, 0, 0,
-                        framebufferSize.X, framebufferSize.Y, 1);
-                }
-
                 mesh.Use();
                 shader.Use();
 
@@ -146,12 +142,12 @@ namespace LeaderEngine
                 {
                     shader.SetInt("lastStageTexture", 2);
                     GL.ActiveTexture(TextureUnit.Texture2);
-                    GL.BindTexture(TextureTarget.Texture2D, readTextureHandle);
+                    GL.BindTexture(TextureTarget.Texture2D, stageReadFramebuffer.GetTexture(FramebufferAttachment.ColorAttachment0));
                 }
 
                 if (i != shaders.Length - 1)
                 {
-                    stageFramebuffer.Begin();
+                    stageDrawFramebuffer.Begin();
                     GL.Clear(ClearBufferMask.ColorBufferBit);
                 }
 
@@ -159,7 +155,13 @@ namespace LeaderEngine
 
                 if (i != shaders.Length - 1)
                 {
-                    stageFramebuffer.End();
+                    stageDrawFramebuffer.End();
+                }
+
+                {
+                    Framebuffer temp = stageDrawFramebuffer;
+                    stageDrawFramebuffer = stageReadFramebuffer;
+                    stageReadFramebuffer = temp;
                 }
             }
         }
