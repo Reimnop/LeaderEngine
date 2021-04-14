@@ -1,10 +1,9 @@
 ﻿using ImGuiNET;
 using OpenTK.Mathematics;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.IO;
-using LeaderEngine;
+using System.Linq;
 
 namespace LeaderEditor
 {

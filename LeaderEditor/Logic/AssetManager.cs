@@ -30,7 +30,7 @@ namespace LeaderEditor
                     ImGui.Text("Prefabs");
 
                     ImGui.SameLine();
-                    
+
                     ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - 100.0f);
 
                     FilePicker fp = FilePicker.GetFilePicker("prefab-model", null, ".fbx;.obj");
