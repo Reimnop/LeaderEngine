@@ -64,6 +64,8 @@ namespace LeaderEngine
             Renderer = renderer != null ? renderer : Renderer;
             Renderer.Init();
 
+            AudioManager.Init();
+
             Input.Init(MainWindow.KeyboardState, MainWindow.MouseState);
 
             //init main application
