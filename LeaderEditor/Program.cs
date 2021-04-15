@@ -30,12 +30,6 @@ namespace LeaderEditor
             Entity editorScripts = new Entity("EditorEntity");
             editorScripts.AddComponent<EditorController>();
 
-            AudioClip ac = AudioClip.FromFile("song", "song.wav");
-
-            var source = AudioManager.GetAudioSource("source");
-            source.Clip = ac;
-            source.Play();
-
             Logger.Log("Editor initialized.", true);
         }
     }

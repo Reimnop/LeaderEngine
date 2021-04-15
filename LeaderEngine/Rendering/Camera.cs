@@ -20,9 +20,11 @@ namespace LeaderEngine
 
             projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(FOV), renderer.ViewportSize.X / (float)renderer.ViewportSize.Y, 0.02f, 800.0f);
 
+            Vector3 pos = BaseTransform.GlobalTransform.ExtractTranslation();
+
             view = Matrix4.LookAt(
-                    BaseTransform.Position,
-                    BaseTransform.Position + BaseTransform.Forward,
+                    pos,
+                    pos + BaseTransform.Forward,
                     BaseTransform.Up
                 );
         }

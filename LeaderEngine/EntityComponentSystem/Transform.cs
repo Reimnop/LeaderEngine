@@ -9,6 +9,24 @@ namespace LeaderEngine
         public Vector3 Position = Vector3.Zero;
         public Vector3 Scale = Vector3.One;
 
+        public Matrix4 GlobalTransform
+        {
+            get
+            {
+                //calculate the model matrix;
+                Matrix4 res =
+                    Matrix4.CreateTranslation(-OriginOffset)
+                    * Matrix4.CreateScale(Scale)
+                    * Matrix4.CreateFromQuaternion(internalRotation)
+                    * Matrix4.CreateTranslation(Position);
+
+                if (baseEntity.Parent != null)
+                    res *= baseEntity.Parent.Transform.GlobalTransform;
+
+                return res;
+            }
+        }
+
         public Quaternion Rotation
         {
             get => internalRotation;
@@ -52,9 +70,9 @@ namespace LeaderEngine
         private Vector3 internalEulerAngles = Vector3.Zero;
 
         //direction vectors
-        public Vector3 Forward => Vector3.Transform(-Vector3.UnitZ, Quaternion.Conjugate(internalRotation));
-        public Vector3 Right => Vector3.Transform(Vector3.UnitX, Quaternion.Conjugate(internalRotation));
-        public Vector3 Up => Vector3.Transform(Vector3.UnitY, Quaternion.Conjugate(internalRotation));
+        public Vector3 Forward => Vector3.Transform(-Vector3.UnitZ, Quaternion.Conjugate(GlobalTransform.ExtractRotation()));
+        public Vector3 Right => Vector3.Transform(Vector3.UnitX, Quaternion.Conjugate(GlobalTransform.ExtractRotation()));
+        public Vector3 Up => Vector3.Transform(Vector3.UnitY, Quaternion.Conjugate(GlobalTransform.ExtractRotation()));
 
         internal Matrix4 ModelMatrix = Matrix4.Identity;
 

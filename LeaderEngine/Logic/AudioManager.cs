@@ -101,14 +101,13 @@ namespace LeaderEngine
         }
     }
 
-    public class AudioSource : IDisposable
+    public class AudioSource : Component
     {
         private int handle;
 
         private float _gain = 1.0f;
         private float _pitch = 1.0f;
         private bool _loop = true;
-        private Vector3 _position;
 
         public float Gain
         {
@@ -146,18 +145,6 @@ namespace LeaderEngine
                 AL.Source(handle, ALSourceb.Looping, value);
             }
         }
-        public Vector3 Position
-        {
-            get => _position;
-            set
-            {
-                if (_position == value)
-                    return;
-
-                _position = value;
-                AL.Source(handle, ALSource3f.Position, ref value);
-            }
-        }
 
         public bool Playing { get; private set; }
 
@@ -182,13 +169,24 @@ namespace LeaderEngine
             }
         }
 
-        public AudioSource()
+        private void Start()
         {
             handle = AL.GenSource();
             AL.Source(handle, ALSourcef.Gain, _gain);
             AL.Source(handle, ALSourcef.Pitch, _pitch);
             AL.Source(handle, ALSourceb.Looping, _loop);
-            AL.Source(handle, ALSource3f.Position, ref _position);
+        }
+
+        private void Update()
+        {
+            Vector3 pos = BaseTransform.GlobalTransform.ExtractTranslation();
+            AL.Source(handle, ALSource3f.Position, ref pos);
+        }
+
+        private void OnRemove()
+        {
+            AL.SourceStop(handle);
+            AL.DeleteSource(handle);
         }
 
         public void Play()
@@ -197,23 +195,36 @@ namespace LeaderEngine
             AL.SourcePlay(handle);
         }
 
+        public void Pause()
+        {
+            AL.SourcePause(handle);
+        }
+
         public void Stop()
         {
             Playing = false;
             AL.SourceStop(handle);
         }
 
-        public void Dispose()
+        public int GetHandle()
         {
-            AL.SourceStop(handle);
-            AL.DeleteSource(handle);
+            return handle;
+        }
+    }
+
+    public class AudioListener : Component
+    {
+        private void Update()
+        {
+            var pos = BaseTransform.GlobalTransform.ExtractTranslation();
+            var ori = BaseTransform.Forward;
+            AL.Listener(ALListener3f.Position, ref pos);
+            AL.Listener(ALListenerfv.Orientation, ref ori.X);
         }
     }
 
     public static class AudioManager
     {
-        private static Dictionary<string, AudioSource> audioSources = new Dictionary<string, AudioSource>();
-
         internal static void Init()
         {
             string deviceName = ALC.GetString(ALDevice.Null, AlcGetString.DefaultDeviceSpecifier);
@@ -231,16 +242,6 @@ namespace LeaderEngine
             ALError error = AL.GetError();
             if (error != ALError.NoError)
                 Logger.LogError($"OpenAL: {AL.GetErrorString(error)}");
-        }
-
-        public static AudioSource GetAudioSource(string id)
-        {
-            if (audioSources.TryGetValue(id, out AudioSource source))
-                return source;
-
-            AudioSource audioSource = new AudioSource();
-            audioSources.Add(id, audioSource);
-            return audioSource;
         }
     }
 }
