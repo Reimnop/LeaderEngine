@@ -26,6 +26,36 @@ namespace LeaderEditor
                 if (Input.GetKeyDown(Keys.I) && ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows))
                     SelectedPrefab?.Instantiate();
 
+                
+                if (ImGui.BeginChild("clips", new Vector2(210.0f, 0.0f), true))
+                {
+                    ImGui.Text("Audio Clips");
+
+                    ImGui.SameLine();
+
+                    FilePicker fp = FilePicker.GetFilePicker("audio", null, ".wav");
+
+                    fp.Title = "Select File (*.wav)";
+
+                    if (ImGui.Button("Import Audio", new Vector2(100.0f, 0.0f)))
+                        fp.Open();
+
+                    if (fp.Draw())
+                        AudioClip.FromFile("song", fp.SelectedFile);
+
+                    ImGui.Separator();
+
+                    if (ImGui.BeginChild("sub-ac-win"))
+                    {
+                        foreach (var a in DataManager.AudioClips)
+                            if (ImGui.Selectable(a.Name, SelectedClip == a))
+                                SelectedClip = a;
+                        ImGui.EndChild();
+                    }
+
+                    ImGui.EndChild();
+                }
+                ImGui.SameLine();
                 if (ImGui.BeginChild("prefabs", new Vector2(210.0f, 0.0f), true))
                 {
                     ImGui.Text("Prefabs");
@@ -99,22 +129,6 @@ namespace LeaderEditor
                         foreach (var m in DataManager.Materials)
                             if (ImGui.Selectable(m.Name, SelectedMaterial == m))
                                 SelectedMaterial = m;
-                        ImGui.EndChild();
-                    }
-
-                    ImGui.EndChild();
-                }
-                ImGui.SameLine();
-                if (ImGui.BeginChild("clips", new Vector2(210.0f, 0.0f), true))
-                {
-                    ImGui.Text("Audio Clips");
-                    ImGui.Separator();
-
-                    if (ImGui.BeginChild("sub-ac-win"))
-                    {
-                        foreach (var a in DataManager.AudioClips)
-                            if (ImGui.Selectable(a.Name, SelectedClip == a))
-                                SelectedClip = a;
                         ImGui.EndChild();
                     }
 

@@ -13,7 +13,9 @@ namespace LeaderEditor
         public static Dictionary<Type, Action<Component>> SerializeableComponents = new Dictionary<Type, Action<Component>>()
         {
             { typeof(DirectionalLight), null },
-            { typeof(TextRenderer), null }
+            { typeof(TextRenderer), null },
+            { typeof(AudioSource), null },
+            { typeof(AudioListener), null }
         };
 
         //is the add component menu open?

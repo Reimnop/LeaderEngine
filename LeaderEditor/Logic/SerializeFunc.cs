@@ -27,48 +27,31 @@ namespace LeaderEditor
             ImGui.PopID();
         }
 
-        //default serializers
-        private static Dictionary<Type, Action<Component, FieldInfo>> fieldDrawFuncs = new Dictionary<Type, Action<Component, FieldInfo>>()
-        {
-            { typeof(int), DefaultInt },
-            { typeof(float), DefaultFloat },
-            { typeof(string), DefaultString },
-            { typeof(Vector4), DefaultV4 },
-            { typeof(Vector3), DefaultV3 },
-            { typeof(Vector2), DefaultV2 }
-        };
-
-        private static void DefaultV2(Component obj, FieldInfo field)
-        {
-            Vector2 value = (Vector2)field.GetValue(obj);
-            ImGuiExtension.DragVector2(field.Name, ref value, Vector2.Zero);
-            field.SetValue(obj, value);
-        }
-
-        private static void DefaultV3(Component obj, FieldInfo field)
-        {
-            Vector3 value = (Vector3)field.GetValue(obj);
-            ImGuiExtension.DragVector3(field.Name, ref value, Vector3.Zero);
-            field.SetValue(obj, value);
-        }
-
-        private static void DefaultV4(Component obj, FieldInfo field)
-        {
-            Vector4 value = (Vector4)field.GetValue(obj);
-            ImGuiExtension.DragVector4(field.Name, ref value, Vector4.Zero);
-            field.SetValue(obj, value);
-        }
-
         public static void DefaultSerializeFunc(Component obj)
         {
-            var fields = obj.GetType().GetFields();
             bool guiDrawn = false;
+
+            //serialize fields
+            var fields = obj.GetType().GetFields();
             foreach (var field in fields)
             {
-                if (fieldDrawFuncs.TryGetValue(field.FieldType, out Action<Component, FieldInfo> drawFunc) && field.IsPublic && !field.IsStatic)
+                if (fieldDrawFuncs.TryGetValue(field.FieldType, out var drawFunc) && field.IsPublic && !field.IsStatic)
                 {
                     ImGui.PushID(field.Name);
-                    drawFunc.Invoke(obj, field);
+                    field.SetValue(obj, drawFunc.Invoke(field.Name, field.GetValue(obj)));
+                    ImGui.PopID();
+                    guiDrawn = true;
+                }
+            }
+
+            //serialize properties
+            var props = obj.GetType().GetProperties();
+            foreach (var prop in props)
+            {
+                if (fieldDrawFuncs.TryGetValue(prop.PropertyType, out var drawFunc))
+                {
+                    ImGui.PushID(prop.Name);
+                    prop.SetValue(obj, drawFunc.Invoke(prop.Name, prop.GetValue(obj)));
                     ImGui.PopID();
                     guiDrawn = true;
                 }
@@ -78,25 +61,77 @@ namespace LeaderEditor
                 ImGui.Text("No property");
         }
 
-        private static void DefaultInt(Component obj, FieldInfo field)
+        //default serializers
+        private static Dictionary<Type, Func<string, object, object>> fieldDrawFuncs = new Dictionary<Type, Func<string, object, object>>()
         {
-            int value = (int)field.GetValue(obj);
-            ImGui.DragInt(field.Name, ref value);
-            field.SetValue(obj, value);
+            { typeof(int), DefaultInt },
+            { typeof(float), DefaultFloat },
+            { typeof(string), DefaultString },
+            { typeof(Vector4), DefaultV4 },
+            { typeof(Vector3), DefaultV3 },
+            { typeof(Vector2), DefaultV2 },
+            { typeof(AudioClip), DefaultAC }
+        };
+
+        private static object DefaultAC(string name, object obj)
+        {
+            AudioClip value = (AudioClip)obj;
+
+            if (ImGui.BeginCombo(name, value != null ? value.Name : "[None]"))
+            {
+                if (ImGui.Selectable("[None]", value == null))
+                    value = null;
+
+                foreach (var clip in DataManager.AudioClips)
+                    if (ImGui.Selectable(clip.Name, value == clip))
+                        value = clip;
+
+                ImGui.EndCombo();
+            }
+
+            return value;
         }
 
-        private static void DefaultFloat(Component obj, FieldInfo field)
+        private static object DefaultV2(string name, object obj)
         {
-            float value = (float)field.GetValue(obj);
-            ImGui.DragFloat(field.Name, ref value, 0.05f);
-            field.SetValue(obj, value);
+            Vector2 value = (Vector2)obj;
+            ImGuiExtension.DragVector2(name, ref value, Vector2.Zero);
+            return value;
         }
 
-        private static void DefaultString(Component obj, FieldInfo field)
+        private static object DefaultV3(string name, object obj)
         {
-            string value = (string)field.GetValue(obj) ?? string.Empty;
-            ImGui.InputText(field.Name, ref value, 65535, ImGuiInputTextFlags.Multiline);
-            field.SetValue(obj, value);
+            Vector3 value = (Vector3)obj;
+            ImGuiExtension.DragVector3(name, ref value, Vector3.Zero);
+            return value;
+        }
+
+        private static object DefaultV4(string name, object obj)
+        {
+            Vector4 value = (Vector4)obj;
+            ImGuiExtension.DragVector4(name, ref value, Vector4.Zero);
+            return value;
+        }
+
+        private static object DefaultInt(string name, object obj)
+        {
+            int value = (int)obj;
+            ImGui.DragInt(name, ref value);
+            return value;
+        }
+
+        private static object DefaultFloat(string name, object obj)
+        {
+            float value = (float)obj;
+            ImGui.DragFloat(name, ref value, 0.05f);
+            return value;
+        }
+
+        private static object DefaultString(string name, object obj)
+        {
+            string value = (string)obj ?? string.Empty;
+            ImGui.InputText(name, ref value, 65535, ImGuiInputTextFlags.Multiline);
+            return value;
         }
     }
 }
