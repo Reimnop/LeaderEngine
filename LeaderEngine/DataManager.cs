@@ -38,6 +38,7 @@ namespace LeaderEngine
         public static List<Prefab> Prefabs { get; } = new List<Prefab>();
         public static List<Mesh> Meshes { get; } = new List<Mesh>();
         public static List<Texture> Textures { get; } = new List<Texture>();
+        public static List<AudioClip> AudioClips { get; } = new List<AudioClip>();
 
         public static Prefab LoadModelFromFile(string path)
         {

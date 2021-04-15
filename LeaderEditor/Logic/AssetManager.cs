@@ -11,6 +11,7 @@ namespace LeaderEditor
         public static Mesh SelectedMesh;
         public static Texture SelectedTexture;
         public static Material SelectedMaterial;
+        public static AudioClip SelectedClip;
 
         private void Start()
         {
@@ -98,6 +99,22 @@ namespace LeaderEditor
                         foreach (var m in DataManager.Materials)
                             if (ImGui.Selectable(m.Name, SelectedMaterial == m))
                                 SelectedMaterial = m;
+                        ImGui.EndChild();
+                    }
+
+                    ImGui.EndChild();
+                }
+                ImGui.SameLine();
+                if (ImGui.BeginChild("clips", new Vector2(210.0f, 0.0f), true))
+                {
+                    ImGui.Text("Audio Clips");
+                    ImGui.Separator();
+
+                    if (ImGui.BeginChild("sub-ac-win"))
+                    {
+                        foreach (var a in DataManager.AudioClips)
+                            if (ImGui.Selectable(a.Name, SelectedClip == a))
+                                SelectedClip = a;
                         ImGui.EndChild();
                     }
 

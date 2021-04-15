@@ -4,6 +4,7 @@ using OpenTK.Audio.OpenAL;
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.CompilerServices;
+using OpenTK.Mathematics;
 
 namespace LeaderEngine
 {
@@ -68,20 +69,23 @@ namespace LeaderEngine
     public class AudioClip : IDisposable
     {
         public readonly string Name;
+
         private int handle;
 
-        private AudioClip(string name, ALFormat format, IntPtr data, int size, int rate)
+        private AudioClip(string name, ALFormat format, byte[] data, int size, int rate)
         {
             Name = name;
 
             handle = AL.GenBuffer();
-            AL.BufferData(handle, format, data, size, rate);
+            AL.BufferData(handle, format, ref data[0], size, rate);
+
+            DataManager.AudioClips.Add(this);
         }
 
-        public unsafe static AudioClip FromFile(string name, string path)
+        public static AudioClip FromFile(string name, string path)
         {
             byte[] data = AudioLoader.LoadWave(File.Open(path, FileMode.Open), out int channels, out int bits, out int rate);
-            return new AudioClip(name, AudioLoader.GetSoundFormat(channels, bits), (IntPtr)Unsafe.AsPointer(ref data), data.Length, rate);
+            return new AudioClip(name, AudioLoader.GetSoundFormat(channels, bits), data, data.Length - data.Length % (bits / 8 * channels), rate);
         }
 
         public int GetHandle()
@@ -92,12 +96,118 @@ namespace LeaderEngine
         public void Dispose()
         {
             AL.DeleteBuffer(handle);
+
+            DataManager.AudioClips.Remove(this);
         }
     }
 
-    public class AudioSource
+    public class AudioSource : IDisposable
     {
+        private int handle;
 
+        private float _gain = 1.0f;
+        private float _pitch = 1.0f;
+        private bool _loop = true;
+        private Vector3 _position;
+
+        public float Gain
+        {
+            get => _gain;
+            set
+            {
+                if (_gain == value)
+                    return;
+
+                _gain = value;
+                AL.Source(handle, ALSourcef.Gain, value);
+            }
+        }
+        public float Pitch
+        {
+            get => _pitch;
+            set
+            {
+                if (_pitch == value)
+                    return;
+
+                _pitch = value;
+                AL.Source(handle, ALSourcef.Pitch, value);
+            }
+        }
+        public bool Looping
+        {
+            get => _loop;
+            set
+            {
+                if (_loop == value)
+                    return;
+
+                _loop = value;
+                AL.Source(handle, ALSourceb.Looping, value);
+            }
+        }
+        public Vector3 Position
+        {
+            get => _position;
+            set
+            {
+                if (_position == value)
+                    return;
+
+                _position = value;
+                AL.Source(handle, ALSource3f.Position, ref value);
+            }
+        }
+
+        public bool Playing { get; private set; }
+
+        private AudioClip _audioClip;
+
+        public AudioClip Clip
+        {
+            get => _audioClip;
+            set
+            {
+                if (Playing)
+                {
+                    Logger.LogError("Cannot set clip while playing!");
+                    return;
+                }
+
+                if (_audioClip == value)
+                    return;
+
+                _audioClip = value;
+                AL.Source(handle, ALSourcei.Buffer, value.GetHandle());
+            }
+        }
+
+        public AudioSource()
+        {
+            handle = AL.GenSource();
+            AL.Source(handle, ALSourcef.Gain, _gain);
+            AL.Source(handle, ALSourcef.Pitch, _pitch);
+            AL.Source(handle, ALSourceb.Looping, _loop);
+            AL.Source(handle, ALSource3f.Position, ref _position);
+        }
+
+        public void Play()
+        {
+            Playing = true;
+            AL.SourcePlay(handle);
+        }
+
+        public void Stop()
+        {
+            Playing = false;
+            AL.SourceStop(handle);
+        }
+
+        public void Dispose()
+        {
+            AL.SourceStop(handle);
+            AL.DeleteSource(handle);
+        }
     }
 
     public static class AudioManager
