@@ -14,7 +14,7 @@ namespace LeaderEngine
                 Main = this;
         }
 
-        public void CalculateViewProjection(out Matrix4 view, out Matrix4 projection)
+        public virtual void CalculateViewProjection(out Matrix4 view, out Matrix4 projection)
         {
             GLRenderer renderer = Engine.Renderer;
 
