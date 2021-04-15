@@ -4,6 +4,11 @@ using System.Text;
 
 namespace LeaderEngine
 {
+    public class AudioSource
+    {
+
+    }
+
     public static class AudioManager
     {
 
