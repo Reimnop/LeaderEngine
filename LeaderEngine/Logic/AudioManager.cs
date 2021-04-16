@@ -222,12 +222,24 @@ namespace LeaderEngine
 
     public class AudioListener : Component
     {
+        private float[] orientation = new float[6];
+
         private void Update()
         {
             var pos = BaseTransform.GlobalTransform.ExtractTranslation();
-            var ori = BaseTransform.Forward;
             AL.Listener(ALListener3f.Position, ref pos);
-            AL.Listener(ALListenerfv.Orientation, ref ori.X);
+
+            var fw = BaseTransform.Forward;
+            var up = BaseTransform.Up;
+
+            orientation[0] = fw.X;
+            orientation[1] = fw.Y;
+            orientation[2] = fw.Z;
+            orientation[3] = up.X;
+            orientation[4] = up.Y;
+            orientation[5] = up.Z;
+
+            AL.Listener(ALListenerfv.Orientation, ref orientation[0]);
         }
     }
 
