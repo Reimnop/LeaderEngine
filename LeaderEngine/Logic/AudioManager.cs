@@ -155,14 +155,14 @@ namespace LeaderEngine
             get => _audioClip;
             set
             {
+                if (_audioClip == value)
+                    return;
+
                 if (Playing)
                 {
                     Logger.LogError("Cannot set clip while playing!");
                     return;
                 }
-
-                if (_audioClip == value)
-                    return;
 
                 _audioClip = value;
                 AL.Source(handle, ALSourcei.Buffer, value.GetHandle());

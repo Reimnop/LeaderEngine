@@ -4,6 +4,7 @@ using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 
 namespace LeaderEditor
 {
@@ -25,6 +26,48 @@ namespace LeaderEditor
             ImGui.PushID("ScaleV3");
             ImGuiExtension.DragVector3("Scale", ref transform.Scale, Vector3.One, 0.05f);
             ImGui.PopID();
+        }
+
+        public static void SerializeAudioSource(Component obj)
+        {
+            AudioSource source = (AudioSource)obj;
+
+            float gain = source.Gain;
+            ImGui.DragFloat("Gain", ref gain, 0.1f);
+            source.Gain = gain;
+
+            float pitch = source.Pitch;
+            ImGui.DragFloat("Pitch", ref pitch, 0.1f);
+            source.Pitch = pitch;
+
+            bool loop = source.Looping;
+            ImGui.Checkbox("Looping", ref loop);
+            source.Looping = loop;
+
+            if (ImGui.BeginCombo("Clip", source.Clip != null ? source.Clip.Name : "[None]"))
+            {
+                if (ImGui.Selectable("[None]", source.Clip == null))
+                    source.Clip = null;
+
+                foreach (var clip in DataManager.AudioClips)
+                    if (ImGui.Selectable(clip.Name, source.Clip == clip))
+                        source.Clip = clip;
+
+                ImGui.EndCombo();
+            }
+
+            if (ImGui.Button("Play"))
+                source.Play();
+
+            ImGui.SameLine();
+
+            if (ImGui.Button("Pause"))
+                source.Pause();
+
+            ImGui.SameLine();
+
+            if (ImGui.Button("Stop"))
+                source.Stop();
         }
 
         public static void DefaultSerializeFunc(Component obj)
