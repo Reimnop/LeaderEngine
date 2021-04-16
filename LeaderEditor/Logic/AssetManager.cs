@@ -26,7 +26,7 @@ namespace LeaderEditor
                 if (Input.GetKeyDown(Keys.I) && ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows))
                     SelectedPrefab?.Instantiate();
 
-                
+
                 if (ImGui.BeginChild("clips", new Vector2(210.0f, 0.0f), true))
                 {
                     ImGui.Text("Audio Clips");

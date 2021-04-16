@@ -1,8 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace LeaderEngine
 {
@@ -122,8 +120,8 @@ namespace LeaderEngine
 
             LightingGlobals.ShadowMap = shadowMapFramebuffer.GetTexture(FramebufferAttachment.DepthAttachment);
 
-            //render opaque
-            RenderOpaque:
+        //render opaque
+        RenderOpaque:
             Camera.Main.CalculateViewProjection(out Matrix4 view, out Matrix4 projection);
 
             //call all render funcs
