@@ -69,6 +69,8 @@ namespace LeaderEngine
     public class AudioClip : IDisposable
     {
         public readonly string Name;
+        public readonly int SampleRate;
+        public readonly int Size;
 
         private int handle;
 
@@ -78,6 +80,9 @@ namespace LeaderEngine
 
             handle = AL.GenBuffer();
             AL.BufferData(handle, format, ref data[0], size, rate);
+
+            SampleRate = rate;
+            Size = size;
 
             DataManager.AudioClips.Add(this);
         }
@@ -204,6 +209,12 @@ namespace LeaderEngine
         {
             Playing = false;
             AL.SourceStop(handle);
+        }
+
+        public float GetPlayPosition()
+        {
+            AL.GetSource(handle, ALGetSourcei.SampleOffset, out int bPosition);
+            return bPosition / (float)Clip.Size * (Clip.Size / (float)Clip.SampleRate);
         }
 
         public int GetHandle()
