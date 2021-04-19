@@ -16,20 +16,31 @@ namespace LeaderEngine
 
         public Shader(string name, string vertSource, string fragSource)
         {
+            bool success;
+
             var vertexShader = GL.CreateShader(ShaderType.VertexShader);
             GL.ShaderSource(vertexShader, vertSource);
-            CompileShader(vertexShader);
+            CompileShader(vertexShader, out success);
+
+            if (!success)
+                return;
 
             var fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
             GL.ShaderSource(fragmentShader, fragSource);
-            CompileShader(fragmentShader);
+            CompileShader(fragmentShader, out success);
+
+            if (!success)
+                return;
 
             handle = GL.CreateProgram();
 
             GL.AttachShader(handle, vertexShader);
             GL.AttachShader(handle, fragmentShader);
 
-            LinkProgram(handle);
+            LinkProgram(handle, out success);
+
+            if (!success)
+                return;
 
             GL.DetachShader(handle, vertexShader);
             GL.DetachShader(handle, fragmentShader);
@@ -58,26 +69,32 @@ namespace LeaderEngine
             return new Shader(name, File.ReadAllText(vertPath), File.ReadAllText(fragPath));
         }
 
-        private static void CompileShader(int shader)
+        private static void CompileShader(int shader, out bool success)
         {
+            success = true;
+
             GL.CompileShader(shader);
 
             GL.GetShader(shader, ShaderParameter.CompileStatus, out var code);
             if (code != (int)All.True)
             {
                 var infoLog = GL.GetShaderInfoLog(shader);
-                throw new Exception($"Error occurred whilst compiling Shader({shader}).\n\n{infoLog}");
+                Logger.LogError($"Error occurred whilst compiling Shader({shader}).\n\n{infoLog}");
+                success = false;
             }
         }
 
-        private static void LinkProgram(int program)
+        private static void LinkProgram(int program, out bool success)
         {
+            success = true;
+
             GL.LinkProgram(program);
 
             GL.GetProgram(program, GetProgramParameterName.LinkStatus, out var code);
             if (code != (int)All.True)
             {
-                throw new Exception($"Error occurred whilst linking Program({program})");
+                Logger.LogError($"Error occurred whilst linking Program({program})");
+                success = false;
             }
         }
 
