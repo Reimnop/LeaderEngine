@@ -59,6 +59,14 @@ namespace LeaderEditor
                 ImGui.End();
             }
             ImGui.PopStyleVar();
+
+            if (ImGui.Begin("Stats"))
+            {
+                ImGui.Text($"Frametime: {MathF.Floor(Time.UnscaledDeltaTime * 100000.0f) / 100.0f}ms");
+                ImGui.Text($"Framerate: {MathF.Floor(1.0f / Time.UnscaledDeltaTime)}");
+
+                ImGui.End();
+            }
         }
     }
 }
