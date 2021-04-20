@@ -18,9 +18,6 @@ namespace LeaderEditor
             { typeof(AudioListener), null }
         };
 
-        //is the add component menu open?
-        private bool compMenuOpen = false;
-
         private void Start()
         {
             //register ImGui
@@ -37,37 +34,34 @@ namespace LeaderEditor
                     goto EndMenu;
                 }
 
-                if (ImGui.Button("Add Component"))
-                    compMenuOpen = !compMenuOpen;
+                ImGui.SetNextItemWidth(160.0f);
+                ImGui.InputText("Name", ref SceneHierachy.SelectedEntity.Name, 255);
 
                 ImGui.SameLine();
 
-                ImGui.SetNextItemWidth(150.0f);
-                ImGui.InputText("Name", ref SceneHierachy.SelectedEntity.Name, 255);
+                ImGui.SetNextItemWidth(160.0f);
+                ImGui.InputText("Tag", ref SceneHierachy.SelectedEntity.Tag, 255);
+
+                if (ImGui.Button("Add Component"))
+                    ImGui.OpenPopup("comp-menu");
 
                 ImGui.SameLine();
 
                 ImGui.Checkbox("Enabled", ref SceneHierachy.SelectedEntity.Active);
 
                 //get all components
-                Component[] components = SceneHierachy.SelectedEntity.GetComponents<Component>();
+                var components = SceneHierachy.SelectedEntity.GetComponents<Component>();
 
                 //add component menu
-                if (compMenuOpen)
+                if (ImGui.BeginPopup("comp-menu"))
                 {
-                    if (ImGui.ListBoxHeader("Components"))
+                    foreach (var comp in SerializeableComponents)
                     {
-                        foreach (var comp in SerializeableComponents)
-                        {
-                            if (!components.Any(x => x.GetType() == comp.Key))
-                                if (ImGui.Button(comp.Key.Name))
-                                {
-                                    //create new component and add
-                                    SceneHierachy.SelectedEntity.AddComponent((Component)Activator.CreateInstance(comp.Key));
-                                }
-                        }
-                        ImGui.ListBoxFooter();
+                        if (!components.Any(x => x.GetType() == comp.Key))
+                            if (ImGui.Selectable(comp.Key.Name))
+                                SceneHierachy.SelectedEntity.AddComponent((Component)Activator.CreateInstance(comp.Key)); //create new component and add
                     }
+                    ImGui.EndPopup();
                 }
 
                 //render transform editor
@@ -87,7 +81,7 @@ namespace LeaderEditor
                 ImGuiExtension.DragVector3("Origin Offset", ref SceneHierachy.SelectedEntity.Transform.OriginOffset, Vector3.Zero, 0.1f);
 
                 //serialize components in an entity
-                for (int i = 0; i < components.Length; i++)
+                for (int i = 0; i < components.Count; i++)
                 {
                     ImGui.Separator();
 

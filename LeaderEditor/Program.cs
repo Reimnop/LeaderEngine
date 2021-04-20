@@ -27,7 +27,7 @@ namespace LeaderEditor
         {
             Engine.IgnoreGLInfo = true;
 
-            Entity editorScripts = new Entity("EditorEntity");
+            Entity editorScripts = new Entity("EditorEntity", "Editor");
             editorScripts.AddComponent<EditorController>();
 
             Logger.Log("Editor initialized.", true);

@@ -8,6 +8,8 @@ namespace LeaderEngine
     public class Entity
     {
         public string Name;
+        public string Tag;
+
         public readonly Transform Transform;
 
         private Entity _parent;
@@ -41,9 +43,11 @@ namespace LeaderEngine
         public List<IRenderer> Renderers { get; } = new List<IRenderer>();
         public List<IShadowMapRenderer> ShadowMapRenderers { get; } = new List<IShadowMapRenderer>();
 
-        public Entity(string name, Entity parent = null)
+        public Entity(string name, string tag = null, Entity parent = null)
         {
             Name = name;
+            Tag = tag == null ? string.Empty : tag;
+
             Transform = new Transform(this);
 
             if (parent == null)
@@ -102,9 +106,9 @@ namespace LeaderEngine
         {
             return (T)components.Find(c => typeof(T).IsAssignableFrom(c.GetType()));
         }
-        public T[] GetComponents<T>() where T : Component
+        public List<Component> GetComponents<T>() where T : Component
         {
-            return components.FindAll(c => typeof(T).IsAssignableFrom(c.GetType())).Select(x => (T)x).ToArray();
+            return components.FindAll(c => typeof(T).IsAssignableFrom(c.GetType()));
         }
         public void AddComponent(Component component) //basic
         {

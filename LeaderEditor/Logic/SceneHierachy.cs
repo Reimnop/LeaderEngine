@@ -43,7 +43,8 @@ namespace LeaderEditor
             {
                 for (int i = 0; i < currentSceneEntities.Count; i++)
                 {
-                    RecursivelyRender(currentSceneEntities[i]);
+                    if (currentSceneEntities[i].Tag != "Editor")
+                        RecursivelyRender(currentSceneEntities[i]);
                 }
 
                 if (!ImGui.IsAnyItemHovered() && ImGui.IsWindowHovered(ImGuiHoveredFlags.ChildWindows))
@@ -88,7 +89,7 @@ namespace LeaderEditor
             if (ImGui.BeginPopupContextItem("Entity Popup"))
             {
                 if (ImGui.MenuItem("New Entity"))
-                    _ = new Entity("New Entity", en);
+                    _ = new Entity("New Entity", parent: en);
 
                 if (ImGui.MenuItem("Delete"))
                     en.Destroy();

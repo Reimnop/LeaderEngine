@@ -43,7 +43,7 @@ namespace LeaderEngine
 
         private Entity RecursivelySpawnEntities(PrefabEntity prefabEntity, Entity parent)
         {
-            Entity entity = new Entity(prefabEntity.Name, parent);
+            Entity entity = new Entity(prefabEntity.Name, parent: parent);
 
             entity.Transform.Position = prefabEntity.Position;
             entity.Transform.Rotation = prefabEntity.Rotation;
