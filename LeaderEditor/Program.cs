@@ -25,6 +25,7 @@ namespace LeaderEditor
 
         private static void InitEditor()
         {
+            Engine.MainWindow.VSync = VSyncMode.Off;
             Engine.IgnoreGLInfo = true;
 
             Entity editorScripts = new Entity("EditorEntity", "Editor");
