@@ -58,6 +58,8 @@ namespace LeaderEngine
             GL.Enable(EnableCap.DebugOutputSynchronous);
 
             //init modules
+            DataManager.Init();
+
             DefaultShaders.Init();
             DefaultFonts.Init();
 

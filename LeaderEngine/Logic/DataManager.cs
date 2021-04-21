@@ -3,6 +3,9 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using System;
+using System.Linq;
+using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -34,11 +37,25 @@ namespace LeaderEngine
     {
         public static Scene CurrentScene { get; private set; } = new Scene("Untitled Scene");
 
+        internal static Dictionary<string, Type> ComponentTypes { get; } = new Dictionary<string, Type>();
+
         public static List<Material> Materials { get; } = new List<Material>();
         public static List<Prefab> Prefabs { get; } = new List<Prefab>();
         public static List<Mesh> Meshes { get; } = new List<Mesh>();
         public static List<Texture> Textures { get; } = new List<Texture>();
         public static List<AudioClip> AudioClips { get; } = new List<AudioClip>();
+
+        internal static void Init()
+        {
+            var kvps =
+                AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(x => x.GetTypes())
+                .Where(t => typeof(Component).IsAssignableFrom(t))
+                .Select(x => KeyValuePair.Create(x.GUID.ToString(), x));
+
+            foreach (var kvp in kvps)
+                ComponentTypes.Add(kvp.Key, kvp.Value);
+        }
 
         public static Prefab LoadModelFromFile(string path)
         {
