@@ -1,11 +1,12 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using System.Collections.Generic;
 
 namespace LeaderEngine
 {
     public class PostProcessor
     {
-        public readonly Shader[] shaders;
+        public readonly List<Shader> Shaders = new List<Shader>();
 
         private Vector2i framebufferSize = Vector2i.One;
 
@@ -16,10 +17,8 @@ namespace LeaderEngine
         private Framebuffer stageReadFramebuffer;
         private Framebuffer stageDrawFramebuffer;
 
-        public PostProcessor(Shader[] shaders)
+        public PostProcessor()
         {
-            this.shaders = shaders;
-
             mesh = new Mesh("post-process-quad");
             mesh.LoadMesh(new Vertex[]
             {
@@ -121,9 +120,9 @@ namespace LeaderEngine
 
         public void Render()
         {
-            for (int i = 0; i < shaders.Length; i++)
+            for (int i = 0; i < Shaders.Count; i++)
             {
-                Shader shader = shaders[i];
+                Shader shader = Shaders[i];
 
                 mesh.Use();
                 shader.Use();
@@ -143,7 +142,7 @@ namespace LeaderEngine
                     GL.BindTexture(TextureTarget.Texture2D, stageReadFramebuffer.GetTexture(FramebufferAttachment.ColorAttachment0));
                 }
 
-                if (i != shaders.Length - 1)
+                if (i != Shaders.Count - 1)
                 {
                     stageDrawFramebuffer.Begin();
                     GL.Clear(ClearBufferMask.ColorBufferBit);
@@ -151,7 +150,7 @@ namespace LeaderEngine
 
                 GL.DrawElements(PrimitiveType.Triangles, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
 
-                if (i != shaders.Length - 1)
+                if (i != Shaders.Count - 1)
                 {
                     stageDrawFramebuffer.End();
                 }

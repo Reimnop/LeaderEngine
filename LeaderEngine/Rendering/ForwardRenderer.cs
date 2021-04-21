@@ -1,6 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace LeaderEngine
 {
@@ -53,8 +55,10 @@ namespace LeaderEngine
                 }
             });
 
-            /*string postProcessPath = Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/PostProcess");
-            postProcessor = new PostProcessor(new Shader[] {
+            string postProcessPath = Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/PostProcess");
+
+            postProcessor = new PostProcessor();
+            postProcessor.Shaders.AddRange(new Shader[] {
                 Shader.FromSourceFile("post-process",
                     Path.Combine(postProcessPath, "post-process.vert"),
                     Path.Combine(postProcessPath, "extract-bright.frag")),
@@ -67,8 +71,7 @@ namespace LeaderEngine
                 Shader.FromSourceFile("post-process",
                     Path.Combine(postProcessPath, "post-process.vert"),
                     Path.Combine(postProcessPath, "compose.frag"))
-            });*/
-            //TODO: reenable post processor
+            });
 
             Logger.Log("Renderer initialized.", true);
         }
@@ -80,8 +83,7 @@ namespace LeaderEngine
 
         public override void Update()
         {
-            //postProcessor.Resize(ViewportSize);
-            //TODO: reenable post processor
+            postProcessor.Resize(ViewportSize);
         }
 
         public override void Render()
@@ -129,8 +131,7 @@ namespace LeaderEngine
 
             GL.Viewport(0, 0, ViewportSize.X, ViewportSize.Y);
 
-            //postProcessor.Begin();
-            //TODO: reenable post processor
+            postProcessor.Begin();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.Enable(EnableCap.DepthTest);
@@ -150,16 +151,14 @@ namespace LeaderEngine
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             DrawDrawList(drawLists[DrawType.Transparent]);
-            //postProcessor.End();
-            //TODO: reenable post processor
+            postProcessor.End();
 
             //reset states
             GL.DepthMask(true);
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
 
-            //postProcessor.Render();
-            //TODO: reenable post processor
+            postProcessor.Render();
 
             ClearDrawList();
         }
