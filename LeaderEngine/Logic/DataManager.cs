@@ -51,7 +51,7 @@ namespace LeaderEngine
                 AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(x => x.GetTypes())
                 .Where(t => typeof(Component).IsAssignableFrom(t))
-                .Select(x => KeyValuePair.Create(x.GUID.ToString(), x));
+                .Select(x => KeyValuePair.Create(x.FullName, x));
 
             foreach (var kvp in kvps)
                 ComponentTypes.Add(kvp.Key, kvp.Value);
