@@ -129,6 +129,7 @@ void main()
             io.Fonts.GetTexDataAsRGBA32(out IntPtr pixels, out int width, out int height, out _);
 
             fontTexture = Texture.FromPointer("ImGui Font Texture", width, height, pixels,
+                4,
                 PixelInternalFormat.Rgba,
                 PixelFormat.Rgba,
                 PixelType.UnsignedByte);

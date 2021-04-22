@@ -70,7 +70,7 @@ namespace LeaderEngine
                 this.indices = indices;
             }
 
-            public void Serialize(Stream stream)
+            public void Serialize(Stream stream) //TODO: rewrite to BinaryReader and BinaryWriter
             {
                 int vSize = Unsafe.SizeOf<T>();
 

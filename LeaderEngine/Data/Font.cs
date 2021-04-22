@@ -126,6 +126,7 @@ namespace LeaderEngine
                 atlasSize.X,
                 atlasSize.Y,
                 handle.AddrOfPinnedObject(),
+                1,
                 (PixelInternalFormat)All.Red,
                 PixelFormat.Red,
                 PixelType.UnsignedByte);

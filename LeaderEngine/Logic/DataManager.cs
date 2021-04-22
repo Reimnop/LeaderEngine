@@ -119,7 +119,8 @@ namespace LeaderEngine
                                     texName,
                                     embedTexture.Width,
                                     embedTexture.Height,
-                                    handle.AddrOfPinnedObject());
+                                    handle.AddrOfPinnedObject(),
+                                    4);
 
                                 handle.Free();
                             }
