@@ -13,7 +13,10 @@ namespace LeaderEngine
         {
             get
             {
-                //calculate the model matrix;
+                //calculate the model matrix
+                if (Position == Vector3.Zero && Scale == Vector3.One && Rotation == Quaternion.Identity)
+                    return baseEntity.Parent != null ? baseEntity.Parent.Transform.GlobalTransform : Matrix4.Identity;
+
                 Matrix4 res =
                     Matrix4.CreateTranslation(-OriginOffset)
                     * Matrix4.CreateScale(Scale)
@@ -85,7 +88,13 @@ namespace LeaderEngine
 
         internal void CalculateModelMatrixRecursively()
         {
-            //calculate the model matrix;
+            //calculate the model matrix
+            if (Position == Vector3.Zero && Scale == Vector3.One && Rotation == Quaternion.Identity)
+            {
+                ModelMatrix = baseEntity.Parent != null ? baseEntity.Parent.Transform.ModelMatrix : Matrix4.Identity;
+                goto CalculateChildren;
+            }
+            
             Matrix4 res =
                 Matrix4.CreateTranslation(-OriginOffset)
                 * Matrix4.CreateScale(Scale)
@@ -97,7 +106,8 @@ namespace LeaderEngine
 
             ModelMatrix = res;
 
-            //calculate on children
+            //calculate children
+        CalculateChildren:
             baseEntity.Children.ForEach(x => x.Transform.CalculateModelMatrixRecursively());
         }
     }

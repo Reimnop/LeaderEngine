@@ -69,7 +69,6 @@ namespace LeaderEngine
             var aiMaterials = scene.Materials;
 
             //load materials
-
             Material[] materials = new Material[aiMaterials.Count];
 
             for (int i = 0; i < scene.Materials.Count; i++)
@@ -140,13 +139,52 @@ namespace LeaderEngine
                 }
             }
 
+            //load meshes
+            (Mesh mesh, int matIndex)[] meshes = new (Mesh mesh, int matIndex)[scene.Meshes.Count];
+
+            //load each vertex
+            for (int i = 0; i < scene.Meshes.Count; i++)
+            {
+                var aiMesh = aiMeshes[i];
+
+                Vertex[] vertices = new Vertex[aiMesh.VertexCount];
+
+                for (int j = 0; j < aiMesh.VertexCount; j++)
+                {
+                    var aiVert = aiMesh.Vertices[j];
+                    var aiNormal = aiMesh.Normals[j];
+
+                    vertices[j] = new Vertex
+                    {
+                        Position = new Vector3(aiVert.X, aiVert.Y, aiVert.Z),
+
+                        Normal = new Vector3(aiNormal.X, aiNormal.Y, aiNormal.Z),
+
+                        Color = aiMesh.HasVertexColors(0) ? new Vector3(
+                            aiMesh.VertexColorChannels[0][j].R,
+                            aiMesh.VertexColorChannels[0][j].G,
+                            aiMesh.VertexColorChannels[0][j].B) : Vector3.One,
+
+                        UV = aiMesh.HasTextureCoords(0) ? new Vector2(
+                            aiMesh.TextureCoordinateChannels[0][j].X,
+                            aiMesh.TextureCoordinateChannels[0][j].Y) : Vector2.Zero
+                    };
+                }
+
+                //create mesh
+                Mesh mesh = new Mesh(aiMesh.Name);
+                mesh.LoadMesh(vertices, aiMesh.GetUnsignedIndices());
+
+                meshes[i] = (mesh, aiMesh.MaterialIndex);
+            }
+
             //load model
-            PrefabEntity rootEntity = RecursivelyLoadAssimpNode(aiMeshes, materials, scene.RootNode);
+            PrefabEntity rootEntity = RecursivelyLoadAssimpNode(meshes, materials, scene.RootNode);
 
             return new Prefab(Path.GetFileNameWithoutExtension(path), rootEntity);
         }
 
-        private static PrefabEntity RecursivelyLoadAssimpNode(List<Assimp.Mesh> aiMeshes, Material[] materials, Node node)
+        private static PrefabEntity RecursivelyLoadAssimpNode((Mesh Mesh, int MatIndex)[] meshes, Material[] materials, Node node)
         {
             //create Entity
             PrefabEntity entity = new PrefabEntity(node.Name);
@@ -161,44 +199,17 @@ namespace LeaderEngine
             entity.Rotation = new Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
             entity.Scale = new Vector3(scale.X, scale.Y, scale.Z);
 
-            int rIndex = 0;
-            foreach (int ind in node.MeshIndices)
+            for (int i = 0; i < node.MeshIndices.Count; i++)
             {
-                var aiMesh = aiMeshes[ind];
+                int ind = node.MeshIndices[i];
 
-                Vertex[] vertices = new Vertex[aiMesh.VertexCount];
-
-                //load each vertex
-                for (int i = 0; i < aiMesh.VertexCount; i++)
-                {
-                    var aiVert = aiMesh.Vertices[i];
-                    var aiNormal = aiMesh.Normals[i];
-
-                    vertices[i] = new Vertex
-                    {
-                        Position = new Vector3(aiVert.X, aiVert.Y, aiVert.Z),
-
-                        Normal = new Vector3(aiNormal.X, aiNormal.Y, aiNormal.Z),
-
-                        Color = aiMesh.HasVertexColors(0) ? new Vector3(
-                            aiMesh.VertexColorChannels[0][i].R,
-                            aiMesh.VertexColorChannels[0][i].G,
-                            aiMesh.VertexColorChannels[0][i].B) : Vector3.One,
-
-                        UV = aiMesh.HasTextureCoords(0) ? new Vector2(
-                            aiMesh.TextureCoordinateChannels[0][i].X,
-                            aiMesh.TextureCoordinateChannels[0][i].Y) : Vector2.Zero
-                    };
-                }
-
-                //create mesh
-                Mesh mesh = new Mesh(node.Name + "-" + rIndex);
-                mesh.LoadMesh(vertices, aiMesh.GetUnsignedIndices());
+                var mesh = meshes[ind];
 
                 //create entity
-                PrefabEntity mEntity = new PrefabEntity(node.Name + "-" + rIndex);
-                mEntity.Mesh = mesh;
-                mEntity.Material = materials[aiMesh.MaterialIndex];
+                PrefabEntity mEntity = new PrefabEntity(node.Name + "-" + i);
+
+                mEntity.Mesh = mesh.Mesh;
+                mEntity.Material = materials[mesh.MatIndex];
 
                 entity.Children.Add(mEntity);
             }
@@ -206,7 +217,7 @@ namespace LeaderEngine
         //load children
         LoadChildren:
             foreach (var child in node.Children)
-                entity.Children.Add(RecursivelyLoadAssimpNode(aiMeshes, materials, child));
+                entity.Children.Add(RecursivelyLoadAssimpNode(meshes, materials, child));
 
             return entity;
         }
