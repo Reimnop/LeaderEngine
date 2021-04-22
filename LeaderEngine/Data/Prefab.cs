@@ -118,7 +118,7 @@ namespace LeaderEngine
                 RecursivelySerialize(child, writer);
         }
 
-        public static Prefab Deserialize(BinaryReader reader)
+        public static Prefab Deserialize(BinaryReader reader, string id = null)
         {
             //read name
             string name = reader.ReadString();
@@ -126,7 +126,7 @@ namespace LeaderEngine
             //read entities
             PrefabEntity rootEntity = RecursivelyDeserialize(reader);
 
-            return new Prefab(name, rootEntity);
+            return new Prefab(name, rootEntity, id);
         }
 
         private static PrefabEntity RecursivelyDeserialize(BinaryReader reader)

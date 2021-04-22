@@ -62,13 +62,13 @@ namespace LeaderEngine
             DataManager.Textures.Add(ID, this);
         }
 
-        public static Texture FromFile(string name, string path)
+        public static Texture FromFile(string name, string path, string id = null)
         {
             using (var image = Image.Load<Rgba32>(path))
-                return FromImage(name, image);
+                return FromImage(name, image, id);
         }
 
-        public unsafe static Texture FromImage(string name, Image<Rgba32> image)
+        public unsafe static Texture FromImage(string name, Image<Rgba32> image, string id = null)
         {
             Span<Rgba32> pixelSpan;
             if (!image.TryGetSinglePixelSpan(out pixelSpan))
@@ -85,17 +85,16 @@ namespace LeaderEngine
                 pixelSpan = new Span<Rgba32>(pixelArray);
             }
 
-            Texture tex = FromPointer(name, image.Width, image.Height, (IntPtr)Unsafe.AsPointer(ref pixelSpan[0]));
-
-            return tex;
+            return FromPointer(name, image.Width, image.Height, (IntPtr)Unsafe.AsPointer(ref pixelSpan[0]), id: id);
         }
 
         public static Texture FromPointer(string name, int width, int height, IntPtr data, 
             PixelInternalFormat internalFormat = PixelInternalFormat.Rgba, 
             PixelFormat format = PixelFormat.Rgba, 
-            PixelType pixelType = PixelType.UnsignedByte)
+            PixelType pixelType = PixelType.UnsignedByte,
+            string id = null)
         {
-            Texture texture = new Texture(name);
+            Texture texture = new Texture(name, id);
 
             //copy pixel array
             int singlePixelSize = TextureHelper.GetSinglePixelSize(internalFormat, pixelType);
@@ -205,7 +204,7 @@ namespace LeaderEngine
             writer.Write(rawData);
         }
 
-        public static Texture Deserialize(BinaryReader reader)
+        public static Texture Deserialize(BinaryReader reader, string id = null)
         {
             //read name
             string name = reader.ReadString();
