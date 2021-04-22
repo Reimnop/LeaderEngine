@@ -48,8 +48,8 @@ namespace LeaderEngine
             public int VerticesCount { get; }
             public int IndicesCount { get; }
 
-            public void Serialize(Stream stream);
-            public void Deserialize(Stream stream);
+            public void Serialize(BinaryWriter writer);
+            public void Deserialize(BinaryReader reader);
         }
 
         private struct VertexArrayGeneric<T> : IVertexArray where T : struct
@@ -70,73 +70,48 @@ namespace LeaderEngine
                 this.indices = indices;
             }
 
-            public void Serialize(Stream stream) //TODO: rewrite to BinaryReader and BinaryWriter
+            public void Serialize(BinaryWriter writer)
             {
                 int vSize = Unsafe.SizeOf<T>();
 
-                //write length
-                stream.Write(BitConverter.GetBytes(vertices.Length * vSize));
-                IntPtr vPtr = Marshal.AllocHGlobal(vSize);
-                byte[] vBuffer = new byte[vSize];
+                //write size
+                writer.Write(vertices.Length * vSize);
                 //write vertices
-                for (int i = 0; i < vertices.Length; i++)
-                {
-                    T vertex = vertices[i];
+                byte[] vertData = new byte[vertices.Length * vSize];
+                GCHandle vHandle = GCHandle.Alloc(vertices, GCHandleType.Pinned);
+                Marshal.Copy(vHandle.AddrOfPinnedObject(), vertData, 0, vertices.Length * vSize);
+                vHandle.Free();
+                writer.Write(vertData);
 
-                    Marshal.StructureToPtr(vertex, vPtr, true);
-                    Marshal.Copy(vPtr, vBuffer, 0, vSize);
-
-                    stream.Write(vBuffer, 0, vSize);
-                }
-                Marshal.FreeHGlobal(vPtr);
-
-                //write length
-                stream.Write(BitConverter.GetBytes(indices.Length * sizeof(uint)));
+                //write size
+                writer.Write(indices.Length * sizeof(uint));
                 //write indices
-                for (int i = 0; i < indices.Length; i++)
-                {
-                    stream.Write(BitConverter.GetBytes(indices[i]));
-                }
+                byte[] indexData = new byte[indices.Length * sizeof(uint)];
+                GCHandle iHandle = GCHandle.Alloc(indices, GCHandleType.Pinned);
+                Marshal.Copy(iHandle.AddrOfPinnedObject(), indexData, 0, indices.Length * sizeof(uint));
+                iHandle.Free();
+                writer.Write(indexData);
             }
-            public void Deserialize(Stream stream)
+
+            public void Deserialize(BinaryReader reader)
             {
-                //read length
-                byte[] buffer = new byte[sizeof(int)];
-                stream.Read(buffer, 0, sizeof(int));
-
-                int vBufSize = BitConverter.ToInt32(buffer, 0);
-                int vSize = Unsafe.SizeOf<T>();
-                int vLength = vBufSize / vSize;
-
+                //read size
+                int vSize = reader.ReadInt32();
                 //read vertices
-                vertices = new T[vLength];
-                buffer = new byte[vSize];
-                GCHandle handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
-                for (int i = 0; i < vLength; i++)
-                {
-                    stream.Read(buffer, 0, vSize);
-                    vertices[i] = (T)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(T));
-                }
-                handle.Free();
+                byte[] vertData = reader.ReadBytes(vSize);
+                vertices = new T[vSize / Unsafe.SizeOf<T>()];
+                GCHandle vHandle = GCHandle.Alloc(vertices, GCHandleType.Pinned);
+                Marshal.Copy(vertData, 0, vHandle.AddrOfPinnedObject(), vSize);
+                vHandle.Free();
 
-                //read length
-                buffer = new byte[sizeof(int)];
-                stream.Read(buffer, 0, sizeof(int));
-
-                int iBufSize = BitConverter.ToInt32(buffer, 0);
-                int iSize = sizeof(uint);
-                int iLength = iBufSize / iSize;
-
+                //read size
+                int iSize = reader.ReadInt32();
                 //read indices
-                indices = new uint[iLength];
-                buffer = new byte[iSize];
-                handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
-                for (int i = 0; i < iLength; i++)
-                {
-                    stream.Read(buffer, 0, iSize);
-                    indices[i] = BitConverter.ToUInt32(buffer, 0);
-                }
-                handle.Free();
+                byte[] indexData = reader.ReadBytes(iSize);
+                indices = new uint[iSize / sizeof(uint)];
+                GCHandle iHandle = GCHandle.Alloc(indices, GCHandleType.Pinned);
+                Marshal.Copy(indexData, 0, iHandle.AddrOfPinnedObject(), iSize);
+                iHandle.Free();
             }
         }
 

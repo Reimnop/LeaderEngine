@@ -7,18 +7,46 @@ using System.Text;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace LeaderEngine
 {
     public sealed class Texture : IDisposable
     {
+        private static class TextureHelper
+        {
+            private readonly static Dictionary<PixelInternalFormat, int> internalFormatSize = new Dictionary<PixelInternalFormat, int>()
+            {
+                { (PixelInternalFormat)All.Red, 1 },
+                { PixelInternalFormat.Rgba, 4 }
+            };
+
+            private readonly static Dictionary<PixelType, int> typeSize = new Dictionary<PixelType, int>()
+            {
+                { PixelType.UnsignedByte, 1 },
+                { PixelType.Float, sizeof(float) }
+            };
+
+            public static int GetSinglePixelSize(PixelInternalFormat pixelInternalFormat, PixelType pixelType)
+            {
+                int iSize, tSize;
+
+                if (!internalFormatSize.TryGetValue(pixelInternalFormat, out iSize))
+                    throw new NotImplementedException();
+
+                if (!typeSize.TryGetValue(pixelType, out tSize))
+                    throw new NotImplementedException();
+
+                return iSize * tSize;
+            }
+        }
+
         public readonly string Name;
         private int handle;
         
         public Vector2i Size;
 
         private byte[] rawData;
-        private int singlePixelSize;
 
         private PixelInternalFormat pixelInternalFormat;
         private PixelFormat pixelFormat;
@@ -54,23 +82,24 @@ namespace LeaderEngine
                 pixelSpan = new Span<Rgba32>(pixelArray);
             }
 
-            Texture tex = FromPointer(name, image.Width, image.Height, (IntPtr)Unsafe.AsPointer(ref pixelSpan[0]), 4);
+            Texture tex = FromPointer(name, image.Width, image.Height, (IntPtr)Unsafe.AsPointer(ref pixelSpan[0]));
 
             return tex;
         }
 
-        public static Texture FromPointer(string name, int width, int height, IntPtr data, int singlePixelSize, 
-            PixelInternalFormat internalFormat = PixelInternalFormat.SrgbAlpha, 
+        public static Texture FromPointer(string name, int width, int height, IntPtr data, 
+            PixelInternalFormat internalFormat = PixelInternalFormat.Rgba, 
             PixelFormat format = PixelFormat.Rgba, 
             PixelType pixelType = PixelType.UnsignedByte)
         {
             Texture texture = new Texture(name);
 
             //copy pixel array
+            int singlePixelSize = TextureHelper.GetSinglePixelSize(internalFormat, pixelType);
+
             texture.rawData = new byte[width * height * singlePixelSize];
             Marshal.Copy(data, texture.rawData, 0, width * height * singlePixelSize);
 
-            texture.singlePixelSize = singlePixelSize;
             texture.pixelInternalFormat = internalFormat;
             texture.pixelFormat = format;
             texture.pixelType = pixelType;
@@ -92,17 +121,20 @@ namespace LeaderEngine
             return texture;
         }
 
-        public static Texture FromBytes(string name, int width, int height, byte[] data, int singlePixelSize,
+        public static Texture FromArray<T>(string name, int width, int height, T[] data,
             PixelInternalFormat internalFormat = PixelInternalFormat.SrgbAlpha,
             PixelFormat format = PixelFormat.Rgba,
-            PixelType pixelType = PixelType.UnsignedByte)
+            PixelType pixelType = PixelType.UnsignedByte) where T : struct
         {
             Texture texture = new Texture(name);
 
             //copy pixel array
-            texture.rawData = data;
+            texture.rawData = new byte[data.Length * Unsafe.SizeOf<T>()];
 
-            texture.singlePixelSize = singlePixelSize;
+            GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
+            Marshal.Copy(handle.AddrOfPinnedObject(), texture.rawData, 0, data.Length * Unsafe.SizeOf<T>());
+            handle.Free();
+
             texture.pixelInternalFormat = internalFormat;
             texture.pixelFormat = format;
             texture.pixelType = pixelType;
@@ -158,8 +190,6 @@ namespace LeaderEngine
             writer.Write(Name);
 
             //write pixel info
-            writer.Write(singlePixelSize);
-
             writer.Write((int)pixelInternalFormat);
             writer.Write((int)pixelFormat);
             writer.Write((int)pixelType);
@@ -178,8 +208,6 @@ namespace LeaderEngine
             string name = reader.ReadString();
 
             //read pixel info
-            int singlePixelSize = reader.ReadInt32();
-
             PixelInternalFormat pixelInternalFormat = (PixelInternalFormat)reader.ReadInt32();
             PixelFormat pixelFormat = (PixelFormat)reader.ReadInt32();
             PixelType pixelType = (PixelType)reader.ReadInt32();
@@ -188,11 +216,11 @@ namespace LeaderEngine
             Vector2i size = new Vector2i(reader.ReadInt32(), reader.ReadInt32());
 
             //read pixels
-            byte[] data = reader.ReadBytes(size.X * size.Y);
+            byte[] data = reader.ReadBytes(size.X * size.Y * TextureHelper.GetSinglePixelSize(pixelInternalFormat, pixelType));
 
-            return FromBytes(name,
+            return FromArray(name,
                 size.X, size.Y,
-                data, singlePixelSize,
+                data,
                 pixelInternalFormat, pixelFormat,
                 pixelType);
         }

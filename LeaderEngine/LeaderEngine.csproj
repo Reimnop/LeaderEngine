@@ -39,6 +39,9 @@
     <None Update="EngineAssets\Shaders\PostProcess\compose.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="EngineAssets\Shaders\PostProcess\empty.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="EngineAssets\Shaders\PostProcess\vertical-blur.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

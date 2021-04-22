@@ -126,15 +126,14 @@ namespace LeaderEngine
                 atlasSize.X,
                 atlasSize.Y,
                 handle.AddrOfPinnedObject(),
-                1,
                 (PixelInternalFormat)All.Red,
                 PixelFormat.Red,
                 PixelType.UnsignedByte);
 
+            handle.Free();
+
             fontTexture.SetWrapS(TextureWrapMode.ClampToBorder);
             fontTexture.SetWrapT(TextureWrapMode.ClampToBorder);
-
-            handle.Free();
 
             GL.PixelStore(PixelStoreParameter.UnpackAlignment, 4);
         }

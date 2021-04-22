@@ -38,7 +38,7 @@ namespace LeaderEngine
                 new Attachment
                 {
                     Draw = false,
-                    PixelInternalFormat = PixelInternalFormat.Rgba,
+                    PixelInternalFormat = PixelInternalFormat.SrgbAlpha,
                     PixelFormat = PixelFormat.Rgba,
                     PixelType = PixelType.Float,
                     FramebufferAttachment = FramebufferAttachment.ColorAttachment0,

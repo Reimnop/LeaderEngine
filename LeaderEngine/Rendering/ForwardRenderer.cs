@@ -61,16 +61,7 @@ namespace LeaderEngine
             postProcessor.Shaders.AddRange(new Shader[] {
                 Shader.FromSourceFile("post-process",
                     Path.Combine(postProcessPath, "post-process.vert"),
-                    Path.Combine(postProcessPath, "extract-bright.frag")),
-                Shader.FromSourceFile("post-process",
-                    Path.Combine(postProcessPath, "post-process.vert"),
-                    Path.Combine(postProcessPath, "horizontal-blur.frag")),
-                Shader.FromSourceFile("post-process",
-                    Path.Combine(postProcessPath, "post-process.vert"),
-                    Path.Combine(postProcessPath, "vertical-blur.frag")),
-                Shader.FromSourceFile("post-process",
-                    Path.Combine(postProcessPath, "post-process.vert"),
-                    Path.Combine(postProcessPath, "compose.frag"))
+                    Path.Combine(postProcessPath, "empty.frag"))
             });
 
             Logger.Log("Renderer initialized.", true);

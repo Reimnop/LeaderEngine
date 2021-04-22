@@ -20,8 +20,8 @@ uniform sampler2D shadowMap;
 uniform vec3 lightDir;
 uniform float bBias = 0.002;
 
-uniform vec3 ambient = vec3(0.05);
-uniform vec3 shadeColor = vec3(0.15);
+uniform vec3 ambient = vec3(0.25);
+uniform vec3 shadeColor = vec3(0.05);
 
 in vec4 FragPosLightSpace;
 

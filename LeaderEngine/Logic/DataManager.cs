@@ -113,16 +113,11 @@ namespace LeaderEngine
                             }
                             else
                             {
-                                GCHandle handle = GCHandle.Alloc(embedTexture.NonCompressedData, GCHandleType.Pinned);
-
-                                texture = Texture.FromPointer(
+                                texture = Texture.FromArray(
                                     texName,
                                     embedTexture.Width,
                                     embedTexture.Height,
-                                    handle.AddrOfPinnedObject(),
-                                    4);
-
-                                handle.Free();
+                                    embedTexture.NonCompressedData);
                             }
                         }
 
@@ -134,9 +129,13 @@ namespace LeaderEngine
                         mat.SetInt("diffuse", 0);
                         mat.SetTexture2D(TextureUnit.Texture0, texture);
                     }
-                    catch
+                    catch (Exception e)
                     {
                         Logger.LogError($"Could not load texture {texName}!");
+
+#if DEBUG
+                        Logger.LogError($"Exception: {e}");
+#endif
                     }
                 }
             }
