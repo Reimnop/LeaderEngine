@@ -6,10 +6,8 @@ namespace LeaderEngine
     {
         public static void SetOrAdd<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
-            if (dictionary.ContainsKey(key))
+            if (!dictionary.TryAdd(key, value))
                 dictionary[key] = value;
-            else
-                dictionary.Add(key, value);
         }
     }
 }

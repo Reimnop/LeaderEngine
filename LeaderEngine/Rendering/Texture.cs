@@ -41,6 +41,8 @@ namespace LeaderEngine
         }
 
         public readonly string Name;
+        public readonly string ID;
+
         private int handle;
         
         public Vector2i Size;
@@ -51,11 +53,13 @@ namespace LeaderEngine
         private PixelFormat pixelFormat;
         private PixelType pixelType;
 
-        private Texture(string name)
+        private Texture(string name, string id = null)
         {
             Name = name;
 
-            DataManager.Textures.Add(this);
+            ID = id != null ? id : DataManager.GetUniqueID(x => DataManager.Textures.ContainsKey(x));
+
+            DataManager.Textures.Add(ID, this);
         }
 
         public static Texture FromFile(string name, string path)
@@ -239,7 +243,7 @@ namespace LeaderEngine
         {
             GL.DeleteTexture(handle);
 
-            DataManager.Textures.Remove(this);
+            DataManager.Textures.Remove(ID);
         }
     }
 }

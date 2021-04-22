@@ -124,10 +124,11 @@ namespace LeaderEngine
         public PrimitiveType PrimitiveType { get; private set; }
 
         public readonly string Name;
+        public readonly string ID;
 
         public bool Initialized { get; private set; } = false;
 
-        public Mesh(string name)
+        public Mesh(string name, string id = null)
         {
             Name = name;
 
@@ -136,7 +137,9 @@ namespace LeaderEngine
             VBO = GL.GenBuffer();
             EBO = GL.GenBuffer();
 
-            DataManager.Meshes.Add(this);
+            ID = id != null ? id : DataManager.GetUniqueID(x => DataManager.Meshes.ContainsKey(x));
+
+            DataManager.Meshes.Add(ID, this);
         }
 
         public void LoadMesh<T>(T[] vertices, uint[] indices, PrimitiveType primitiveType = PrimitiveType.Triangles) where T : struct
@@ -199,7 +202,7 @@ namespace LeaderEngine
             GL.DeleteBuffer(VBO);
             GL.DeleteBuffer(EBO);
 
-            DataManager.Meshes.Remove(this);
+            DataManager.Meshes.Remove(ID);
         }
     }
 }

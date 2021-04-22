@@ -24,15 +24,18 @@ namespace LeaderEngine
     public sealed class Material : IDisposable
     {
         public readonly string Name;
+        public readonly string ID;
 
         private Dictionary<string, MaterialProp> materialProps = new Dictionary<string, MaterialProp>();
-        private Dictionary<TextureUnit, int> materialTextures = new Dictionary<TextureUnit, int>();
+        private Dictionary<TextureUnit, Texture> materialTextures = new Dictionary<TextureUnit, Texture>();
 
-        public Material(string name)
+        public Material(string name, string id = null)
         {
             Name = name;
 
-            DataManager.Materials.Add(this);
+            ID = id != null ? id : DataManager.GetUniqueID(x => DataManager.Materials.ContainsKey(x));
+
+            DataManager.Materials.Add(ID, this);
         }
 
         #region SetMethods
@@ -81,20 +84,16 @@ namespace LeaderEngine
             });
         }
 
-        public void SetTexture2D(TextureUnit unit, int handle)
-        {
-            materialTextures.SetOrAdd(unit, handle);
-        }
-
         public void SetTexture2D(TextureUnit unit, Texture texture)
         {
-            materialTextures.SetOrAdd(unit, texture.GetHandle());
+            materialTextures.SetOrAdd(unit, texture);
         }
         #endregion
 
         public void Use(Shader shader)
         {
             foreach (var prop in materialProps)
+            {
                 switch (prop.Value.PropType)
                 {
                     case MaterialPropType.Int:
@@ -113,17 +112,17 @@ namespace LeaderEngine
                         shader.SetMatrix4(prop.Key, (Matrix4)prop.Value.Data);
                         break;
                 }
+            }
 
             foreach (var tex in materialTextures)
             {
-                GL.ActiveTexture(tex.Key);
-                GL.BindTexture(TextureTarget.Texture2D, tex.Value);
+                tex.Value.Use(tex.Key);
             }
         }
 
         public void Dispose()
         {
-            DataManager.Materials.Remove(this);
+            DataManager.Materials.Remove(ID);
         }
     }
 }

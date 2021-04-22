@@ -66,12 +66,14 @@ namespace LeaderEngine
     public class AudioClip : IDisposable
     {
         public readonly string Name;
+        public readonly string ID;
+
         public readonly int SampleRate;
         public readonly int Size;
 
         private int handle;
 
-        private AudioClip(string name, ALFormat format, byte[] data, int size, int rate)
+        private AudioClip(string name, ALFormat format, byte[] data, int size, int rate, string id = null)
         {
             Name = name;
 
@@ -81,7 +83,9 @@ namespace LeaderEngine
             SampleRate = rate;
             Size = size;
 
-            DataManager.AudioClips.Add(this);
+            ID = id != null ? id : DataManager.GetUniqueID(x => DataManager.AudioClips.ContainsKey(x));
+
+            DataManager.AudioClips.Add(ID, this);
         }
 
         public static AudioClip FromFile(string name, string path)
@@ -99,7 +103,7 @@ namespace LeaderEngine
         {
             AL.DeleteBuffer(handle);
 
-            DataManager.AudioClips.Remove(this);
+            DataManager.AudioClips.Remove(ID);
         }
     }
 

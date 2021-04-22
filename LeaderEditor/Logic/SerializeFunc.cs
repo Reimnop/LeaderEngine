@@ -48,8 +48,8 @@ namespace LeaderEditor
                     source.Clip = null;
 
                 foreach (var clip in DataManager.AudioClips)
-                    if (ImGui.Selectable(clip.Name, source.Clip == clip))
-                        source.Clip = clip;
+                    if (ImGui.Selectable(clip.Value.Name, source.Clip == clip.Value))
+                        source.Clip = clip.Value;
 
                 ImGui.EndCombo();
             }
@@ -124,8 +124,8 @@ namespace LeaderEditor
                     value = null;
 
                 foreach (var clip in DataManager.AudioClips)
-                    if (ImGui.Selectable(clip.Name, value == clip))
-                        value = clip;
+                    if (ImGui.Selectable(clip.Value.Name, value == clip.Value))
+                        value = clip.Value;
 
                 ImGui.EndCombo();
             }
