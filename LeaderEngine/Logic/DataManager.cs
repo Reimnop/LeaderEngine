@@ -32,6 +32,26 @@ namespace LeaderEngine
         }
     }
 
+    public static class RNG
+    {
+        private static Random idRng = new Random();
+        public static string GetRandomID()
+        {
+            const int idLength = 16;
+            const string characters = "0123456789abcdef";
+
+            int charLength = characters.Length;
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < idLength; i++)
+            {
+                sb.Append(characters[idRng.Next(charLength)]);
+            }
+
+            return sb.ToString();
+        }
+    }
+
     public static class DataManager
     {
         public static Scene CurrentScene { get; private set; } = new Scene("Untitled Scene");
@@ -43,29 +63,6 @@ namespace LeaderEngine
         public static Dictionary<string, Mesh> Meshes { get; } = new Dictionary<string, Mesh>();
         public static Dictionary<string, Texture> Textures { get; } = new Dictionary<string, Texture>();
         public static Dictionary<string, AudioClip> AudioClips { get; } = new Dictionary<string, AudioClip>();
-
-        public static string GetUniqueID(Func<string, bool> checkIdFunc)
-        {
-            const int idLength = 16;
-            const string characters = "0123456789abcdef";
-
-            int charLength = characters.Length;
-
-            Random rng = new Random();
-
-            StringBuilder sb;
-            do
-            {
-                sb = new StringBuilder();
-                for (int i = 0; i < idLength; i++)
-                {
-                    sb.Append(characters[rng.Next(charLength)]);
-                }
-            }
-            while (checkIdFunc(checkIdFunc.ToString()));
-
-            return sb.ToString();
-        }
 
         internal static void Init()
         {

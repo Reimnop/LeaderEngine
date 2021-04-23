@@ -37,7 +37,7 @@ namespace LeaderEngine
             Name = name;
             RootPrefabEntity = rootEntity;
 
-            ID = id != null ? id : DataManager.GetUniqueID(x => DataManager.Prefabs.ContainsKey(x));
+            ID = id != null ? id : RNG.GetRandomID();
 
             DataManager.Prefabs.Add(ID, this);
         }

@@ -57,7 +57,7 @@ namespace LeaderEngine
         {
             Name = name;
 
-            ID = id != null ? id : DataManager.GetUniqueID(x => DataManager.Textures.ContainsKey(x));
+            ID = id != null ? id : RNG.GetRandomID();
 
             DataManager.Textures.Add(ID, this);
         }

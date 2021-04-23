@@ -83,7 +83,7 @@ namespace LeaderEngine
             SampleRate = rate;
             Size = size;
 
-            ID = id != null ? id : DataManager.GetUniqueID(x => DataManager.AudioClips.ContainsKey(x));
+            ID = id != null ? id : RNG.GetRandomID();
 
             DataManager.AudioClips.Add(ID, this);
         }

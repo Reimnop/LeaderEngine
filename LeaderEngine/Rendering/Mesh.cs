@@ -137,7 +137,7 @@ namespace LeaderEngine
             VBO = GL.GenBuffer();
             EBO = GL.GenBuffer();
 
-            ID = id != null ? id : DataManager.GetUniqueID(x => DataManager.Meshes.ContainsKey(x));
+            ID = id != null ? id : RNG.GetRandomID();
 
             DataManager.Meshes.Add(ID, this);
         }
