@@ -61,7 +61,6 @@ namespace LeaderEngine
             DataManager.Init();
 
             DefaultShaders.Init();
-            DefaultFonts.Init();
 
             Renderer = renderer != null ? renderer : Renderer;
             Renderer.Init();

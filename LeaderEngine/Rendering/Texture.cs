@@ -131,9 +131,10 @@ namespace LeaderEngine
         public static Texture FromArray<T>(string name, int width, int height, T[] data,
             PixelInternalFormat internalFormat = PixelInternalFormat.SrgbAlpha,
             PixelFormat format = PixelFormat.Rgba,
-            PixelType pixelType = PixelType.UnsignedByte) where T : struct
+            PixelType pixelType = PixelType.UnsignedByte,
+            string id = null) where T : struct
         {
-            Texture texture = new Texture(name);
+            Texture texture = new Texture(name, id);
 
             //copy pixel array
             texture.rawData = new byte[data.Length * Unsafe.SizeOf<T>()];
@@ -195,6 +196,8 @@ namespace LeaderEngine
         {
             //write name
             writer.Write(Name);
+            //write id
+            writer.Write(ID);
 
             //write pixel info
             writer.Write((int)pixelInternalFormat);
@@ -209,10 +212,12 @@ namespace LeaderEngine
             writer.Write(rawData);
         }
 
-        public static Texture Deserialize(BinaryReader reader, string id = null)
+        public static Texture Deserialize(BinaryReader reader)
         {
             //read name
             string name = reader.ReadString();
+            //read id
+            string id = reader.ReadString();
 
             //read pixel info
             PixelInternalFormat pixelInternalFormat = (PixelInternalFormat)reader.ReadInt32();
@@ -229,7 +234,7 @@ namespace LeaderEngine
                 size.X, size.Y,
                 data,
                 pixelInternalFormat, pixelFormat,
-                pixelType);
+                pixelType, id: id);
         }
 
         public void Use(TextureUnit textureUnit)

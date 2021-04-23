@@ -244,6 +244,8 @@ namespace LeaderEngine
         {
             //write name
             writer.Write(Name);
+            //write id
+            writer.Write(ID);
             //write prim type
             writer.Write((int)PrimitiveType);
             //write type name
@@ -252,10 +254,12 @@ namespace LeaderEngine
             vertexArray.Serialize(writer);
         }
 
-        public static Mesh Deserialize(BinaryReader reader, string id = null)
+        public static Mesh Deserialize(BinaryReader reader)
         {
             //read name
             string name = reader.ReadString();
+            //read id
+            string id = reader.ReadString();
             //read prim type
             PrimitiveType primitiveType = (PrimitiveType)reader.ReadInt32();
             //read type

@@ -2,6 +2,7 @@
 using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace LeaderEngine
 {
@@ -89,6 +90,22 @@ namespace LeaderEngine
             materialTextures.SetOrAdd(unit, texture);
         }
         #endregion
+
+        public void Serialize(BinaryWriter writer)
+        {
+            //write name
+            writer.Write(Name);
+            //write id
+            writer.Write(ID);
+
+            //write mat props
+            foreach (var prop in materialProps)
+            {
+                
+            }
+        }
+
+
 
         public void Use(Shader shader)
         {

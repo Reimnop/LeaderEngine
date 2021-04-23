@@ -74,6 +74,8 @@ namespace LeaderEngine
         {
             //write name
             writer.Write(Name);
+            //write id
+            writer.Write(ID);
 
             //write entites
             RecursivelySerialize(RootPrefabEntity, writer);
@@ -118,10 +120,12 @@ namespace LeaderEngine
                 RecursivelySerialize(child, writer);
         }
 
-        public static Prefab Deserialize(BinaryReader reader, string id = null)
+        public static Prefab Deserialize(BinaryReader reader)
         {
             //read name
             string name = reader.ReadString();
+            //read id
+            string id = reader.ReadString();
 
             //read entities
             PrefabEntity rootEntity = RecursivelyDeserialize(reader);

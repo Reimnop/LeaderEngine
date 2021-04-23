@@ -5,10 +5,8 @@ namespace LeaderEngine
 {
     public class TextRenderer : Component, IRenderer
     {
-        public string Text = "New Text";
-
         private string _text;
-        private string internalText
+        public string Text
         {
             get => _text;
             set
@@ -16,12 +14,15 @@ namespace LeaderEngine
                 if (_text == value)
                     return;
 
+                if (Font == null)
+                    return;
+
                 _text = value;
                 Font.GenTextMesh(textMesh, value);
             }
         }
 
-        public Font Font = DefaultFonts.Inconsolata;
+        public Font Font;
 
         private Mesh textMesh;
 
@@ -35,11 +36,6 @@ namespace LeaderEngine
             BaseEntity.Renderers.Add(this);
         }
 
-        private void Update()
-        {
-            internalText = Text;
-        }
-
         private void OnRemove()
         {
             BaseEntity.Renderers.Remove(this);
@@ -48,6 +44,9 @@ namespace LeaderEngine
         public void Render(Matrix4 view, Matrix4 projection)
         {
             if (!Enabled)
+                return;
+
+            if (Font == null)
                 return;
 
             GLRenderer renderer = Engine.Renderer;
