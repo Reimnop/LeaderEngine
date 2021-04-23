@@ -62,6 +62,11 @@ namespace LeaderEngine
             DataManager.Textures.Add(ID, this);
         }
 
+        internal void Reserve()
+        {
+            DataManager.Textures.Remove(ID);
+        }
+
         public static Texture FromFile(string name, string path, string id = null)
         {
             using (var image = Image.Load<Rgba32>(path))

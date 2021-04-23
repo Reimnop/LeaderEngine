@@ -43,8 +43,7 @@ namespace LeaderEditor
             {
                 for (int i = 0; i < currentSceneEntities.Count; i++)
                 {
-                    if (currentSceneEntities[i].Tag != "Editor")
-                        RecursivelyRender(currentSceneEntities[i]);
+                    RecursivelyRender(currentSceneEntities[i]);
                 }
 
                 if (!ImGui.IsAnyItemHovered() && ImGui.IsWindowHovered(ImGuiHoveredFlags.ChildWindows))

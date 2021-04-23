@@ -31,6 +31,8 @@ namespace LeaderEditor
             Entity editorScripts = new Entity("EditorEntity", "Editor");
             editorScripts.AddComponent<EditorController>();
 
+            editorScripts.Reserve();
+
             Logger.Log("Editor initialized.", true);
         }
     }

@@ -83,6 +83,7 @@ namespace LeaderEngine
                 return;
 
             DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.Transform.CalculateModelMatrixRecursively());
+            DataManager.EngineReservedEntities.ForEach(en => en.Transform.CalculateModelMatrixRecursively());
 
             //shadow mapping
             if (DirectionalLight.Main == null)
@@ -95,6 +96,7 @@ namespace LeaderEngine
             LightingGlobals.LightProjection = lProjection;
 
             DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRenderShadowMap(LightingGlobals.LightView, LightingGlobals.LightProjection));
+            DataManager.EngineReservedEntities.ForEach(en => en.RecursivelyRenderShadowMap(LightingGlobals.LightView, LightingGlobals.LightProjection));
 
             GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
 
@@ -119,6 +121,7 @@ namespace LeaderEngine
 
             //call all render funcs
             DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRender(view, projection));
+            DataManager.EngineReservedEntities.ForEach(en => en.RecursivelyRender(view, projection));
 
             GL.Viewport(0, 0, ViewportSize.X, ViewportSize.Y);
 

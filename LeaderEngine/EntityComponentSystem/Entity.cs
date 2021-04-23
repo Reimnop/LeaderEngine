@@ -58,7 +58,16 @@ namespace LeaderEngine
                 _parent = parent;
                 parent.Children.Add(this);
             }
+        }
 
+        internal void Reserve()
+        {
+            if (_parent == null)
+            {
+                DataManager.CurrentScene.SceneRootEntities.Remove(this);
+            }
+
+            DataManager.EngineReservedEntities.Add(this);
         }
 
         internal void RecursivelyUpdate()

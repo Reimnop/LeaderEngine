@@ -20,6 +20,8 @@ namespace LeaderEngine
         public PostProcessor()
         {
             mesh = new Mesh("post-process-quad");
+            mesh.Reserve();
+
             mesh.LoadMesh(new Vertex[]
             {
                 new Vertex { Position = new Vector3(1.0f, 1.0f, 0.0f), UV = new Vector2(1.0f, 1.0f) },

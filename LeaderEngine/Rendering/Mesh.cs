@@ -142,6 +142,11 @@ namespace LeaderEngine
             DataManager.Meshes.Add(ID, this);
         }
 
+        internal void Reserve()
+        {
+            DataManager.Meshes.Remove(ID);
+        }
+
         public void LoadMesh<T>(T[] vertices, uint[] indices, PrimitiveType primitiveType = PrimitiveType.Triangles) where T : struct
         {
             PrimitiveType = primitiveType;

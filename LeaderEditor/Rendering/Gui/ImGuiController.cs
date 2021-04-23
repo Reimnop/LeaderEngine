@@ -135,6 +135,8 @@ void main()
                 PixelFormat.Rgba,
                 PixelType.UnsignedByte);
 
+            fontTexture.Reserve();
+
             fontTexture.SetMagFilter(TextureMagFilter.Linear);
             fontTexture.SetMinFilter(TextureMinFilter.Linear);
 

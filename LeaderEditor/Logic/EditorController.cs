@@ -30,9 +30,11 @@ namespace LeaderEditor
             BaseEntity.AddComponent<Inspector>();
             BaseEntity.AddComponent<AssetManager>();
 
-            editorCamera = new Entity("EditorCamera", "Editor");
+            editorCamera = new Entity("EditorCamera");
             editorCamera.AddComponent<Camera>();
             cm = editorCamera.AddComponent<CameraMove>();
+
+            editorCamera.Reserve();
         }
 
         private void ImGuiRenderer()
