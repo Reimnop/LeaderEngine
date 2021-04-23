@@ -53,6 +53,11 @@ namespace LeaderEngine
         private PixelFormat pixelFormat;
         private PixelType pixelType;
 
+        private TextureMinFilter minFilter = TextureMinFilter.Linear;
+        private TextureMagFilter magFilter = TextureMagFilter.Linear;
+        private TextureWrapMode wrapS = TextureWrapMode.ClampToEdge;
+        private TextureWrapMode wrapT = TextureWrapMode.ClampToEdge;
+
         private Texture(string name, string id = null)
         {
             Name = name;
@@ -166,6 +171,8 @@ namespace LeaderEngine
 
         public void SetMinFilter(TextureMinFilter textureMinFilter)
         {
+            minFilter = textureMinFilter;
+
             GL.BindTexture(TextureTarget.Texture2D, handle);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)textureMinFilter);
             GL.BindTexture(TextureTarget.Texture2D, 0);
@@ -173,6 +180,8 @@ namespace LeaderEngine
 
         public void SetMagFilter(TextureMagFilter textureMagFilter)
         {
+            magFilter = textureMagFilter;
+
             GL.BindTexture(TextureTarget.Texture2D, handle);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)textureMagFilter);
             GL.BindTexture(TextureTarget.Texture2D, 0);
@@ -180,6 +189,8 @@ namespace LeaderEngine
 
         public void SetWrapS(TextureWrapMode textureWrapMode)
         {
+            wrapS = textureWrapMode;
+
             GL.BindTexture(TextureTarget.Texture2D, handle);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)textureWrapMode);
             GL.BindTexture(TextureTarget.Texture2D, 0);
@@ -187,6 +198,8 @@ namespace LeaderEngine
 
         public void SetWrapT(TextureWrapMode textureWrapMode)
         {
+            wrapT = textureWrapMode;
+
             GL.BindTexture(TextureTarget.Texture2D, handle);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)textureWrapMode);
             GL.BindTexture(TextureTarget.Texture2D, 0);
@@ -198,6 +211,12 @@ namespace LeaderEngine
             writer.Write(Name);
             //write id
             writer.Write(ID);
+
+            //write texture info
+            writer.Write((int)minFilter);
+            writer.Write((int)magFilter);
+            writer.Write((int)wrapS);
+            writer.Write((int)wrapT);
 
             //write pixel info
             writer.Write((int)pixelInternalFormat);
@@ -219,6 +238,12 @@ namespace LeaderEngine
             //read id
             string id = reader.ReadString();
 
+            //read texture info
+            TextureMinFilter minFilter = (TextureMinFilter)reader.ReadInt32();
+            TextureMagFilter magFilter = (TextureMagFilter)reader.ReadInt32();
+            TextureWrapMode wrapS = (TextureWrapMode)reader.ReadInt32();
+            TextureWrapMode wrapT = (TextureWrapMode)reader.ReadInt32();
+
             //read pixel info
             PixelInternalFormat pixelInternalFormat = (PixelInternalFormat)reader.ReadInt32();
             PixelFormat pixelFormat = (PixelFormat)reader.ReadInt32();
@@ -230,11 +255,18 @@ namespace LeaderEngine
             //read pixels
             byte[] data = reader.ReadBytes(size.X * size.Y * TextureHelper.GetSinglePixelSize(pixelInternalFormat, pixelType));
 
-            return FromArray(name,
+            Texture tex = FromArray(name,
                 size.X, size.Y,
                 data,
                 pixelInternalFormat, pixelFormat,
                 pixelType, id: id);
+
+            tex.SetMinFilter(minFilter);
+            tex.SetMagFilter(magFilter);
+            tex.SetWrapS(wrapS);
+            tex.SetWrapT(wrapT);
+
+            return tex;
         }
 
         public void Use(TextureUnit textureUnit)

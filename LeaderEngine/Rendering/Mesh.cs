@@ -112,6 +112,8 @@ namespace LeaderEngine
                 GCHandle iHandle = GCHandle.Alloc(Indices, GCHandleType.Pinned);
                 Marshal.Copy(indexData, 0, iHandle.AddrOfPinnedObject(), iSize);
                 iHandle.Free();
+
+                VertexType = typeof(T);
             }
         }
 

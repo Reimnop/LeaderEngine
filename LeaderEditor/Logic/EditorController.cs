@@ -42,6 +42,32 @@ namespace LeaderEditor
             //dockspace
             ImGui.DockSpaceOverViewport();
 
+            if (ImGui.BeginMainMenuBar())
+            {
+                if (ImGui.BeginMenu("File"))
+                {
+#if DEBUG
+                    if (ImGui.BeginMenu("Debug"))
+                    {
+                        if (ImGui.MenuItem("Save Assets"))
+                        {
+                            DataManager.SaveGameAssets("game-assets.ldrassets");
+                        }
+
+                        if (ImGui.MenuItem("Load Assets"))
+                        {
+                            DataManager.LoadGameAssets("game-assets.ldrassets");
+                        }
+                        ImGui.EndMenu();
+                    }
+#endif
+
+                    ImGui.EndMenu();
+                }
+
+                ImGui.EndMainMenuBar();
+            }
+
             ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, new System.Numerics.Vector2(160.0f, 90.0f));
             if (ImGui.Begin("Viewport"))
             {

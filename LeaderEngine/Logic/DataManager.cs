@@ -6,6 +6,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using Quaternion = OpenTK.Mathematics.Quaternion;
@@ -75,6 +76,62 @@ namespace LeaderEngine
 
             foreach (var kvp in kvps)
                 ComponentTypes.Add(kvp.Key, kvp.Value);
+        }
+
+        public static void SaveGameAssets(string path)
+        {
+            using (FileStream fileStream = File.Open(path, FileMode.Create))
+            {
+                BinaryWriter writer = new BinaryWriter(fileStream);
+
+                //serialize meshes
+                writer.Write(Meshes.Count);
+                foreach (var mesh in Meshes)
+                    mesh.Value.Serialize(writer);
+
+                //serialize textures
+                writer.Write(Textures.Count);
+                foreach (var tex in Textures)
+                    tex.Value.Serialize(writer);
+
+                //serialize materials
+                writer.Write(Materials.Count);
+                foreach (var mat in Materials)
+                    mat.Value.Serialize(writer);
+
+                //serialize prefabs
+                writer.Write(Prefabs.Count);
+                foreach (var pref in Prefabs)
+                    pref.Value.Serialize(writer);
+            }
+        }
+
+        public static void LoadGameAssets(string path)
+        {
+            using (FileStream fileStream = File.Open(path, FileMode.Open))
+            {
+                BinaryReader reader = new BinaryReader(fileStream);
+
+                //deserialize meshes
+                int meshCount = reader.ReadInt32();
+                for (int i = 0; i < meshCount; i++)
+                    Mesh.Deserialize(reader);
+
+                //deserialize textures
+                int texCount = reader.ReadInt32();
+                for (int i = 0; i < texCount; i++)
+                    Texture.Deserialize(reader);
+
+                //deserialize materials
+                int matCount = reader.ReadInt32();
+                for (int i = 0; i < matCount; i++)
+                    Material.Deserialize(reader);
+
+                //deserialize prefabs
+                int prefCount = reader.ReadInt32();
+                for (int i = 0; i < prefCount; i++)
+                    Prefab.Deserialize(reader);
+            }
         }
 
         public static Prefab LoadModelFromFile(string path)
