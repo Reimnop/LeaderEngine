@@ -3,6 +3,7 @@ using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace LeaderEngine
 {
@@ -101,7 +102,14 @@ namespace LeaderEngine
             //write mat props
             foreach (var prop in materialProps)
             {
-                
+                //write name
+                writer.Write(prop.Key);
+
+                int size = Marshal.SizeOf(prop.Value.Data);
+
+                writer.Write(size);
+                IntPtr dataPtr = Marshal.AllocHGlobal(size);
+                Marshal.StructureToPtr(prop.Value.Data, dataPtr, true);
             }
         }
 
