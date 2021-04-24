@@ -144,7 +144,7 @@ namespace LeaderEngine
             DataManager.Meshes.Add(ID, this);
         }
 
-        internal void Reserve()
+        internal void Unlist()
         {
             DataManager.Meshes.Remove(ID);
         }

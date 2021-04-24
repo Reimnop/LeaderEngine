@@ -60,7 +60,7 @@ namespace LeaderEngine
             }
         }
 
-        internal void Reserve()
+        internal void Unlist()
         {
             if (_parent == null)
             {

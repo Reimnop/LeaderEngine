@@ -67,7 +67,7 @@ namespace LeaderEngine
             DataManager.Textures.Add(ID, this);
         }
 
-        internal void Reserve()
+        internal void Unlist()
         {
             DataManager.Textures.Remove(ID);
         }

@@ -18,7 +18,7 @@ namespace LeaderEditor
         private void Start()
         {
             mesh = new Mesh("grid");
-            mesh.Reserve();
+            mesh.Unlist();
 
             List<Vertex> vertices = new List<Vertex>();
 

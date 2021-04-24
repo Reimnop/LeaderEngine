@@ -34,7 +34,7 @@ namespace LeaderEditor
             editorCamera.AddComponent<Camera>();
             cm = editorCamera.AddComponent<CameraMove>();
 
-            editorCamera.Reserve();
+            editorCamera.Unlist();
         }
 
         private void ImGuiRenderer()
