@@ -6,53 +6,12 @@ using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using System.Text;
 using Quaternion = OpenTK.Mathematics.Quaternion;
 using TextureWrapMode = OpenTK.Graphics.OpenGL4.TextureWrapMode;
 
 namespace LeaderEngine
 {
-    public class Scene
-    {
-        public string Name;
-
-        public List<Entity> SceneRootEntities { get; } = new List<Entity>();
-
-        public Scene(string name)
-        {
-            Name = name;
-        }
-
-        internal void UpdateSceneHierachy()
-        {
-            for (int i = 0; i < SceneRootEntities.Count; i++)
-                if (SceneRootEntities[i].Parent == null)
-                    SceneRootEntities[i].RecursivelyUpdate();
-        }
-    }
-
-    public static class RNG
-    {
-        private static Random idRng = new Random();
-        public static string GetRandomID()
-        {
-            const int idLength = 16;
-            const string characters = "0123456789abcdef";
-
-            int charLength = characters.Length;
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < idLength; i++)
-            {
-                sb.Append(characters[idRng.Next(charLength)]);
-            }
-
-            return sb.ToString();
-        }
-    }
-
     public static class DataManager
     {
         public static Scene CurrentScene { get; private set; } = new Scene("Untitled Scene");
