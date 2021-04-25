@@ -28,9 +28,9 @@ namespace LeaderEngine
                 _parent?.Children.Add(this);
 
                 if (value == null)
-                    DataManager.CurrentScene.SceneRootEntities.Add(this);
+                    scene.SceneRootEntities.Add(this);
                 else
-                    DataManager.CurrentScene.SceneRootEntities.Remove(this);
+                    scene.SceneRootEntities.Remove(this);
             }
         }
 
@@ -42,16 +42,20 @@ namespace LeaderEngine
         public List<IRenderer> Renderers { get; } = new List<IRenderer>();
         public List<IShadowMapRenderer> ShadowMapRenderers { get; } = new List<IShadowMapRenderer>();
 
-        public Entity(string name, string tag = null, Entity parent = null)
+        private Scene scene;
+
+        public Entity(string name, string tag = null, Entity parent = null, Scene scene = null)
         {
             Name = name;
             Tag = tag == null ? string.Empty : tag;
 
             Transform = new Transform(this);
 
+            this.scene = scene != null ? scene : DataManager.CurrentScene;
+
             if (parent == null)
             {
-                DataManager.CurrentScene.SceneRootEntities.Add(this);
+                this.scene.SceneRootEntities.Add(this);
             }
             else
             {
@@ -64,7 +68,7 @@ namespace LeaderEngine
         {
             if (_parent == null)
             {
-                DataManager.CurrentScene.SceneRootEntities.Remove(this);
+                scene.SceneRootEntities.Remove(this);
             }
 
             DataManager.EngineReservedEntities.Add(this);
@@ -103,7 +107,7 @@ namespace LeaderEngine
         public void Destroy()
         {
             _parent?.Children.Remove(this);
-            DataManager.CurrentScene.SceneRootEntities.Remove(this);
+            scene.SceneRootEntities.Remove(this);
 
             while (Children.Count > 0)
                 Children[0].Destroy();

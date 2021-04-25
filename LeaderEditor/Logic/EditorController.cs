@@ -1,4 +1,6 @@
-﻿using ImGuiNET;
+﻿#define dumb_scene_load
+
+using ImGuiNET;
 using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -58,11 +60,28 @@ namespace LeaderEditor
                         {
                             DataManager.LoadGameAssets("game-assets.ldrassets");
                         }
+
+#if dumb_scene_load
+                        if (ImGui.MenuItem("Reload Scene"))
+                        {
+                            using (var ms = new System.IO.MemoryStream())
+                            {
+                                var writer = new System.IO.BinaryWriter(ms);
+                                DataManager.CurrentScene.Serialize(writer);
+
+                                ms.Seek(0, System.IO.SeekOrigin.Begin);
+
+                                var reader = new System.IO.BinaryReader(ms);
+                                Scene s = Scene.Deserialize(reader);
+                            }
+                        }
+#endif
+
                         ImGui.EndMenu();
                     }
 #endif
 
-                    ImGui.EndMenu();
+                        ImGui.EndMenu();
                 }
 
                 ImGui.EndMainMenuBar();

@@ -23,8 +23,8 @@ namespace LeaderEngine
             { DrawType.GUI, new List<GLDrawData>() }
         };
 
-        const int shadowMapRes = 8192;
-        const float shadowMapSize = 128.0f;
+        const int shadowMapRes = 2048;
+        const float shadowMapSize = 16.0f;
 
         private Framebuffer shadowMapFramebuffer;
 
