@@ -48,8 +48,6 @@ namespace LeaderEngine
         {
             Name = name;
 
-            string fontName;
-
             using (var fnt = new FntParser(path))
             {
                 while (fnt.NextToken(out string token, out _))
@@ -57,10 +55,47 @@ namespace LeaderEngine
                     switch (token)
                     {
                         case "info": //parse info
-                            
+                            LoadFontInfo(fnt);
+                            break;
+                        case "common": //parse common
+                            LoadCommon(fnt);
                             break;
                     }
                 }
+            }
+        }
+
+        private void LoadCommon(FntParser fnt, out int lineHeight)
+        {
+            lineHeight = 0;
+
+            while (fnt.NextToken(out string token, out _))
+            {
+                bool eol;
+                switch (token)
+                {
+                    case "lineHeight":
+                        {
+                            fnt.NextToken(out string tk, out eol);
+                            lineHeight = int.Parse(tk);
+                        }
+                        break;
+                    default:
+                        fnt.NextToken(out _, out eol);
+                        break;
+                }
+
+                if (eol)
+                    return;
+            }
+        }
+
+        private void LoadFontInfo(FntParser fnt)
+        {
+            while (fnt.NextToken(out _, out bool eol))
+            {
+                if (eol)
+                    return;
             }
         }
 
