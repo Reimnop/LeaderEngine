@@ -37,105 +37,31 @@ namespace LeaderEngine
             public Vector2 UV;
         }
 
-        const int fontHeight = 96;
-        const int glyphs = 256;
-
         public readonly string Name;
 
-        private Character[] characters = new Character[glyphs];
+        private int fontHeight;
+
+        private Dictionary<int, Character> characters;
         private Texture fontTexture;
 
         public Font(string name, string path)
         {
             Name = name;
 
-            CharacterData[] characterDatas = new CharacterData[glyphs];
+            string fontName;
 
-            //cache all characters into array
-            GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
-
-            using (Library ft = new Library())
+            using (var fnt = new FntParser(path))
             {
-                using (Face face = new Face(ft, path))
+                while (fnt.NextToken(out string token, out _))
                 {
-                    face.SetPixelSizes(0, fontHeight);
-
-                    for (uint i = 0; i < glyphs; i++)
+                    switch (token)
                     {
-                        face.LoadChar(i, LoadFlags.Render, LoadTarget.Normal);
-
-                        var bitmap = face.Glyph.Bitmap;
-
-                        characterDatas[i] = new CharacterData
-                        {
-                            Width = bitmap.Width,
-                            Height = bitmap.Rows,
-                            Bearing = new Vector2i(face.Glyph.BitmapLeft, face.Glyph.BitmapTop),
-                            Advance = face.Glyph.Advance.X.Value,
-                            BufferData = bitmap.Buffer == IntPtr.Zero ? new byte[0] : bitmap.BufferData
-                        };
+                        case "info": //parse info
+                            
+                            break;
                     }
                 }
             }
-
-            //calculate atlas size
-            const int padding = 2;
-
-            Vector2i atlasSize = new Vector2i(0, fontHeight);
-
-            for (int i = 0; i < characterDatas.Length; i++)
-            {
-                atlasSize.X += characterDatas[i].Width + padding;
-            }
-
-            //calculate buffer
-            byte[,] buffer = new byte[atlasSize.Y, atlasSize.X];
-
-            int pos = 0;
-            for (int i = 0; i < glyphs; i++)
-            {
-                CharacterData c = characterDatas[i];
-
-                //populate buffer
-                for (int x = 0; x < c.Height; x++)
-                {
-                    for (int y = 0; y < c.Width; y++)
-                    {
-                        byte b = c.BufferData[x * c.Width + y];
-
-                        buffer[x, pos + y] = b;
-                    }
-                }
-
-                characters[i] = new Character
-                {
-                    Start = new Vector2(pos / (float)atlasSize.X, 0.0f),
-                    End = new Vector2((pos + c.Width) / (float)atlasSize.X, c.Height / (float)atlasSize.Y),
-                    Size = new Vector2i(c.Width, c.Height),
-                    Bearing = c.Bearing,
-                    Advance = c.Advance
-                };
-
-                pos += c.Width + padding;
-            }
-
-            //generate texture
-            GCHandle handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
-
-            fontTexture = Texture.FromPointer(name + "-font",
-                atlasSize.X,
-                atlasSize.Y,
-                handle.AddrOfPinnedObject(),
-                (PixelInternalFormat)All.Red,
-                PixelFormat.Red,
-                PixelType.UnsignedByte);
-
-            handle.Free();
-
-            fontTexture.SetWrapS(TextureWrapMode.ClampToBorder);
-            fontTexture.SetWrapT(TextureWrapMode.ClampToBorder);
-
-            GL.PixelStore(PixelStoreParameter.UnpackAlignment, 4);
         }
 
         public void GenTextMesh(Mesh mesh, string text)
@@ -158,7 +84,9 @@ namespace LeaderEngine
                     continue;
                 }
 
-                Character ch = characters[text[i] >= glyphs ? '?' : text[i]];
+                Character ch;
+                if (!characters.TryGetValue(text[i], out ch))
+                    continue;
 
                 float xpos = xOffset + ch.Bearing.X * scale;
                 float ypos = yOffset + (ch.Bearing.Y - ch.Size.Y) * scale;
