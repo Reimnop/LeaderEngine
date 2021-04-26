@@ -111,8 +111,28 @@ namespace LeaderEditor
             { typeof(Vector4), DefaultV4 },
             { typeof(Vector3), DefaultV3 },
             { typeof(Vector2), DefaultV2 },
-            { typeof(AudioClip), DefaultAC }
+            { typeof(AudioClip), DefaultAC },
+            { typeof(Font), DefaultFont }
         };
+
+        private static object DefaultFont(string name, object obj)
+        {
+            Font value = (Font)obj;
+
+            if (ImGui.BeginCombo(name, value != null ? value.Name : "[None]"))
+            {
+                if (ImGui.Selectable("[None]", value == null))
+                    value = null;
+
+                foreach (var font in DataManager.Fonts)
+                    if (ImGui.Selectable(font.Value.Name, value == font.Value))
+                        value = font.Value;
+
+                ImGui.EndCombo();
+            }
+
+            return value;
+        }
 
         private static object DefaultAC(string name, object obj)
         {

@@ -27,12 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="SharpFont">
-      <HintPath>SharpFont.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="EngineAssets\Fonts\Inconsolata.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

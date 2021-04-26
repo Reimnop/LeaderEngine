@@ -5,7 +5,7 @@ namespace LeaderEngine
 {
     public class TextRenderer : Component, IRenderer
     {
-        private string _text;
+        private string _text = "New Text";
         public string Text
         {
             get => _text;
@@ -22,7 +22,19 @@ namespace LeaderEngine
             }
         }
 
-        public Font Font;
+        private Font _font;
+        public Font Font
+        {
+            get => _font;
+            set
+            {
+                if (_font == value)
+                    return;
+
+                _font = value;
+                Font.GenTextMesh(textMesh, _text);
+            }
+        }
 
         private Mesh textMesh;
 
@@ -46,7 +58,7 @@ namespace LeaderEngine
             if (!Enabled)
                 return;
 
-            if (Font == null)
+            if (_font == null)
                 return;
 
             GLRenderer renderer = Engine.Renderer;
@@ -55,7 +67,7 @@ namespace LeaderEngine
                 BaseTransform.ModelMatrix
                 * view * projection));
 
-            textMaterial.SetTexture2D(TextureUnit.Texture0, Font.GetTexture());
+            textMaterial.SetTexture2D(TextureUnit.Texture0, _font.GetTexture());
 
             renderer.PushDrawData(DrawType.Transparent, new GLDrawData
             {

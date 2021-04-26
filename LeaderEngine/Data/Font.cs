@@ -1,7 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using SharpFont;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -9,21 +9,12 @@ namespace LeaderEngine
 {
     public class Font : IDisposable
     {
-        private struct CharacterData
-        {
-            public int Width;
-            public int Height;
-            public Vector2i Bearing;
-            public int Advance;
-            public byte[] BufferData;
-        }
-
         private struct Character
         {
             public Vector2 Start;
             public Vector2 End;
             public Vector2i Size;
-            public Vector2i Bearing;
+            public Vector2i Offset;
             public int Advance;
         }
 
@@ -38,65 +29,52 @@ namespace LeaderEngine
         }
 
         public readonly string Name;
+        public readonly string ID;
 
         private int fontHeight;
 
-        private Dictionary<int, Character> characters;
+        private Dictionary<int, Character> characters = new Dictionary<int, Character>();
         private Texture fontTexture;
 
-        public Font(string name, string path)
+        private int paddingTop;
+        private int paddingLeft;
+        private int paddingBottom;
+        private int paddingRight;
+
+        public Font(string name, string path, string id = null)
         {
             Name = name;
 
-            using (var fnt = new FntParser(path))
+            var parser = new FntParser(path);
+
+            fontTexture = parser.FontTexture;
+            fontHeight = parser.LineHeight;
+
+            paddingTop = parser.PaddingTop;
+            paddingLeft = parser.PaddingLeft;
+            paddingBottom = parser.PaddingBottom;
+            paddingRight = parser.PaddingRight;
+
+            foreach (var c in parser.Characters)
             {
-                while (fnt.NextToken(out string token, out _))
+                var fChar = c.Value;
+
+                Vector2i start = fChar.Position;
+                Vector2i end = fChar.Position + fChar.Size;
+
+                characters.Add(c.Key, new Character
                 {
-                    switch (token)
-                    {
-                        case "info": //parse info
-                            LoadFontInfo(fnt);
-                            break;
-                        case "common": //parse common
-                            LoadCommon(fnt);
-                            break;
-                    }
-                }
+                    Start = new Vector2(start.X / (float)parser.TextureSize.X, start.Y / (float)parser.TextureSize.Y),
+                    End = new Vector2(end.X / (float)parser.TextureSize.X, end.Y / (float)parser.TextureSize.Y),
+                    Size = fChar.Size,
+                    Offset = fChar.Offset,
+                    Advance = fChar.Advance - parser.PaddingLeft - parser.PaddingRight
+                });
             }
-        }
 
-        private void LoadCommon(FntParser fnt, out int lineHeight)
-        {
-            lineHeight = 0;
+            ID = id != null ? id : RNG.GetRandomID();
 
-            while (fnt.NextToken(out string token, out _))
-            {
-                bool eol;
-                switch (token)
-                {
-                    case "lineHeight":
-                        {
-                            fnt.NextToken(out string tk, out eol);
-                            lineHeight = int.Parse(tk);
-                        }
-                        break;
-                    default:
-                        fnt.NextToken(out _, out eol);
-                        break;
-                }
-
-                if (eol)
-                    return;
-            }
-        }
-
-        private void LoadFontInfo(FntParser fnt)
-        {
-            while (fnt.NextToken(out _, out bool eol))
-            {
-                if (eol)
-                    return;
-            }
+            DataManager.Fonts.Add(ID, this);
         }
 
         public void GenTextMesh(Mesh mesh, string text)
@@ -110,12 +88,14 @@ namespace LeaderEngine
 
             float scale = 1.0f / fontHeight;
 
+            int spaceWidth = paddingTop + paddingBottom;
+
             for (int i = 0; i < text.Length; i++)
             {
                 if (text[i] == '\n')
                 {
                     xOffset = 0;
-                    yOffset -= fontHeight * scale;
+                    yOffset += (fontHeight - spaceWidth) * scale;
                     continue;
                 }
 
@@ -123,18 +103,24 @@ namespace LeaderEngine
                 if (!characters.TryGetValue(text[i], out ch))
                     continue;
 
-                float xpos = xOffset + ch.Bearing.X * scale;
-                float ypos = yOffset + (ch.Bearing.Y - ch.Size.Y) * scale;
+                float xpos = xOffset + ch.Offset.X * scale;
+                float ypos = yOffset + ch.Offset.Y * scale;
 
-                float w = ch.Size.X * scale;
-                float h = ch.Size.Y * scale;
+                float xmax = xpos + ch.Size.X * scale;
+                float ymax = ypos + ch.Size.Y * scale;
+
+                float xproper = xpos;
+                float yproper = -ypos + spaceWidth * scale + 0.5f;
+
+                float xmaxproper = xmax;
+                float ymaxproper = -ymax + spaceWidth * scale + 0.5f;
 
                 vertices.AddRange(
                     new TextVertex[] {
-                        new TextVertex { Position = new Vector3(xpos + w, ypos + h, 0.0f), UV = new Vector2(ch.End.X, ch.Start.Y) },
-                        new TextVertex { Position = new Vector3(xpos + w, ypos, 0.0f),     UV = new Vector2(ch.End.X, ch.End.Y) },
-                        new TextVertex { Position = new Vector3(xpos, ypos, 0.0f),         UV = new Vector2(ch.Start.X, ch.End.Y) },
-                        new TextVertex { Position = new Vector3(xpos, ypos + h, 0.0f),     UV = new Vector2(ch.Start.X, ch.Start.Y) }
+                        new TextVertex { Position = new Vector3(xmaxproper, ymaxproper, 0.0f), UV = new Vector2(ch.End.X,   ch.End.Y  ) },
+                        new TextVertex { Position = new Vector3(xmaxproper, yproper,    0.0f), UV = new Vector2(ch.End.X,   ch.Start.Y) },
+                        new TextVertex { Position = new Vector3(xproper,    yproper,    0.0f), UV = new Vector2(ch.Start.X, ch.Start.Y) },
+                        new TextVertex { Position = new Vector3(xproper,    ymaxproper, 0.0f), UV = new Vector2(ch.Start.X, ch.End.Y  ) }
                     });
 
                 indices.AddRange(new uint[]
@@ -144,7 +130,7 @@ namespace LeaderEngine
                 });
 
                 ind += 4;
-                xOffset += (ch.Advance >> 6) * scale;
+                xOffset += ch.Advance * scale;
             }
 
             if (mesh.Initialized)
@@ -159,6 +145,8 @@ namespace LeaderEngine
         public void Dispose()
         {
             fontTexture.Dispose();
+
+            DataManager.Fonts.Remove(ID);
         }
     }
 }
