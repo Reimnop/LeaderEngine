@@ -31,9 +31,10 @@ namespace LeaderEngine
         public readonly string ID;
 
         private int fontHeight;
+        private Texture fontTexture;
 
         private Dictionary<int, Character> characters = new Dictionary<int, Character>();
-        private Texture fontTexture;
+        private Dictionary<(int, int), int> kernings = new Dictionary<(int, int), int>();
 
         private int paddingTop;
         private int paddingLeft;
@@ -53,6 +54,8 @@ namespace LeaderEngine
             paddingLeft = parser.PaddingLeft;
             paddingBottom = parser.PaddingBottom;
             paddingRight = parser.PaddingRight;
+
+            kernings = parser.Kernings;
 
             foreach (var c in parser.Characters)
             {
@@ -130,6 +133,17 @@ namespace LeaderEngine
 
                 ind += 4;
                 xOffset += ch.Advance * scale;
+
+                if (i < text.Length - 1)
+                {
+                    int first = text[i];
+                    int second = text[i + 1];
+
+                    if (kernings.TryGetValue((first, second), out int amount))
+                    {
+                        xOffset += amount * scale;
+                    }
+                }
             }
 
             if (mesh.Initialized)

@@ -125,8 +125,10 @@ namespace LeaderEngine
         public Texture FontTexture;
 
         public int CharacterCount;
-
         public Dictionary<int, FntCharacter> Characters = new Dictionary<int, FntCharacter>();
+
+        public int KerningCount;
+        public Dictionary<(int, int), int> Kernings = new Dictionary<(int, int), int>();
         #endregion
 
         private static Dictionary<string, Action<FntParser, Stack<Assignment>>> parseFuncs = new Dictionary<string, Action<FntParser, Stack<Assignment>>>()
@@ -135,7 +137,9 @@ namespace LeaderEngine
             { "common", ParseCommon },
             { "page", ParsePage },
             { "chars", ParseChars },
-            { "char", ParseChar }
+            { "char", ParseChar },
+            { "kernings", ParseKernings },
+            { "kerning", ParseKerning }
         };
 
         public FntParser(string path)
@@ -286,6 +290,46 @@ namespace LeaderEngine
             }
 
             parser.Characters.Add(id, character);
+        }
+        private static void ParseKernings(FntParser parser, Stack<Assignment> assignments)
+        {
+            while (assignments.Count > 0)
+            {
+                Assignment a = assignments.Pop();
+
+                switch (a.Name)
+                {
+                    case "count":
+                        parser.KerningCount = int.Parse(a.Value);
+                        break;
+                }
+            }
+        }
+        private static void ParseKerning(FntParser parser, Stack<Assignment> assignments)
+        {
+            int first = 0;
+            int second = 0;
+            int amount = 0;
+
+            while (assignments.Count > 0)
+            {
+                Assignment a = assignments.Pop();
+
+                switch (a.Name)
+                {
+                    case "first":
+                        first = int.Parse(a.Value);
+                        break;
+                    case "second":
+                        second = int.Parse(a.Value);
+                        break;
+                    case "amount":
+                        amount = int.Parse(a.Value);
+                        break;
+                }
+            }
+
+            parser.Kernings.Add((first, second), amount);
         }
         #endregion
 
