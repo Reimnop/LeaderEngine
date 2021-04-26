@@ -15,4 +15,10 @@
     <ProjectReference Include="..\LeaderEngine\LeaderEngine.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="EditorAssets\Fonts\Inconsolata.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

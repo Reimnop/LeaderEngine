@@ -27,6 +27,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="EngineAssets\Fonts\Inconsolata.fnt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="EngineAssets\Fonts\Inconsolata.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="EngineAssets\Shaders\PostProcess\compose.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

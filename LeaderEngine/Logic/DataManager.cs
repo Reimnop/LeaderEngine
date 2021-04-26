@@ -36,6 +36,8 @@ namespace LeaderEngine
 
             foreach (var kvp in kvps)
                 ComponentTypes.Add(kvp.Key, kvp.Value);
+
+            new Font("Inconsolata", Path.Combine(AppContext.BaseDirectory, "EngineAssets/Fonts/Inconsolata.fnt"));
         }
 
         public static void SaveGameAssets(string path)
