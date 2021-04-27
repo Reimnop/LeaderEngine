@@ -1,8 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -91,7 +91,7 @@ namespace LeaderEngine
             DataManager.Meshes.Remove(ID);
         }
 
-        public void LoadMesh<T1, T2>(T1[] vertices, T2[] indices, PrimitiveType primitiveType = PrimitiveType.Triangles, DrawElementsType drawElementsType = DrawElementsType.UnsignedInt) 
+        public void LoadMesh<T1, T2>(T1[] vertices, T2[] indices, PrimitiveType primitiveType = PrimitiveType.Triangles, DrawElementsType drawElementsType = DrawElementsType.UnsignedInt)
             where T1 : struct
             where T2 : struct
         {
@@ -152,7 +152,7 @@ namespace LeaderEngine
             initialized = true;
         }
 
-        public void UpdateMesh<T1, T2>(T1[] vertices, T2[] indices) 
+        public void UpdateMesh<T1, T2>(T1[] vertices, T2[] indices)
             where T1 : struct
             where T2 : struct
         {

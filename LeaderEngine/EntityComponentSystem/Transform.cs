@@ -94,7 +94,7 @@ namespace LeaderEngine
                 ModelMatrix = baseEntity.Parent != null ? baseEntity.Parent.Transform.ModelMatrix : Matrix4.Identity;
                 goto CalculateChildren;
             }
-            
+
             Matrix4 res =
                 Matrix4.CreateTranslation(-OriginOffset)
                 * Matrix4.CreateScale(Scale)
@@ -106,7 +106,7 @@ namespace LeaderEngine
 
             ModelMatrix = res;
 
-            //calculate children
+        //calculate children
         CalculateChildren:
             baseEntity.Children.ForEach(x => x.Transform.CalculateModelMatrixRecursively());
         }

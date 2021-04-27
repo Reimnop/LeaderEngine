@@ -87,13 +87,13 @@ namespace LeaderEngine
             writer.Write(entity.Name);
 
             //write transform
-            writer.Write(entity.Position.X); 
-            writer.Write(entity.Position.Y); 
+            writer.Write(entity.Position.X);
+            writer.Write(entity.Position.Y);
             writer.Write(entity.Position.Z); //position
 
-            writer.Write(entity.Rotation.X); 
-            writer.Write(entity.Rotation.Y); 
-            writer.Write(entity.Rotation.Z); 
+            writer.Write(entity.Rotation.X);
+            writer.Write(entity.Rotation.Y);
+            writer.Write(entity.Rotation.Z);
             writer.Write(entity.Rotation.W); //rotation
 
             writer.Write(entity.Scale.X);

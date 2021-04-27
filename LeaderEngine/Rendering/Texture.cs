@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace LeaderEngine
 {
@@ -44,7 +43,7 @@ namespace LeaderEngine
         public readonly string ID;
 
         private int handle;
-        
+
         public Vector2i Size;
 
         private PixelInternalFormat pixelInternalFormat;
@@ -96,9 +95,9 @@ namespace LeaderEngine
             return FromPointer(name, image.Width, image.Height, (IntPtr)Unsafe.AsPointer(ref pixelSpan[0]), id: id);
         }
 
-        public static Texture FromPointer(string name, int width, int height, IntPtr data, 
-            PixelInternalFormat internalFormat = PixelInternalFormat.Rgba, 
-            PixelFormat format = PixelFormat.Rgba, 
+        public static Texture FromPointer(string name, int width, int height, IntPtr data,
+            PixelInternalFormat internalFormat = PixelInternalFormat.Rgba,
+            PixelFormat format = PixelFormat.Rgba,
             PixelType pixelType = PixelType.UnsignedByte,
             string id = null)
         {

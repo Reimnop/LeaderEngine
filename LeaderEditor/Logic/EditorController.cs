@@ -81,7 +81,7 @@ namespace LeaderEditor
                     }
 #endif
 
-                        ImGui.EndMenu();
+                    ImGui.EndMenu();
                 }
 
                 ImGui.EndMainMenuBar();
