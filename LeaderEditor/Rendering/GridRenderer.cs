@@ -12,7 +12,7 @@ namespace LeaderEditor
 
         private UniformData uniforms = new UniformData();
 
-        const int gridSize = 100;
+        const int gridSize = 80;
 
         //init grid mesh
         private void Start()

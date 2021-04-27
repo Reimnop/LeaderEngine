@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System;
+using System.Linq;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -12,12 +13,14 @@ namespace LeaderEngine
     public class VertexAttrib : Attribute
     {
         public VertexAttribPointerType PointerType;
+        public int Location;
         public int Size;
         public bool Normalized;
 
-        public VertexAttrib(VertexAttribPointerType pointerType, int size, bool normalized)
+        public VertexAttrib(VertexAttribPointerType pointerType, int location, int size, bool normalized)
         {
             PointerType = pointerType;
+            Location = location;
             Normalized = normalized;
             Size = size;
         }
@@ -26,102 +29,26 @@ namespace LeaderEngine
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Vertex
     {
-        [VertexAttrib(VertexAttribPointerType.Float, 3, false)]
+        [VertexAttrib(VertexAttribPointerType.Float, 0, 3, false)]
         public Vector3 Position;
 
-        [VertexAttrib(VertexAttribPointerType.Float, 3, false)]
+        [VertexAttrib(VertexAttribPointerType.Float, 1, 3, false)]
         public Vector3 Normal;
 
-        [VertexAttrib(VertexAttribPointerType.Float, 3, false)]
+        [VertexAttrib(VertexAttribPointerType.Float, 2, 3, false)]
         public Vector3 Color;
 
-        [VertexAttrib(VertexAttribPointerType.Float, 2, false)]
+        [VertexAttrib(VertexAttribPointerType.Float, 3, 2, false)]
         public Vector2 UV;
     }
 
     public sealed class Mesh : IDisposable
     {
-        private interface IVertexArray
-        {
-            public Type VertexType { get; }
-
-            public int VerticesCount { get; }
-            public int IndicesCount { get; }
-
-            public void Serialize(BinaryWriter writer);
-            public void Deserialize(BinaryReader reader);
-        }
-
-        private struct VertexArrayGeneric<T> : IVertexArray where T : struct
-        {
-            public T[] Vertices;
-            public uint[] Indices;
-
-            public Type VertexType { get; private set; }
-
-            public int VerticesCount => Vertices.Length;
-            public int IndicesCount => Indices.Length;
-
-            public VertexArrayGeneric(T[] vertices, uint[] indices)
-            {
-                VertexType = typeof(T);
-
-                Vertices = vertices;
-                Indices = indices;
-            }
-
-            public void Serialize(BinaryWriter writer)
-            {
-                int vSize = Unsafe.SizeOf<T>();
-
-                //write size
-                writer.Write(Vertices.Length * vSize);
-                //write vertices
-                byte[] vertData = new byte[Vertices.Length * vSize];
-                GCHandle vHandle = GCHandle.Alloc(Vertices, GCHandleType.Pinned);
-                Marshal.Copy(vHandle.AddrOfPinnedObject(), vertData, 0, Vertices.Length * vSize);
-                vHandle.Free();
-                writer.Write(vertData);
-
-                //write size
-                writer.Write(Indices.Length * sizeof(uint));
-                //write indices
-                byte[] indexData = new byte[Indices.Length * sizeof(uint)];
-                GCHandle iHandle = GCHandle.Alloc(Indices, GCHandleType.Pinned);
-                Marshal.Copy(iHandle.AddrOfPinnedObject(), indexData, 0, Indices.Length * sizeof(uint));
-                iHandle.Free();
-                writer.Write(indexData);
-            }
-
-            public void Deserialize(BinaryReader reader)
-            {
-                //read size
-                int vSize = reader.ReadInt32();
-                //read vertices
-                byte[] vertData = reader.ReadBytes(vSize);
-                Vertices = new T[vSize / Unsafe.SizeOf<T>()];
-                GCHandle vHandle = GCHandle.Alloc(Vertices, GCHandleType.Pinned);
-                Marshal.Copy(vertData, 0, vHandle.AddrOfPinnedObject(), vSize);
-                vHandle.Free();
-
-                //read size
-                int iSize = reader.ReadInt32();
-                //read indices
-                byte[] indexData = reader.ReadBytes(iSize);
-                Indices = new uint[iSize / sizeof(uint)];
-                GCHandle iHandle = GCHandle.Alloc(Indices, GCHandleType.Pinned);
-                Marshal.Copy(indexData, 0, iHandle.AddrOfPinnedObject(), iSize);
-                iHandle.Free();
-
-                VertexType = typeof(T);
-            }
-        }
-
         //vertex data
         private int VAO, VBO, EBO;
-        private IVertexArray vertexArray;
-        public int VerticesCount => vertexArray.VerticesCount;
-        public int IndicesCount => vertexArray.IndicesCount;
+
+        public int VerticesCount { private set; get; }
+        public int IndicesCount { private set; get; }
 
         public PrimitiveType PrimitiveType { get; private set; }
 
@@ -153,10 +80,11 @@ namespace LeaderEngine
         {
             PrimitiveType = primitiveType;
 
-            //store vertices
-            vertexArray = new VertexArrayGeneric<T>(vertices, indices);
-
             GL.BindVertexArray(VAO);
+
+            //update array sizes
+            VerticesCount = vertices.Length;
+            IndicesCount = indices.Length;
 
             //upload vertex buffer
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
@@ -171,70 +99,50 @@ namespace LeaderEngine
 
             for (int i = 0; i < fields.Length; i++)
             {
-                VertexAttrib attrib = ((VertexAttrib[])fields[i].GetCustomAttributes(typeof(VertexAttrib)))[0];
+                var attribs = fields[i].GetCustomAttributes(typeof(VertexAttrib));
+                VertexAttrib attrib = attribs.Count() > 0 ? (VertexAttrib)attribs.First() : throw new ArgumentNullException();
 
-                GL.VertexAttribPointer(i, attrib.Size, attrib.PointerType, attrib.Normalized, Unsafe.SizeOf<T>(), Marshal.OffsetOf<T>(fields[i].Name));
-                GL.EnableVertexAttribArray(i);
+                GL.VertexAttribPointer(attrib.Location, attrib.Size, attrib.PointerType, attrib.Normalized, Unsafe.SizeOf<T>(), Marshal.OffsetOf<T>(fields[i].Name));
+                GL.EnableVertexAttribArray(attrib.Location);
             }
-
-            GL.ObjectLabel(ObjectLabelIdentifier.VertexArray, VAO, Name.Length, Name);
-            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, VBO, Name.Length, Name);
-            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, EBO, Name.Length, Name);
 
             GL.BindVertexArray(0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+
+            GL.ObjectLabel(ObjectLabelIdentifier.VertexArray, VAO, Name.Length, Name);
+            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, VBO, Name.Length, Name);
+            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, EBO, Name.Length, Name);
 
             Initialized = true;
         }
 
         public void UpdateMesh<T>(T[] vertices, uint[] indices) where T : struct
         {
-            //store vertices
-            vertexArray = new VertexArrayGeneric<T>(vertices, indices);
+            if (!Initialized)
+            {
+                LoadMesh(vertices, indices);
+                return;
+            }
+
+            //update array sizes
+            VerticesCount = vertices.Length;
+            IndicesCount = indices.Length;
 
             //upload buffers
             GL.NamedBufferData(VBO, vertices.Length * Unsafe.SizeOf<T>(), vertices, BufferUsageHint.DynamicCopy);
             GL.NamedBufferData(EBO, indices.Length * sizeof(uint), indices, BufferUsageHint.DynamicCopy);
         }
 
-        private void FromVertexArrayInternal<T>(VertexArrayGeneric<T> vertexArray, PrimitiveType primitiveType = PrimitiveType.Triangles) where T : struct
+        public void Clear()
         {
-            PrimitiveType = primitiveType;
+            //update array sizes
+            VerticesCount = 0;
+            IndicesCount = 0;
 
-            //store vertices
-            this.vertexArray = vertexArray;
-
-            GL.BindVertexArray(VAO);
-
-            //upload vertex buffer
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertexArray.VerticesCount * Unsafe.SizeOf<T>(), vertexArray.Vertices, BufferUsageHint.StaticDraw);
-
-            //upload element buffer
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, vertexArray.IndicesCount * sizeof(uint), vertexArray.Indices, BufferUsageHint.StaticDraw);
-
-            //vertex attribs
-            FieldInfo[] fields = typeof(T).GetFields();
-
-            for (int i = 0; i < fields.Length; i++)
-            {
-                VertexAttrib attrib = ((VertexAttrib[])fields[i].GetCustomAttributes(typeof(VertexAttrib)))[0];
-
-                GL.VertexAttribPointer(i, attrib.Size, attrib.PointerType, attrib.Normalized, Unsafe.SizeOf<T>(), Marshal.OffsetOf<T>(fields[i].Name));
-                GL.EnableVertexAttribArray(i);
-            }
-
-            GL.ObjectLabel(ObjectLabelIdentifier.VertexArray, VAO, Name.Length, Name);
-            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, VBO, Name.Length, Name);
-            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, EBO, Name.Length, Name);
-
-            GL.BindVertexArray(0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-
-            Initialized = true;
+            //clear buffers
+            GL.NamedBufferData(VBO, 0, IntPtr.Zero, BufferUsageHint.DynamicCopy);
+            GL.NamedBufferData(EBO, 0, IntPtr.Zero, BufferUsageHint.DynamicCopy);
         }
 
         public void Use()
@@ -245,7 +153,7 @@ namespace LeaderEngine
         public void Serialize(BinaryWriter writer)
         {
             //write name
-            writer.Write(Name);
+            /*writer.Write(Name);
             //write id
             writer.Write(ID);
             //write prim type
@@ -253,13 +161,13 @@ namespace LeaderEngine
             //write type name
             writer.Write(vertexArray.VertexType.AssemblyQualifiedName);
             //write vertex array
-            vertexArray.Serialize(writer);
+            vertexArray.Serialize(writer);*/
         }
 
         public static Mesh Deserialize(BinaryReader reader)
         {
             //read name
-            string name = reader.ReadString();
+            /*string name = reader.ReadString();
             //read id
             string id = reader.ReadString();
             //read prim type
@@ -271,9 +179,10 @@ namespace LeaderEngine
             vertexArray.Deserialize(reader);
 
             dynamic mesh = new Mesh(name, id);
-            mesh.FromVertexArrayInternal(vertexArray, primitiveType);
+            mesh.FromVertexArrayInternal(vertexArray, primitiveType);*/
 
-            return mesh;
+            throw new NotImplementedException();
+            //return mesh;
         }
 
         public void Dispose()

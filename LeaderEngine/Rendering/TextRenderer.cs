@@ -14,11 +14,8 @@ namespace LeaderEngine
                 if (_text == value)
                     return;
 
-                if (Font == null)
-                    return;
-
                 _text = value;
-                Font.GenTextMesh(textMesh, value);
+                _font?.GenTextMesh(textMesh, value);
             }
         }
 
@@ -32,18 +29,25 @@ namespace LeaderEngine
                     return;
 
                 _font = value;
-                Font.GenTextMesh(textMesh, _text);
+
+                if (_font == null)
+                {
+                    textMesh.Clear();
+                    return;
+                }
+
+                _font.GenTextMesh(textMesh, _text);
             }
         }
 
         private Mesh textMesh;
 
         private UniformData uniforms = new UniformData();
-        private Material textMaterial = new Material("text material");
+        private Material textMaterial = new Material("text-material");
 
         private void Start()
         {
-            textMesh = new Mesh("text mesh");
+            textMesh = new Mesh("text-mesh");
 
             BaseEntity.Renderers.Add(this);
         }
