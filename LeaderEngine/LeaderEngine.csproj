@@ -1,7 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
@@ -14,109 +13,80 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="C:\Users\rayng\.nuget\packages\sharpfont.dependencies\2.6.0\build\..\bin\msvc10\x86\freetype6.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AssimpNet" Version="4.1.0" />
-    <PackageReference Include="BEPUphysics" Version="2.2.0" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+    <PackageReference Include="OpenTK" Version="4.6.3" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="DefaultAssets\Shaders\pp-fs.glsl">
+    <None Update="EngineAssets\Fonts\Impact.fnt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\pp-vs.glsl">
+    <None Update="EngineAssets\Fonts\Impact.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\transparent-fs.glsl">
+    <None Update="EngineAssets\Fonts\Inconsolata.fnt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\lit-fs.glsl">
+    <None Update="EngineAssets\Fonts\Inconsolata.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\transparent-vs.glsl">
+    <None Update="EngineAssets\Shaders\PostProcess\compose.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\lit-vs.glsl">
+    <None Update="EngineAssets\Shaders\PostProcess\empty.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\depth-fs.glsl">
+    <None Update="EngineAssets\Shaders\PostProcess\vertical-blur.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\immediatemode-fs.glsl">
+    <None Update="EngineAssets\Shaders\PostProcess\horizontal-blur.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\immediatemode-vs.glsl">
+    <None Update="EngineAssets\Shaders\PostProcess\extract-bright.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\skybox-fs.glsl">
+    <None Update="EngineAssets\Shaders\PostProcess\post-process.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\norender-fs.glsl">
+    <None Update="EngineAssets\Shaders\shadowmap.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\depth-vs.glsl">
+    <None Update="EngineAssets\Shaders\shadowmap.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\skybox-vs.glsl">
+    <None Update="EngineAssets\Shaders\text.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\norender-vs.glsl">
+    <None Update="EngineAssets\Shaders\text.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\transparent-composite-fs.glsl">
+    <None Update="EngineAssets\Shaders\single-color.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\transparent-composite-vs.glsl">
+    <None Update="EngineAssets\Shaders\single-color.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\text-fs.glsl">
+    <None Update="EngineAssets\Shaders\lit.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\sprite-fs.glsl">
+    <None Update="EngineAssets\Shaders\lit.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\text-vs.glsl">
+    <None Update="freetype6.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DefaultAssets\Shaders\sprite-vs.glsl">
+    <None Update="openal32.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="glfw3.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DefaultAssets\Meshes\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="OpenTK.Compute">
-      <HintPath>..\thirdparty\OpenTK.Compute.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK.Core">
-      <HintPath>..\thirdparty\OpenTK.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK.Graphics">
-      <HintPath>..\thirdparty\OpenTK.Graphics.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK.Input">
-      <HintPath>..\thirdparty\OpenTK.Input.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK.Mathematics">
-      <HintPath>..\thirdparty\OpenTK.Mathematics.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK.OpenAL">
-      <HintPath>..\thirdparty\OpenTK.OpenAL.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK.Windowing.Common">
-      <HintPath>..\thirdparty\OpenTK.Windowing.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK.Windowing.Desktop">
-      <HintPath>..\thirdparty\OpenTK.Windowing.Desktop.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK.Windowing.GraphicsLibraryFramework">
-      <HintPath>..\thirdparty\OpenTK.Windowing.GraphicsLibraryFramework.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
