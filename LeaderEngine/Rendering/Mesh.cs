@@ -285,6 +285,8 @@ namespace LeaderEngine
             GL.BufferData(BufferTarget.ElementArrayBuffer, elementBuffer.Length, elementBuffer, BufferUsageHint.StaticDraw);
 
             //vertex attribs
+            mesh.vertexAttribs = attribs;
+
             for (int i = 0; i < attribs.Length; i++)
             {
                 var attrib = attribs[i];
