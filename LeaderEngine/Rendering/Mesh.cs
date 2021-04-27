@@ -272,7 +272,10 @@ namespace LeaderEngine
 
             GL.BindVertexArray(vao);
 
-            //update array sizes
+            //update sizes
+            mesh.vertexSize = vertexSize;
+            mesh.indexSize = indexSize;
+
             mesh.VerticesCount = verticesCount;
             mesh.IndicesCount = indicesCount;
 
