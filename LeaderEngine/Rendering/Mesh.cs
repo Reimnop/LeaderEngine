@@ -91,7 +91,10 @@ namespace LeaderEngine
             DataManager.Meshes.Remove(ID);
         }
 
-        public void LoadMesh<T1, T2>(T1[] vertices, T2[] indices, PrimitiveType primitiveType = PrimitiveType.Triangles, DrawElementsType drawElementsType = DrawElementsType.UnsignedInt)
+        public void LoadMesh<T1, T2>(
+            T1[] vertices, T2[] indices, 
+            PrimitiveType primitiveType = PrimitiveType.Triangles, 
+            DrawElementsType drawElementsType = DrawElementsType.UnsignedInt)
             where T1 : struct
             where T2 : struct
         {
@@ -259,6 +262,7 @@ namespace LeaderEngine
             //upload to GPU
             Mesh mesh = new Mesh(name, id);
 
+            #region MeshInitOverride
             int vao = mesh.VAO;
             int vbo = mesh.VBO;
             int ebo = mesh.EBO;
@@ -298,6 +302,7 @@ namespace LeaderEngine
             GL.ObjectLabel(ObjectLabelIdentifier.Buffer, ebo, name.Length, name);
 
             mesh.initialized = true;
+            #endregion
 
             return mesh;
         }
