@@ -184,7 +184,7 @@ namespace LeaderEngine
                 material?.Use(shader);
                 uniforms.Use(shader);
 
-                GL.DrawElements(mesh.PrimitiveType, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
+                GL.DrawElements(mesh.PrimitiveType, mesh.IndicesCount, mesh.DrawElementsType, 0);
             });
         }
 
