@@ -43,11 +43,11 @@ namespace LeaderEngine
         private Mesh textMesh;
 
         private UniformData uniforms = new UniformData();
-        private Material textMaterial = new Material("text-material");
 
         private void Start()
         {
             textMesh = new Mesh("text-mesh");
+            textMesh.Unlist();
 
             BaseEntity.Renderers.Add(this);
         }
@@ -71,13 +71,13 @@ namespace LeaderEngine
                 BaseTransform.ModelMatrix
                 * view * projection));
 
-            textMaterial.SetTexture2D(TextureUnit.Texture0, _font.GetTexture());
+            uniforms.SetUniform("fontAtlas", new Uniform(UniformType.Texture2D,
+                new TextureData(TextureUnit.Texture0, _font.GetTexture().GetHandle())));
 
             renderer.PushDrawData(DrawType.Transparent, new GLDrawData
             {
                 Mesh = textMesh,
                 Shader = DefaultShaders.Text,
-                Material = textMaterial,
                 Uniforms = uniforms
             });
         }
