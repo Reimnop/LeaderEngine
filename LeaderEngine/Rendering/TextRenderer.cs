@@ -40,6 +40,9 @@ namespace LeaderEngine
             }
         }
 
+        public float Width = 0.5f;
+        public float Edge = 0.01f;
+
         private Mesh textMesh;
 
         private UniformData uniforms = new UniformData();
@@ -73,6 +76,9 @@ namespace LeaderEngine
 
             uniforms.SetUniform("fontAtlas", new Uniform(UniformType.Texture2D,
                 new TextureData(TextureUnit.Texture0, _font.GetTexture().GetHandle())));
+
+            uniforms.SetUniform("width", new Uniform(UniformType.Float, Width));
+            uniforms.SetUniform("edge", new Uniform(UniformType.Float, Edge));
 
             renderer.PushDrawData(DrawType.Transparent, new GLDrawData
             {

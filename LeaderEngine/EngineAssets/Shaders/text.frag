@@ -6,8 +6,8 @@ in vec2 TexCoord;
 
 uniform sampler2D fontAtlas;
 
-const float width = 0.5;
-const float edge = 0.01;
+uniform float width = 0.5;
+uniform float edge = 0.01;
 
 void main() {
 	float dist = texture(fontAtlas, TexCoord).a;
