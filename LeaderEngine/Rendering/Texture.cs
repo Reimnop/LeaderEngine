@@ -126,7 +126,7 @@ namespace LeaderEngine
         }
 
         public static Texture FromArray<T>(string name, int width, int height, T[] data,
-            PixelInternalFormat internalFormat = PixelInternalFormat.SrgbAlpha,
+            PixelInternalFormat internalFormat = PixelInternalFormat.Rgba,
             PixelFormat format = PixelFormat.Rgba,
             PixelType pixelType = PixelType.UnsignedByte,
             string id = null) where T : struct
