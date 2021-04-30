@@ -123,13 +123,7 @@ namespace LeaderEditor
                     ImGuizmo.Manipulate(ref view.Row0.X, ref projection.Row0.X, OPERATION.TRANSLATE, MODE.LOCAL, ref transform.Row0.X);
                     ImGui.PopClipRect();
 
-                    var pos = transform.ExtractTranslation();
-                    var rot = transform.ExtractRotation();
-                    var sca = transform.ExtractScale();
-
-                    entity.Transform.Position = pos;
-                    entity.Transform.Rotation = rot;
-                    entity.Transform.Scale = sca;
+                    entity.Transform.GlobalTransform = transform;
                 }
 
                 ImGui.End();

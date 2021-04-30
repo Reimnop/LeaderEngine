@@ -28,6 +28,15 @@ namespace LeaderEngine
 
                 return res;
             }
+            set
+            {
+                Matrix4 invParentGlobal = baseEntity.Parent != null ? baseEntity.Parent.Transform.GlobalTransform.Inverted() : Matrix4.Identity;
+                Matrix4 local = value * invParentGlobal;
+
+                Position = local.ExtractTranslation();
+                Rotation = local.ExtractRotation();
+                Scale = local.ExtractScale();
+            }
         }
 
         public Quaternion Rotation
