@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using ImGuizmoNET;
 using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -49,6 +50,7 @@ namespace LeaderEditor
 
             IntPtr context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
+            ImGuizmo.SetImGuiContext(context);
 
             var io = ImGui.GetIO();
             io.Fonts.AddFontFromFileTTF(Path.Combine(AppContext.BaseDirectory, "EditorAssets/Fonts/Inconsolata.ttf"), 16);
@@ -65,6 +67,7 @@ namespace LeaderEditor
             SetPerFrameImGuiData(0.166666f);
 
             ImGui.NewFrame();
+            ImGuizmo.BeginFrame();
             frameBegun = true;
         }
 
@@ -147,7 +150,7 @@ void main()
 
         internal void RenderImGui()
         {
-            ImGuiFuncs.ForEach(x => x.Invoke());
+            ImGuiFuncs.ForEach(x => x.Invoke());            
 
             if (frameBegun)
             {
@@ -172,6 +175,7 @@ void main()
 
             frameBegun = true;
             ImGui.NewFrame();
+            ImGuizmo.BeginFrame();
         }
 
         private void SetPerFrameImGuiData(float dt)

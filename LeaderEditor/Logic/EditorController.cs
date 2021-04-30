@@ -1,6 +1,7 @@
 ﻿#define dumb_scene_load
 
 using ImGuiNET;
+using ImGuizmoNET;
 using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -92,16 +93,44 @@ namespace LeaderEditor
             {
                 cm.Focus = ImGui.IsWindowFocused();
 
+                var cPos = ImGui.GetCursorScreenPos();
                 var vSize = ImGui.GetContentRegionAvail();
 
                 ERenderer.ViewportSize = new Vector2i((int)vSize.X, (int)vSize.Y);
 
                 //display framebuffer texture on window
-                ImGui.Image(
+                ImGui.GetWindowDrawList().AddImage(
                     (IntPtr)ERenderer.Framebuffer.GetTexture(FramebufferAttachment.ColorAttachment0),
-                    vSize,
+                    cPos,
+                    cPos + vSize,
                     new System.Numerics.Vector2(0.0f, 1.0f),
                     new System.Numerics.Vector2(1.0f, 0.0f));
+
+                //gizmos
+                if (SceneHierachy.SelectedEntity != null)
+                {
+                    var entity = SceneHierachy.SelectedEntity;
+
+                    ImGuizmo.SetOrthographic(false);
+                    ImGuizmo.SetDrawlist();
+
+                    ImGuizmo.SetRect(cPos.X, cPos.Y, vSize.X, vSize.Y);
+
+                    Camera.Main.CalculateViewProjection(out var view, out var projection);
+                    var transform = entity.Transform.GlobalTransform;
+
+                    ImGui.PushClipRect(cPos, cPos + vSize, false);
+                    ImGuizmo.Manipulate(ref view.Row0.X, ref projection.Row0.X, OPERATION.TRANSLATE, MODE.LOCAL, ref transform.Row0.X);
+                    ImGui.PopClipRect();
+
+                    var pos = transform.ExtractTranslation();
+                    var rot = transform.ExtractRotation();
+                    var sca = transform.ExtractScale();
+
+                    entity.Transform.Position = pos;
+                    entity.Transform.Rotation = rot;
+                    entity.Transform.Scale = sca;
+                }
 
                 ImGui.End();
             }
