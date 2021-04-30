@@ -28,7 +28,7 @@ namespace LeaderEditor
             Engine.MainWindow.VSync = VSyncMode.Off;
             Engine.IgnoreGLInfo = true;
 
-            Entity editorScripts = new Entity("EditorEntity", "Editor");
+            Entity editorScripts = new Entity("EditorEntity");
             editorScripts.AddComponent<EditorController>();
 
             editorScripts.Unlist();

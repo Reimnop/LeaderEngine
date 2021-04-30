@@ -30,7 +30,7 @@ namespace LeaderEditor
                     color = Vector3.One * 0.6f;
 
                 if (i == 0)
-                    color = new Vector3(1.0f, 0.0f, 0.0f);
+                    color = new Vector3(0.0f, 0.0f, 1.0f);
 
                 vertices.Add(new Vertex
                 {
@@ -53,7 +53,7 @@ namespace LeaderEditor
                     color = Vector3.One * 0.6f;
 
                 if (i == 0)
-                    color = new Vector3(0.0f, 1.0f, 0.0f);
+                    color = new Vector3(1.0f, 0.0f, 0.0f);
 
                 vertices.Add(new Vertex
                 {

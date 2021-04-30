@@ -19,6 +19,12 @@
     <None Update="EditorAssets\Fonts\Inconsolata.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="EditorAssets\Shaders\gizmo.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="EditorAssets\Shaders\gizmo.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
