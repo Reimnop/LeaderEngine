@@ -40,6 +40,8 @@ namespace LeaderEditor
             editorCamera.Unlist();
         }
 
+        private OPERATION operation = OPERATION.TRANSLATE;
+
         private void ImGuiRenderer()
         {
             //dockspace
@@ -120,10 +122,23 @@ namespace LeaderEditor
                     var transform = entity.Transform.GlobalTransform;
 
                     ImGui.PushClipRect(cPos, cPos + vSize, false);
-                    ImGuizmo.Manipulate(ref view.Row0.X, ref projection.Row0.X, OPERATION.TRANSLATE, MODE.LOCAL, ref transform.Row0.X);
+                    ImGuizmo.Manipulate(ref view.Row0.X, ref projection.Row0.X, operation, MODE.LOCAL, ref transform.Row0.X);
                     ImGui.PopClipRect();
 
                     entity.Transform.GlobalTransform = transform;
+                }
+
+                ImGui.SetCursorScreenPos(cPos + new System.Numerics.Vector2(8.0f));
+
+                ImGui.SetNextItemWidth(240.0f);
+                if (ImGui.BeginCombo("Gizmo", operation == OPERATION.TRANSLATE ? "Translate" : (operation == OPERATION.ROTATE ? "Rotate" : "Scale")))
+                {
+                    if (ImGui.Selectable("Translate", operation == OPERATION.TRANSLATE))
+                        operation = OPERATION.TRANSLATE;
+                    if (ImGui.Selectable("Rotate", operation == OPERATION.ROTATE))
+                        operation = OPERATION.ROTATE;
+                    if (ImGui.Selectable("Scale", operation == OPERATION.SCALE))
+                        operation = OPERATION.SCALE;
                 }
 
                 ImGui.End();
