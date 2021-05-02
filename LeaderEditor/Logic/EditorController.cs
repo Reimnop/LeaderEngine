@@ -128,7 +128,7 @@ namespace LeaderEditor
                     entity.Transform.GlobalTransform = transform;
                 }
 
-                ImGui.SetCursorScreenPos(cPos + new System.Numerics.Vector2(8.0f));
+                ImGui.SetCursorScreenPos(cPos + new System.Numerics.Vector2(4.0f));
 
                 ImGui.SetNextItemWidth(240.0f);
                 if (ImGui.BeginCombo("Gizmo", operation == OPERATION.TRANSLATE ? "Translate" : (operation == OPERATION.ROTATE ? "Rotate" : "Scale")))
