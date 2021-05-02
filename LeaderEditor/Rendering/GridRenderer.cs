@@ -92,6 +92,7 @@ namespace LeaderEditor
 
             renderer.PushDrawData(DrawType.Opaque, new GLDrawData
             {
+                SourceEntity = BaseEntity,
                 Mesh = mesh,
                 Shader = shader,
                 Uniforms = uniforms

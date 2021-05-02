@@ -82,6 +82,7 @@ namespace LeaderEngine
 
             renderer.PushDrawData(DrawType.Transparent, new GLDrawData
             {
+                SourceEntity = BaseEntity,
                 Mesh = textMesh,
                 Shader = DefaultShaders.Text,
                 Uniforms = uniforms

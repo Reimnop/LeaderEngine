@@ -20,6 +20,7 @@ namespace LeaderEngine
 
     public struct GLDrawData
     {
+        public Entity SourceEntity;
         public Mesh Mesh;
         public Shader Shader;
         public UniformData Uniforms;
