@@ -121,7 +121,7 @@ namespace LeaderEditor
 
                     Camera.Main.CalculateViewProjection(out var view, out var projection);
                     var transform = entity.Transform.GlobalTransform;
-                    
+
                     ImGuizmo.Manipulate(ref view.Row0.X, ref projection.Row0.X, operation, MODE.LOCAL, ref transform.Row0.X);
 
                     entity.Transform.GlobalTransform = transform;
