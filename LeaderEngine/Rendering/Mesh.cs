@@ -57,6 +57,8 @@ namespace LeaderEngine
         public readonly string ID;
 
         //vertex data
+        public Vector3[] VertexPositions { private set; get; }
+
         private int VAO, VBO0, VBO1, EBO;
         private VertexAttribData[] vertexAttribs;
 
@@ -88,10 +90,15 @@ namespace LeaderEngine
             DataManager.Meshes.Remove(ID);
         }
 
-        public void LoadMesh(Vector3[] vertexPositions, uint[] indices, PrimitiveType primitiveType = PrimitiveType.Triangles, DrawElementsType drawElementsType = DrawElementsType.UnsignedInt)
+        public void LoadMesh(
+            Vector3[] vertexPositions, uint[] indices, 
+            PrimitiveType primitiveType = PrimitiveType.Triangles, 
+            DrawElementsType drawElementsType = DrawElementsType.UnsignedInt)
         {
             PrimitiveType = primitiveType;
             DrawElementsType = drawElementsType;
+
+            VertexPositions = vertexPositions;
 
             GL.BindVertexArray(VAO);
 
@@ -182,7 +189,7 @@ namespace LeaderEngine
 
         internal void Serialize(BinaryWriter writer)
         {
-            /*//write name
+            //write name
             writer.Write(Name);
             //write id
             writer.Write(ID);
@@ -193,21 +200,30 @@ namespace LeaderEngine
             //write attribs
             SerializeVertexAttribs(writer);
 
-            //download buffers
-            byte[] vertexBuffer = new byte[VerticesCount * vertexSize];
-            GL.GetNamedBufferSubData(VBO, IntPtr.Zero, vertexBuffer.Length, vertexBuffer);
+            byte[] vertexBuffer = Helper.StructArrayToByteArray(VertexPositions);
 
-            byte[] elementBuffer = new byte[IndicesCount * indexSize];
+            byte[] elementBuffer = new byte[IndicesCount * sizeof(uint)];
             GL.GetNamedBufferSubData(EBO, IntPtr.Zero, elementBuffer.Length, elementBuffer);
 
             //write buffers
-            writer.Write(vertexSize);
             writer.Write(VerticesCount);
             writer.Write(vertexBuffer);
 
-            writer.Write(indexSize);
             writer.Write(IndicesCount);
-            writer.Write(elementBuffer);*/
+            writer.Write(elementBuffer);
+
+            //write per vertex data
+            bool hasPerVertexData = perVertexDataType != null;
+            writer.Write(hasPerVertexData);
+
+            if (hasPerVertexData)
+            {
+                byte[] perVertexBuffer = new byte[VerticesCount * Marshal.SizeOf(perVertexDataType)];
+                GL.GetNamedBufferSubData(VBO1, IntPtr.Zero, perVertexBuffer.Length, perVertexBuffer);
+
+                writer.Write(perVertexDataType.AssemblyQualifiedName);
+                writer.Write(perVertexBuffer);
+            }
         }
 
         private void SerializeVertexAttribs(BinaryWriter writer)
@@ -229,8 +245,7 @@ namespace LeaderEngine
 
         public static Mesh Deserialize(BinaryReader reader)
         {
-            throw new NotImplementedException();
-            /*//read name
+            //read name
             string name = reader.ReadString();
             //read id
             string id = reader.ReadString();
@@ -242,65 +257,35 @@ namespace LeaderEngine
             var attribs = DeserializeVertexAttribs(reader);
 
             //read buffers
-            int vertexSize = reader.ReadInt32();
             int verticesCount = reader.ReadInt32();
-            byte[] vertexBuffer = reader.ReadBytes(verticesCount * vertexSize);
+            Vector3[] vertices = Helper.ByteArrayToStructArray<Vector3>(reader.ReadBytes(verticesCount * Vector3.SizeInBytes));
 
-            int indexSize = reader.ReadInt32();
             int indicesCount = reader.ReadInt32();
-            byte[] elementBuffer = reader.ReadBytes(indicesCount * indexSize);
+            uint[] indices = Helper.ByteArrayToStructArray<uint>(reader.ReadBytes(indicesCount * sizeof(uint)));
 
-            //upload to GPU
-            Mesh mesh = new Mesh(name, id);
+            bool hasPerVertexData = reader.ReadBoolean();
+            dynamic perVertexData = null;
 
-            #region MeshInitOverride
-            int vao = mesh.VAO;
-            int vbo = mesh.VBO;
-            int ebo = mesh.EBO;
-
-            mesh.PrimitiveType = primType;
-            mesh.DrawElementsType = drawElemType;
-
-            GL.BindVertexArray(vao);
-
-            //update sizes
-            mesh.vertexSize = vertexSize;
-            mesh.indexSize = indexSize;
-
-            mesh.VerticesCount = verticesCount;
-            mesh.IndicesCount = indicesCount;
-
-            //upload vertex buffer
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertexBuffer.Length, vertexBuffer, BufferUsageHint.StaticDraw);
-
-            //upload element buffer
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, elementBuffer.Length, elementBuffer, BufferUsageHint.StaticDraw);
-
-            //vertex attribs
-            mesh.vertexAttribs = attribs;
-
-            for (int i = 0; i < attribs.Length; i++)
+            if (hasPerVertexData)
             {
-                var attrib = attribs[i];
+                Type perVertexType = Type.GetType(reader.ReadString());
+                int size = Marshal.SizeOf(perVertexType);
 
-                GL.VertexAttribPointer(attrib.Location, attrib.Size, attrib.PointerType, attrib.Normalized, vertexSize, attrib.Offset);
-                GL.EnableVertexAttribArray(attrib.Location);
+                MethodInfo m = 
+                    typeof(Helper)
+                    .GetMethod("ByteArrayToStructArray", BindingFlags.Static | BindingFlags.Public)
+                    .MakeGenericMethod(perVertexType);
+
+                perVertexData = m.Invoke(null, new object[] { reader.ReadBytes(verticesCount * size) });
             }
 
-            GL.BindVertexArray(0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+            dynamic mesh = new Mesh(name, id);
+            mesh.LoadMesh(vertices, indices, primType, drawElemType);
 
-            GL.ObjectLabel(ObjectLabelIdentifier.VertexArray, vao, name.Length, name);
-            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, vbo, name.Length, name);
-            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, ebo, name.Length, name);
+            if (hasPerVertexData)
+                mesh.SetPerVertexData(perVertexData);
 
-            mesh.initialized = true;
-            #endregion
-
-            return mesh;*/
+            return mesh;
         }
 
         private static VertexAttribData[] DeserializeVertexAttribs(BinaryReader reader)
