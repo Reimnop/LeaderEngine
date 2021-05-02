@@ -22,17 +22,24 @@ namespace LeaderEngine
             mesh = new Mesh("post-process-quad");
             mesh.Unlist();
 
-            mesh.LoadMesh(new Vertex[]
+            mesh.LoadMesh(new Vector3[]
             {
-                new Vertex { Position = new Vector3(1.0f, 1.0f, 0.0f), UV = new Vector2(1.0f, 1.0f) },
-                new Vertex { Position = new Vector3(1.0f, -1.0f, 0.0f), UV = new Vector2(1.0f, 0.0f) },
-                new Vertex { Position = new Vector3(-1.0f, -1.0f, 0.0f), UV = new Vector2(0.0f, 0.0f) },
-                new Vertex { Position = new Vector3(-1.0f, 1.0f, 0.0f), UV = new Vector2(0.0f, 1.0f) }
+                new Vector3(1.0f, 1.0f, 0.0f),
+                new Vector3(1.0f, -1.0f, 0.0f),
+                new Vector3(-1.0f, -1.0f, 0.0f),
+                new Vector3(-1.0f, 1.0f, 0.0f)
             },
             new uint[]
             {
                 0, 1, 3,
                 1, 2, 3
+            });
+
+            mesh.SetPerVertexData(new VertexData[] {
+                new VertexData { UV = new Vector2(1.0f, 1.0f) },
+                new VertexData { UV = new Vector2(1.0f, 0.0f) },
+                new VertexData { UV = new Vector2(0.0f, 0.0f) },
+                new VertexData { UV = new Vector2(0.0f, 1.0f) }
             });
 
             framebuffer = new Framebuffer("post-process-fbo", framebufferSize.X, framebufferSize.Y, new Attachment[]

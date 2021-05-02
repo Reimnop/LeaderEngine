@@ -20,7 +20,8 @@ namespace LeaderEditor
             mesh = new Mesh("grid");
             mesh.Unlist();
 
-            List<Vertex> vertices = new List<Vertex>();
+            List<Vector3> vertexPositions = new List<Vector3>();
+            List<VertexData> vertices = new List<VertexData>();
 
             for (int i = -gridSize; i <= gridSize; i++)
             {
@@ -32,15 +33,16 @@ namespace LeaderEditor
                 if (i == 0)
                     color = new Vector3(0.0f, 0.0f, 1.0f);
 
-                vertices.Add(new Vertex
+                vertexPositions.Add(new Vector3(i, 0.0f, -gridSize));
+                vertexPositions.Add(new Vector3(i, 0.0f, gridSize));
+
+                vertices.Add(new VertexData
                 {
-                    Position = new Vector3(i, 0.0f, -gridSize),
                     Color = color
                 });
 
-                vertices.Add(new Vertex
+                vertices.Add(new VertexData
                 {
-                    Position = new Vector3(i, 0.0f, gridSize),
                     Color = color
                 });
             }
@@ -55,15 +57,16 @@ namespace LeaderEditor
                 if (i == 0)
                     color = new Vector3(1.0f, 0.0f, 0.0f);
 
-                vertices.Add(new Vertex
+                vertexPositions.Add(new Vector3(-gridSize, 0.0f, i));
+                vertexPositions.Add(new Vector3(gridSize, 0.0f, i));
+
+                vertices.Add(new VertexData
                 {
-                    Position = new Vector3(-gridSize, 0.0f, i),
                     Color = color
                 });
 
-                vertices.Add(new Vertex
+                vertices.Add(new VertexData
                 {
-                    Position = new Vector3(gridSize, 0.0f, i),
                     Color = color
                 });
             }
@@ -73,7 +76,8 @@ namespace LeaderEditor
             for (uint i = 0; i < vertices.Count; i++)
                 indices[i] = i;
 
-            mesh.LoadMesh(vertices.ToArray(), indices, PrimitiveType.Lines);
+            mesh.LoadMesh(vertexPositions.ToArray(), indices, PrimitiveType.Lines);
+            mesh.SetPerVertexData(vertices.ToArray());
 
             BaseEntity.Renderers.Add(this);
         }
