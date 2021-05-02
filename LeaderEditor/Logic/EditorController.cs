@@ -109,6 +109,7 @@ namespace LeaderEditor
                     new System.Numerics.Vector2(1.0f, 0.0f));
 
                 //gizmos
+                ImGui.PushClipRect(cPos, cPos + vSize, false);
                 if (SceneHierachy.SelectedEntity != null)
                 {
                     var entity = SceneHierachy.SelectedEntity;
@@ -120,10 +121,8 @@ namespace LeaderEditor
 
                     Camera.Main.CalculateViewProjection(out var view, out var projection);
                     var transform = entity.Transform.GlobalTransform;
-
-                    ImGui.PushClipRect(cPos, cPos + vSize, false);
+                    
                     ImGuizmo.Manipulate(ref view.Row0.X, ref projection.Row0.X, operation, MODE.LOCAL, ref transform.Row0.X);
-                    ImGui.PopClipRect();
 
                     entity.Transform.GlobalTransform = transform;
                 }
@@ -140,6 +139,7 @@ namespace LeaderEditor
                     if (ImGui.Selectable("Scale", operation == OPERATION.SCALE))
                         operation = OPERATION.SCALE;
                 }
+                ImGui.PopClipRect();
 
                 ImGui.End();
             }
