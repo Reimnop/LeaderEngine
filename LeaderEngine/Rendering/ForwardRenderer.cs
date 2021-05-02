@@ -6,13 +6,6 @@ using System.IO;
 
 namespace LeaderEngine
 {
-    public static class LightingGlobals
-    {
-        public static Matrix4 LightView { get; internal set; }
-        public static Matrix4 LightProjection { get; internal set; }
-        public static int ShadowMap { get; internal set; }
-    }
-
     public class ForwardRenderer : GLRenderer
     {
         private Dictionary<DrawType, List<GLDrawData>> drawLists = new Dictionary<DrawType, List<GLDrawData>>()
@@ -23,8 +16,8 @@ namespace LeaderEngine
             { DrawType.GUI, new List<GLDrawData>() }
         };
 
-        const int shadowMapRes = 2048;
-        const float shadowMapSize = 16.0f;
+        const int shadowMapRes = 4096;
+        const float shadowMapSize = 48.0f;
 
         private Framebuffer shadowMapFramebuffer;
 
@@ -184,7 +177,7 @@ namespace LeaderEngine
                 material?.Use(shader);
                 uniforms.Use(shader);
 
-                GL.DrawElements(mesh.PrimitiveType, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
+                GL.DrawElements(mesh.PrimitiveType, mesh.IndicesCount, mesh.DrawElementsType, 0);
             });
         }
 

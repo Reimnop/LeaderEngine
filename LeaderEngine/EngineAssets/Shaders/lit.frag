@@ -25,10 +25,6 @@ uniform vec3 shadeColor = vec3(0.05);
 
 in vec4 FragPosLightSpace;
 
-vec3 gammaCorrect(float gamma, vec3 col) {
-	return pow(col, vec3(1 / gamma));
-}
-
 float calculateShadow(vec4 fragPosLightSpace) {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w * 0.5 + 0.5;
 
@@ -68,5 +64,5 @@ void main() {
 
 	vec3 outColor = (ambient + shade * shadeColor + diffuse * shadow) * obColor;
 
-	fragColor = vec4(gammaCorrect(2.2, outColor), 1.0);
+	fragColor = vec4(outColor, 1.0);
 }

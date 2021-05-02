@@ -14,11 +14,8 @@ namespace LeaderEngine
                 if (_text == value)
                     return;
 
-                if (Font == null)
-                    return;
-
                 _text = value;
-                Font.GenTextMesh(textMesh, value);
+                _font?.GenTextMesh(textMesh, value);
             }
         }
 
@@ -32,18 +29,28 @@ namespace LeaderEngine
                     return;
 
                 _font = value;
-                Font.GenTextMesh(textMesh, _text);
+
+                if (_font == null)
+                {
+                    textMesh.Clear();
+                    return;
+                }
+
+                _font.GenTextMesh(textMesh, _text);
             }
         }
+
+        public float Width = 0.5f;
+        public float Edge = 0.01f;
 
         private Mesh textMesh;
 
         private UniformData uniforms = new UniformData();
-        private Material textMaterial = new Material("text material");
 
         private void Start()
         {
-            textMesh = new Mesh("text mesh");
+            textMesh = new Mesh("text-mesh");
+            textMesh.Unlist();
 
             BaseEntity.Renderers.Add(this);
         }
@@ -67,13 +74,17 @@ namespace LeaderEngine
                 BaseTransform.ModelMatrix
                 * view * projection));
 
-            textMaterial.SetTexture2D(TextureUnit.Texture0, _font.GetTexture());
+            uniforms.SetUniform("fontAtlas", new Uniform(UniformType.Texture2D,
+                new TextureData(TextureUnit.Texture0, _font.GetTexture().GetHandle())));
+
+            uniforms.SetUniform("width", new Uniform(UniformType.Float, Width));
+            uniforms.SetUniform("edge", new Uniform(UniformType.Float, Edge));
 
             renderer.PushDrawData(DrawType.Transparent, new GLDrawData
             {
+                SourceEntity = BaseEntity,
                 Mesh = textMesh,
                 Shader = DefaultShaders.Text,
-                Material = textMaterial,
                 Uniforms = uniforms
             });
         }

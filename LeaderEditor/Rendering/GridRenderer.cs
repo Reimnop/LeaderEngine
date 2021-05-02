@@ -12,7 +12,7 @@ namespace LeaderEditor
 
         private UniformData uniforms = new UniformData();
 
-        const int gridSize = 100;
+        const int gridSize = 80;
 
         //init grid mesh
         private void Start()
@@ -24,13 +24,13 @@ namespace LeaderEditor
 
             for (int i = -gridSize; i <= gridSize; i++)
             {
-                Vector3 color = Vector3.One * 0.4f;
+                Vector3 color = Vector3.One * 0.2f;
 
                 if (i % 10 == 0)
-                    color = Vector3.One * 0.8f;
+                    color = Vector3.One * 0.6f;
 
                 if (i == 0)
-                    color = new Vector3(1.0f, 0.0f, 0.0f);
+                    color = new Vector3(0.0f, 0.0f, 1.0f);
 
                 vertices.Add(new Vertex
                 {
@@ -47,13 +47,13 @@ namespace LeaderEditor
 
             for (int i = -gridSize; i <= gridSize; i++)
             {
-                Vector3 color = Vector3.One * 0.4f;
+                Vector3 color = Vector3.One * 0.2f;
 
                 if (i % 10 == 0)
-                    color = Vector3.One * 0.8f;
+                    color = Vector3.One * 0.6f;
 
                 if (i == 0)
-                    color = new Vector3(0.0f, 1.0f, 0.0f);
+                    color = new Vector3(1.0f, 0.0f, 0.0f);
 
                 vertices.Add(new Vertex
                 {
@@ -92,6 +92,7 @@ namespace LeaderEditor
 
             renderer.PushDrawData(DrawType.Opaque, new GLDrawData
             {
+                SourceEntity = BaseEntity,
                 Mesh = mesh,
                 Shader = shader,
                 Uniforms = uniforms

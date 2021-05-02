@@ -1,6 +1,7 @@
 ﻿#define dumb_scene_load
 
 using ImGuiNET;
+using ImGuizmoNET;
 using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
@@ -38,6 +39,8 @@ namespace LeaderEditor
 
             editorCamera.Unlist();
         }
+
+        private OPERATION operation = OPERATION.TRANSLATE;
 
         private void ImGuiRenderer()
         {
@@ -81,7 +84,7 @@ namespace LeaderEditor
                     }
 #endif
 
-                        ImGui.EndMenu();
+                    ImGui.EndMenu();
                 }
 
                 ImGui.EndMainMenuBar();
@@ -92,16 +95,51 @@ namespace LeaderEditor
             {
                 cm.Focus = ImGui.IsWindowFocused();
 
+                var cPos = ImGui.GetCursorScreenPos();
                 var vSize = ImGui.GetContentRegionAvail();
 
                 ERenderer.ViewportSize = new Vector2i((int)vSize.X, (int)vSize.Y);
 
                 //display framebuffer texture on window
-                ImGui.Image(
+                ImGui.GetWindowDrawList().AddImage(
                     (IntPtr)ERenderer.Framebuffer.GetTexture(FramebufferAttachment.ColorAttachment0),
-                    vSize,
+                    cPos,
+                    cPos + vSize,
                     new System.Numerics.Vector2(0.0f, 1.0f),
                     new System.Numerics.Vector2(1.0f, 0.0f));
+
+                //gizmos
+                ImGui.PushClipRect(cPos, cPos + vSize, false);
+                if (SceneHierachy.SelectedEntity != null)
+                {
+                    var entity = SceneHierachy.SelectedEntity;
+
+                    ImGuizmo.SetOrthographic(false);
+                    ImGuizmo.SetDrawlist();
+
+                    ImGuizmo.SetRect(cPos.X, cPos.Y, vSize.X, vSize.Y);
+
+                    Camera.Main.CalculateViewProjection(out var view, out var projection);
+                    var transform = entity.Transform.GlobalTransform;
+                    
+                    ImGuizmo.Manipulate(ref view.Row0.X, ref projection.Row0.X, operation, MODE.LOCAL, ref transform.Row0.X);
+
+                    entity.Transform.GlobalTransform = transform;
+                }
+
+                ImGui.SetCursorScreenPos(cPos + new System.Numerics.Vector2(4.0f));
+
+                ImGui.SetNextItemWidth(240.0f);
+                if (ImGui.BeginCombo("Gizmo", operation == OPERATION.TRANSLATE ? "Translate" : (operation == OPERATION.ROTATE ? "Rotate" : "Scale")))
+                {
+                    if (ImGui.Selectable("Translate", operation == OPERATION.TRANSLATE))
+                        operation = OPERATION.TRANSLATE;
+                    if (ImGui.Selectable("Rotate", operation == OPERATION.ROTATE))
+                        operation = OPERATION.ROTATE;
+                    if (ImGui.Selectable("Scale", operation == OPERATION.SCALE))
+                        operation = OPERATION.SCALE;
+                }
+                ImGui.PopClipRect();
 
                 ImGui.End();
             }

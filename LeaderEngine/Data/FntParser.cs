@@ -233,6 +233,7 @@ namespace LeaderEngine
                 {
                     case "file":
                         parser.FontTexture = Texture.FromFile(parser.FontName + "-Font", Path.Combine(Path.GetDirectoryName(parser.FilePath), a.Value));
+                        parser.FontTexture.Unlist();
                         break;
                 }
             }

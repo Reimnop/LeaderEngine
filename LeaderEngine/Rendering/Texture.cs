@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace LeaderEngine
 {
@@ -44,10 +43,8 @@ namespace LeaderEngine
         public readonly string ID;
 
         private int handle;
-        
-        public Vector2i Size;
 
-        private byte[] rawData;
+        public Vector2i Size;
 
         private PixelInternalFormat pixelInternalFormat;
         private PixelFormat pixelFormat;
@@ -98,20 +95,15 @@ namespace LeaderEngine
             return FromPointer(name, image.Width, image.Height, (IntPtr)Unsafe.AsPointer(ref pixelSpan[0]), id: id);
         }
 
-        public static Texture FromPointer(string name, int width, int height, IntPtr data, 
-            PixelInternalFormat internalFormat = PixelInternalFormat.Rgba, 
-            PixelFormat format = PixelFormat.Rgba, 
+        public static Texture FromPointer(string name, int width, int height, IntPtr data,
+            PixelInternalFormat internalFormat = PixelInternalFormat.Rgba,
+            PixelFormat format = PixelFormat.Rgba,
             PixelType pixelType = PixelType.UnsignedByte,
             string id = null)
         {
             Texture texture = new Texture(name, id);
 
             //copy pixel array
-            int singlePixelSize = TextureHelper.GetSinglePixelSize(internalFormat, pixelType);
-
-            texture.rawData = new byte[width * height * singlePixelSize];
-            Marshal.Copy(data, texture.rawData, 0, width * height * singlePixelSize);
-
             texture.pixelInternalFormat = internalFormat;
             texture.pixelFormat = format;
             texture.pixelType = pixelType;
@@ -134,7 +126,7 @@ namespace LeaderEngine
         }
 
         public static Texture FromArray<T>(string name, int width, int height, T[] data,
-            PixelInternalFormat internalFormat = PixelInternalFormat.SrgbAlpha,
+            PixelInternalFormat internalFormat = PixelInternalFormat.Rgba,
             PixelFormat format = PixelFormat.Rgba,
             PixelType pixelType = PixelType.UnsignedByte,
             string id = null) where T : struct
@@ -142,12 +134,6 @@ namespace LeaderEngine
             Texture texture = new Texture(name, id);
 
             //copy pixel array
-            texture.rawData = new byte[data.Length * Unsafe.SizeOf<T>()];
-
-            GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
-            Marshal.Copy(handle.AddrOfPinnedObject(), texture.rawData, 0, data.Length * Unsafe.SizeOf<T>());
-            handle.Free();
-
             texture.pixelInternalFormat = internalFormat;
             texture.pixelFormat = format;
             texture.pixelType = pixelType;
@@ -228,6 +214,12 @@ namespace LeaderEngine
             writer.Write(Size.Y);
 
             //write pixels
+            byte[] rawData = new byte[Size.X * Size.Y * TextureHelper.GetSinglePixelSize(pixelInternalFormat, pixelType)];
+
+            GL.BindTexture(TextureTarget.Texture2D, handle);
+            GL.GetTexImage(TextureTarget.Texture2D, 0, pixelFormat, pixelType, rawData);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
             writer.Write(rawData);
         }
 

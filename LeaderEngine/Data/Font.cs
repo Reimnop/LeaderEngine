@@ -20,10 +20,10 @@ namespace LeaderEngine
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct TextVertex
         {
-            [VertexAttrib(VertexAttribPointerType.Float, 3, false)]
+            [VertexAttrib(VertexAttribPointerType.Float, 0, 3, false)]
             public Vector3 Position;
 
-            [VertexAttrib(VertexAttribPointerType.Float, 2, false)]
+            [VertexAttrib(VertexAttribPointerType.Float, 1, 2, false)]
             public Vector2 UV;
         }
 
@@ -81,16 +81,28 @@ namespace LeaderEngine
 
         public void GenTextMesh(Mesh mesh, string text)
         {
-            List<TextVertex> vertices = new List<TextVertex>();
-            List<uint> indices = new List<uint>();
+            //calculate render char count size
+            int charCount = 0;
+            for (int i = 0; i < text.Length; i++)
+            {
+                charCount += text[i] != '\n' && characters.ContainsKey(text[i]) ? 1 : 0;
+            }
 
+            //init vertex arrays
+            TextVertex[] vertices = new TextVertex[charCount * 4];
+            uint[] indices = new uint[charCount * 6];
+
+            //init variables
             float xOffset = 0;
             float yOffset = 0;
-            uint ind = 0;
 
             float scale = 1.0f / fontHeight;
 
             int spaceWidth = paddingTop + paddingBottom;
+
+            //indices
+            uint vertOffset = 0;
+            uint indOffset = 0;
 
             for (int i = 0; i < text.Length; i++)
             {
@@ -117,21 +129,25 @@ namespace LeaderEngine
                 float xmaxproper = xmax;
                 float ymaxproper = -ymax + spaceWidth * scale + 0.5f;
 
-                vertices.AddRange(
-                    new TextVertex[] {
-                        new TextVertex { Position = new Vector3(xmaxproper, ymaxproper, 0.0f), UV = new Vector2(ch.End.X,   ch.End.Y  ) },
-                        new TextVertex { Position = new Vector3(xmaxproper, yproper,    0.0f), UV = new Vector2(ch.End.X,   ch.Start.Y) },
-                        new TextVertex { Position = new Vector3(xproper,    yproper,    0.0f), UV = new Vector2(ch.Start.X, ch.Start.Y) },
-                        new TextVertex { Position = new Vector3(xproper,    ymaxproper, 0.0f), UV = new Vector2(ch.Start.X, ch.End.Y  ) }
-                    });
+                //set vertices
+                vertices[vertOffset + 0] = new TextVertex { Position = new Vector3(xmaxproper, ymaxproper, 0.0f), UV = new Vector2(ch.End.X, ch.End.Y) };
+                vertices[vertOffset + 1] = new TextVertex { Position = new Vector3(xmaxproper, yproper, 0.0f), UV = new Vector2(ch.End.X, ch.Start.Y) };
+                vertices[vertOffset + 2] = new TextVertex { Position = new Vector3(xproper, yproper, 0.0f), UV = new Vector2(ch.Start.X, ch.Start.Y) };
+                vertices[vertOffset + 3] = new TextVertex { Position = new Vector3(xproper, ymaxproper, 0.0f), UV = new Vector2(ch.Start.X, ch.End.Y) };
 
-                indices.AddRange(new uint[]
-                {
-                    ind + 0, ind + 1, ind + 3,
-                    ind + 1, ind + 2, ind + 3
-                });
+                //set indices
+                uint ind = indOffset / 6 * 4;
+                indices[indOffset + 0] = ind + 0;
+                indices[indOffset + 1] = ind + 1;
+                indices[indOffset + 2] = ind + 3;
+                indices[indOffset + 3] = ind + 1;
+                indices[indOffset + 4] = ind + 2;
+                indices[indOffset + 5] = ind + 3;
 
-                ind += 4;
+                //update offset
+                vertOffset += 4;
+                indOffset += 6;
+
                 xOffset += ch.Advance * scale;
 
                 if (i < text.Length - 1)
@@ -146,10 +162,7 @@ namespace LeaderEngine
                 }
             }
 
-            if (mesh.Initialized)
-                mesh.UpdateMesh(vertices.ToArray(), indices.ToArray());
-            else
-                mesh.LoadMesh(vertices.ToArray(), indices.ToArray());
+            mesh.UpdateMesh(vertices, indices);
         }
 
         public Texture GetTexture()

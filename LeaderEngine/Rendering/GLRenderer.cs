@@ -3,6 +3,13 @@ using System;
 
 namespace LeaderEngine
 {
+    public static class LightingGlobals
+    {
+        public static Matrix4 LightView { get; internal set; }
+        public static Matrix4 LightProjection { get; internal set; }
+        public static int ShadowMap { get; internal set; }
+    }
+
     public enum DrawType
     {
         ShadowMap,
@@ -13,6 +20,7 @@ namespace LeaderEngine
 
     public struct GLDrawData
     {
+        public Entity SourceEntity;
         public Mesh Mesh;
         public Shader Shader;
         public UniformData Uniforms;

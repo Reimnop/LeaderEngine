@@ -40,7 +40,7 @@ namespace LeaderEngine
                 new Attachment
                 {
                     Draw = false,
-                    PixelInternalFormat = PixelInternalFormat.SrgbAlpha,
+                    PixelInternalFormat = PixelInternalFormat.Rgba,
                     PixelFormat = PixelFormat.Rgba,
                     PixelType = PixelType.Float,
                     FramebufferAttachment = FramebufferAttachment.ColorAttachment0,
@@ -113,11 +113,13 @@ namespace LeaderEngine
         public void Begin()
         {
             framebuffer.Begin();
+            GL.Enable(EnableCap.FramebufferSrgb);
         }
 
         public void End()
         {
             framebuffer.End();
+            GL.Disable(EnableCap.FramebufferSrgb);
         }
 
         public void Render()

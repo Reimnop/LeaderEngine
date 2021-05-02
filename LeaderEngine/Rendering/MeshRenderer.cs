@@ -35,6 +35,7 @@ namespace LeaderEngine
 
             Engine.Renderer.PushDrawData(DrawType.ShadowMap, new GLDrawData
             {
+                SourceEntity = BaseEntity,
                 Mesh = Mesh,
                 Shader = DefaultShaders.ShadowMap,
                 Uniforms = shadowMapUniforms
@@ -72,6 +73,7 @@ namespace LeaderEngine
 
             renderer.PushDrawData(DrawType.Opaque, new GLDrawData
             {
+                SourceEntity = BaseEntity,
                 Mesh = Mesh,
                 Shader = Shader,
                 Material = Material,
