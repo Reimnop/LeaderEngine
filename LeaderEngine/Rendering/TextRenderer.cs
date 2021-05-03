@@ -31,10 +31,7 @@ namespace LeaderEngine
                 _font = value;
 
                 if (_font == null)
-                {
-                    textMesh.Clear();
                     return;
-                }
 
                 _font.GenTextMesh(textMesh, _text);
             }

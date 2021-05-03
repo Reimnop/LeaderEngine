@@ -100,12 +100,9 @@ namespace LeaderEngine
             DrawElementsType = drawElementsType;
 
             Vertices = vertices;
+            Indices = indices;
 
             GL.BindVertexArray(VAO);
-
-            //update array sizes
-            VerticesCount = vertices.Length;
-            IndicesCount = indices.Length;
 
             //upload vertex buffer
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO0);
@@ -169,18 +166,6 @@ namespace LeaderEngine
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
             GL.ObjectLabel(ObjectLabelIdentifier.Buffer, VBO1, Name.Length + 5, Name + "-VBO1");
-        }
-
-        public void Clear()
-        {
-            //update array sizes
-            VerticesCount = 0;
-            IndicesCount = 0;
-
-            //clear buffers
-            GL.NamedBufferData(VBO0, 0, IntPtr.Zero, BufferUsageHint.DynamicCopy);
-            GL.NamedBufferData(VBO1, 0, IntPtr.Zero, BufferUsageHint.DynamicCopy);
-            GL.NamedBufferData(EBO, 0, IntPtr.Zero, BufferUsageHint.DynamicCopy);
         }
 
         public void Use()
