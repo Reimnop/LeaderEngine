@@ -43,7 +43,7 @@ namespace LeaderEngine
         {
             Name = name;
 
-            ID = id != null ? id : RNG.GetRandomID();
+            ID = id ?? RNG.GetRandomID();
 
             DataManager.Materials.Add(ID, this);
         }

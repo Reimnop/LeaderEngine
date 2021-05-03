@@ -80,7 +80,7 @@ namespace LeaderEngine
             VBO1 = GL.GenBuffer();
             EBO = GL.GenBuffer();
 
-            ID = id != null ? id : RNG.GetRandomID();
+            ID = id ?? RNG.GetRandomID();
 
             DataManager.Meshes.Add(ID, this);
         }

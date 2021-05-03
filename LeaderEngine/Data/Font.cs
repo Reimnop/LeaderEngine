@@ -71,7 +71,7 @@ namespace LeaderEngine
                 });
             }
 
-            ID = id != null ? id : RNG.GetRandomID();
+            ID = id ?? RNG.GetRandomID();
 
             DataManager.Fonts.Add(ID, this);
         }
