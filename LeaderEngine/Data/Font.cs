@@ -18,7 +18,7 @@ namespace LeaderEngine
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        private struct TextVertex
+        private struct TextVertexData
         {
             [VertexAttrib(VertexAttribPointerType.Float, 1, 2, false)]
             public Vector2 UV;
@@ -86,8 +86,8 @@ namespace LeaderEngine
             }
 
             //init vertex arrays
-            Vector3[] vertexPositions = new Vector3[charCount * 4];
-            TextVertex[] vertices = new TextVertex[charCount * 4];
+            Vector3[] vertices = new Vector3[charCount * 4];
+            TextVertexData[] perVertexData = new TextVertexData[charCount * 4];
             uint[] indices = new uint[charCount * 6];
 
             //init variables
@@ -128,15 +128,15 @@ namespace LeaderEngine
                 float ymaxproper = -ymax + spaceWidth * scale + 0.5f;
 
                 //set vertices
-                vertexPositions[vertOffset + 0] = new Vector3(xmaxproper, ymaxproper, 0.0f);
-                vertexPositions[vertOffset + 1] = new Vector3(xmaxproper, yproper, 0.0f);
-                vertexPositions[vertOffset + 2] = new Vector3(xproper, yproper, 0.0f);
-                vertexPositions[vertOffset + 3] = new Vector3(xproper, ymaxproper, 0.0f);
+                vertices[vertOffset + 0] = new Vector3(xmaxproper, ymaxproper, 0.0f);
+                vertices[vertOffset + 1] = new Vector3(xmaxproper, yproper, 0.0f);
+                vertices[vertOffset + 2] = new Vector3(xproper, yproper, 0.0f);
+                vertices[vertOffset + 3] = new Vector3(xproper, ymaxproper, 0.0f);
 
-                vertices[vertOffset + 0] = new TextVertex { UV = new Vector2(ch.End.X, ch.End.Y) };
-                vertices[vertOffset + 1] = new TextVertex { UV = new Vector2(ch.End.X, ch.Start.Y) };
-                vertices[vertOffset + 2] = new TextVertex { UV = new Vector2(ch.Start.X, ch.Start.Y) };
-                vertices[vertOffset + 3] = new TextVertex { UV = new Vector2(ch.Start.X, ch.End.Y) };
+                perVertexData[vertOffset + 0] = new TextVertexData { UV = new Vector2(ch.End.X, ch.End.Y) };
+                perVertexData[vertOffset + 1] = new TextVertexData { UV = new Vector2(ch.End.X, ch.Start.Y) };
+                perVertexData[vertOffset + 2] = new TextVertexData { UV = new Vector2(ch.Start.X, ch.Start.Y) };
+                perVertexData[vertOffset + 3] = new TextVertexData { UV = new Vector2(ch.Start.X, ch.End.Y) };
 
                 //set indices
                 uint ind = indOffset / 6 * 4;
@@ -165,8 +165,8 @@ namespace LeaderEngine
                 }
             }
 
-            mesh.LoadMesh(vertexPositions, indices);
-            mesh.SetPerVertexData(vertices);
+            mesh.LoadMesh(vertices, indices);
+            mesh.SetPerVertexData(perVertexData);
         }
 
         public Texture GetTexture()

@@ -20,8 +20,8 @@ namespace LeaderEditor
             mesh = new Mesh("grid");
             mesh.Unlist();
 
-            List<Vector3> vertexPositions = new List<Vector3>();
-            List<VertexData> vertices = new List<VertexData>();
+            List<Vector3> vertices = new List<Vector3>();
+            List<VertexData> perVertexData = new List<VertexData>();
 
             for (int i = -gridSize; i <= gridSize; i++)
             {
@@ -33,15 +33,15 @@ namespace LeaderEditor
                 if (i == 0)
                     color = new Vector3(0.0f, 0.0f, 1.0f);
 
-                vertexPositions.Add(new Vector3(i, 0.0f, -gridSize));
-                vertexPositions.Add(new Vector3(i, 0.0f, gridSize));
+                vertices.Add(new Vector3(i, 0.0f, -gridSize));
+                vertices.Add(new Vector3(i, 0.0f, gridSize));
 
-                vertices.Add(new VertexData
+                perVertexData.Add(new VertexData
                 {
                     Color = color
                 });
 
-                vertices.Add(new VertexData
+                perVertexData.Add(new VertexData
                 {
                     Color = color
                 });
@@ -57,27 +57,27 @@ namespace LeaderEditor
                 if (i == 0)
                     color = new Vector3(1.0f, 0.0f, 0.0f);
 
-                vertexPositions.Add(new Vector3(-gridSize, 0.0f, i));
-                vertexPositions.Add(new Vector3(gridSize, 0.0f, i));
+                vertices.Add(new Vector3(-gridSize, 0.0f, i));
+                vertices.Add(new Vector3(gridSize, 0.0f, i));
 
-                vertices.Add(new VertexData
+                perVertexData.Add(new VertexData
                 {
                     Color = color
                 });
 
-                vertices.Add(new VertexData
+                perVertexData.Add(new VertexData
                 {
                     Color = color
                 });
             }
 
-            uint[] indices = new uint[vertices.Count];
+            uint[] indices = new uint[perVertexData.Count];
 
-            for (uint i = 0; i < vertices.Count; i++)
+            for (uint i = 0; i < perVertexData.Count; i++)
                 indices[i] = i;
 
-            mesh.LoadMesh(vertexPositions.ToArray(), indices, PrimitiveType.Lines);
-            mesh.SetPerVertexData(vertices.ToArray());
+            mesh.LoadMesh(vertices.ToArray(), indices, PrimitiveType.Lines);
+            mesh.SetPerVertexData(perVertexData.ToArray());
 
             BaseEntity.Renderers.Add(this);
         }

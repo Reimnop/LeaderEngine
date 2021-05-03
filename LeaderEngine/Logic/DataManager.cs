@@ -188,17 +188,17 @@ namespace LeaderEngine
             {
                 var aiMesh = aiMeshes[i];
 
-                Vector3[] vertexPositions = new Vector3[aiMesh.VertexCount];
-                VertexData[] vertices = new VertexData[aiMesh.VertexCount];
+                Vector3[] vertices = new Vector3[aiMesh.VertexCount];
+                VertexData[] perVertexData = new VertexData[aiMesh.VertexCount];
 
                 for (int j = 0; j < aiMesh.VertexCount; j++)
                 {
                     var aiVert = aiMesh.Vertices[j];
                     var aiNormal = aiMesh.Normals[j];
 
-                    vertexPositions[j] = new Vector3(aiVert.X, aiVert.Y, aiVert.Z);
+                    vertices[j] = new Vector3(aiVert.X, aiVert.Y, aiVert.Z);
 
-                    vertices[j] = new VertexData
+                    perVertexData[j] = new VertexData
                     {
                         Normal = new Vector3(aiNormal.X, aiNormal.Y, aiNormal.Z),
 
@@ -215,8 +215,8 @@ namespace LeaderEngine
 
                 //create mesh
                 Mesh mesh = new Mesh(aiMesh.Name);
-                mesh.LoadMesh(vertexPositions, aiMesh.GetUnsignedIndices());
-                mesh.SetPerVertexData(vertices);
+                mesh.LoadMesh(vertices, aiMesh.GetUnsignedIndices());
+                mesh.SetPerVertexData(perVertexData);
 
                 meshes[i] = (mesh, aiMesh.MaterialIndex);
             }

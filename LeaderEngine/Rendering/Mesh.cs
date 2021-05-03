@@ -57,7 +57,8 @@ namespace LeaderEngine
         public readonly string ID;
 
         //vertex data
-        public Vector3[] VertexPositions { private set; get; }
+        public Vector3[] Vertices { private set; get; }
+        public uint[] Indices { private set; get; }
 
         private int VAO, VBO0, VBO1, EBO;
         private VertexAttribData[] vertexAttribs;
@@ -67,8 +68,8 @@ namespace LeaderEngine
         public PrimitiveType PrimitiveType { private set; get; }
         public DrawElementsType DrawElementsType { private set; get; }
 
-        public int VerticesCount { private set; get; }
-        public int IndicesCount { private set; get; }
+        public int VerticesCount => Vertices.Length;
+        public int IndicesCount => Indices.Length;
 
         public Mesh(string name, string id = null)
         {
@@ -91,24 +92,24 @@ namespace LeaderEngine
         }
 
         public void LoadMesh(
-            Vector3[] vertexPositions, uint[] indices, 
+            Vector3[] vertices, uint[] indices, 
             PrimitiveType primitiveType = PrimitiveType.Triangles, 
             DrawElementsType drawElementsType = DrawElementsType.UnsignedInt)
         {
             PrimitiveType = primitiveType;
             DrawElementsType = drawElementsType;
 
-            VertexPositions = vertexPositions;
+            Vertices = vertices;
 
             GL.BindVertexArray(VAO);
 
             //update array sizes
-            VerticesCount = vertexPositions.Length;
+            VerticesCount = vertices.Length;
             IndicesCount = indices.Length;
 
             //upload vertex buffer
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO0);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertexPositions.Length * Vector3.SizeInBytes, vertexPositions, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * Vector3.SizeInBytes, vertices, BufferUsageHint.StaticDraw);
 
             //upload element buffer
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
@@ -198,10 +199,9 @@ namespace LeaderEngine
             //write draw elem type
             writer.Write((int)DrawElementsType);
 
-            byte[] vertexBuffer = Helper.StructArrayToByteArray(VertexPositions);
-
-            byte[] elementBuffer = new byte[IndicesCount * sizeof(uint)];
-            GL.GetNamedBufferSubData(EBO, IntPtr.Zero, elementBuffer.Length, elementBuffer);
+            //get buffers
+            byte[] vertexBuffer = Helper.StructArrayToByteArray(Vertices);
+            byte[] elementBuffer = Helper.StructArrayToByteArray(Indices);
 
             //write buffers
             writer.Write(VerticesCount);
