@@ -122,9 +122,9 @@ namespace LeaderEngine
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
 
-            GL.ObjectLabel(ObjectLabelIdentifier.VertexArray, VAO, Name.Length, Name);
-            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, VBO0, Name.Length, Name);
-            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, EBO, Name.Length, Name);
+            GL.ObjectLabel(ObjectLabelIdentifier.VertexArray, VAO, Name.Length + 4, Name + "-VAO");
+            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, VBO0, Name.Length + 5, Name + "-VBO0");
+            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, EBO, Name.Length + 4, Name + "-EBO");
         }
 
         public void SetPerVertexData<T>(T[] data) where T : struct
@@ -167,7 +167,7 @@ namespace LeaderEngine
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
-            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, VBO1, Name.Length, Name);
+            GL.ObjectLabel(ObjectLabelIdentifier.Buffer, VBO1, Name.Length + 5, Name + "-VBO1");
         }
 
         public void Clear()
