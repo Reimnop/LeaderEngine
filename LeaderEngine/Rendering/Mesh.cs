@@ -60,6 +60,9 @@ namespace LeaderEngine
         public Vector3[] Vertices { private set; get; }
         public uint[] Indices { private set; get; }
 
+        public int VerticesCount => Vertices.Length;
+        public int IndicesCount => Indices.Length;
+
         private int VAO, VBO0, VBO1, EBO;
         private VertexAttribData[] vertexAttribs;
 
@@ -67,9 +70,6 @@ namespace LeaderEngine
 
         public PrimitiveType PrimitiveType { private set; get; }
         public DrawElementsType DrawElementsType { private set; get; }
-
-        public int VerticesCount => Vertices.Length;
-        public int IndicesCount => Indices.Length;
 
         public Mesh(string name, string id = null)
         {
