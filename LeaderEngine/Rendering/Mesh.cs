@@ -197,8 +197,6 @@ namespace LeaderEngine
             writer.Write((int)PrimitiveType);
             //write draw elem type
             writer.Write((int)DrawElementsType);
-            //write attribs
-            SerializeVertexAttribs(writer);
 
             byte[] vertexBuffer = Helper.StructArrayToByteArray(VertexPositions);
 
@@ -226,23 +224,6 @@ namespace LeaderEngine
             }
         }
 
-        private void SerializeVertexAttribs(BinaryWriter writer)
-        {
-            //write length
-            writer.Write(vertexAttribs.Length);
-            //write attribs
-            for (int i = 0; i < vertexAttribs.Length; i++)
-            {
-                VertexAttribData attrib = vertexAttribs[i];
-
-                writer.Write((int)attrib.PointerType);
-                writer.Write(attrib.Location);
-                writer.Write(attrib.Size);
-                writer.Write(attrib.Offset);
-                writer.Write(attrib.Normalized);
-            }
-        }
-
         public static Mesh Deserialize(BinaryReader reader)
         {
             //read name
@@ -253,8 +234,6 @@ namespace LeaderEngine
             var primType = (PrimitiveType)reader.ReadInt32();
             //read draw elem type
             var drawElemType = (DrawElementsType)reader.ReadInt32();
-            //read attribs
-            var attribs = DeserializeVertexAttribs(reader);
 
             //read buffers
             int verticesCount = reader.ReadInt32();
@@ -286,24 +265,6 @@ namespace LeaderEngine
                 mesh.SetPerVertexData(perVertexData);
 
             return mesh;
-        }
-
-        private static VertexAttribData[] DeserializeVertexAttribs(BinaryReader reader)
-        {
-            int attribCount = reader.ReadInt32();
-
-            VertexAttribData[] attribs = new VertexAttribData[attribCount];
-
-            for (int i = 0; i < attribCount; i++)
-            {
-                attribs[i].PointerType = (VertexAttribPointerType)reader.ReadInt32();
-                attribs[i].Location = reader.ReadInt32();
-                attribs[i].Size = reader.ReadInt32();
-                attribs[i].Offset = reader.ReadInt32();
-                attribs[i].Normalized = reader.ReadBoolean();
-            }
-
-            return attribs;
         }
 
         public void Dispose()
