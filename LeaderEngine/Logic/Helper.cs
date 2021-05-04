@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -10,6 +11,16 @@ namespace LeaderEngine
         {
             if (!dictionary.TryAdd(key, value))
                 dictionary[key] = value;
+        }
+
+        public static bool NearlyEquals(this float a, float b)
+        {
+            const float epsilon = 1e-8f;
+
+            if (MathF.Abs(a - b) < epsilon)
+                return true;
+
+            return false;
         }
 
         public static byte[] StructArrayToByteArray<T>(T[] data) where T : struct

@@ -130,30 +130,10 @@ namespace LeaderEditor
             ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, new System.Numerics.Vector2(160.0f, 90.0f));
             if (ImGui.Begin("Viewport"))
             {
-                bool focus = ImGui.IsWindowFocused();
-
-                cm.Focus = focus;
+                cm.Focus = ImGui.IsWindowFocused();
 
                 var cPos = ImGui.GetCursorScreenPos();
                 var vSize = ImGui.GetContentRegionAvail();
-
-                //mouse select \w raycast tbh
-                if (focus && ImGui.IsMouseClicked(ImGuiMouseButton.Left) && SceneHierachy.SelectedEntity == null)
-                {
-                    //what the fuck?
-                    Ray ray;
-                    ray.Origin = Camera.Main.BaseTransform.GlobalTransform.ExtractTranslation();
-
-                    var mPos = (ImGui.GetMousePos() - cPos) / vSize;
-                    Vector2 mousePos = new Vector2(mPos.X, mPos.Y) * new Vector2(2.0f) - new Vector2(1.0f);
-
-                    Camera.Main.CalculateViewProjection(out var view, out var proj);
-
-                    Vector4 unprojected = new Vector4(mousePos.X, -mousePos.Y, 1.0f, 1.0f) * Matrix4.Invert(view * proj);
-                    ray.Direction = Vector3.Normalize(unprojected.Xyz);
-
-                    MouseSelect(ray);
-                }
 
                 ERenderer.ViewportSize = new Vector2i((int)vSize.X, (int)vSize.Y);
 
@@ -177,11 +157,19 @@ namespace LeaderEditor
                     ImGuizmo.SetRect(cPos.X, cPos.Y, vSize.X, vSize.Y);
 
                     Camera.Main.CalculateViewProjection(out var view, out var projection);
-                    var transform = entity.Transform.GlobalTransform;
 
+                    var transform = entity.Transform.GlobalTransform;
                     ImGuizmo.Manipulate(ref view.Row0.X, ref projection.Row0.X, operation, MODE.LOCAL, ref transform.Row0.X);
 
-                    entity.Transform.GlobalTransform = transform;
+                    if (ImGuizmo.IsUsing())
+                    {
+                        var parentGlobal = entity.Parent != null ? entity.Parent.Transform.GlobalTransform : Matrix4.Identity;
+                        var local = transform * parentGlobal.Inverted();
+
+                        entity.Transform.Position = local.ExtractTranslation();
+                        entity.Transform.Rotation = local.ExtractRotation();
+                        entity.Transform.Scale = local.ExtractScale();
+                    }
                 }
 
                 ImGui.SetCursorScreenPos(cPos + new System.Numerics.Vector2(4.0f));
@@ -197,6 +185,23 @@ namespace LeaderEditor
                         operation = OPERATION.SCALE;
                 }
                 ImGui.PopClipRect();
+
+                //mouse select with raycast
+                if (ImGui.IsWindowHovered() && ImGui.IsWindowFocused() && ImGui.IsMouseClicked(ImGuiMouseButton.Left) && !ImGuizmo.IsUsing())
+                {
+                    Ray ray;
+                    ray.Origin = Camera.Main.BaseTransform.GlobalTransform.ExtractTranslation(); //get cam position
+
+                    var mPos = (ImGui.GetMousePos() - cPos) / vSize; //get mouse pos in [0, 1]
+                    Vector2 mousePos = new Vector2(mPos.X, mPos.Y) * new Vector2(2.0f) - new Vector2(1.0f); //convert to [-1, 1]
+
+                    Camera.Main.CalculateViewProjection(out var view, out var proj); //get view and proj
+
+                    Vector4 unprojected = new Vector4(mousePos.X, -mousePos.Y, 1.0f, 1.0f) * Matrix4.Invert(view * proj); //what the fuck?
+                    ray.Direction = Vector3.Normalize(unprojected.Xyz);
+
+                    MouseSelect(ray);
+                }
 
                 ImGui.End();
             }
