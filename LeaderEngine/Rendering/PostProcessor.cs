@@ -120,13 +120,11 @@ namespace LeaderEngine
         public void Begin()
         {
             framebuffer.Begin();
-            GL.Enable(EnableCap.FramebufferSrgb);
         }
 
         public void End()
         {
             framebuffer.End();
-            GL.Disable(EnableCap.FramebufferSrgb);
         }
 
         public void Render()
