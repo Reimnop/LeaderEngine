@@ -53,6 +53,9 @@ namespace LeaderEditor
 
             void CheckMeshRayHitRecursively(Entity entity)
             {
+                if (!entity.Active)
+                    return;
+
                 //get mesh
                 var mr = entity.GetComponent<MeshRenderer>();
 

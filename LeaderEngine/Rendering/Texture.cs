@@ -16,7 +16,8 @@ namespace LeaderEngine
             private readonly static Dictionary<PixelInternalFormat, int> internalFormatSize = new Dictionary<PixelInternalFormat, int>()
             {
                 { (PixelInternalFormat)All.Red, 1 },
-                { PixelInternalFormat.Rgba, 4 }
+                { PixelInternalFormat.Rgba, 4 },
+                { PixelInternalFormat.SrgbAlpha, 4 }
             };
 
             private readonly static Dictionary<PixelType, int> typeSize = new Dictionary<PixelType, int>()
