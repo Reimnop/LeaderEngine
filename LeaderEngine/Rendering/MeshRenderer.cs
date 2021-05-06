@@ -64,6 +64,10 @@ namespace LeaderEngine
                 Camera.Main.BaseTransform.Position));
 
             if (DirectionalLight.Main != null)
+                uniforms.SetUniform("lightIntensity", new Uniform(UniformType.Float,
+                    DirectionalLight.Main.Intensity));
+
+            if (DirectionalLight.Main != null)
                 uniforms.SetUniform("lightDir", new Uniform(UniformType.Vector3,
                     -DirectionalLight.Main.BaseTransform.Forward));
 

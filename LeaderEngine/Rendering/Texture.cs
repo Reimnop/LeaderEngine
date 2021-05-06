@@ -92,7 +92,7 @@ namespace LeaderEngine
                 pixelSpan = new Span<Rgba32>(pixelArray);
             }
 
-            return FromPointer(name, image.Width, image.Height, (IntPtr)Unsafe.AsPointer(ref pixelSpan[0]), id: id);
+            return FromPointer(name, image.Width, image.Height, (IntPtr)Unsafe.AsPointer(ref pixelSpan[0]), PixelInternalFormat.SrgbAlpha, id: id);
         }
 
         public static Texture FromPointer(string name, int width, int height, IntPtr data,

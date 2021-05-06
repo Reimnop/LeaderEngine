@@ -6,6 +6,8 @@ namespace LeaderEngine
     {
         public static DirectionalLight Main;
 
+        public float Intensity = 1.0f;
+
         private void Start()
         {
             if (Main == null)

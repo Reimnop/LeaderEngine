@@ -207,10 +207,14 @@ namespace LeaderEditor
             }
             ImGui.PopStyleVar();
 
-            if (ImGui.Begin("Stats"))
+            if (ImGui.Begin("Debug"))
             {
                 ImGui.Text($"Frametime: {MathF.Floor(Time.UnscaledDeltaTime * 100000.0f) / 100.0f}ms");
                 ImGui.Text($"Framerate: {MathF.Floor(1.0f / Time.UnscaledDeltaTime)}");
+
+#if DEBUG
+                ImGui.DragFloat("Exposure", ref ((ForwardRenderer)Engine.Renderer).Exposure, 0.1f);
+#endif
 
                 ImGui.End();
             }

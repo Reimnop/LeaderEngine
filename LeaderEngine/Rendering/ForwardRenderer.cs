@@ -16,12 +16,19 @@ namespace LeaderEngine
             { DrawType.GUI, new List<GLDrawData>() }
         };
 
+        #region PostProcess
+        public float Exposure = 1.0f;
+
+        #endregion
+
         const int shadowMapRes = 4096;
         const float shadowMapSize = 48.0f;
 
         private Framebuffer shadowMapFramebuffer;
 
         private PostProcessor postProcessor;
+
+        private PostProcessingEffect hdrEffect;
 
         public override void Init()
         {
@@ -48,14 +55,22 @@ namespace LeaderEngine
                 }
             });
 
+            #region PostProcess
             string postProcessPath = Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/PostProcess");
 
-            postProcessor = new PostProcessor();
-            postProcessor.Shaders.AddRange(new Shader[] {
-                Shader.FromSourceFile("post-process",
+            hdrEffect = new PostProcessingEffect
+            {
+                Uniforms = new UniformData(),
+                Shader = Shader.FromSourceFile("hdr",
                     Path.Combine(postProcessPath, "post-process.vert"),
-                    Path.Combine(postProcessPath, "empty.frag"))
+                    Path.Combine(postProcessPath, "hdr.frag"))
+            };
+
+            postProcessor = new PostProcessor();
+            postProcessor.Effects.AddRange(new PostProcessingEffect[] {
+                hdrEffect
             });
+            #endregion
 
             Logger.Log("Renderer initialized.", true);
         }
@@ -144,6 +159,9 @@ namespace LeaderEngine
             GL.DepthMask(true);
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
+
+            //post processing
+            hdrEffect.Uniforms.SetUniform("exposure", new Uniform(UniformType.Float, Exposure));
 
             postProcessor.Render();
 

@@ -4,9 +4,15 @@ using System.Collections.Generic;
 
 namespace LeaderEngine
 {
+    public struct PostProcessingEffect
+    {
+        public UniformData Uniforms;
+        public Shader Shader;
+    }
+
     public class PostProcessor
     {
-        public readonly List<Shader> Shaders = new List<Shader>();
+        public readonly List<PostProcessingEffect> Effects = new List<PostProcessingEffect>();
 
         private Vector2i framebufferSize = Vector2i.One;
 
@@ -47,7 +53,7 @@ namespace LeaderEngine
                 new Attachment
                 {
                     Draw = false,
-                    PixelInternalFormat = PixelInternalFormat.Rgba,
+                    PixelInternalFormat = PixelInternalFormat.Rgba32f,
                     PixelFormat = PixelFormat.Rgba,
                     PixelType = PixelType.Float,
                     FramebufferAttachment = FramebufferAttachment.ColorAttachment0,
@@ -129,12 +135,17 @@ namespace LeaderEngine
 
         public void Render()
         {
-            for (int i = 0; i < Shaders.Count; i++)
+            for (int i = 0; i < Effects.Count; i++)
             {
-                Shader shader = Shaders[i];
+                PostProcessingEffect effect = Effects[i];
+
+                var shader = effect.Shader;
+                var uniforms = effect.Uniforms;
 
                 mesh.Use();
                 shader.Use();
+
+                uniforms.Use(shader);
 
                 shader.SetInt("sourceTexture", 0);
                 GL.ActiveTexture(TextureUnit.Texture0);
@@ -151,7 +162,7 @@ namespace LeaderEngine
                     GL.BindTexture(TextureTarget.Texture2D, stageReadFramebuffer.GetTexture(FramebufferAttachment.ColorAttachment0));
                 }
 
-                if (i != Shaders.Count - 1)
+                if (i != Effects.Count - 1)
                 {
                     stageDrawFramebuffer.Begin();
                     GL.Clear(ClearBufferMask.ColorBufferBit);
@@ -159,7 +170,7 @@ namespace LeaderEngine
 
                 GL.DrawElements(PrimitiveType.Triangles, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
 
-                if (i != Shaders.Count - 1)
+                if (i != Effects.Count - 1)
                 {
                     stageDrawFramebuffer.End();
                 }

@@ -25,10 +25,10 @@ namespace LeaderEditor
 
             for (int i = -gridSize; i <= gridSize; i++)
             {
-                Vector3 color = Vector3.One * 0.2f;
+                Vector3 color = Vector3.One * 0.03f;
 
                 if (i % 10 == 0)
-                    color = Vector3.One * 0.6f;
+                    color = Vector3.One * 0.3f;
 
                 if (i == 0)
                     color = new Vector3(0.0f, 0.0f, 1.0f);
@@ -49,10 +49,10 @@ namespace LeaderEditor
 
             for (int i = -gridSize; i <= gridSize; i++)
             {
-                Vector3 color = Vector3.One * 0.2f;
+                Vector3 color = Vector3.One * 0.03f;
 
                 if (i % 10 == 0)
-                    color = Vector3.One * 0.6f;
+                    color = Vector3.One * 0.3f;
 
                 if (i == 0)
                     color = new Vector3(1.0f, 0.0f, 0.0f);
