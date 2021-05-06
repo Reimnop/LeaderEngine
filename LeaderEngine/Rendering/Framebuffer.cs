@@ -103,7 +103,7 @@ namespace LeaderEngine
             var fboStatus = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
 
             if (fboStatus != FramebufferErrorCode.FramebufferComplete)
-                Logger.LogError("FRAMEBUFFER: " + Name + ": " + fboStatus);
+                Logger.LogError("FrameBuffer: " + Name + ": " + fboStatus);
 
             GL.ObjectLabel(ObjectLabelIdentifier.Framebuffer, handle, name.Length, name);
 
