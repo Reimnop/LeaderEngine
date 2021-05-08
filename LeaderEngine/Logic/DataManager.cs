@@ -14,7 +14,7 @@ namespace LeaderEngine
 {
     public static class DataManager
     {
-        public static Scene CurrentScene { get; private set; } = new Scene("Untitled Scene");
+        public static Scene CurrentScene { get; set; } = new Scene("Untitled Scene");
 
         internal static Dictionary<string, Type> ComponentTypes { get; } = new Dictionary<string, Type>();
         internal static List<Entity> EngineReservedEntities { get; } = new List<Entity>();

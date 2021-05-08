@@ -116,6 +116,8 @@ namespace LeaderEditor
 
                                 var reader = new System.IO.BinaryReader(ms);
                                 Scene s = Scene.Deserialize(reader);
+
+                                DataManager.CurrentScene = s;
                             }
                         }
 #endif
