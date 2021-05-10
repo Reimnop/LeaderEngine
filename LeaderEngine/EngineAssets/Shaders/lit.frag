@@ -21,7 +21,7 @@ uniform vec3 lightDir;
 uniform float bBias = 0.002;
 uniform float lightIntensity = 1.0;
 
-uniform vec3 ambient = vec3(0.05);
+uniform float ambient = 0.05;
 
 in vec4 FragPosLightSpace;
 
@@ -60,7 +60,9 @@ void main() {
 	float diffuse = max(dot(norm, lightDir), 0.0) * lightIntensity;
 	float shadow = (calculateShadow(FragPosLightSpace));
 
-	vec3 outColor = (ambient + diffuse * shadow) * obColor;
+	float calculatedAmbient = max(dot(norm, normalize(camPos - FragPos)), 0.25) * ambient;
+
+	vec3 outColor = (calculatedAmbient + diffuse * shadow) * obColor;
 
 	fragColor = vec4(outColor, 1.0);
 }
