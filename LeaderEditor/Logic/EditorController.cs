@@ -1,6 +1,4 @@
-﻿#define dumb_scene_load
-
-using ImGuiNET;
+﻿using ImGuiNET;
 using ImGuizmoNET;
 using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
@@ -16,6 +14,7 @@ namespace LeaderEditor
 
         private Entity editorCamera;
 
+        private ProjectController pc;
         private CameraMove cm;
 
         private void Start()
@@ -32,6 +31,8 @@ namespace LeaderEditor
             BaseEntity.AddComponent<SceneHierachy>();
             BaseEntity.AddComponent<Inspector>();
             BaseEntity.AddComponent<AssetManager>();
+
+            pc = BaseEntity.AddComponent<ProjectController>();
 
             editorCamera = new Entity("EditorCamera");
             editorCamera.AddComponent<Camera>();
@@ -89,45 +90,7 @@ namespace LeaderEditor
 
             if (ImGui.BeginMainMenuBar())
             {
-                if (ImGui.BeginMenu("File"))
-                {
-#if DEBUG
-                    if (ImGui.BeginMenu("Debug"))
-                    {
-                        if (ImGui.MenuItem("Save Assets"))
-                        {
-                            DataManager.SaveGameAssets("game-assets.ldrassets");
-                        }
-
-                        if (ImGui.MenuItem("Load Assets"))
-                        {
-                            DataManager.LoadGameAssets("game-assets.ldrassets");
-                        }
-
-#if dumb_scene_load
-                        if (ImGui.MenuItem("Reload Scene"))
-                        {
-                            using (var ms = new System.IO.MemoryStream())
-                            {
-                                var writer = new System.IO.BinaryWriter(ms);
-                                DataManager.CurrentScene.Serialize(writer);
-
-                                ms.Seek(0, System.IO.SeekOrigin.Begin);
-
-                                var reader = new System.IO.BinaryReader(ms);
-                                Scene s = Scene.Deserialize(reader);
-
-                                DataManager.CurrentScene = s;
-                            }
-                        }
-#endif
-
-                        ImGui.EndMenu();
-                    }
-#endif
-
-                    ImGui.EndMenu();
-                }
+                pc.DrawFileMenu();
 
                 ImGui.EndMainMenuBar();
             }

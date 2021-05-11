@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using LeaderEngine;
 using System.Numerics;
+using System.Windows.Forms;
 using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 
 namespace LeaderEditor
@@ -33,15 +34,20 @@ namespace LeaderEditor
 
                     ImGui.SameLine();
 
-                    FilePicker fp = FilePicker.GetFilePicker("audio", null, ".wav");
-
-                    fp.Title = "Select File (*.wav)";
-
                     if (ImGui.Button("Import Audio", new Vector2(100.0f, 0.0f)))
-                        fp.Open();
+                    {
+                        using (var ofd = new OpenFileDialog())
+                        {
+                            ofd.Filter = "Audio File|*.wav";
 
-                    if (fp.Draw())
-                        AudioClip.FromFile("song", fp.SelectedFile);
+                            ofd.ShowDialog();
+
+                            if (!string.IsNullOrEmpty(ofd.FileName))
+                            {
+                                AudioClip.FromFile("audio clip", ofd.FileName);
+                            }
+                        }
+                    }
 
                     ImGui.Separator();
 
@@ -64,15 +70,20 @@ namespace LeaderEditor
 
                     ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - 100.0f);
 
-                    FilePicker fp = FilePicker.GetFilePicker("prefab-model", null, ".fbx;.obj");
-
-                    fp.Title = "Select File (*.fbx; *.obj)";
-
                     if (ImGui.Button("Import Model", new Vector2(100.0f, 0.0f)))
-                        fp.Open();
+                    {
+                        using (var ofd = new OpenFileDialog())
+                        {
+                            ofd.Filter = "3D Model|*.fbx;*.obj";
 
-                    if (fp.Draw())
-                        DataManager.LoadModelFromFile(fp.SelectedFile);
+                            ofd.ShowDialog();
+
+                            if (!string.IsNullOrEmpty(ofd.FileName))
+                            {
+                                DataManager.LoadModelFromFile(ofd.FileName);
+                            }
+                        }
+                    }
 
                     ImGui.Separator();
 

@@ -41,7 +41,7 @@ namespace LeaderEngine
             new Font("Impact", Path.Combine(AppContext.BaseDirectory, "EngineAssets/Fonts/Impact.fnt"));
         }
 
-        public static void SaveGameAssets(string path)
+        public static void SaveAssets(string path)
         {
             using (FileStream fileStream = File.Open(path, FileMode.Create))
             {
@@ -69,8 +69,10 @@ namespace LeaderEngine
             }
         }
 
-        public static void LoadGameAssets(string path)
+        public static void LoadAssets(string path)
         {
+            DisposeAssets();
+
             using (FileStream fileStream = File.Open(path, FileMode.Open))
             {
                 BinaryReader reader = new BinaryReader(fileStream);
@@ -95,6 +97,18 @@ namespace LeaderEngine
                 for (int i = 0; i < prefCount; i++)
                     Prefab.Deserialize(reader);
             }
+        }
+
+        public static void DisposeAssets()
+        {
+            foreach (var m in Meshes)
+                m.Value.Dispose();
+
+            foreach (var t in Textures)
+                t.Value.Dispose();
+
+            Materials.Clear();
+            Prefabs.Clear();
         }
 
         public static Prefab LoadModelFromFile(string path)
