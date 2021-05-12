@@ -21,6 +21,8 @@ namespace LeaderEditor
         public static string Name = "Untitled Project";
         public static List<AssetGroup> Assets = new List<AssetGroup>();
         public static int CurrentAssetGroupIndex = 0;
+
+        public static string SceneFileName = "scene.ldrscene";
     }
 
     public static class ProjectManager
@@ -60,6 +62,11 @@ namespace LeaderEditor
 
                 writer.WriteEndElement();
 
+                //scene
+                writer.WriteStartElement("Scene");
+                writer.WriteAttributeString("FileName", Project.SceneFileName);
+                writer.WriteEndElement();
+
                 //project end
                 writer.WriteEndElement();
                 writer.WriteEndDocument();
@@ -77,17 +84,19 @@ namespace LeaderEditor
 
             var doc = XDocument.Load(cfgPath);
 
+            //project info
             Project.Name = doc
                 .Element("Project")
                 .Attribute("Name")
                 .Value;
 
+            //assets
             Project.CurrentAssetGroupIndex = int.Parse(doc
                 .Element("Project")
                     .Element("Assets")
                     .Attribute("CurrentIndex")
                     .Value);
-
+            
             Project.Assets = doc
                 .Element("Project")
                     .Element("Assets")
@@ -95,7 +104,15 @@ namespace LeaderEditor
                         .Select(atr => new AssetGroup { FileName = atr.Attribute("FileName").Value, Name = atr.Value })
                         .ToList();
 
+            //scene
+            Project.SceneFileName = doc
+                .Element("Project")
+                    .Element("Scene")
+                        .Attribute("FileName")
+                        .Value;
+
             LoadAssetGroup();
+            LoadScene();
 
             return true;
         }
@@ -107,6 +124,26 @@ namespace LeaderEditor
 
             var ag = Project.Assets[Project.CurrentAssetGroupIndex];
             DataManager.LoadAssets(Path.Combine(Project.Path, "Assets/", ag.FileName));
+        }
+
+        private static void LoadScene()
+        {
+            string path = Path.Combine(Project.Path, "Assets/", Project.SceneFileName);
+
+            using (var reader = new BinaryReader(new FileStream(path, FileMode.Open)))
+            {
+                DataManager.CurrentScene = Scene.Deserialize(reader);
+            }
+        }
+
+        public static void SaveScene()
+        {
+            string path = Path.Combine(Project.Path, "Assets/", Project.SceneFileName);
+
+            using (var writer = new BinaryWriter(new FileStream(path, FileMode.Create)))
+            {
+                DataManager.CurrentScene.Serialize(writer);
+            }
         }
 
         public static void SaveAssetGroup(int index = -1)

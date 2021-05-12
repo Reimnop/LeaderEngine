@@ -125,6 +125,11 @@ namespace LeaderEditor
                     ProjectManager.SaveProject();
                 }
 
+                if (ImGui.MenuItem("Save Scene"))
+                {
+                    ProjectManager.SaveScene();
+                }
+
                 if (ImGui.MenuItem("Project Configuration"))
                 {
                     projectConfigMenuOpen = true;
