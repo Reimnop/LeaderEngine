@@ -59,8 +59,8 @@ namespace LeaderEngine
 
             //init modules
             DataManager.Init();
-
             DefaultShaders.Init();
+            SpriteRenderer.Init();
 
             Renderer = renderer != null ? renderer : Renderer;
             Renderer.Init();

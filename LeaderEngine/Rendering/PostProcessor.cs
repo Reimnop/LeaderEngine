@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace LeaderEngine
 {
@@ -12,6 +13,13 @@ namespace LeaderEngine
 
     public class PostProcessor
     {
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        private struct PostProcessorVertexData
+        {
+            [VertexAttrib(VertexAttribPointerType.Float, 1, 2, false)]
+            public Vector2 UV;
+        }
+
         public readonly List<PostProcessingEffect> Effects = new List<PostProcessingEffect>();
 
         private Vector2i framebufferSize = Vector2i.One;
@@ -41,11 +49,11 @@ namespace LeaderEngine
                 1, 2, 3
             });
 
-            mesh.SetPerVertexData(new VertexData[] {
-                new VertexData { UV = new Vector2(1.0f, 1.0f) },
-                new VertexData { UV = new Vector2(1.0f, 0.0f) },
-                new VertexData { UV = new Vector2(0.0f, 0.0f) },
-                new VertexData { UV = new Vector2(0.0f, 1.0f) }
+            mesh.SetPerVertexData(new PostProcessorVertexData[] {
+                new PostProcessorVertexData { UV = new Vector2(1.0f, 1.0f) },
+                new PostProcessorVertexData { UV = new Vector2(1.0f, 0.0f) },
+                new PostProcessorVertexData { UV = new Vector2(0.0f, 0.0f) },
+                new PostProcessorVertexData { UV = new Vector2(0.0f, 1.0f) }
             });
 
             framebuffer = new Framebuffer("post-process-fbo", framebufferSize.X, framebufferSize.Y, new Attachment[]
