@@ -30,8 +30,7 @@ namespace LeaderEngine
             }
             else
             {
-                var winSize = Engine.MainWindow.ClientSize;
-                float aspect = winSize.X / winSize.Y;
+                float aspect = renderer.ViewportSize.X / (float)renderer.ViewportSize.Y;
 
                 projection = Matrix4.CreateOrthographic(OrthographicScale * 2f * aspect, OrthographicScale * 2f, NearPlane, FarPlane);
             }
