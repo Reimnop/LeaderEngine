@@ -29,10 +29,10 @@ namespace LeaderEngine
 
             Vector3[] vertices = new Vector3[]
             {
-                new Vector3( 0.5f,  0.5f, 0.0f),
-                new Vector3( 0.5f, -0.5f, 0.0f),
-                new Vector3(-0.5f, -0.5f, 0.0f),
-                new Vector3(-0.5f,  0.5f, 0.0f)
+                new Vector3( 0.5f,  0.5f, 0f),
+                new Vector3( 0.5f, -0.5f, 0f),
+                new Vector3(-0.5f, -0.5f, 0f),
+                new Vector3(-0.5f,  0.5f, 0f)
             };
 
             uint[] indices = new uint[]
@@ -44,10 +44,10 @@ namespace LeaderEngine
             mesh.LoadMesh(vertices, indices);
             mesh.SetPerVertexData(new SpriteVertexData[]
             {
-                new SpriteVertexData { UV = new Vector2(1.0f, 1.0f) },
-                new SpriteVertexData { UV = new Vector2(1.0f, 0.0f) },
-                new SpriteVertexData { UV = new Vector2(0.0f, 0.0f) },
-                new SpriteVertexData { UV = new Vector2(0.0f, 1.0f) }
+                new SpriteVertexData { UV = new Vector2(1f, 1f) },
+                new SpriteVertexData { UV = new Vector2(1f, 0f) },
+                new SpriteVertexData { UV = new Vector2(0f, 0f) },
+                new SpriteVertexData { UV = new Vector2(0f, 1f) }
             });
 
             mesh.Unlist();

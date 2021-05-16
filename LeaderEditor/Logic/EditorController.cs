@@ -95,7 +95,7 @@ namespace LeaderEditor
                 ImGui.EndMainMenuBar();
             }
 
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, new System.Numerics.Vector2(160.0f, 90.0f));
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, new System.Numerics.Vector2(160f, 90f));
             if (ImGui.Begin("Viewport"))
             {
                 cm.Focus = ImGui.IsWindowFocused();
@@ -110,8 +110,8 @@ namespace LeaderEditor
                     (IntPtr)ERenderer.Framebuffer.GetTexture(FramebufferAttachment.ColorAttachment0),
                     cPos,
                     cPos + vSize,
-                    new System.Numerics.Vector2(0.0f, 1.0f),
-                    new System.Numerics.Vector2(1.0f, 0.0f));
+                    new System.Numerics.Vector2(0f, 1f),
+                    new System.Numerics.Vector2(1f, 0f));
 
                 //gizmos
                 ImGui.PushClipRect(cPos, cPos + vSize, false);
@@ -140,9 +140,9 @@ namespace LeaderEditor
                     }
                 }
 
-                ImGui.SetCursorScreenPos(cPos + new System.Numerics.Vector2(4.0f));
+                ImGui.SetCursorScreenPos(cPos + new System.Numerics.Vector2(4f));
 
-                ImGui.SetNextItemWidth(240.0f);
+                ImGui.SetNextItemWidth(240f);
                 if (ImGui.BeginCombo("Gizmo", operation == OPERATION.TRANSLATE ? "Translate" : (operation == OPERATION.ROTATE ? "Rotate" : "Scale")))
                 {
                     if (ImGui.Selectable("Translate", operation == OPERATION.TRANSLATE))
@@ -161,11 +161,11 @@ namespace LeaderEditor
                     ray.Origin = Camera.Main.BaseTransform.GlobalTransform.ExtractTranslation(); //get cam position
 
                     var mPos = (ImGui.GetMousePos() - cPos) / vSize; //get mouse pos in [0, 1]
-                    Vector2 mousePos = new Vector2(mPos.X, mPos.Y) * new Vector2(2.0f) - new Vector2(1.0f); //convert to [-1, 1]
+                    Vector2 mousePos = new Vector2(mPos.X, mPos.Y) * new Vector2(2f) - new Vector2(1f); //convert to [-1, 1]
 
                     Camera.Main.CalculateViewProjection(out var view, out var proj); //get view and proj
 
-                    Vector4 unprojected = new Vector4(mousePos.X, -mousePos.Y, 1.0f, 1.0f) * Matrix4.Invert(view * proj); //what the fuck?
+                    Vector4 unprojected = new Vector4(mousePos.X, -mousePos.Y, 1f, 1f) * Matrix4.Invert(view * proj); //what the fuck?
                     ray.Direction = Vector3.Normalize(unprojected.Xyz);
 
                     MouseSelect(ray);
@@ -177,8 +177,8 @@ namespace LeaderEditor
 
             if (ImGui.Begin("Debug"))
             {
-                ImGui.Text($"Frametime: {MathF.Floor(Time.UnscaledDeltaTime * 100000.0f) / 100.0f}ms");
-                ImGui.Text($"Framerate: {MathF.Floor(1.0f / Time.UnscaledDeltaTime)}");
+                ImGui.Text($"Frametime: {MathF.Floor(Time.UnscaledDeltaTime * 100000f) / 100f}ms");
+                ImGui.Text($"Framerate: {MathF.Floor(1f / Time.UnscaledDeltaTime)}");
 
 #if DEBUG
                 ImGui.DragFloat("Exposure", ref ((ForwardRenderer)Engine.Renderer).Exposure, 0.1f);

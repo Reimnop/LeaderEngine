@@ -5,7 +5,7 @@ namespace LeaderEditor
 {
     public static class ImGuiExtension
     {
-        public static void DragVector2(string label, ref Vector2 value, Vector2 defaultValue, float speed = 1.0f)
+        public static void DragVector2(string label, ref Vector2 value, Vector2 defaultValue, float speed = 1f)
         {
             ImGui.PushID(label);
 
@@ -18,7 +18,7 @@ namespace LeaderEditor
             ImGui.SameLine();
 
             ImGui.PushID("X-drag");
-            ImGui.SetNextItemWidth(75.0f);
+            ImGui.SetNextItemWidth(75f);
             ImGui.DragFloat(string.Empty, ref value.X, speed);
             ImGui.PopID();
 
@@ -33,7 +33,7 @@ namespace LeaderEditor
             ImGui.SameLine();
 
             ImGui.PushID("Y-drag");
-            ImGui.SetNextItemWidth(75.0f);
+            ImGui.SetNextItemWidth(75f);
             ImGui.DragFloat(string.Empty, ref value.Y, speed);
             ImGui.PopID();
 
@@ -42,7 +42,7 @@ namespace LeaderEditor
 
             ImGui.PopID();
         }
-        public static void DragVector3(string label, ref Vector3 value, Vector3 defaultValue, float speed = 1.0f)
+        public static void DragVector3(string label, ref Vector3 value, Vector3 defaultValue, float speed = 1f)
         {
             ImGui.PushID(label);
 
@@ -55,7 +55,7 @@ namespace LeaderEditor
             ImGui.SameLine();
 
             ImGui.PushID("X-drag");
-            ImGui.SetNextItemWidth(75.0f);
+            ImGui.SetNextItemWidth(75f);
             ImGui.DragFloat(string.Empty, ref value.X, speed);
             ImGui.PopID();
 
@@ -70,7 +70,7 @@ namespace LeaderEditor
             ImGui.SameLine();
 
             ImGui.PushID("Y-drag");
-            ImGui.SetNextItemWidth(75.0f);
+            ImGui.SetNextItemWidth(75f);
             ImGui.DragFloat(string.Empty, ref value.Y, speed);
             ImGui.PopID();
 
@@ -85,7 +85,7 @@ namespace LeaderEditor
             ImGui.SameLine();
 
             ImGui.PushID("Z-drag");
-            ImGui.SetNextItemWidth(75.0f);
+            ImGui.SetNextItemWidth(75f);
             ImGui.DragFloat(string.Empty, ref value.Z, speed);
             ImGui.PopID();
 
@@ -94,7 +94,7 @@ namespace LeaderEditor
 
             ImGui.PopID();
         }
-        public static void DragVector4(string label, ref Vector4 value, Vector4 defaultValue, float speed = 1.0f)
+        public static void DragVector4(string label, ref Vector4 value, Vector4 defaultValue, float speed = 1f)
         {
             ImGui.PushID(label);
 
@@ -107,7 +107,7 @@ namespace LeaderEditor
             ImGui.SameLine();
 
             ImGui.PushID("X-drag");
-            ImGui.SetNextItemWidth(75.0f);
+            ImGui.SetNextItemWidth(75f);
             ImGui.DragFloat(string.Empty, ref value.X, speed);
             ImGui.PopID();
 
@@ -122,7 +122,7 @@ namespace LeaderEditor
             ImGui.SameLine();
 
             ImGui.PushID("Y-drag");
-            ImGui.SetNextItemWidth(75.0f);
+            ImGui.SetNextItemWidth(75f);
             ImGui.DragFloat(string.Empty, ref value.Y, speed);
             ImGui.PopID();
 
@@ -137,7 +137,7 @@ namespace LeaderEditor
             ImGui.SameLine();
 
             ImGui.PushID("Z-drag");
-            ImGui.SetNextItemWidth(75.0f);
+            ImGui.SetNextItemWidth(75f);
             ImGui.DragFloat(string.Empty, ref value.Z, speed);
             ImGui.PopID();
 
@@ -152,7 +152,7 @@ namespace LeaderEditor
             ImGui.SameLine();
 
             ImGui.PushID("W-drag");
-            ImGui.SetNextItemWidth(75.0f);
+            ImGui.SetNextItemWidth(75f);
             ImGui.DragFloat(string.Empty, ref value.W, speed);
             ImGui.PopID();
 
@@ -168,7 +168,7 @@ namespace LeaderEditor
             ImGui.SetNextWindowPos(viewport.Pos);
             ImGui.SetNextWindowSize(viewport.Size);
             ImGui.SetNextWindowViewport(viewport.ID);
-            ImGui.SetNextWindowBgAlpha(0.0f);
+            ImGui.SetNextWindowBgAlpha(0f);
 
             ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.MenuBar;
 
@@ -176,8 +176,8 @@ namespace LeaderEditor
             windowFlags |= ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove;
             windowFlags |= ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus;
 
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0f);
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
             ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, System.Numerics.Vector2.Zero);
             ImGui.Begin("imgui-docking", windowFlags);
             ImGui.PopStyleVar(3);

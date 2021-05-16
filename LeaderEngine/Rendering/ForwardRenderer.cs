@@ -17,12 +17,12 @@ namespace LeaderEngine
         };
 
         #region PostProcess
-        public float Exposure = 1.0f;
+        public float Exposure = 1f;
 
         #endregion
 
         const int shadowMapRes = 4096;
-        const float shadowMapSize = 48.0f;
+        const float shadowMapSize = 48f;
 
         private Framebuffer shadowMapFramebuffer;
 
@@ -50,7 +50,7 @@ namespace LeaderEngine
                     },
                     TextureParamsFloatArr = new TextureParamFloatArr[]
                     {
-                        new TextureParamFloatArr { ParamName = TextureParameterName.TextureBorderColor, Params = new float[] { 1.0f, 1.0f, 1.0f, 1.0f } }
+                        new TextureParamFloatArr { ParamName = TextureParameterName.TextureBorderColor, Params = new float[] { 1f, 1f, 1f, 1f } }
                     }
                 }
             });

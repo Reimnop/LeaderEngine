@@ -28,7 +28,7 @@ namespace LeaderEditor
                         if (ImGui.BeginTabItem("Assets"))
                         {
                             //asset group list
-                            if (ImGui.BeginChild("asset-groups-win", new Vector2(210.0f, 0.0f), true))
+                            if (ImGui.BeginChild("asset-groups-win", new Vector2(210f, 0f), true))
                             {
                                 for (int i = 0; i < Project.Assets.Count; i++)
                                 {

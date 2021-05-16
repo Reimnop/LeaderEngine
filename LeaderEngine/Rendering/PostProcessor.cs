@@ -38,10 +38,10 @@ namespace LeaderEngine
 
             mesh.LoadMesh(new Vector3[]
             {
-                new Vector3(1.0f, 1.0f, 0.0f),
-                new Vector3(1.0f, -1.0f, 0.0f),
-                new Vector3(-1.0f, -1.0f, 0.0f),
-                new Vector3(-1.0f, 1.0f, 0.0f)
+                new Vector3(1f, 1f, 0f),
+                new Vector3(1f, -1f, 0f),
+                new Vector3(-1f, -1f, 0f),
+                new Vector3(-1f, 1f, 0f)
             },
             new uint[]
             {
@@ -50,10 +50,10 @@ namespace LeaderEngine
             });
 
             mesh.SetPerVertexData(new PostProcessorVertexData[] {
-                new PostProcessorVertexData { UV = new Vector2(1.0f, 1.0f) },
-                new PostProcessorVertexData { UV = new Vector2(1.0f, 0.0f) },
-                new PostProcessorVertexData { UV = new Vector2(0.0f, 0.0f) },
-                new PostProcessorVertexData { UV = new Vector2(0.0f, 1.0f) }
+                new PostProcessorVertexData { UV = new Vector2(1f, 1f) },
+                new PostProcessorVertexData { UV = new Vector2(1f, 0f) },
+                new PostProcessorVertexData { UV = new Vector2(0f, 0f) },
+                new PostProcessorVertexData { UV = new Vector2(0f, 1f) }
             });
 
             framebuffer = new Framebuffer("post-process-fbo", framebufferSize.X, framebufferSize.Y, new Attachment[]

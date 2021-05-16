@@ -31,10 +31,10 @@ namespace LeaderEditor
                     color = Vector3.One * 0.3f;
 
                 if (i == 0)
-                    color = new Vector3(0.0f, 0.0f, 1.0f);
+                    color = new Vector3(0f, 0f, 1f);
 
-                vertices.Add(new Vector3(i, 0.0f, -gridSize));
-                vertices.Add(new Vector3(i, 0.0f, gridSize));
+                vertices.Add(new Vector3(i, 0f, -gridSize));
+                vertices.Add(new Vector3(i, 0f, gridSize));
 
                 perVertexData.Add(new VertexData
                 {
@@ -55,10 +55,10 @@ namespace LeaderEditor
                     color = Vector3.One * 0.3f;
 
                 if (i == 0)
-                    color = new Vector3(1.0f, 0.0f, 0.0f);
+                    color = new Vector3(1f, 0f, 0f);
 
-                vertices.Add(new Vector3(-gridSize, 0.0f, i));
-                vertices.Add(new Vector3(gridSize, 0.0f, i));
+                vertices.Add(new Vector3(-gridSize, 0f, i));
+                vertices.Add(new Vector3(gridSize, 0f, i));
 
                 perVertexData.Add(new VertexData
                 {

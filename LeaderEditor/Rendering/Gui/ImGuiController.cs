@@ -294,9 +294,9 @@ void main()
             // Setup orthographic projection matrix into our constant buffer
             ImGuiIOPtr io = ImGui.GetIO();
             Matrix4 mvp = Matrix4.CreateOrthographicOffCenter(
-                0.0f, io.DisplaySize.X, //width
-                io.DisplaySize.Y, 0.0f, //height
-                -1.0f, 1.0f); //near and far plane
+                0f, io.DisplaySize.X, //width
+                io.DisplaySize.Y, 0f, //height
+                -1f, 1f); //near and far plane
 
             shader.Use();
             shader.SetMatrix4("projection_matrix", mvp);

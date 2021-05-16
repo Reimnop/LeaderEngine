@@ -94,7 +94,7 @@ namespace LeaderEngine
             float xOffset = 0;
             float yOffset = 0;
 
-            float scale = 1.0f / fontHeight;
+            float scale = 1f / fontHeight;
 
             int spaceWidth = paddingTop + paddingBottom;
 
@@ -128,10 +128,10 @@ namespace LeaderEngine
                 float ymaxproper = -ymax + spaceWidth * scale + 0.5f;
 
                 //set vertices
-                vertices[vertOffset + 0] = new Vector3(xmaxproper, ymaxproper, 0.0f);
-                vertices[vertOffset + 1] = new Vector3(xmaxproper, yproper, 0.0f);
-                vertices[vertOffset + 2] = new Vector3(xproper, yproper, 0.0f);
-                vertices[vertOffset + 3] = new Vector3(xproper, ymaxproper, 0.0f);
+                vertices[vertOffset + 0] = new Vector3(xmaxproper, ymaxproper, 0f);
+                vertices[vertOffset + 1] = new Vector3(xmaxproper, yproper, 0f);
+                vertices[vertOffset + 2] = new Vector3(xproper, yproper, 0f);
+                vertices[vertOffset + 3] = new Vector3(xproper, ymaxproper, 0f);
 
                 perVertexData[vertOffset + 0] = new TextVertexData { UV = new Vector2(ch.End.X, ch.End.Y) };
                 perVertexData[vertOffset + 1] = new TextVertexData { UV = new Vector2(ch.End.X, ch.Start.Y) };

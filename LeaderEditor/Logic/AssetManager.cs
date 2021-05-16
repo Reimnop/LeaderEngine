@@ -28,13 +28,13 @@ namespace LeaderEditor
                     SelectedPrefab?.Instantiate();
 
 
-                if (ImGui.BeginChild("clips", new Vector2(210.0f, 0.0f), true))
+                if (ImGui.BeginChild("clips", new Vector2(210f, 0f), true))
                 {
                     ImGui.Text("Audio Clips");
 
                     ImGui.SameLine();
 
-                    if (ImGui.Button("Import Audio", new Vector2(100.0f, 0.0f)))
+                    if (ImGui.Button("Import Audio", new Vector2(100f, 0f)))
                     {
                         using (var ofd = new OpenFileDialog())
                         {
@@ -62,15 +62,15 @@ namespace LeaderEditor
                     ImGui.EndChild();
                 }
                 ImGui.SameLine();
-                if (ImGui.BeginChild("prefabs", new Vector2(210.0f, 0.0f), true))
+                if (ImGui.BeginChild("prefabs", new Vector2(210f, 0f), true))
                 {
                     ImGui.Text("Prefabs");
 
                     ImGui.SameLine();
 
-                    ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - 100.0f);
+                    ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - 100f);
 
-                    if (ImGui.Button("Import Model", new Vector2(100.0f, 0.0f)))
+                    if (ImGui.Button("Import Model", new Vector2(100f, 0f)))
                     {
                         using (var ofd = new OpenFileDialog())
                         {
@@ -98,7 +98,7 @@ namespace LeaderEditor
                     ImGui.EndChild();
                 }
                 ImGui.SameLine();
-                if (ImGui.BeginChild("meshes", new Vector2(210.0f, 0.0f), true))
+                if (ImGui.BeginChild("meshes", new Vector2(210f, 0f), true))
                 {
                     ImGui.Text("Meshes");
                     ImGui.Separator();
@@ -114,7 +114,7 @@ namespace LeaderEditor
                     ImGui.EndChild();
                 }
                 ImGui.SameLine();
-                if (ImGui.BeginChild("textures", new Vector2(210.0f, 0.0f), true))
+                if (ImGui.BeginChild("textures", new Vector2(210f, 0f), true))
                 {
                     ImGui.Text("Textures");
                     ImGui.Separator();
@@ -130,7 +130,7 @@ namespace LeaderEditor
                     ImGui.EndChild();
                 }
                 ImGui.SameLine();
-                if (ImGui.BeginChild("materials", new Vector2(210.0f, 0.0f), true))
+                if (ImGui.BeginChild("materials", new Vector2(210f, 0f), true))
                 {
                     ImGui.Text("Materials");
                     ImGui.Separator();
