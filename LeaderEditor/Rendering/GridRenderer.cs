@@ -78,13 +78,6 @@ namespace LeaderEditor
 
             mesh.LoadMesh(vertices.ToArray(), indices, PrimitiveType.Lines);
             mesh.SetPerVertexData(perVertexData.ToArray());
-
-            BaseEntity.Renderers.Add(this);
-        }
-
-        private void OnRemove()
-        {
-            BaseEntity.Renderers.Remove(this);
         }
 
         public void Render(Matrix4 view, Matrix4 projection)

@@ -12,18 +12,6 @@ namespace LeaderEngine
         private UniformData shadowMapUniforms = new UniformData();
         private UniformData uniforms = new UniformData();
 
-        private void Start()
-        {
-            BaseEntity.ShadowMapRenderers.Add(this);
-            BaseEntity.Renderers.Add(this);
-        }
-
-        private void OnRemove()
-        {
-            BaseEntity.ShadowMapRenderers.Remove(this);
-            BaseEntity.Renderers.Remove(this);
-        }
-
         public void RenderShadowMap(Matrix4 view, Matrix4 projection)
         {
             if (!Enabled)

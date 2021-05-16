@@ -18,7 +18,7 @@ namespace LeaderEditor
                 API = ContextAPI.OpenGL,
                 Flags = ContextFlags.ForwardCompatible,
                 Profile = ContextProfile.Core,
-                Size = new Vector2i(1600, 900),
+                Size = new Vector2i(1440, 810),
                 Title = "LeaderEditor"
             }, InitEditor, new EditorRenderer());
         }
