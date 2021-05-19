@@ -97,6 +97,9 @@ namespace LeaderEngine
 
         internal void CalculateModelMatrixRecursively()
         {
+            if (!baseEntity.Active)
+                return;
+
             //calculate the model matrix
             if (Position == Vector3.Zero && Scale == Vector3.One && Rotation == Quaternion.Identity)
             {
