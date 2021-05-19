@@ -31,10 +31,7 @@ namespace LeaderEngine
                 _font = value;
 
                 if (_font == null)
-                {
-                    textMesh.Clear();
                     return;
-                }
 
                 _font.GenTextMesh(textMesh, _text);
             }
@@ -82,6 +79,7 @@ namespace LeaderEngine
 
             renderer.PushDrawData(DrawType.Transparent, new GLDrawData
             {
+                SourceEntity = BaseEntity,
                 Mesh = textMesh,
                 Shader = DefaultShaders.Text,
                 Uniforms = uniforms

@@ -14,7 +14,7 @@ namespace LeaderEngine
 {
     public static class DataManager
     {
-        public static Scene CurrentScene { get; private set; } = new Scene("Untitled Scene");
+        public static Scene CurrentScene { get; set; } = new Scene("Untitled Scene");
 
         internal static Dictionary<string, Type> ComponentTypes { get; } = new Dictionary<string, Type>();
         internal static List<Entity> EngineReservedEntities { get; } = new List<Entity>();
@@ -41,7 +41,7 @@ namespace LeaderEngine
             new Font("Impact", Path.Combine(AppContext.BaseDirectory, "EngineAssets/Fonts/Impact.fnt"));
         }
 
-        public static void SaveGameAssets(string path)
+        public static void SaveAssets(string path)
         {
             using (FileStream fileStream = File.Open(path, FileMode.Create))
             {
@@ -69,8 +69,10 @@ namespace LeaderEngine
             }
         }
 
-        public static void LoadGameAssets(string path)
+        public static void LoadAssets(string path)
         {
+            DisposeAssets();
+
             using (FileStream fileStream = File.Open(path, FileMode.Open))
             {
                 BinaryReader reader = new BinaryReader(fileStream);
@@ -95,6 +97,18 @@ namespace LeaderEngine
                 for (int i = 0; i < prefCount; i++)
                     Prefab.Deserialize(reader);
             }
+        }
+
+        public static void DisposeAssets()
+        {
+            foreach (var m in Meshes)
+                m.Value.Dispose();
+
+            foreach (var t in Textures)
+                t.Value.Dispose();
+
+            Materials.Clear();
+            Prefabs.Clear();
         }
 
         public static Prefab LoadModelFromFile(string path)
@@ -188,17 +202,18 @@ namespace LeaderEngine
             {
                 var aiMesh = aiMeshes[i];
 
-                Vertex[] vertices = new Vertex[aiMesh.VertexCount];
+                Vector3[] vertices = new Vector3[aiMesh.VertexCount];
+                VertexData[] perVertexData = new VertexData[aiMesh.VertexCount];
 
                 for (int j = 0; j < aiMesh.VertexCount; j++)
                 {
                     var aiVert = aiMesh.Vertices[j];
                     var aiNormal = aiMesh.Normals[j];
 
-                    vertices[j] = new Vertex
-                    {
-                        Position = new Vector3(aiVert.X, aiVert.Y, aiVert.Z),
+                    vertices[j] = new Vector3(aiVert.X, aiVert.Y, aiVert.Z);
 
+                    perVertexData[j] = new VertexData
+                    {
                         Normal = new Vector3(aiNormal.X, aiNormal.Y, aiNormal.Z),
 
                         Color = aiMesh.HasVertexColors(0) ? new Vector3(
@@ -215,6 +230,7 @@ namespace LeaderEngine
                 //create mesh
                 Mesh mesh = new Mesh(aiMesh.Name);
                 mesh.LoadMesh(vertices, aiMesh.GetUnsignedIndices());
+                mesh.SetPerVertexData(perVertexData);
 
                 meshes[i] = (mesh, aiMesh.MaterialIndex);
             }

@@ -6,16 +6,16 @@ namespace LeaderEditor
 {
     public class CameraMove : Component
     {
-        public float Speed = 2.0f;
+        public float Speed = 2f;
         public float Sensitivity = 0.4f;
 
         public bool Focus = false;
 
-        private float speedMultiplier = 1.0f;
+        private float speedMultiplier = 1f;
 
         private void Start()
         {
-            BaseTransform.Position.Y = 2.0f;
+            BaseTransform.Position.Y = 2f;
         }
 
         private void Update()
@@ -24,8 +24,8 @@ namespace LeaderEditor
                 return;
 
             if (Input.GetKey(Keys.LeftShift))
-                speedMultiplier = 3.0f;
-            else speedMultiplier = 1.0f;
+                speedMultiplier = 3f;
+            else speedMultiplier = 1f;
 
             float moveX = Input.GetAxis(Axis.Horizontal);
             float moveZ = Input.GetAxis(Axis.Vertical);
@@ -36,7 +36,7 @@ namespace LeaderEditor
             if (Input.GetMouse(MouseButton.Right))
             {
                 Vector2 delta = Input.GetMouseDelta() * Sensitivity;
-                BaseTransform.EulerAngles += new Vector3(delta.Y, delta.X, 0.0f);
+                BaseTransform.EulerAngles += new Vector3(delta.Y, delta.X, 0f);
             }
         }
     }

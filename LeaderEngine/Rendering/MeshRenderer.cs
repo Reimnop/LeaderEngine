@@ -12,18 +12,6 @@ namespace LeaderEngine
         private UniformData shadowMapUniforms = new UniformData();
         private UniformData uniforms = new UniformData();
 
-        private void Start()
-        {
-            BaseEntity.ShadowMapRenderers.Add(this);
-            BaseEntity.Renderers.Add(this);
-        }
-
-        private void OnRemove()
-        {
-            BaseEntity.ShadowMapRenderers.Remove(this);
-            BaseEntity.Renderers.Remove(this);
-        }
-
         public void RenderShadowMap(Matrix4 view, Matrix4 projection)
         {
             if (!Enabled)
@@ -35,6 +23,7 @@ namespace LeaderEngine
 
             Engine.Renderer.PushDrawData(DrawType.ShadowMap, new GLDrawData
             {
+                SourceEntity = BaseEntity,
                 Mesh = Mesh,
                 Shader = DefaultShaders.ShadowMap,
                 Uniforms = shadowMapUniforms
@@ -63,6 +52,10 @@ namespace LeaderEngine
                 Camera.Main.BaseTransform.Position));
 
             if (DirectionalLight.Main != null)
+                uniforms.SetUniform("lightIntensity", new Uniform(UniformType.Float,
+                    DirectionalLight.Main.Intensity));
+
+            if (DirectionalLight.Main != null)
                 uniforms.SetUniform("lightDir", new Uniform(UniformType.Vector3,
                     -DirectionalLight.Main.BaseTransform.Forward));
 
@@ -72,6 +65,7 @@ namespace LeaderEngine
 
             renderer.PushDrawData(DrawType.Opaque, new GLDrawData
             {
+                SourceEntity = BaseEntity,
                 Mesh = Mesh,
                 Shader = Shader,
                 Material = Material,

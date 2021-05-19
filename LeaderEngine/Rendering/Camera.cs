@@ -6,7 +6,13 @@ namespace LeaderEngine
     {
         public static Camera Main;
 
-        public float FOV = 60.0f;
+        public float FOV = 60f;
+
+        public float NearPlane = 0.05f;
+        public float FarPlane = 500f;
+
+        public bool OrthographicProjection = false;
+        public float OrthographicScale = 5f;
 
         private void Start()
         {
@@ -18,7 +24,16 @@ namespace LeaderEngine
         {
             GLRenderer renderer = Engine.Renderer;
 
-            projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(FOV), renderer.ViewportSize.X / (float)renderer.ViewportSize.Y, 0.02f, 800.0f);
+            if (!OrthographicProjection)
+            {
+                projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(FOV), renderer.ViewportSize.X / (float)renderer.ViewportSize.Y, NearPlane, FarPlane);
+            }
+            else
+            {
+                float aspect = renderer.ViewportSize.X / (float)renderer.ViewportSize.Y;
+
+                projection = Matrix4.CreateOrthographic(OrthographicScale * 2f * aspect, OrthographicScale * 2f, NearPlane, FarPlane);
+            }
 
             Vector3 pos = BaseTransform.GlobalTransform.ExtractTranslation();
 

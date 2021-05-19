@@ -15,7 +15,8 @@ namespace LeaderEditor
             { typeof(DirectionalLight), null },
             { typeof(TextRenderer), null },
             { typeof(AudioSource), SerializeFunc.SerializeAudioSource },
-            { typeof(AudioListener), null }
+            { typeof(AudioListener), null },
+            { typeof(SpriteRenderer), null }
         };
 
         private void Start()
@@ -34,12 +35,12 @@ namespace LeaderEditor
                     goto EndMenu;
                 }
 
-                ImGui.SetNextItemWidth(160.0f);
+                ImGui.SetNextItemWidth(160f);
                 ImGui.InputText("Name", ref SceneHierachy.SelectedEntity.Name, 255);
 
                 ImGui.SameLine();
 
-                ImGui.SetNextItemWidth(160.0f);
+                ImGui.SetNextItemWidth(160f);
                 ImGui.InputText("Tag", ref SceneHierachy.SelectedEntity.Tag, 255);
 
                 if (ImGui.Button("Add Component"))
@@ -105,7 +106,7 @@ namespace LeaderEditor
                         ImGui.SameLine();
 
                         //remove component button
-                        ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - 30.0f);
+                        ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - 30f);
                         if (ImGui.Button("Remove Component"))
                         {
                             SceneHierachy.SelectedEntity.RemoveComponent(component);

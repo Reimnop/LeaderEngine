@@ -125,6 +125,13 @@ namespace LeaderEngine
         public void AddComponent(Component component) //basic
         {
             components.Add(component);
+
+            if (typeof(IRenderer).IsAssignableFrom(component.GetType()))
+                Renderers.Add((IRenderer)component);
+
+            if (typeof(IShadowMapRenderer).IsAssignableFrom(component.GetType()))
+                ShadowMapRenderers.Add((IShadowMapRenderer)component);
+
             component.BaseEntity = this;
             component.StartMethod?.Invoke();
         }
@@ -136,7 +143,15 @@ namespace LeaderEngine
         }
         private void RemoveComponentAt(int index) //basic
         {
-            components[index].RemoveMethod?.Invoke();
+            var component = components[index];
+
+            component.RemoveMethod?.Invoke();
+
+            if (typeof(IRenderer).IsAssignableFrom(component.GetType()))
+                Renderers.Remove((IRenderer)component);
+
+            if (typeof(IShadowMapRenderer).IsAssignableFrom(component.GetType()))
+                ShadowMapRenderers.Remove((IShadowMapRenderer)component);
 
             components.RemoveAt(index);
         }

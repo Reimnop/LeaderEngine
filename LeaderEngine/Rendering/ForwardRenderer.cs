@@ -6,13 +6,6 @@ using System.IO;
 
 namespace LeaderEngine
 {
-    public static class LightingGlobals
-    {
-        public static Matrix4 LightView { get; internal set; }
-        public static Matrix4 LightProjection { get; internal set; }
-        public static int ShadowMap { get; internal set; }
-    }
-
     public class ForwardRenderer : GLRenderer
     {
         private Dictionary<DrawType, List<GLDrawData>> drawLists = new Dictionary<DrawType, List<GLDrawData>>()
@@ -23,12 +16,19 @@ namespace LeaderEngine
             { DrawType.GUI, new List<GLDrawData>() }
         };
 
+        #region PostProcess
+        public float Exposure = 1f;
+
+        #endregion
+
         const int shadowMapRes = 4096;
-        const float shadowMapSize = 48.0f;
+        const float shadowMapSize = 48f;
 
         private Framebuffer shadowMapFramebuffer;
 
         private PostProcessor postProcessor;
+
+        private PostProcessingEffect hdrEffect;
 
         public override void Init()
         {
@@ -50,19 +50,27 @@ namespace LeaderEngine
                     },
                     TextureParamsFloatArr = new TextureParamFloatArr[]
                     {
-                        new TextureParamFloatArr { ParamName = TextureParameterName.TextureBorderColor, Params = new float[] { 1.0f, 1.0f, 1.0f, 1.0f } }
+                        new TextureParamFloatArr { ParamName = TextureParameterName.TextureBorderColor, Params = new float[] { 1f, 1f, 1f, 1f } }
                     }
                 }
             });
 
+            #region PostProcess
             string postProcessPath = Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/PostProcess");
 
-            postProcessor = new PostProcessor();
-            postProcessor.Shaders.AddRange(new Shader[] {
-                Shader.FromSourceFile("post-process",
+            hdrEffect = new PostProcessingEffect
+            {
+                Uniforms = new UniformData(),
+                Shader = Shader.FromSourceFile("hdr",
                     Path.Combine(postProcessPath, "post-process.vert"),
-                    Path.Combine(postProcessPath, "empty.frag"))
+                    Path.Combine(postProcessPath, "hdr.frag"))
+            };
+
+            postProcessor = new PostProcessor();
+            postProcessor.Effects.AddRange(new PostProcessingEffect[] {
+                hdrEffect
             });
+            #endregion
 
             Logger.Log("Renderer initialized.", true);
         }
@@ -151,6 +159,9 @@ namespace LeaderEngine
             GL.DepthMask(true);
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
+
+            //post processing
+            hdrEffect.Uniforms.SetUniform("exposure", new Uniform(UniformType.Float, Exposure));
 
             postProcessor.Render();
 
