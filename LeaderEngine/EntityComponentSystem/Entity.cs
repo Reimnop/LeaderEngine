@@ -84,14 +84,16 @@ namespace LeaderEngine
             Children.ForEach(child => child.RecursivelyUpdate());
         }
 
-        internal void RecursivelyRender(Matrix4 view, Matrix4 projection)
+        internal void RecursivelyRender(in RenderData renderData)
         {
             if (!Active)
                 return;
 
-            Renderers.ForEach(x => x.Render(view, projection));
+            foreach (var renderer in Renderers)
+                renderer.Render(renderData);
 
-            Children.ForEach(child => child.RecursivelyRender(view, projection));
+            foreach (var child in Children)
+                child.RecursivelyRender(renderData);
         }
 
         internal void RecursivelyRenderShadowMap(Matrix4 view, Matrix4 projection)

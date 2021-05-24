@@ -10,7 +10,7 @@ namespace LeaderEditor
         private Mesh mesh;
         private Shader shader = DefaultShaders.SingleColor;
 
-        private UniformData uniforms = new UniformData();
+        private CommandBuffer cmd = new CommandBuffer();
 
         const int gridSize = 80;
 
@@ -80,20 +80,17 @@ namespace LeaderEditor
             mesh.SetPerVertexData(perVertexData.ToArray());
         }
 
-        public void Render(Matrix4 view, Matrix4 projection)
+        public void Render(in RenderData renderData)
         {
-            GLRenderer renderer = Engine.Renderer;
+            cmd.Clear();
 
-            uniforms.SetUniform("mvp", new Uniform(UniformType.Matrix4,
-                view * projection));
+            cmd.BindShader(shader);
+            cmd.SetUniformMatrix4(shader, "mvp", BaseTransform.ModelMatrix * renderData.View * renderData.Projection);
 
-            renderer.PushDrawData(DrawType.Opaque, new GLDrawData
-            {
-                SourceEntity = BaseEntity,
-                Mesh = mesh,
-                Shader = shader,
-                Uniforms = uniforms
-            });
+            cmd.BindMesh(mesh);
+            cmd.DrawMesh(mesh);
+
+            Engine.Renderer.QueueCommands(cmd);
         }
     }
 }

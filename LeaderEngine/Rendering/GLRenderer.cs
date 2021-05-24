@@ -3,28 +3,12 @@ using System;
 
 namespace LeaderEngine
 {
-    public static class LightingGlobals
-    {
-        public static Matrix4 LightView { get; internal set; }
-        public static Matrix4 LightProjection { get; internal set; }
-        public static int ShadowMap { get; internal set; }
-    }
-
     public enum DrawType
     {
         ShadowMap,
         Opaque,
         Transparent,
         GUI
-    }
-
-    public struct GLDrawData
-    {
-        public Entity SourceEntity;
-        public Mesh Mesh;
-        public Shader Shader;
-        public UniformData Uniforms;
-        public Material Material;
     }
 
     public abstract class GLRenderer
@@ -41,8 +25,8 @@ namespace LeaderEngine
         }
 
         public abstract void Init();
-        public abstract void PushDrawData(DrawType drawType, GLDrawData drawData);
         public abstract void Update();
+        public abstract void QueueCommands(CommandBuffer commandBuffer);
         public abstract void Render();
     }
 }

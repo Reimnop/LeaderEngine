@@ -63,7 +63,11 @@ namespace LeaderEngine
         public int VerticesCount => Vertices.Length;
         public int IndicesCount => Indices.Length;
 
-        private int VAO, VBO0, VBO1, EBO;
+        public int VAO { get; private set; }
+        public int VBO0 { get; private set; }
+        public int VBO1 { get; private set; }
+        public int EBO { get; private set; }
+
         private VertexAttribData[] vertexAttribs;
 
         private Type perVertexDataType;

@@ -12,8 +12,7 @@ namespace LeaderEngine
         Int,
         Float,
         Vector3,
-        Vector4,
-        Matrix4
+        Vector4
     }
 
     public struct MaterialProp
@@ -32,12 +31,11 @@ namespace LeaderEngine
             { MaterialPropType.Int, sizeof(int) },
             { MaterialPropType.Float, sizeof(float) },
             { MaterialPropType.Vector3, sizeof(float) * 3 },
-            { MaterialPropType.Vector4, sizeof(float) * 4 },
-            { MaterialPropType.Matrix4, sizeof(float) * 16 }
+            { MaterialPropType.Vector4, sizeof(float) * 4 }
         };
 
-        private Dictionary<string, MaterialProp> materialProps = new Dictionary<string, MaterialProp>();
-        private Dictionary<TextureUnit, Texture> materialTextures = new Dictionary<TextureUnit, Texture>();
+        internal Dictionary<string, MaterialProp> MaterialProps = new Dictionary<string, MaterialProp>();
+        internal Dictionary<TextureUnit, Texture> MaterialTextures = new Dictionary<TextureUnit, Texture>();
 
         public Material(string name, string id = null)
         {
@@ -51,7 +49,7 @@ namespace LeaderEngine
         #region SetMethods
         public void SetInt(string name, int value)
         {
-            materialProps.SetOrAdd(name, new MaterialProp
+            MaterialProps.SetOrAdd(name, new MaterialProp
             {
                 PropType = MaterialPropType.Int,
                 Data = value
@@ -60,7 +58,7 @@ namespace LeaderEngine
 
         public void SetFloat(string name, float value)
         {
-            materialProps.SetOrAdd(name, new MaterialProp
+            MaterialProps.SetOrAdd(name, new MaterialProp
             {
                 PropType = MaterialPropType.Float,
                 Data = value
@@ -69,7 +67,7 @@ namespace LeaderEngine
 
         public void SetVector3(string name, Vector3 value)
         {
-            materialProps.SetOrAdd(name, new MaterialProp
+            MaterialProps.SetOrAdd(name, new MaterialProp
             {
                 PropType = MaterialPropType.Vector3,
                 Data = value
@@ -78,25 +76,16 @@ namespace LeaderEngine
 
         public void SetVector4(string name, Vector4 value)
         {
-            materialProps.SetOrAdd(name, new MaterialProp
+            MaterialProps.SetOrAdd(name, new MaterialProp
             {
                 PropType = MaterialPropType.Vector4,
                 Data = value
             });
         }
 
-        public void SetMatrix4(string name, Matrix4 value)
-        {
-            materialProps.SetOrAdd(name, new MaterialProp
-            {
-                PropType = MaterialPropType.Matrix4,
-                Data = value
-            });
-        }
-
         public void SetTexture2D(TextureUnit unit, Texture texture)
         {
-            materialTextures.SetOrAdd(unit, texture);
+            MaterialTextures.SetOrAdd(unit, texture);
         }
         #endregion
 
@@ -107,9 +96,9 @@ namespace LeaderEngine
             //write id
             writer.Write(ID);
             //write prop count
-            writer.Write(materialProps.Count);
+            writer.Write(MaterialProps.Count);
             //write mat props
-            foreach (var prop in materialProps)
+            foreach (var prop in MaterialProps)
             {
                 //write name
                 writer.Write(prop.Key);
@@ -137,9 +126,9 @@ namespace LeaderEngine
             }
 
             //write textures count
-            writer.Write(materialTextures.Count);
+            writer.Write(MaterialTextures.Count);
             //write mat textures
-            foreach (var tex in materialTextures)
+            foreach (var tex in MaterialTextures)
             {
                 //write unit
                 writer.Write((int)tex.Key);
@@ -188,9 +177,6 @@ namespace LeaderEngine
                     case MaterialPropType.Vector4:
                         pData = Marshal.PtrToStructure<Vector4>(handle.AddrOfPinnedObject());
                         break;
-                    case MaterialPropType.Matrix4:
-                        pData = Marshal.PtrToStructure<Matrix4>(handle.AddrOfPinnedObject());
-                        break;
                 }
 
                 handle.Free();
@@ -215,15 +201,15 @@ namespace LeaderEngine
             }
 
             Material mat = new Material(name, id);
-            mat.materialProps = materialProps;
-            mat.materialTextures = textures;
+            mat.MaterialProps = materialProps;
+            mat.MaterialTextures = textures;
 
             return mat;
         }
 
         public void Use(Shader shader)
         {
-            foreach (var prop in materialProps)
+            foreach (var prop in MaterialProps)
             {
                 switch (prop.Value.PropType)
                 {
@@ -239,13 +225,10 @@ namespace LeaderEngine
                     case MaterialPropType.Vector4:
                         shader.SetVector4(prop.Key, (Vector4)prop.Value.Data);
                         break;
-                    case MaterialPropType.Matrix4:
-                        shader.SetMatrix4(prop.Key, (Matrix4)prop.Value.Data);
-                        break;
                 }
             }
 
-            foreach (var tex in materialTextures)
+            foreach (var tex in MaterialTextures)
             {
                 tex.Value.Use(tex.Key);
             }
