@@ -144,7 +144,7 @@ namespace LeaderEngine
         {
             AddCommand(new GLCommand
             {
-                Command = CommandEnum.MultiDrawArrays,
+                Command = CommandEnum.MultiDrawElements,
                 Arguments = (primitiveType, counts, drawElementsType, indices, drawCount)
             });
         }
