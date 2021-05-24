@@ -21,7 +21,7 @@ namespace LeaderEngine
         public Texture Texture;
         public Vector4 Color = Vector4.One;
 
-        private UniformData uniforms = new UniformData();
+        private CommandBuffer cmd = new CommandBuffer();
 
         internal static void Init()
         {
@@ -59,31 +59,23 @@ namespace LeaderEngine
                 Path.Combine(dir, "sprite.frag"));
         }
 
-        public void Render(Matrix4 view, Matrix4 projection)
+        public void Render(in RenderData renderData)
         {
             if (Texture == null)
                 return;
 
-            uniforms.SetUniform("mvp", new Uniform(UniformType.Matrix4,
-                BaseTransform.ModelMatrix
-                * view * projection));
+            cmd.Clear();
 
-            uniforms.SetUniform("color", new Uniform(UniformType.Vector4,
-                Color));
+            cmd.BindShader(shader);
+            cmd.SetUniformMatrix4(shader, "mvp", BaseTransform.ModelMatrix * renderData.View * renderData.Projection);
+            cmd.SetUniformVector4(shader, "color", Color);
 
-            uniforms.SetUniform("texture0", new Uniform(UniformType.Texture2D, new TextureData
-            {
-                TextureUnit = TextureUnit.Texture0,
-                TextureHandle = Texture.GetHandle()
-            }));
+            cmd.BindTexture(TextureUnit.Texture0, Texture);
 
-            Engine.Renderer.PushDrawData(DrawType.Transparent, new GLDrawData
-            {
-                SourceEntity = BaseEntity,
-                Mesh = mesh,
-                Shader = shader,
-                Uniforms = uniforms
-            });
+            cmd.BindMesh(mesh);
+            cmd.DrawMesh(mesh);
+
+            Engine.Renderer.QueueCommands(cmd);
         }
     }
 }

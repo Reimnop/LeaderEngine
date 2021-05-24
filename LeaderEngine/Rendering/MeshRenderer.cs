@@ -9,68 +9,59 @@ namespace LeaderEngine
         public Material Material;
         public Shader Shader = DefaultShaders.Lit;
 
-        private UniformData shadowMapUniforms = new UniformData();
-        private UniformData uniforms = new UniformData();
+        private CommandBuffer shadowMapCmd = new CommandBuffer() { DrawType = DrawType.ShadowMap };
+        private CommandBuffer mainCmd = new CommandBuffer();
 
         public void RenderShadowMap(Matrix4 view, Matrix4 projection)
         {
             if (!Enabled)
                 return;
 
-            shadowMapUniforms.SetUniform("mvp", new Uniform(UniformType.Matrix4,
-                BaseTransform.ModelMatrix
-                * view * projection));
+            var shader = DefaultShaders.ShadowMap;
 
-            Engine.Renderer.PushDrawData(DrawType.ShadowMap, new GLDrawData
-            {
-                SourceEntity = BaseEntity,
-                Mesh = Mesh,
-                Shader = DefaultShaders.ShadowMap,
-                Uniforms = shadowMapUniforms
-            });
+            shadowMapCmd.Clear();
+
+            shadowMapCmd.BindShader(shader);
+            shadowMapCmd.SetUniformMatrix4(shader, "mvp", BaseTransform.ModelMatrix * view * projection);
+
+            shadowMapCmd.BindMesh(Mesh);
+            shadowMapCmd.DrawMesh(Mesh);
+
+            Engine.Renderer.QueueCommands(shadowMapCmd);
         }
 
-        public void Render(Matrix4 view, Matrix4 projection)
+        public void Render(in RenderData renderData)
         {
             if (!Enabled)
                 return;
 
-            GLRenderer renderer = Engine.Renderer;
+            mainCmd.Clear();
 
-            uniforms.SetUniform("model", new Uniform(UniformType.Matrix4,
-                BaseTransform.ModelMatrix));
+            mainCmd.BindShader(Shader);
+            mainCmd.SetUniformMatrix4(Shader, "model", BaseTransform.ModelMatrix);
+            mainCmd.SetUniformMatrix4(Shader, "view", renderData.View);
+            mainCmd.SetUniformMatrix4(Shader, "projection", renderData.Projection);
+            mainCmd.SetUniformMatrix4(Shader, "mvp", BaseTransform.ModelMatrix * renderData.View * renderData.Projection);
 
-            uniforms.SetUniform("view", new Uniform(UniformType.Matrix4, view));
-
-            uniforms.SetUniform("projection", new Uniform(UniformType.Matrix4, projection));
-
-            uniforms.SetUniform("mvp", new Uniform(UniformType.Matrix4,
-                BaseTransform.ModelMatrix
-                * view * projection));
-
-            uniforms.SetUniform("camPos", new Uniform(UniformType.Vector3,
-                Camera.Main.BaseTransform.Position));
+            mainCmd.SetUniformVector3(Shader, "camPos", Camera.Main.BaseTransform.Position);
 
             if (DirectionalLight.Main != null)
-                uniforms.SetUniform("lightIntensity", new Uniform(UniformType.Float,
-                    DirectionalLight.Main.Intensity));
-
-            if (DirectionalLight.Main != null)
-                uniforms.SetUniform("lightDir", new Uniform(UniformType.Vector3,
-                    -DirectionalLight.Main.BaseTransform.Forward));
-
-            uniforms.SetUniform("lightSpaceMat", new Uniform(UniformType.Matrix4, LightingGlobals.LightView * LightingGlobals.LightProjection));
-
-            uniforms.SetUniform("shadowMap", new Uniform(UniformType.Texture2D, new TextureData(TextureUnit.Texture1, LightingGlobals.ShadowMap)));
-
-            renderer.PushDrawData(DrawType.Opaque, new GLDrawData
             {
-                SourceEntity = BaseEntity,
-                Mesh = Mesh,
-                Shader = Shader,
-                Material = Material,
-                Uniforms = uniforms
-            });
+                mainCmd.SetUniformFloat(Shader, "lightIntensity", DirectionalLight.Main.Intensity);
+                mainCmd.SetUniformVector3(Shader, "lightDir", -DirectionalLight.Main.BaseTransform.Forward);
+            }
+
+            mainCmd.SetUniformMatrix4(Shader, "lightSpaceMat", renderData.LightView * renderData.LightProjection);
+
+            mainCmd.SetUniformInt(Shader, "shadowMap", 1);
+            mainCmd.BindTexture(TextureUnit.Texture1, renderData.ShadowMapTexture);
+
+            mainCmd.BindMaterial(Material, Shader);
+
+            mainCmd.BindMesh(Mesh);
+            mainCmd.DrawMesh(Mesh);
+
+            Engine.Renderer.QueueCommands(mainCmd);
         }
     }
 }
