@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using LeaderEngine;
 using System.Numerics;
+using System.Windows.Forms;
 using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 
 namespace LeaderEditor
@@ -27,21 +28,26 @@ namespace LeaderEditor
                     SelectedPrefab?.Instantiate();
 
 
-                if (ImGui.BeginChild("clips", new Vector2(210.0f, 0.0f), true))
+                if (ImGui.BeginChild("clips", new Vector2(210f, 0f), true))
                 {
                     ImGui.Text("Audio Clips");
 
                     ImGui.SameLine();
 
-                    FilePicker fp = FilePicker.GetFilePicker("audio", null, ".wav");
+                    if (ImGui.Button("Import Audio", new Vector2(100f, 0f)))
+                    {
+                        using (var ofd = new OpenFileDialog())
+                        {
+                            ofd.Filter = "Audio File|*.wav";
 
-                    fp.Title = "Select File (*.wav)";
+                            ofd.ShowDialog();
 
-                    if (ImGui.Button("Import Audio", new Vector2(100.0f, 0.0f)))
-                        fp.Open();
-
-                    if (fp.Draw())
-                        AudioClip.FromFile("song", fp.SelectedFile);
+                            if (!string.IsNullOrEmpty(ofd.FileName))
+                            {
+                                AudioClip.FromFile("audio clip", ofd.FileName);
+                            }
+                        }
+                    }
 
                     ImGui.Separator();
 
@@ -56,23 +62,28 @@ namespace LeaderEditor
                     ImGui.EndChild();
                 }
                 ImGui.SameLine();
-                if (ImGui.BeginChild("prefabs", new Vector2(210.0f, 0.0f), true))
+                if (ImGui.BeginChild("prefabs", new Vector2(210f, 0f), true))
                 {
                     ImGui.Text("Prefabs");
 
                     ImGui.SameLine();
 
-                    ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - 100.0f);
+                    ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - 100f);
 
-                    FilePicker fp = FilePicker.GetFilePicker("prefab-model", null, ".fbx;.obj");
+                    if (ImGui.Button("Import Model", new Vector2(100f, 0f)))
+                    {
+                        using (var ofd = new OpenFileDialog())
+                        {
+                            ofd.Filter = "3D Model|*.fbx;*.obj";
 
-                    fp.Title = "Select File (*.fbx; *.obj)";
+                            ofd.ShowDialog();
 
-                    if (ImGui.Button("Import Model", new Vector2(100.0f, 0.0f)))
-                        fp.Open();
-
-                    if (fp.Draw())
-                        DataManager.LoadModelFromFile(fp.SelectedFile);
+                            if (!string.IsNullOrEmpty(ofd.FileName))
+                            {
+                                DataManager.LoadModelFromFile(ofd.FileName);
+                            }
+                        }
+                    }
 
                     ImGui.Separator();
 
@@ -87,7 +98,7 @@ namespace LeaderEditor
                     ImGui.EndChild();
                 }
                 ImGui.SameLine();
-                if (ImGui.BeginChild("meshes", new Vector2(210.0f, 0.0f), true))
+                if (ImGui.BeginChild("meshes", new Vector2(210f, 0f), true))
                 {
                     ImGui.Text("Meshes");
                     ImGui.Separator();
@@ -103,7 +114,7 @@ namespace LeaderEditor
                     ImGui.EndChild();
                 }
                 ImGui.SameLine();
-                if (ImGui.BeginChild("textures", new Vector2(210.0f, 0.0f), true))
+                if (ImGui.BeginChild("textures", new Vector2(210f, 0f), true))
                 {
                     ImGui.Text("Textures");
                     ImGui.Separator();
@@ -119,7 +130,7 @@ namespace LeaderEditor
                     ImGui.EndChild();
                 }
                 ImGui.SameLine();
-                if (ImGui.BeginChild("materials", new Vector2(210.0f, 0.0f), true))
+                if (ImGui.BeginChild("materials", new Vector2(210f, 0f), true))
                 {
                     ImGui.Text("Materials");
                     ImGui.Separator();

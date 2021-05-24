@@ -10,7 +10,7 @@ namespace LeaderEditor
         private Mesh mesh;
         private Shader shader = DefaultShaders.SingleColor;
 
-        private UniformData uniforms = new UniformData();
+        private CommandBuffer cmd = new CommandBuffer();
 
         const int gridSize = 80;
 
@@ -20,83 +20,77 @@ namespace LeaderEditor
             mesh = new Mesh("grid");
             mesh.Unlist();
 
-            List<Vertex> vertices = new List<Vertex>();
+            List<Vector3> vertices = new List<Vector3>();
+            List<VertexData> perVertexData = new List<VertexData>();
 
             for (int i = -gridSize; i <= gridSize; i++)
             {
-                Vector3 color = Vector3.One * 0.2f;
+                Vector3 color = Vector3.One * 0.03f;
 
                 if (i % 10 == 0)
-                    color = Vector3.One * 0.6f;
+                    color = Vector3.One * 0.3f;
 
                 if (i == 0)
-                    color = new Vector3(0.0f, 0.0f, 1.0f);
+                    color = new Vector3(0f, 0f, 1f);
 
-                vertices.Add(new Vertex
+                vertices.Add(new Vector3(i, 0f, -gridSize));
+                vertices.Add(new Vector3(i, 0f, gridSize));
+
+                perVertexData.Add(new VertexData
                 {
-                    Position = new Vector3(i, 0.0f, -gridSize),
                     Color = color
                 });
 
-                vertices.Add(new Vertex
+                perVertexData.Add(new VertexData
                 {
-                    Position = new Vector3(i, 0.0f, gridSize),
                     Color = color
                 });
             }
 
             for (int i = -gridSize; i <= gridSize; i++)
             {
-                Vector3 color = Vector3.One * 0.2f;
+                Vector3 color = Vector3.One * 0.03f;
 
                 if (i % 10 == 0)
-                    color = Vector3.One * 0.6f;
+                    color = Vector3.One * 0.3f;
 
                 if (i == 0)
-                    color = new Vector3(1.0f, 0.0f, 0.0f);
+                    color = new Vector3(1f, 0f, 0f);
 
-                vertices.Add(new Vertex
+                vertices.Add(new Vector3(-gridSize, 0f, i));
+                vertices.Add(new Vector3(gridSize, 0f, i));
+
+                perVertexData.Add(new VertexData
                 {
-                    Position = new Vector3(-gridSize, 0.0f, i),
                     Color = color
                 });
 
-                vertices.Add(new Vertex
+                perVertexData.Add(new VertexData
                 {
-                    Position = new Vector3(gridSize, 0.0f, i),
                     Color = color
                 });
             }
 
-            uint[] indices = new uint[vertices.Count];
+            uint[] indices = new uint[perVertexData.Count];
 
-            for (uint i = 0; i < vertices.Count; i++)
+            for (uint i = 0; i < perVertexData.Count; i++)
                 indices[i] = i;
 
             mesh.LoadMesh(vertices.ToArray(), indices, PrimitiveType.Lines);
-
-            BaseEntity.Renderers.Add(this);
+            mesh.SetPerVertexData(perVertexData.ToArray());
         }
 
-        private void OnRemove()
+        public void Render(in RenderData renderData)
         {
-            BaseEntity.Renderers.Remove(this);
-        }
+            cmd.Clear();
 
-        public void Render(Matrix4 view, Matrix4 projection)
-        {
-            GLRenderer renderer = Engine.Renderer;
+            cmd.BindShader(shader);
+            cmd.SetUniformMatrix4(shader, "mvp", BaseTransform.ModelMatrix * renderData.View * renderData.Projection);
 
-            uniforms.SetUniform("mvp", new Uniform(UniformType.Matrix4,
-                view * projection));
+            cmd.BindMesh(mesh);
+            cmd.DrawMesh(mesh);
 
-            renderer.PushDrawData(DrawType.Opaque, new GLDrawData
-            {
-                SourceEntity = BaseEntity,
-                Mesh = mesh,
-                Shader = shader,
-                Uniforms = uniforms
-            });
+            Engine.Renderer.QueueCommands(cmd);
         }
     }
 }

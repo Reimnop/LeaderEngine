@@ -16,7 +16,8 @@ namespace LeaderEngine
             private readonly static Dictionary<PixelInternalFormat, int> internalFormatSize = new Dictionary<PixelInternalFormat, int>()
             {
                 { (PixelInternalFormat)All.Red, 1 },
-                { PixelInternalFormat.Rgba, 4 }
+                { PixelInternalFormat.Rgba, 4 },
+                { PixelInternalFormat.SrgbAlpha, 4 }
             };
 
             private readonly static Dictionary<PixelType, int> typeSize = new Dictionary<PixelType, int>()
@@ -59,7 +60,7 @@ namespace LeaderEngine
         {
             Name = name;
 
-            ID = id != null ? id : RNG.GetRandomID();
+            ID = id ?? RNG.GetRandomID();
 
             DataManager.Textures.Add(ID, this);
         }
@@ -92,7 +93,7 @@ namespace LeaderEngine
                 pixelSpan = new Span<Rgba32>(pixelArray);
             }
 
-            return FromPointer(name, image.Width, image.Height, (IntPtr)Unsafe.AsPointer(ref pixelSpan[0]), id: id);
+            return FromPointer(name, image.Width, image.Height, (IntPtr)Unsafe.AsPointer(ref pixelSpan[0]), PixelInternalFormat.SrgbAlpha, id: id);
         }
 
         public static Texture FromPointer(string name, int width, int height, IntPtr data,
@@ -111,8 +112,8 @@ namespace LeaderEngine
             texture.handle = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, texture.handle);
             GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, width, height, 0, format, pixelType, data);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
 

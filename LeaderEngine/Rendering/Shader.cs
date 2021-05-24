@@ -105,6 +105,9 @@ namespace LeaderEngine
 
         public int GetAttribLocation(string attribName)
         {
+            if (uniformLocations.TryGetValue(attribName, out int loc))
+                return loc;
+
             return GL.GetAttribLocation(handle, attribName);
         }
 

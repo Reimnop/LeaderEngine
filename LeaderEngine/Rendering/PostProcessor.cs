@@ -1,12 +1,26 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace LeaderEngine
 {
+    public struct PostProcessingEffect
+    {
+        public UniformData Uniforms;
+        public Shader Shader;
+    }
+
     public class PostProcessor
     {
-        public readonly List<Shader> Shaders = new List<Shader>();
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        private struct PostProcessorVertexData
+        {
+            [VertexAttrib(VertexAttribPointerType.Float, 1, 2, false)]
+            public Vector2 UV;
+        }
+
+        public readonly List<PostProcessingEffect> Effects = new List<PostProcessingEffect>();
 
         private Vector2i framebufferSize = Vector2i.One;
 
@@ -22,12 +36,12 @@ namespace LeaderEngine
             mesh = new Mesh("post-process-quad");
             mesh.Unlist();
 
-            mesh.LoadMesh(new Vertex[]
+            mesh.LoadMesh(new Vector3[]
             {
-                new Vertex { Position = new Vector3(1.0f, 1.0f, 0.0f), UV = new Vector2(1.0f, 1.0f) },
-                new Vertex { Position = new Vector3(1.0f, -1.0f, 0.0f), UV = new Vector2(1.0f, 0.0f) },
-                new Vertex { Position = new Vector3(-1.0f, -1.0f, 0.0f), UV = new Vector2(0.0f, 0.0f) },
-                new Vertex { Position = new Vector3(-1.0f, 1.0f, 0.0f), UV = new Vector2(0.0f, 1.0f) }
+                new Vector3(1f, 1f, 0f),
+                new Vector3(1f, -1f, 0f),
+                new Vector3(-1f, -1f, 0f),
+                new Vector3(-1f, 1f, 0f)
             },
             new uint[]
             {
@@ -35,12 +49,19 @@ namespace LeaderEngine
                 1, 2, 3
             });
 
+            mesh.SetPerVertexData(new PostProcessorVertexData[] {
+                new PostProcessorVertexData { UV = new Vector2(1f, 1f) },
+                new PostProcessorVertexData { UV = new Vector2(1f, 0f) },
+                new PostProcessorVertexData { UV = new Vector2(0f, 0f) },
+                new PostProcessorVertexData { UV = new Vector2(0f, 1f) }
+            });
+
             framebuffer = new Framebuffer("post-process-fbo", framebufferSize.X, framebufferSize.Y, new Attachment[]
             {
                 new Attachment
                 {
                     Draw = false,
-                    PixelInternalFormat = PixelInternalFormat.Rgba,
+                    PixelInternalFormat = PixelInternalFormat.Rgba32f,
                     PixelFormat = PixelFormat.Rgba,
                     PixelType = PixelType.Float,
                     FramebufferAttachment = FramebufferAttachment.ColorAttachment0,
@@ -113,23 +134,26 @@ namespace LeaderEngine
         public void Begin()
         {
             framebuffer.Begin();
-            GL.Enable(EnableCap.FramebufferSrgb);
         }
 
         public void End()
         {
             framebuffer.End();
-            GL.Disable(EnableCap.FramebufferSrgb);
         }
 
         public void Render()
         {
-            for (int i = 0; i < Shaders.Count; i++)
+            for (int i = 0; i < Effects.Count; i++)
             {
-                Shader shader = Shaders[i];
+                PostProcessingEffect effect = Effects[i];
+
+                var shader = effect.Shader;
+                var uniforms = effect.Uniforms;
 
                 mesh.Use();
                 shader.Use();
+
+                uniforms.Use(shader);
 
                 shader.SetInt("sourceTexture", 0);
                 GL.ActiveTexture(TextureUnit.Texture0);
@@ -146,7 +170,7 @@ namespace LeaderEngine
                     GL.BindTexture(TextureTarget.Texture2D, stageReadFramebuffer.GetTexture(FramebufferAttachment.ColorAttachment0));
                 }
 
-                if (i != Shaders.Count - 1)
+                if (i != Effects.Count - 1)
                 {
                     stageDrawFramebuffer.Begin();
                     GL.Clear(ClearBufferMask.ColorBufferBit);
@@ -154,7 +178,7 @@ namespace LeaderEngine
 
                 GL.DrawElements(PrimitiveType.Triangles, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
 
-                if (i != Shaders.Count - 1)
+                if (i != Effects.Count - 1)
                 {
                     stageDrawFramebuffer.End();
                 }

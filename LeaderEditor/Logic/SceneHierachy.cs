@@ -77,7 +77,7 @@ namespace LeaderEditor
                 nodeFlags |= ImGuiTreeNodeFlags.Selected;
 
             if (!en.Active)
-                ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(0.4f, 0.4f, 0.4f, 1.0f));
+                ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(0.4f, 0.4f, 0.4f, 1f));
 
             bool nodeOpen = ImGui.TreeNodeEx(en.Name, nodeFlags);
 

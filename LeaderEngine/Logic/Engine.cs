@@ -14,7 +14,7 @@ namespace LeaderEngine
         public static float Elapsed { get; internal set; }
         public static float DeltaTime { get; internal set; }
         public static float UnscaledDeltaTime { get; internal set; }
-        public static float TimeScale = 1.0f;
+        public static float TimeScale = 1f;
     }
 
     public static class Engine
@@ -59,8 +59,8 @@ namespace LeaderEngine
 
             //init modules
             DataManager.Init();
-
             DefaultShaders.Init();
+            SpriteRenderer.Init();
 
             Renderer = renderer != null ? renderer : Renderer;
             Renderer.Init();

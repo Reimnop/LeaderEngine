@@ -1,7 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
-
-namespace LeaderEngine
+﻿namespace LeaderEngine
 {
     public class TextRenderer : Component, IRenderer
     {
@@ -31,10 +28,7 @@ namespace LeaderEngine
                 _font = value;
 
                 if (_font == null)
-                {
-                    textMesh.Clear();
                     return;
-                }
 
                 _font.GenTextMesh(textMesh, _text);
             }
@@ -45,7 +39,7 @@ namespace LeaderEngine
 
         private Mesh textMesh;
 
-        private UniformData uniforms = new UniformData();
+        private CommandBuffer cmd = new CommandBuffer();
 
         private void Start()
         {
@@ -60,7 +54,7 @@ namespace LeaderEngine
             BaseEntity.Renderers.Remove(this);
         }
 
-        public void Render(Matrix4 view, Matrix4 projection)
+        public void Render(in RenderData renderData)
         {
             if (!Enabled)
                 return;
@@ -68,25 +62,17 @@ namespace LeaderEngine
             if (_font == null)
                 return;
 
-            GLRenderer renderer = Engine.Renderer;
+            var shader = DefaultShaders.Text;
 
-            uniforms.SetUniform("mvp", new Uniform(UniformType.Matrix4,
-                BaseTransform.ModelMatrix
-                * view * projection));
+            cmd.Clear();
 
-            uniforms.SetUniform("fontAtlas", new Uniform(UniformType.Texture2D,
-                new TextureData(TextureUnit.Texture0, _font.GetTexture().GetHandle())));
+            cmd.BindShader(shader);
+            cmd.SetUniformMatrix4(shader, "mvp", BaseTransform.ModelMatrix * renderData.View * renderData.Projection);
+            cmd.SetUniformFloat(shader, "width", Width);
+            cmd.SetUniformFloat(shader, "edge", Edge);
 
-            uniforms.SetUniform("width", new Uniform(UniformType.Float, Width));
-            uniforms.SetUniform("edge", new Uniform(UniformType.Float, Edge));
-
-            renderer.PushDrawData(DrawType.Transparent, new GLDrawData
-            {
-                SourceEntity = BaseEntity,
-                Mesh = textMesh,
-                Shader = DefaultShaders.Text,
-                Uniforms = uniforms
-            });
+            cmd.BindMesh(textMesh);
+            cmd.DrawMesh(textMesh);
         }
     }
 }

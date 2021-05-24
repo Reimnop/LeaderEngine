@@ -6,6 +6,19 @@ using System.Linq;
 
 namespace LeaderEngine
 {
+    internal static class SceneGlobals
+    {
+        internal static BinarySerializer[] Serializers = new BinarySerializer[]
+        {
+            new IntSerializer(),
+            new FloatSerializer(),
+            new StringSerializer(),
+            new MeshSerializer(),
+            new MaterialSerializer(),
+            new TextureSerializer()
+        };
+    }
+
     public class Scene
     {
         public string Name;
@@ -25,13 +38,6 @@ namespace LeaderEngine
         }
 
         #region Binary
-        private static BinarySerializer[] serializers = new BinarySerializer[]
-        {
-            new IntSerializer(),
-            new FloatSerializer(),
-            new StringSerializer()
-        };
-
         #region Serialize
         internal void Serialize(BinaryWriter writer)
         {
@@ -41,7 +47,7 @@ namespace LeaderEngine
             //write entities
             writer.Write(SceneRootEntities.Count);
             foreach (var entity in SceneRootEntities)
-                RecursivelySerializeEntity(writer, entity, serializers);
+                RecursivelySerializeEntity(writer, entity, SceneGlobals.Serializers);
         }
         private void RecursivelySerializeEntity(BinaryWriter writer, Entity entity, BinarySerializer[] serializers)
         {
@@ -153,7 +159,7 @@ namespace LeaderEngine
             //read entities
             int count = reader.ReadInt32();
             for (int i = 0; i < count; i++)
-                RecursivelyDeserializeEntity(reader, scene, null, serializers);
+                RecursivelyDeserializeEntity(reader, scene, null, SceneGlobals.Serializers);
 
             return scene;
         }
@@ -238,7 +244,6 @@ namespace LeaderEngine
             return comp;
         }
         #endregion
-
         #endregion
     }
 }

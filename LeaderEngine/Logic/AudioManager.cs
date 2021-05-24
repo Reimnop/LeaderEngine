@@ -83,7 +83,7 @@ namespace LeaderEngine
             SampleRate = rate;
             Size = size;
 
-            ID = id != null ? id : RNG.GetRandomID();
+            ID = id ?? RNG.GetRandomID();
 
             DataManager.AudioClips.Add(ID, this);
         }
@@ -111,8 +111,8 @@ namespace LeaderEngine
     {
         private int handle;
 
-        private float _gain = 1.0f;
-        private float _pitch = 1.0f;
+        private float _gain = 1f;
+        private float _pitch = 1f;
         private bool _loop = true;
 
         public float Gain

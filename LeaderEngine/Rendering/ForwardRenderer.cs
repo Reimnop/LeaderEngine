@@ -8,20 +8,26 @@ namespace LeaderEngine
 {
     public class ForwardRenderer : GLRenderer
     {
-        private Dictionary<DrawType, List<GLDrawData>> drawLists = new Dictionary<DrawType, List<GLDrawData>>()
+        private Dictionary<DrawType, List<CommandBuffer>> commandBuffers = new Dictionary<DrawType, List<CommandBuffer>>()
         {
-            { DrawType.ShadowMap, new List<GLDrawData>() },
-            { DrawType.Opaque, new List<GLDrawData>() },
-            { DrawType.Transparent, new List<GLDrawData>() },
-            { DrawType.GUI, new List<GLDrawData>() }
+            { DrawType.ShadowMap, new List<CommandBuffer>() },
+            { DrawType.Opaque, new List<CommandBuffer>() },
+            { DrawType.Transparent, new List<CommandBuffer>() },
+            { DrawType.GUI, new List<CommandBuffer>() }
         };
 
+        #region PostProcess
+        public float Exposure = 1f;
+        #endregion
+
         const int shadowMapRes = 4096;
-        const float shadowMapSize = 48.0f;
+        const float shadowMapSize = 48f;
 
         private Framebuffer shadowMapFramebuffer;
 
         private PostProcessor postProcessor;
+
+        private PostProcessingEffect hdrEffect;
 
         public override void Init()
         {
@@ -43,31 +49,39 @@ namespace LeaderEngine
                     },
                     TextureParamsFloatArr = new TextureParamFloatArr[]
                     {
-                        new TextureParamFloatArr { ParamName = TextureParameterName.TextureBorderColor, Params = new float[] { 1.0f, 1.0f, 1.0f, 1.0f } }
+                        new TextureParamFloatArr { ParamName = TextureParameterName.TextureBorderColor, Params = new float[] { 1f, 1f, 1f, 1f } }
                     }
                 }
             });
 
+            #region PostProcess
             string postProcessPath = Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/PostProcess");
 
-            postProcessor = new PostProcessor();
-            postProcessor.Shaders.AddRange(new Shader[] {
-                Shader.FromSourceFile("post-process",
+            hdrEffect = new PostProcessingEffect
+            {
+                Uniforms = new UniformData(),
+                Shader = Shader.FromSourceFile("hdr",
                     Path.Combine(postProcessPath, "post-process.vert"),
-                    Path.Combine(postProcessPath, "empty.frag"))
+                    Path.Combine(postProcessPath, "hdr.frag"))
+            };
+
+            postProcessor = new PostProcessor();
+            postProcessor.Effects.AddRange(new PostProcessingEffect[] {
+                hdrEffect
             });
+            #endregion
 
             Logger.Log("Renderer initialized.", true);
-        }
-
-        public override void PushDrawData(DrawType drawType, GLDrawData drawData)
-        {
-            drawLists[drawType].Add(drawData);
         }
 
         public override void Update()
         {
             postProcessor.Resize(ViewportSize);
+        }
+
+        public override void QueueCommands(CommandBuffer commandBuffer)
+        {
+            commandBuffers[commandBuffer.DrawType].Add(commandBuffer);
         }
 
         public override void Render()
@@ -79,17 +93,16 @@ namespace LeaderEngine
             DataManager.EngineReservedEntities.ForEach(en => en.Transform.CalculateModelMatrixRecursively());
 
             //shadow mapping
+            Matrix4 lightView = Matrix4.Identity;
+            Matrix4 lightProjection = Matrix4.Identity;
+
             if (DirectionalLight.Main == null)
                 goto RenderOpaque;
 
-            Matrix4 lView;
-            Matrix4 lProjection;
-            DirectionalLight.Main.CalculateViewProjection(out lView, out lProjection, shadowMapSize, Camera.Main.BaseTransform.Position);
-            LightingGlobals.LightView = lView;
-            LightingGlobals.LightProjection = lProjection;
+            DirectionalLight.Main.CalculateViewProjection(out lightView, out lightProjection, shadowMapSize, Camera.Main.BaseTransform.Position);
 
-            DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRenderShadowMap(LightingGlobals.LightView, LightingGlobals.LightProjection));
-            DataManager.EngineReservedEntities.ForEach(en => en.RecursivelyRenderShadowMap(LightingGlobals.LightView, LightingGlobals.LightProjection));
+            DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRenderShadowMap(lightView, lightProjection));
+            DataManager.EngineReservedEntities.ForEach(en => en.RecursivelyRenderShadowMap(lightView, lightProjection));
 
             GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
 
@@ -102,19 +115,27 @@ namespace LeaderEngine
             GL.CullFace(CullFaceMode.Back);
             GL.FrontFace(FrontFaceDirection.Ccw);
 
-            DrawDrawList(drawLists[DrawType.ShadowMap]);
+            foreach (var buffer in commandBuffers[DrawType.ShadowMap])
+                ExecuteCommandBuffer(buffer);
 
             shadowMapFramebuffer.End();
 
-            LightingGlobals.ShadowMap = shadowMapFramebuffer.GetTexture(FramebufferAttachment.DepthAttachment);
-
         //render opaque
         RenderOpaque:
-            Camera.Main.CalculateViewProjection(out Matrix4 view, out Matrix4 projection);
+            Camera.Main.CalculateViewProjection(out var view, out var projection);
 
             //call all render funcs
-            DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRender(view, projection));
-            DataManager.EngineReservedEntities.ForEach(en => en.RecursivelyRender(view, projection));
+            RenderData renderData = new RenderData
+            {
+                View = view,
+                Projection = projection,
+                LightView = lightView,
+                LightProjection = lightProjection,
+                ShadowMapTexture = shadowMapFramebuffer.GetTexture(FramebufferAttachment.DepthAttachment)
+            };
+
+            DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRender(renderData));
+            DataManager.EngineReservedEntities.ForEach(en => en.RecursivelyRender(renderData));
 
             GL.Viewport(0, 0, ViewportSize.X, ViewportSize.Y);
 
@@ -127,7 +148,9 @@ namespace LeaderEngine
             GL.CullFace(CullFaceMode.Back);
             GL.FrontFace(FrontFaceDirection.Ccw);
 
-            DrawDrawList(drawLists[DrawType.Opaque]);
+            //DrawDrawList(drawLists[DrawType.Opaque]);
+            foreach (var buffer in commandBuffers[DrawType.Opaque])
+                ExecuteCommandBuffer(buffer);
 
             //render transparent
             GL.DepthMask(false);
@@ -137,7 +160,9 @@ namespace LeaderEngine
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            DrawDrawList(drawLists[DrawType.Transparent]);
+            foreach (var buffer in commandBuffers[DrawType.Transparent])
+                ExecuteCommandBuffer(buffer);
+
             postProcessor.End();
 
             //reset states
@@ -145,46 +170,21 @@ namespace LeaderEngine
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
 
+            //post processing
+            hdrEffect.Uniforms.SetUniform("exposure", new Uniform(UniformType.Float, Exposure));
+
             postProcessor.Render();
 
-            ClearDrawList();
+            foreach (var bufferList in commandBuffers)
+                bufferList.Value.Clear();
+
+            RenderCommandProcessor.Reset();
         }
 
-        private void DrawDrawList(List<GLDrawData> drawDatas)
+        private void ExecuteCommandBuffer(CommandBuffer commandBuffer)
         {
-            Mesh oldMesh = null;
-            Shader oldShader = null;
-
-            drawDatas.ForEach(drawData =>
-            {
-                Mesh mesh = drawData.Mesh;
-                Shader shader = drawData.Shader;
-                Material material = drawData.Material;
-                UniformData uniforms = drawData.Uniforms;
-
-                if (mesh == null || shader == null || uniforms == null)
-                    return;
-
-                if (mesh != oldMesh)
-                    mesh.Use();
-
-                if (shader != oldShader)
-                    shader.Use();
-
-                oldMesh = mesh;
-                oldShader = shader;
-
-                material?.Use(shader);
-                uniforms.Use(shader);
-
-                GL.DrawElements(mesh.PrimitiveType, mesh.IndicesCount, mesh.DrawElementsType, 0);
-            });
-        }
-
-        private void ClearDrawList()
-        {
-            foreach (var kvp in drawLists)
-                kvp.Value.Clear();
+            for (int i = 0; i < commandBuffer.Count; i++)
+                RenderCommandProcessor.ExecuteCommand(commandBuffer.Commands[i]);
         }
     }
 }
