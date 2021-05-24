@@ -1,4 +1,6 @@
-﻿namespace LeaderEngine
+﻿using OpenTK.Graphics.OpenGL4;
+
+namespace LeaderEngine
 {
     public class TextRenderer : Component, IRenderer
     {
@@ -39,7 +41,7 @@
 
         private Mesh textMesh;
 
-        private CommandBuffer cmd = new CommandBuffer();
+        private CommandBuffer cmd = new CommandBuffer() { DrawType = DrawType.Transparent };
 
         private void Start()
         {
@@ -71,8 +73,12 @@
             cmd.SetUniformFloat(shader, "width", Width);
             cmd.SetUniformFloat(shader, "edge", Edge);
 
+            cmd.BindTexture(TextureUnit.Texture0, Font.GetTexture());
+
             cmd.BindMesh(textMesh);
             cmd.DrawMesh(textMesh);
+
+            Engine.Renderer.QueueCommands(cmd);
         }
     }
 }
