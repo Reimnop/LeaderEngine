@@ -33,7 +33,7 @@ namespace LeaderEngine
 
     public class CommandBuffer
     {
-        public GLCommand[] Commands { get; } = new GLCommand[64];
+        public GLCommand[] Commands { get; } = new GLCommand[128];
         public int Count { get; private set; }
 
         public DrawType DrawType = DrawType.Opaque;
