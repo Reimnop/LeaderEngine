@@ -1,27 +1,41 @@
 ﻿using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 namespace LeaderEditor
 {
     internal class GridRenderer : Component, IRenderer
     {
-        private Mesh mesh;
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        private struct GridVertex
+        {
+            public Vector3 Position;
+            public Vector3 Color;
+
+            public GridVertex(Vector3 position, Vector3 color)
+            {
+                Position = position;
+                Color = color;
+            }
+        }
+
+        private int VAO, VBO;
         private Shader shader = DefaultShaders.SingleColor;
 
         private CommandBuffer cmd = new CommandBuffer();
 
         const int gridSize = 80;
+        const int vertCount = gridSize * 8 + 4;
 
         //init grid mesh
         private void Start()
         {
-            mesh = new Mesh("grid");
-            mesh.Unlist();
+            #region GenGridMesh
+            GridVertex[] vertices = new GridVertex[vertCount];
 
-            List<Vector3> vertices = new List<Vector3>();
-            List<VertexData> perVertexData = new List<VertexData>();
+            int offset = 0;
 
             for (int i = -gridSize; i <= gridSize; i++)
             {
@@ -33,18 +47,10 @@ namespace LeaderEditor
                 if (i == 0)
                     color = new Vector3(0f, 0f, 1f);
 
-                vertices.Add(new Vector3(i, 0f, -gridSize));
-                vertices.Add(new Vector3(i, 0f, gridSize));
+                vertices[offset + 0] = new GridVertex(new Vector3(i, 0f, -gridSize), color);
+                vertices[offset + 1] = new GridVertex(new Vector3(i, 0f,  gridSize), color);
 
-                perVertexData.Add(new VertexData
-                {
-                    Color = color
-                });
-
-                perVertexData.Add(new VertexData
-                {
-                    Color = color
-                });
+                offset += 2;
             }
 
             for (int i = -gridSize; i <= gridSize; i++)
@@ -57,27 +63,28 @@ namespace LeaderEditor
                 if (i == 0)
                     color = new Vector3(1f, 0f, 0f);
 
-                vertices.Add(new Vector3(-gridSize, 0f, i));
-                vertices.Add(new Vector3(gridSize, 0f, i));
+                vertices[offset + 0] = new GridVertex(new Vector3(-gridSize, 0f, i), color);
+                vertices[offset + 1] = new GridVertex(new Vector3( gridSize, 0f, i), color);
 
-                perVertexData.Add(new VertexData
-                {
-                    Color = color
-                });
-
-                perVertexData.Add(new VertexData
-                {
-                    Color = color
-                });
+                offset += 2;
             }
+            #endregion
 
-            uint[] indices = new uint[perVertexData.Count];
+            VAO = GL.GenVertexArray();
+            GL.BindVertexArray(VAO);
 
-            for (uint i = 0; i < perVertexData.Count; i++)
-                indices[i] = i;
+            VBO = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * Unsafe.SizeOf<GridVertex>(), vertices, BufferUsageHint.StaticDraw);
 
-            mesh.LoadMesh(vertices.ToArray(), indices, PrimitiveType.Lines);
-            mesh.SetPerVertexData(perVertexData.ToArray());
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, Unsafe.SizeOf<GridVertex>(), 0);
+            GL.EnableVertexAttribArray(0);
+
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, Unsafe.SizeOf<GridVertex>(), Vector3.SizeInBytes);
+            GL.EnableVertexAttribArray(1);
+
+            GL.BindVertexArray(0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
         public void Render(in RenderData renderData)
@@ -87,8 +94,8 @@ namespace LeaderEditor
             cmd.BindShader(shader);
             cmd.SetUniformMatrix4(shader, "mvp", BaseTransform.ModelMatrix * renderData.View * renderData.Projection);
 
-            cmd.BindMesh(mesh);
-            cmd.DrawMesh(mesh);
+            cmd.BindVertexArray(VAO);
+            cmd.DrawArrays(PrimitiveType.Lines, 0, vertCount);
 
             Engine.Renderer.QueueCommands(cmd);
         }
