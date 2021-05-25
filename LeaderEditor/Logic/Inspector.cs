@@ -13,7 +13,7 @@ namespace LeaderEditor
         public static Dictionary<Type, Action<Component>> SerializeableComponents = new Dictionary<Type, Action<Component>>()
         {
             { typeof(DirectionalLight), null },
-            { typeof(TextRenderer), null },
+            { typeof(TextRenderer), SerializeFunc.SerializeTextRenderer },
             { typeof(AudioSource), SerializeFunc.SerializeAudioSource },
             { typeof(AudioListener), null },
             { typeof(SpriteRenderer), null }

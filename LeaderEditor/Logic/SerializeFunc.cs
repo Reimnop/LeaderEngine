@@ -26,6 +26,43 @@ namespace LeaderEditor
             ImGui.PopID();
         }
 
+        internal static void SerializeTextRenderer(Component obj)
+        {
+            TextRenderer textRenderer = (TextRenderer)obj;
+            
+            textRenderer.Text = (string)DefaultString("Text", textRenderer.Text);
+            textRenderer.Font = (Font)DefaultFont("Font", textRenderer.Font);
+
+            ImGui.Text("Alignment");
+            if (ImGui.BeginCombo("Horizontal", textRenderer.HorizontalAlignment.ToString()))
+            {
+                if (ImGui.Selectable("Left", textRenderer.HorizontalAlignment == HorizontalAlignment.Left))
+                    textRenderer.HorizontalAlignment = HorizontalAlignment.Left;
+
+                if (ImGui.Selectable("Center", textRenderer.HorizontalAlignment == HorizontalAlignment.Center))
+                    textRenderer.HorizontalAlignment = HorizontalAlignment.Center;
+
+                if (ImGui.Selectable("Right", textRenderer.HorizontalAlignment == HorizontalAlignment.Right))
+                    textRenderer.HorizontalAlignment = HorizontalAlignment.Right;
+
+                ImGui.EndCombo();
+            }
+
+            if (ImGui.BeginCombo("Vertical", textRenderer.VerticalAlignment.ToString()))
+            {
+                if (ImGui.Selectable("Top", textRenderer.VerticalAlignment == VerticalAlignment.Top))
+                    textRenderer.VerticalAlignment = VerticalAlignment.Top;
+
+                if (ImGui.Selectable("Center", textRenderer.VerticalAlignment == VerticalAlignment.Center))
+                    textRenderer.VerticalAlignment = VerticalAlignment.Center;
+
+                if (ImGui.Selectable("Bottom", textRenderer.VerticalAlignment == VerticalAlignment.Bottom))
+                    textRenderer.VerticalAlignment = VerticalAlignment.Bottom;
+
+                ImGui.EndCombo();
+            }
+        }
+
         public static void SerializeAudioSource(Component obj)
         {
             AudioSource source = (AudioSource)obj;
