@@ -8,12 +8,14 @@ namespace LeaderEngine
 {
     public class ForwardRenderer : GLRenderer
     {
-        private Dictionary<DrawType, List<CommandBuffer>> commandBuffers = new Dictionary<DrawType, List<CommandBuffer>>()
+        const int MaxBuffers = 16384;
+
+        private Dictionary<DrawType, PreAllocatedList<CommandBuffer>> commandBuffers = new Dictionary<DrawType, PreAllocatedList<CommandBuffer>>()
         {
-            { DrawType.ShadowMap, new List<CommandBuffer>() },
-            { DrawType.Opaque, new List<CommandBuffer>() },
-            { DrawType.Transparent, new List<CommandBuffer>() },
-            { DrawType.GUI, new List<CommandBuffer>() }
+            { DrawType.ShadowMap, new PreAllocatedList<CommandBuffer>(MaxBuffers) },
+            { DrawType.Opaque, new PreAllocatedList<CommandBuffer>(MaxBuffers) },
+            { DrawType.Transparent, new PreAllocatedList<CommandBuffer>(MaxBuffers) },
+            { DrawType.GUI, new PreAllocatedList<CommandBuffer>(MaxBuffers) }
         };
 
         #region PostProcess
