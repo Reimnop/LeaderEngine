@@ -117,9 +117,9 @@ namespace LeaderEngine
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
 
-            GL.ObjectLabel(ObjectLabelIdentifier.Texture, texture.handle, name.Length, name);
-
             GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            GL.ObjectLabel(ObjectLabelIdentifier.Texture, texture.handle, name.Length, name);
 
             texture.Size = new Vector2i(width, height);
 
@@ -147,9 +147,9 @@ namespace LeaderEngine
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
 
-            GL.ObjectLabel(ObjectLabelIdentifier.Texture, texture.handle, name.Length, name);
-
             GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            GL.ObjectLabel(ObjectLabelIdentifier.Texture, texture.handle, name.Length, name);
 
             texture.Size = new Vector2i(width, height);
 
