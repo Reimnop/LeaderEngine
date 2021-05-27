@@ -209,13 +209,13 @@ namespace LeaderEngine
             transparentBuffers.Clear();
             guiBuffers.Clear();
 
-            RenderCommandProcessor.Reset();
+            CommandProcessor.Reset();
         }
 
         private void ExecuteCommandBuffer(CommandBuffer commandBuffer)
         {
             for (int i = 0; i < commandBuffer.Count; i++)
-                RenderCommandProcessor.ExecuteCommand(commandBuffer.Commands[i]);
+                CommandProcessor.ExecuteCommand(commandBuffer.Commands[i]);
         }
     }
 }

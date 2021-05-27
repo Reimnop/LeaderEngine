@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace LeaderEngine
 {
-    public static class RenderCommandProcessor
+    public static class CommandProcessor
     {
         private static Dictionary<CommandEnum, Action<object>> commandProcessors = new Dictionary<CommandEnum, Action<object>>()
         {
