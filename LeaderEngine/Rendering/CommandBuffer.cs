@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using System;
 
 namespace LeaderEngine
 {
@@ -68,7 +69,7 @@ namespace LeaderEngine
             AddCommand(new GLCommand
             {
                 Command = CommandEnum.BindTexture,
-                Arguments = (unit, handle)
+                Arguments = ValueTuple.Create(unit, handle)
             });
         }
 
@@ -91,7 +92,7 @@ namespace LeaderEngine
             AddCommand(new GLCommand
             {
                 Command = CommandEnum.BindBuffer,
-                Arguments = (bufferTarget, handle)
+                Arguments = ValueTuple.Create(bufferTarget, handle)
             });
         }
 
@@ -100,7 +101,7 @@ namespace LeaderEngine
             AddCommand(new GLCommand
             {
                 Command = CommandEnum.DrawArrays,
-                Arguments = (primitiveType, offset, count)
+                Arguments = ValueTuple.Create(primitiveType, offset, count)
             });
         }
 
@@ -109,7 +110,7 @@ namespace LeaderEngine
             AddCommand(new GLCommand
             {
                 Command = CommandEnum.DrawElements,
-                Arguments = (primitiveType, count, drawElementsType, indices)
+                Arguments = ValueTuple.Create(primitiveType, count, drawElementsType, indices)
             });
         }
 
@@ -118,7 +119,7 @@ namespace LeaderEngine
             AddCommand(new GLCommand
             {
                 Command = CommandEnum.DrawArraysInstanced,
-                Arguments = (primitiveType, offset, count, instanceCount)
+                Arguments = ValueTuple.Create(primitiveType, offset, count, instanceCount)
             });
         }
 
@@ -127,7 +128,7 @@ namespace LeaderEngine
             AddCommand(new GLCommand
             {
                 Command = CommandEnum.DrawElementsInstanced,
-                Arguments = (primitiveType, drawElementsType, count, indices, instanceCount)
+                Arguments = ValueTuple.Create(primitiveType, drawElementsType, count, indices, instanceCount)
             });
         }
 
@@ -136,7 +137,7 @@ namespace LeaderEngine
             AddCommand(new GLCommand
             {
                 Command = CommandEnum.MultiDrawArrays,
-                Arguments = (primitiveType, firsts, counts, drawCount)
+                Arguments = ValueTuple.Create(primitiveType, firsts, counts, drawCount)
             });
         }
 
@@ -145,7 +146,7 @@ namespace LeaderEngine
             AddCommand(new GLCommand
             {
                 Command = CommandEnum.MultiDrawElements,
-                Arguments = (primitiveType, counts, drawElementsType, indices, drawCount)
+                Arguments = ValueTuple.Create(primitiveType, counts, drawElementsType, indices, drawCount)
             });
         }
 
@@ -154,7 +155,7 @@ namespace LeaderEngine
             AddCommand(new GLCommand
             {
                 Command = CommandEnum.SetUniformInt,
-                Arguments = (location, value)
+                Arguments = ValueTuple.Create(location, value)
             });
         }
 
@@ -168,7 +169,7 @@ namespace LeaderEngine
             AddCommand(new GLCommand
             {
                 Command = CommandEnum.SetUniformFloat,
-                Arguments = (location, value)
+                Arguments = ValueTuple.Create(location, value)
             });
         }
 
@@ -182,7 +183,7 @@ namespace LeaderEngine
             AddCommand(new GLCommand
             {
                 Command = CommandEnum.SetUniformVector3,
-                Arguments = (location, value)
+                Arguments = ValueTuple.Create(location, value)
             });
         }
 
@@ -196,7 +197,7 @@ namespace LeaderEngine
             AddCommand(new GLCommand
             {
                 Command = CommandEnum.SetUniformVector4,
-                Arguments = (location, value)
+                Arguments = ValueTuple.Create(location, value)
             });
         }
 
@@ -210,7 +211,7 @@ namespace LeaderEngine
             AddCommand(new GLCommand
             {
                 Command = CommandEnum.SetUniformMatrix3,
-                Arguments = (location, value)
+                Arguments = ValueTuple.Create(location, value)
             });
         }
 
@@ -224,7 +225,7 @@ namespace LeaderEngine
             AddCommand(new GLCommand
             {
                 Command = CommandEnum.SetUniformMatrix4,
-                Arguments = (location, value)
+                Arguments = ValueTuple.Create(location, value)
             });
         }
 

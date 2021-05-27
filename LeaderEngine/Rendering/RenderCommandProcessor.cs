@@ -33,80 +33,80 @@ namespace LeaderEngine
 
         private static void ExecuteSetUniformMatrix4(object obj)
         {
-            var args = ((int location, Matrix4 value))obj;
-            GL.UniformMatrix4(args.location, true, ref args.value);
+            var args = (ValueTuple<int, Matrix4>)obj;
+            GL.UniformMatrix4(args.Item1, true, ref args.Item2);
         }
 
         private static void ExecuteSetUniformMatrix3(object obj)
         {
-            var args = ((int location, Matrix3 value))obj;
-            GL.UniformMatrix3(args.location, true, ref args.value);
+            var args = (ValueTuple<int, Matrix3>)obj;
+            GL.UniformMatrix3(args.Item1, true, ref args.Item2);
         }
 
         private static void ExecuteSetUniformVector4(object obj)
         {
-            var args = ((int location, Vector4 value))obj;
-            GL.Uniform4(args.location, args.value);
+            var args = (ValueTuple<int, Vector4>)obj;
+            GL.Uniform4(args.Item1, args.Item2);
         }
 
         private static void ExecuteSetUniformVector3(object obj)
         {
-            var args = ((int location, Vector3 value))obj;
-            GL.Uniform3(args.location, args.value);
+            var args = (ValueTuple<int, Vector3>)obj;
+            GL.Uniform3(args.Item1, args.Item2);
         }
 
         private static void ExecuteSetUniformFloat(object obj)
         {
-            var args = ((int location, float value))obj;
-            GL.Uniform1(args.location, args.value);
+            var args = (ValueTuple<int, float>)obj;
+            GL.Uniform1(args.Item1, args.Item2);
         }
 
         private static void ExecuteSetUniformInt(object obj)
         {
-            var args = ((int location, int value))obj;
-            GL.Uniform1(args.location, args.value);
+            var args = (ValueTuple<int, int>)obj;
+            GL.Uniform1(args.Item1, args.Item2);
         }
 
         private static void ExecuteMultiDrawElements(object obj)
         {
-            var args = ((PrimitiveType primitiveType, int[] counts, DrawElementsType drawElementsType, int[] indices, int drawCount))obj;
-            GL.MultiDrawElements(args.primitiveType, args.counts, args.drawElementsType, args.indices, args.drawCount);
+            var args = (ValueTuple<PrimitiveType, int[], DrawElementsType, int[], int>)obj;
+            GL.MultiDrawElements(args.Item1, args.Item2, args.Item3, args.Item4, args.Item5);
         }
 
         private static void ExecuteMultiDrawArrays(object obj)
         {
-            var args = ((PrimitiveType primitiveType, int[] firsts, int[] counts, int drawCount))obj;
-            GL.MultiDrawArrays(args.primitiveType, args.firsts, args.counts, args.drawCount);
+            var args = (ValueTuple<PrimitiveType, int[], int[], int>)obj;
+            GL.MultiDrawArrays(args.Item1, args.Item2, args.Item3, args.Item4);
         }
 
         private static void ExecuteDrawElementsInstanced(object obj)
         {
-            var args = ((PrimitiveType primitiveType, int count, DrawElementsType drawElementsType, int indices, int instanceCount))obj;
-            GL.DrawElementsInstanced(args.primitiveType, args.count, args.drawElementsType, (IntPtr)args.indices, args.instanceCount);
+            var args = (ValueTuple<PrimitiveType, int, DrawElementsType, int, int>)obj;
+            GL.DrawElementsInstanced(args.Item1, args.Item2, args.Item3, (IntPtr)args.Item4, args.Item5);
         }
 
         private static void ExecuteDrawArraysInstanced(object obj)
         {
-            var args = ((PrimitiveType primitiveType, int offset, int count, int instanceCount))obj;
-            GL.DrawArraysInstanced(args.primitiveType, args.offset, args.count, args.instanceCount);
+            var args = (ValueTuple<PrimitiveType, int, int, int>)obj;
+            GL.DrawArraysInstanced(args.Item1, args.Item2, args.Item3, args.Item4);
         }
 
         private static void ExecuteDrawElements(object obj)
         {
-            var args = ((PrimitiveType primitiveType, int count, DrawElementsType drawElementsType, int indices))obj;
-            GL.DrawElements(args.primitiveType, args.count, args.drawElementsType, args.indices);
+            var args = (ValueTuple<PrimitiveType, int, DrawElementsType, int>)obj;
+            GL.DrawElements(args.Item1, args.Item2, args.Item3, args.Item4);
         }
 
         private static void ExecuteDrawArrays(object obj)
         {
-            var args = ((PrimitiveType primitiveType, int offset, int count))obj;
-            GL.DrawArrays(args.primitiveType, args.offset, args.count);
+            var args = (ValueTuple<PrimitiveType, int, int>)obj;
+            GL.DrawArrays(args.Item1, args.Item2, args.Item3);
         }
 
         private static void ExecuteBindBuffer(object obj)
         {
-            var args = ((BufferTarget bufferTarget, int handle))obj;
-            GL.BindBuffer(args.bufferTarget, args.handle);
+            var args = (ValueTuple<BufferTarget, int>)obj;
+            GL.BindBuffer(args.Item1, args.Item2);
         }
 
         private static void ExecuteBindVertexArray(object obj)
@@ -117,8 +117,8 @@ namespace LeaderEngine
 
         private static void ExecuteBindTexture(object obj)
         {
-            var args = ((TextureUnit unit, int handle))obj;
-            GL.BindTextureUnit((int)args.unit - (int)TextureUnit.Texture0, args.handle);
+            var args = (ValueTuple<TextureUnit, int>)obj;
+            GL.BindTextureUnit((int)args.Item1 - (int)TextureUnit.Texture0, args.Item2);
         }
 
         private static void ExecuteBindShader(object obj)
