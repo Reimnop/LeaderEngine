@@ -89,8 +89,11 @@ namespace LeaderEngine
             if (Camera.Main == null)
                 return;
 
-            DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.Transform.CalculateModelMatrixRecursively());
-            DataManager.EngineReservedEntities.ForEach(en => en.Transform.CalculateModelMatrixRecursively());
+            foreach (var entity in DataManager.CurrentScene.SceneRootEntities)
+                entity.Transform.CalculateModelMatrixRecursively();
+
+            foreach (var entity in DataManager.UnlistedEntities)
+                entity.Transform.CalculateModelMatrixRecursively();
 
             //shadow mapping
             Matrix4 lightView = Matrix4.Identity;
@@ -101,8 +104,11 @@ namespace LeaderEngine
 
             DirectionalLight.Main.CalculateViewProjection(out lightView, out lightProjection, shadowMapSize, Camera.Main.BaseTransform.Position);
 
-            DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRenderShadowMap(lightView, lightProjection));
-            DataManager.EngineReservedEntities.ForEach(en => en.RecursivelyRenderShadowMap(lightView, lightProjection));
+            foreach (var entity in DataManager.CurrentScene.SceneRootEntities)
+                entity.RecursivelyRenderShadowMap(lightView, lightProjection);
+
+            foreach (var entity in DataManager.UnlistedEntities)
+                entity.RecursivelyRenderShadowMap(lightView, lightProjection);
 
             GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
 
@@ -134,8 +140,11 @@ namespace LeaderEngine
                 ShadowMapTexture = shadowMapFramebuffer.GetTexture(FramebufferAttachment.DepthAttachment)
             };
 
-            DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRender(renderData));
-            DataManager.EngineReservedEntities.ForEach(en => en.RecursivelyRender(renderData));
+            foreach (var entity in DataManager.CurrentScene.SceneRootEntities)
+                entity.RecursivelyRender(renderData);
+
+            foreach (var entity in DataManager.UnlistedEntities)
+                entity.RecursivelyRender(renderData);
 
             GL.Viewport(0, 0, ViewportSize.X, ViewportSize.Y);
 

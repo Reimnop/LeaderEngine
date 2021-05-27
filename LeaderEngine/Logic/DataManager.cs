@@ -17,7 +17,7 @@ namespace LeaderEngine
         public static Scene CurrentScene { get; set; } = new Scene("Untitled Scene");
 
         internal static Dictionary<string, Type> ComponentTypes { get; } = new Dictionary<string, Type>();
-        internal static List<Entity> EngineReservedEntities { get; } = new List<Entity>();
+        internal static List<Entity> UnlistedEntities { get; } = new List<Entity>();
 
         public static Dictionary<string, Material> Materials { get; } = new Dictionary<string, Material>();
         public static Dictionary<string, Prefab> Prefabs { get; } = new Dictionary<string, Prefab>();

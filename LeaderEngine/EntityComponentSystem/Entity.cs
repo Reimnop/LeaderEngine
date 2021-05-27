@@ -71,7 +71,7 @@ namespace LeaderEngine
                 scene.SceneRootEntities.Remove(this);
             }
 
-            DataManager.EngineReservedEntities.Add(this);
+            DataManager.UnlistedEntities.Add(this);
         }
 
         internal void RecursivelyUpdate()
@@ -79,9 +79,16 @@ namespace LeaderEngine
             if (!Active)
                 return;
 
-            components.ForEach(x => { if (x.Enabled) x.UpdateMethod?.Invoke(); });
+            foreach (var component in components)
+            {
+                if (component.Enabled)
+                {
+                    component.UpdateMethod?.Invoke();
+                }
+            }
 
-            Children.ForEach(child => child.RecursivelyUpdate());
+            foreach (var child in Children)
+                child.RecursivelyUpdate();
         }
 
         internal void RecursivelyRender(in RenderData renderData)
@@ -101,9 +108,11 @@ namespace LeaderEngine
             if (!Active)
                 return;
 
-            ShadowMapRenderers.ForEach(x => x.RenderShadowMap(view, projection));
+            foreach (var renderer in ShadowMapRenderers)
+                renderer.RenderShadowMap(view, projection);
 
-            Children.ForEach(child => child.RecursivelyRenderShadowMap(view, projection));
+            foreach (var child in Children)
+                child.RecursivelyRenderShadowMap(view, projection);
         }
 
         public void Destroy()

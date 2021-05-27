@@ -110,7 +110,8 @@ namespace LeaderEngine
 
         //calculate children
         CalculateChildren:
-            baseEntity.Children.ForEach(x => x.Transform.CalculateModelMatrixRecursively());
+            foreach (var child in baseEntity.Children)
+                child.Transform.CalculateModelMatrixRecursively();
         }
     }
 }

@@ -116,8 +116,9 @@ namespace LeaderEngine
             //update scene
             DataManager.CurrentScene.UpdateSceneHierachy();
 
-            //update engine entities
-            DataManager.EngineReservedEntities.ForEach(x => x.RecursivelyUpdate());
+            //update unlisted entities
+            foreach (var entity in DataManager.UnlistedEntities)
+                entity.RecursivelyUpdate();
 
             //update renderer
             Renderer.Update();
