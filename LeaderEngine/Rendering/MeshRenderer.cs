@@ -39,8 +39,6 @@ namespace LeaderEngine
 
             mainCmd.BindShader(Shader);
             mainCmd.SetUniformMatrix4(Shader, "model", BaseTransform.ModelMatrix);
-            mainCmd.SetUniformMatrix4(Shader, "view", renderData.View);
-            mainCmd.SetUniformMatrix4(Shader, "projection", renderData.Projection);
             mainCmd.SetUniformMatrix4(Shader, "mvp", BaseTransform.ModelMatrix * renderData.View * renderData.Projection);
 
             mainCmd.SetUniformVector3(Shader, "camPos", Camera.Main.BaseTransform.Position);

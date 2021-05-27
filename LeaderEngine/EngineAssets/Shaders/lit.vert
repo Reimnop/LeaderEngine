@@ -6,8 +6,6 @@ layout (location = 2) in vec3 aColor;
 layout (location = 3) in vec2 aTexCoord;
 
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
 
 uniform mat4 mvp;
 uniform mat4 lightSpaceMat;
