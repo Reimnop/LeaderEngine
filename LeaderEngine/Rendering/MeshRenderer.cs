@@ -9,7 +9,7 @@ namespace LeaderEngine
         public Material Material;
         public Shader Shader = DefaultShaders.Lit;
 
-        private CommandBuffer shadowMapCmd = new CommandBuffer() { DrawType = DrawType.ShadowMap };
+        private CommandBuffer shadowMapCmd = new CommandBuffer();
         private CommandBuffer mainCmd = new CommandBuffer();
 
         public void RenderShadowMap(in LightData lightData)
@@ -27,7 +27,7 @@ namespace LeaderEngine
             shadowMapCmd.BindMesh(Mesh);
             shadowMapCmd.DrawMesh(Mesh);
 
-            Engine.Renderer.QueueCommands(shadowMapCmd);
+            Engine.Renderer.QueueCommandsShadowMap(shadowMapCmd);
         }
 
         public void Render(in RenderData renderData)
@@ -59,7 +59,7 @@ namespace LeaderEngine
             mainCmd.BindMesh(Mesh);
             mainCmd.DrawMesh(Mesh);
 
-            Engine.Renderer.QueueCommands(mainCmd);
+            Engine.Renderer.QueueCommandsOpaque(mainCmd);
         }
     }
 }

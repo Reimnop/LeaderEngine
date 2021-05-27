@@ -37,8 +37,6 @@ namespace LeaderEngine
         public GLCommand[] Commands { get; } = new GLCommand[128];
         public int Count { get; private set; }
 
-        public DrawType DrawType = DrawType.Opaque;
-
         private void AddCommand(GLCommand command)
         {
             Commands[Count] = command;

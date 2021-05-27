@@ -3,14 +3,6 @@ using System;
 
 namespace LeaderEngine
 {
-    public enum DrawType
-    {
-        ShadowMap,
-        Opaque,
-        Transparent,
-        GUI
-    }
-
     public abstract class GLRenderer
     {
         private Vector2i _viewPortSize = new Vector2i(1600, 900);
@@ -26,7 +18,10 @@ namespace LeaderEngine
 
         public abstract void Init();
         public abstract void Update();
-        public abstract void QueueCommands(CommandBuffer commandBuffer);
+        public abstract void QueueCommandsShadowMap(CommandBuffer commandBuffer);
+        public abstract void QueueCommandsOpaque(CommandBuffer commandBuffer);
+        public abstract void QueueCommandsTransparent(CommandBuffer commandBuffer);
+        public abstract void QueueCommandsGUI(CommandBuffer commandBuffer);
         public abstract void Render();
     }
 }

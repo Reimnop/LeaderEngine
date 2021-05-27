@@ -75,7 +75,7 @@ namespace LeaderEngine
             cmd.BindMesh(mesh);
             cmd.DrawMesh(mesh);
 
-            Engine.Renderer.QueueCommands(cmd);
+            Engine.Renderer.QueueCommandsOpaque(cmd);
         }
     }
 }

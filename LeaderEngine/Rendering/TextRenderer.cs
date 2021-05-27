@@ -89,7 +89,7 @@ namespace LeaderEngine
         private int VAO, VBO;
         private int vertCount;
 
-        private CommandBuffer cmd = new CommandBuffer() { DrawType = DrawType.Transparent };
+        private CommandBuffer cmd = new CommandBuffer();
 
         private void Start()
         {
@@ -144,7 +144,7 @@ namespace LeaderEngine
             cmd.BindVertexArray(VAO);
             cmd.DrawArrays(PrimitiveType.Triangles, 0, vertCount);
 
-            Engine.Renderer.QueueCommands(cmd);
+            Engine.Renderer.QueueCommandsTransparent(cmd);
         }
     }
 }

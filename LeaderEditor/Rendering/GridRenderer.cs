@@ -97,7 +97,7 @@ namespace LeaderEditor
             cmd.BindVertexArray(VAO);
             cmd.DrawArrays(PrimitiveType.Lines, 0, vertCount);
 
-            Engine.Renderer.QueueCommands(cmd);
+            Engine.Renderer.QueueCommandsOpaque(cmd);
         }
     }
 }

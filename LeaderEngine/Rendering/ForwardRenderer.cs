@@ -8,13 +8,12 @@ namespace LeaderEngine
 {
     public class ForwardRenderer : GLRenderer
     {
-        private Dictionary<DrawType, List<CommandBuffer>> commandBuffers = new Dictionary<DrawType, List<CommandBuffer>>()
-        {
-            { DrawType.ShadowMap, new List<CommandBuffer>() },
-            { DrawType.Opaque, new List<CommandBuffer>() },
-            { DrawType.Transparent, new List<CommandBuffer>() },
-            { DrawType.GUI, new List<CommandBuffer>() }
-        };
+        const int defaultSize = 4096;
+
+        private List<CommandBuffer> shadowMapBuffers = new List<CommandBuffer>();
+        private List<CommandBuffer> opaqueBuffers = new List<CommandBuffer>();
+        private List<CommandBuffer> transparentBuffers = new List<CommandBuffer>();
+        private List<CommandBuffer> guiBuffers = new List<CommandBuffer>();
 
         #region PostProcess
         public float Exposure = 1f;
@@ -74,14 +73,29 @@ namespace LeaderEngine
             Logger.Log("Renderer initialized.", true);
         }
 
+        public override void QueueCommandsShadowMap(CommandBuffer commandBuffer)
+        {
+            shadowMapBuffers.Add(commandBuffer);
+        }
+
+        public override void QueueCommandsOpaque(CommandBuffer commandBuffer)
+        {
+            opaqueBuffers.Add(commandBuffer);
+        }
+
+        public override void QueueCommandsTransparent(CommandBuffer commandBuffer)
+        {
+            transparentBuffers.Add(commandBuffer);
+        }
+
+        public override void QueueCommandsGUI(CommandBuffer commandBuffer)
+        {
+            guiBuffers.Add(commandBuffer);
+        }
+
         public override void Update()
         {
             postProcessor.Resize(ViewportSize);
-        }
-
-        public override void QueueCommands(CommandBuffer commandBuffer)
-        {
-            commandBuffers[commandBuffer.DrawType].Add(commandBuffer);
         }
 
         public override void Render()
@@ -127,7 +141,7 @@ namespace LeaderEngine
             GL.CullFace(CullFaceMode.Back);
             GL.FrontFace(FrontFaceDirection.Ccw);
 
-            foreach (var buffer in commandBuffers[DrawType.ShadowMap])
+            foreach (var buffer in shadowMapBuffers)
                 ExecuteCommandBuffer(buffer);
 
             shadowMapFramebuffer.End();
@@ -163,8 +177,7 @@ namespace LeaderEngine
             GL.CullFace(CullFaceMode.Back);
             GL.FrontFace(FrontFaceDirection.Ccw);
 
-            //DrawDrawList(drawLists[DrawType.Opaque]);
-            foreach (var buffer in commandBuffers[DrawType.Opaque])
+            foreach (var buffer in opaqueBuffers)
                 ExecuteCommandBuffer(buffer);
 
             //render transparent
@@ -175,7 +188,7 @@ namespace LeaderEngine
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            foreach (var buffer in commandBuffers[DrawType.Transparent])
+            foreach (var buffer in transparentBuffers)
                 ExecuteCommandBuffer(buffer);
 
             postProcessor.End();
@@ -190,8 +203,11 @@ namespace LeaderEngine
 
             postProcessor.Render();
 
-            foreach (var bufferList in commandBuffers)
-                bufferList.Value.Clear();
+            //clean up
+            shadowMapBuffers.Clear();
+            opaqueBuffers.Clear();
+            transparentBuffers.Clear();
+            guiBuffers.Clear();
 
             RenderCommandProcessor.Reset();
         }
