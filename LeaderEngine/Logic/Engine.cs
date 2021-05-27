@@ -3,6 +3,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using ErrorCode = OpenTK.Windowing.GraphicsLibraryFramework.ErrorCode;
@@ -28,6 +29,11 @@ namespace LeaderEngine
         private static DebugProc debugProcCallback = DebugCallback;
         private static GCHandle debugProcCallbackHandle;
 
+        private static string[] requiredExtensions = new string[]
+        {
+            "GL_ARB_direct_state_access"
+        };
+
         public static void Init(GameWindowSettings gws, NativeWindowSettings nws, Action initCallback = null, GLRenderer renderer = null)
         {
             MainWindow = new GameWindow(gws, nws);
@@ -38,6 +44,21 @@ namespace LeaderEngine
             Logger.Log("Vendor: " + GL.GetString(StringName.Vendor), true);
             Logger.Log("Version: " + GL.GetString(StringName.Version), true);
             Logger.Log("Shading Language version: " + GL.GetString(StringName.ShadingLanguageVersion), true);
+
+            //check extensions
+            HashSet<string> supportedExtensions = new HashSet<string>();
+
+            int numExt = GL.GetInteger(GetPName.NumExtensions);
+            for (int i = 0; i < numExt; i++)
+            {
+                supportedExtensions.Add(GL.GetString(StringNameIndexed.Extensions, i));
+            }
+
+            foreach (var ext in requiredExtensions)
+            {
+                if (!supportedExtensions.Contains(ext))
+                    throw new Exception($"Extension {ext} is not supported on the system!");
+            }
 
             //subscribe to window events
             MainWindow.UpdateFrame += UpdateFrame;
