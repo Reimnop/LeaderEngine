@@ -104,11 +104,17 @@ namespace LeaderEngine
 
             DirectionalLight.Main.CalculateViewProjection(out lightView, out lightProjection, shadowMapSize, Camera.Main.BaseTransform.Position);
 
+            LightData lightData = new LightData
+            {
+                View = lightView,
+                Projection = lightProjection
+            };
+
             foreach (var entity in DataManager.CurrentScene.SceneRootEntities)
-                entity.RecursivelyRenderShadowMap(lightView, lightProjection);
+                entity.RecursivelyRenderShadowMap(in lightData);
 
             foreach (var entity in DataManager.UnlistedEntities)
-                entity.RecursivelyRenderShadowMap(lightView, lightProjection);
+                entity.RecursivelyRenderShadowMap(in lightData);
 
             GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
 

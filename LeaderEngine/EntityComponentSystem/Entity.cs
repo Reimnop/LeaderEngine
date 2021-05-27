@@ -103,16 +103,16 @@ namespace LeaderEngine
                 child.RecursivelyRender(renderData);
         }
 
-        internal void RecursivelyRenderShadowMap(Matrix4 view, Matrix4 projection)
+        internal void RecursivelyRenderShadowMap(in LightData lightData)
         {
             if (!Active)
                 return;
 
             foreach (var renderer in ShadowMapRenderers)
-                renderer.RenderShadowMap(view, projection);
+                renderer.RenderShadowMap(lightData);
 
             foreach (var child in Children)
-                child.RecursivelyRenderShadowMap(view, projection);
+                child.RecursivelyRenderShadowMap(lightData);
         }
 
         public void Destroy()

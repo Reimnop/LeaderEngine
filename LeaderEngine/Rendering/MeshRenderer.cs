@@ -12,7 +12,7 @@ namespace LeaderEngine
         private CommandBuffer shadowMapCmd = new CommandBuffer() { DrawType = DrawType.ShadowMap };
         private CommandBuffer mainCmd = new CommandBuffer();
 
-        public void RenderShadowMap(Matrix4 view, Matrix4 projection)
+        public void RenderShadowMap(in LightData lightData)
         {
             if (!Enabled)
                 return;
@@ -22,7 +22,7 @@ namespace LeaderEngine
             shadowMapCmd.Clear();
 
             shadowMapCmd.BindShader(shader);
-            shadowMapCmd.SetUniformMatrix4(shader, "mvp", BaseTransform.ModelMatrix * view * projection);
+            shadowMapCmd.SetUniformMatrix4(shader, "mvp", BaseTransform.ModelMatrix * lightData.View * lightData.Projection);
 
             shadowMapCmd.BindMesh(Mesh);
             shadowMapCmd.DrawMesh(Mesh);
