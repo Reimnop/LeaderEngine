@@ -118,8 +118,7 @@ namespace LeaderEngine
         private static void ExecuteBindTexture(object obj)
         {
             var args = ((TextureUnit unit, int handle))obj;
-            GL.ActiveTexture(args.unit);
-            GL.BindTexture(TextureTarget.Texture2D, args.handle);
+            GL.BindTextureUnit((int)args.unit - (int)TextureUnit.Texture0, args.handle);
         }
 
         private static void ExecuteBindShader(object obj)
