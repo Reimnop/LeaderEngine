@@ -1,4 +1,6 @@
 ﻿using System;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -45,6 +47,31 @@ namespace LeaderEngine
             handle.Free();
 
             return output;
+        }
+
+        public static Span<Rgba32> LoadImageFromFile(string path, out int width, out int height)
+        {
+            using (Image<Rgba32> image = Image.Load<Rgba32>(path))
+            {
+                Span<Rgba32> pixelSpan;
+                if (!image.TryGetSinglePixelSpan(out pixelSpan))
+                {
+                    Rgba32[] pixelArray = new Rgba32[image.Width * image.Height];
+                    for (int i = 0; i < image.Height; i++)
+                    {
+                        var row = image.GetPixelRowSpan(i);
+                        for (int j = 0; j < image.Width; j++)
+                        {
+                            pixelArray[i * image.Height + j] = row[j];
+                        }
+                    }
+                    pixelSpan = new Span<Rgba32>(pixelArray);
+                }
+
+                width = image.Width;
+                height = image.Height;
+                return pixelSpan;
+            }
         }
     }
 }
