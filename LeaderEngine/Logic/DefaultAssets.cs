@@ -9,6 +9,7 @@ namespace LeaderEngine
         public static Shader ShadowMap { get; private set; }
         public static Shader Text { get; private set; }
         public static Shader Lit { get; private set; }
+        public static Shader Skybox { get; private set; }
 
         internal static void Init()
         {
@@ -29,6 +30,10 @@ namespace LeaderEngine
             Lit = Shader.FromSourceFile("lit",
                 Path.Combine(baseDir, "lit.vert"),
                 Path.Combine(baseDir, "lit.frag"));
+
+            Skybox = Shader.FromSourceFile("skybox",
+                Path.Combine(baseDir, "skybox.vert"),
+                Path.Combine(baseDir, "skybox.frag"));
         }
     }
 }

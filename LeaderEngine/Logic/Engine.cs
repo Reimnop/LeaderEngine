@@ -82,8 +82,9 @@ namespace LeaderEngine
             GlobalData.Init();
             DefaultShaders.Init();
             SpriteRenderer.Init();
+            SkyboxRenderer.Init();
 
-            Renderer = renderer != null ? renderer : Renderer;
+            Renderer = renderer ?? Renderer;
             Renderer.Init();
 
             AudioManager.Init();

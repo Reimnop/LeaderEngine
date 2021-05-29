@@ -1,6 +1,6 @@
-﻿using System;
-using SixLabors.ImageSharp;
+﻿using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -49,7 +49,7 @@ namespace LeaderEngine
             return output;
         }
 
-        public static Span<Rgba32> LoadImageFromFile(string path, out int width, out int height)
+        public static Rgba32[] LoadImageFromFile(string path, out int width, out int height)
         {
             using (Image<Rgba32> image = Image.Load<Rgba32>(path))
             {
@@ -70,7 +70,7 @@ namespace LeaderEngine
 
                 width = image.Width;
                 height = image.Height;
-                return pixelSpan;
+                return pixelSpan.ToArray();
             }
         }
 

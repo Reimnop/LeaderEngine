@@ -70,6 +70,8 @@ namespace LeaderEngine
             });
             #endregion
 
+            GL.DepthFunc(DepthFunction.Lequal);
+
             Logger.Log("Renderer initialized.", true);
         }
 

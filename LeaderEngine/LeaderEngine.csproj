@@ -63,6 +63,12 @@
     <None Update="EngineAssets\Shaders\shadowmap.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="EngineAssets\Shaders\skybox.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="EngineAssets\Shaders\skybox.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="EngineAssets\Shaders\sprite.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

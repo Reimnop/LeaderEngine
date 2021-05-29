@@ -2,7 +2,6 @@
 
 using ImGuiNET;
 using LeaderEngine;
-using System.Numerics;
 using System.Windows.Forms;
 
 namespace LeaderEditor

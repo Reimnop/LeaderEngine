@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using OpenTK.Mathematics;
-using OpenTK.Graphics.OpenGL4;
-using System.Runtime.CompilerServices;
+﻿using OpenTK.Graphics.OpenGL4;
+using System;
 
 namespace LeaderEngine
 {
     public class Cubemap : IDisposable
     {
         public readonly string Name;
+        public readonly string ID;
 
         private int handle;
 
@@ -17,7 +14,9 @@ namespace LeaderEngine
         {
             Name = name;
 
-            //TODO: implement id
+            ID = id ?? RNG.GetRandomID();
+
+            GlobalData.Cubemaps.Add(ID, this);
         }
 
         public static Cubemap FromPointers(
@@ -55,7 +54,42 @@ namespace LeaderEngine
             return cubemap;
         }
 
-        public unsafe static Cubemap FromFile(
+        public static Cubemap FromArrays<T>(
+            string name,
+            int width, int height,
+            T[] right, T[] left, T[] top, T[] bottom, T[] back, T[] front,
+            PixelInternalFormat internalFormat = PixelInternalFormat.Rgba,
+            PixelFormat format = PixelFormat.Rgba,
+            PixelType pixelType = PixelType.UnsignedByte,
+            string id = null) where T : struct
+        {
+            Cubemap cubemap = new Cubemap(name, id);
+            cubemap.handle = GL.GenTexture();
+            GL.BindTexture(TextureTarget.TextureCubeMap, cubemap.handle);
+
+            //upload
+            GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX, 0, internalFormat, width, height, 0, format, pixelType, right);
+            GL.TexImage2D(TextureTarget.TextureCubeMapNegativeX, 0, internalFormat, width, height, 0, format, pixelType, left);
+            GL.TexImage2D(TextureTarget.TextureCubeMapPositiveY, 0, internalFormat, width, height, 0, format, pixelType, top);
+            GL.TexImage2D(TextureTarget.TextureCubeMapNegativeY, 0, internalFormat, width, height, 0, format, pixelType, bottom);
+            GL.TexImage2D(TextureTarget.TextureCubeMapPositiveZ, 0, internalFormat, width, height, 0, format, pixelType, back);
+            GL.TexImage2D(TextureTarget.TextureCubeMapNegativeZ, 0, internalFormat, width, height, 0, format, pixelType, front);
+
+            //params
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
+
+            GL.ObjectLabel(ObjectLabelIdentifier.Texture, cubemap.handle, name.Length, name);
+
+            GL.BindTexture(TextureTarget.TextureCubeMap, 0);
+
+            return cubemap;
+        }
+
+        public static Cubemap FromFile(
             string name, 
             string rightPath, string leftPath, string topPath, string bottomPath, string backPath, string frontPath,
             string id = null)
@@ -79,15 +113,10 @@ namespace LeaderEngine
                 return null;
             }
 
-            return FromPointers(
+            return FromArrays(
                 name,
                 width, height,
-                (IntPtr)Unsafe.AsPointer(ref right[0]),
-                (IntPtr)Unsafe.AsPointer(ref left[0]),
-                (IntPtr)Unsafe.AsPointer(ref top[0]),
-                (IntPtr)Unsafe.AsPointer(ref bottom[0]),
-                (IntPtr)Unsafe.AsPointer(ref back[0]),
-                (IntPtr)Unsafe.AsPointer(ref front[0]),
+                right, left, top, bottom, back, front,
                 id: id);
         }
 
@@ -99,6 +128,8 @@ namespace LeaderEngine
         public void Dispose()
         {
             GL.DeleteTexture(handle);
+
+            GlobalData.Cubemaps.Remove(ID);
         }
     }
 }

@@ -14,6 +14,7 @@ namespace LeaderEngine
         public static Dictionary<string, Prefab> Prefabs { get; } = new Dictionary<string, Prefab>();
         public static Dictionary<string, Mesh> Meshes { get; } = new Dictionary<string, Mesh>();
         public static Dictionary<string, Texture> Textures { get; } = new Dictionary<string, Texture>();
+        public static Dictionary<string, Cubemap> Cubemaps { get; } = new Dictionary<string, Cubemap>();
         public static Dictionary<string, AudioClip> AudioClips { get; } = new Dictionary<string, AudioClip>();
         public static Dictionary<string, Font> Fonts { get; } = new Dictionary<string, Font>();
 
