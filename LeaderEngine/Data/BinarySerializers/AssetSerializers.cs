@@ -17,7 +17,7 @@ namespace LeaderEngine
 
         public override object DeserializeObject(BinaryReader reader)
         {
-            return DataManager.Meshes[reader.ReadString()];
+            return GlobalData.Meshes[reader.ReadString()];
         }
     }
 
@@ -35,7 +35,7 @@ namespace LeaderEngine
 
         public override object DeserializeObject(BinaryReader reader)
         {
-            return DataManager.Materials[reader.ReadString()];
+            return GlobalData.Materials[reader.ReadString()];
         }
     }
 
@@ -53,7 +53,7 @@ namespace LeaderEngine
 
         public override object DeserializeObject(BinaryReader reader)
         {
-            return DataManager.Textures[reader.ReadString()];
+            return GlobalData.Textures[reader.ReadString()];
         }
     }
 }

@@ -73,5 +73,21 @@ namespace LeaderEngine
                 return pixelSpan;
             }
         }
+
+        public static bool EnsureEqual<T>(T[] values, out T value)
+        {
+            value = default;
+
+            for (int i = 1; i < values.Length; i++) 
+            {
+                if (!values[i].Equals(values[i - 1]))
+                {
+                    return false;
+                }
+            }
+
+            value = values[0];
+            return true;
+        }
     }
 }

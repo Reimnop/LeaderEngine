@@ -60,12 +60,24 @@ namespace LeaderEngine
             string rightPath, string leftPath, string topPath, string bottomPath, string backPath, string frontPath,
             string id = null)
         {
-            var right = Helper.LoadImageFromFile(rightPath, out int width, out int height);
-            var left = Helper.LoadImageFromFile(leftPath, out _, out _);
-            var top = Helper.LoadImageFromFile(topPath, out _, out _);
-            var bottom = Helper.LoadImageFromFile(bottomPath, out _, out _);
-            var back = Helper.LoadImageFromFile(backPath, out _, out _);
-            var front = Helper.LoadImageFromFile(frontPath, out _, out _);
+            int[] widths = new int[6];
+            int[] heights = new int[6];
+
+            var right = Helper.LoadImageFromFile(rightPath, out widths[0], out heights[0]);
+            var left = Helper.LoadImageFromFile(leftPath, out widths[1], out heights[1]);
+            var top = Helper.LoadImageFromFile(topPath, out widths[2], out heights[2]);
+            var bottom = Helper.LoadImageFromFile(bottomPath, out widths[3], out heights[3]);
+            var back = Helper.LoadImageFromFile(backPath, out widths[4], out heights[4]);
+            var front = Helper.LoadImageFromFile(frontPath, out widths[5], out heights[5]);
+
+            int width;
+            int height;
+
+            if (!Helper.EnsureEqual(widths, out width) || !Helper.EnsureEqual(heights, out height))
+            {
+                Logger.Log("Error whilst loading Cubemap: Images do not have equal sizes!");
+                return null;
+            }
 
             return FromPointers(
                 name,

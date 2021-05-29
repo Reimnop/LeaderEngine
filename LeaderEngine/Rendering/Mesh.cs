@@ -87,12 +87,12 @@ namespace LeaderEngine
 
             ID = id ?? RNG.GetRandomID();
 
-            DataManager.Meshes.Add(ID, this);
+            GlobalData.Meshes.Add(ID, this);
         }
 
         internal void Unlist()
         {
-            DataManager.Meshes.Remove(ID);
+            GlobalData.Meshes.Remove(ID);
         }
 
         public void LoadMesh(
@@ -263,7 +263,7 @@ namespace LeaderEngine
             GL.DeleteBuffer(VBO1);
             GL.DeleteBuffer(EBO);
 
-            DataManager.Meshes.Remove(ID);
+            GlobalData.Meshes.Remove(ID);
         }
     }
 }

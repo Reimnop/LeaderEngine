@@ -71,7 +71,7 @@ namespace LeaderEngine
                 scene.SceneRootEntities.Remove(this);
             }
 
-            DataManager.UnlistedEntities.Add(this);
+            GlobalData.UnlistedEntities.Add(this);
         }
 
         internal void RecursivelyUpdate()

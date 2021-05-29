@@ -1,4 +1,6 @@
-﻿using ImGuiNET;
+﻿//#define HasAssetConfig
+
+using ImGuiNET;
 using LeaderEngine;
 using System.Numerics;
 using System.Windows.Forms;
@@ -12,8 +14,6 @@ namespace LeaderEditor
 
         private void Start()
         {
-            Logger.Log(":help:"); //TODO: lmao
-
             ImGuiController.RegisterImGui(ImGuiRenderer);
         }
 
@@ -25,6 +25,7 @@ namespace LeaderEditor
                 {
                     if (ImGui.BeginTabBar("prj-config-tabs"))
                     {
+#if HasAssetConfig
                         if (ImGui.BeginTabItem("Assets"))
                         {
                             //asset group list
@@ -76,6 +77,7 @@ namespace LeaderEditor
 
                             ImGui.EndTabItem();
                         }
+#endif
 
                         ImGui.EndTabBar();
                     }

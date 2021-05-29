@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="AssimpNet" Version="4.1.0" />
-    <PackageReference Include="OpenTK" Version="4.6.3" />
+    <PackageReference Include="OpenTK" Version="4.6.4" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
   </ItemGroup>
 

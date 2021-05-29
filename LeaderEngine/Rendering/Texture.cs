@@ -62,12 +62,12 @@ namespace LeaderEngine
 
             ID = id ?? RNG.GetRandomID();
 
-            DataManager.Textures.Add(ID, this);
+            GlobalData.Textures.Add(ID, this);
         }
 
         internal void Unlist()
         {
-            DataManager.Textures.Remove(ID);
+            GlobalData.Textures.Remove(ID);
         }
 
         public static Texture FromFile(string name, string path, string id = null)
@@ -277,7 +277,7 @@ namespace LeaderEngine
         {
             GL.DeleteTexture(handle);
 
-            DataManager.Textures.Remove(ID);
+            GlobalData.Textures.Remove(ID);
         }
     }
 }

@@ -79,7 +79,7 @@ namespace LeaderEngine
             GL.Enable(EnableCap.DebugOutputSynchronous);
 
             //init modules
-            DataManager.Init();
+            GlobalData.Init();
             DefaultShaders.Init();
             SpriteRenderer.Init();
 
@@ -138,7 +138,7 @@ namespace LeaderEngine
             DataManager.CurrentScene.UpdateSceneHierachy();
 
             //update unlisted entities
-            foreach (var entity in DataManager.UnlistedEntities)
+            foreach (var entity in GlobalData.UnlistedEntities)
                 entity.RecursivelyUpdate();
 
             //update renderer

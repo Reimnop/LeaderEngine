@@ -39,7 +39,7 @@ namespace LeaderEngine
 
             ID = id ?? RNG.GetRandomID();
 
-            DataManager.Prefabs.Add(ID, this);
+            GlobalData.Prefabs.Add(ID, this);
         }
 
         public Entity Instantiate(Entity parent = null)
@@ -158,10 +158,10 @@ namespace LeaderEngine
 
             //read mesh & material
             if (reader.ReadBoolean())
-                prefabEntity.Mesh = DataManager.Meshes[reader.ReadString()]; //mesh
+                prefabEntity.Mesh = GlobalData.Meshes[reader.ReadString()]; //mesh
 
             if (reader.ReadBoolean())
-                prefabEntity.Material = DataManager.Materials[reader.ReadString()]; //material
+                prefabEntity.Material = GlobalData.Materials[reader.ReadString()]; //material
 
             //read children
             int childrenCount = reader.ReadInt32();
@@ -173,7 +173,7 @@ namespace LeaderEngine
 
         public void Dispose()
         {
-            DataManager.Prefabs.Remove(ID);
+            GlobalData.Prefabs.Remove(ID);
         }
     }
 }

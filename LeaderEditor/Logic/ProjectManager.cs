@@ -122,7 +122,7 @@ namespace LeaderEditor
                 return;
 
             var ag = Project.Assets[Project.CurrentAssetGroupIndex];
-            DataManager.LoadAssets(Path.Combine(Project.Path, "Assets/", ag.FileName));
+            GlobalData.LoadAssets(Path.Combine(Project.Path, "Assets/", ag.FileName));
         }
 
         private static void LoadScene()
@@ -155,7 +155,7 @@ namespace LeaderEditor
             Directory.CreateDirectory(assetsPath);
 
             var ag = Project.Assets[index];
-            DataManager.SaveAssets(Path.Combine(assetsPath, ag.FileName));
+            GlobalData.SaveAssets(Path.Combine(assetsPath, ag.FileName));
         }
     }
 }

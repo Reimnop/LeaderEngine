@@ -66,7 +66,7 @@ namespace LeaderEngine
 
             ID = id ?? RNG.GetRandomID();
 
-            DataManager.Fonts.Add(ID, this);
+            GlobalData.Fonts.Add(ID, this);
         }
 
         public Texture GetTexture()
@@ -76,7 +76,7 @@ namespace LeaderEngine
         {
             fontTexture.Dispose();
 
-            DataManager.Fonts.Remove(ID);
+            GlobalData.Fonts.Remove(ID);
         }
     }
 }

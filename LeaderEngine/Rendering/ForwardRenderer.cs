@@ -106,7 +106,7 @@ namespace LeaderEngine
             foreach (var entity in DataManager.CurrentScene.SceneRootEntities)
                 entity.Transform.CalculateModelMatrixRecursively();
 
-            foreach (var entity in DataManager.UnlistedEntities)
+            foreach (var entity in GlobalData.UnlistedEntities)
                 entity.Transform.CalculateModelMatrixRecursively();
 
             //shadow mapping
@@ -127,7 +127,7 @@ namespace LeaderEngine
             foreach (var entity in DataManager.CurrentScene.SceneRootEntities)
                 entity.RecursivelyRenderShadowMap(in lightData);
 
-            foreach (var entity in DataManager.UnlistedEntities)
+            foreach (var entity in GlobalData.UnlistedEntities)
                 entity.RecursivelyRenderShadowMap(in lightData);
 
             GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
@@ -163,7 +163,7 @@ namespace LeaderEngine
             foreach (var entity in DataManager.CurrentScene.SceneRootEntities)
                 entity.RecursivelyRender(renderData);
 
-            foreach (var entity in DataManager.UnlistedEntities)
+            foreach (var entity in GlobalData.UnlistedEntities)
                 entity.RecursivelyRender(renderData);
 
             GL.Viewport(0, 0, ViewportSize.X, ViewportSize.Y);

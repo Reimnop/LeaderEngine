@@ -84,7 +84,7 @@ namespace LeaderEditor
                 if (ImGui.Selectable("[None]", source.Clip == null))
                     source.Clip = null;
 
-                foreach (var clip in DataManager.AudioClips)
+                foreach (var clip in GlobalData.AudioClips)
                     if (ImGui.Selectable(clip.Value.Name, source.Clip == clip.Value))
                         source.Clip = clip.Value;
 
@@ -162,7 +162,7 @@ namespace LeaderEditor
                 if (ImGui.Selectable("[None]", value == null))
                     value = null;
 
-                foreach (var tex in DataManager.Textures)
+                foreach (var tex in GlobalData.Textures)
                     if (ImGui.Selectable(tex.Value.Name, value == tex.Value))
                         value = tex.Value;
 
@@ -181,7 +181,7 @@ namespace LeaderEditor
                 if (ImGui.Selectable("[None]", value == null))
                     value = null;
 
-                foreach (var font in DataManager.Fonts)
+                foreach (var font in GlobalData.Fonts)
                     if (ImGui.Selectable(font.Value.Name, value == font.Value))
                         value = font.Value;
 
@@ -200,7 +200,7 @@ namespace LeaderEditor
                 if (ImGui.Selectable("[None]", value == null))
                     value = null;
 
-                foreach (var clip in DataManager.AudioClips)
+                foreach (var clip in GlobalData.AudioClips)
                     if (ImGui.Selectable(clip.Value.Name, value == clip.Value))
                         value = clip.Value;
 

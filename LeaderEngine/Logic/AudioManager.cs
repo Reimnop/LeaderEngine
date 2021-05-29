@@ -85,7 +85,7 @@ namespace LeaderEngine
 
             ID = id ?? RNG.GetRandomID();
 
-            DataManager.AudioClips.Add(ID, this);
+            GlobalData.AudioClips.Add(ID, this);
         }
 
         public static AudioClip FromFile(string name, string path)
@@ -103,7 +103,7 @@ namespace LeaderEngine
         {
             AL.DeleteBuffer(handle);
 
-            DataManager.AudioClips.Remove(ID);
+            GlobalData.AudioClips.Remove(ID);
         }
     }
 

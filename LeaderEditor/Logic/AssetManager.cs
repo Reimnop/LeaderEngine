@@ -53,7 +53,7 @@ namespace LeaderEditor
 
                     if (ImGui.BeginChild("sub-ac-win"))
                     {
-                        foreach (var a in DataManager.AudioClips)
+                        foreach (var a in GlobalData.AudioClips)
                             if (ImGui.Selectable(a.Value.Name, SelectedClip == a.Value))
                                 SelectedClip = a.Value;
                         ImGui.EndChild();
@@ -80,7 +80,7 @@ namespace LeaderEditor
 
                             if (!string.IsNullOrEmpty(ofd.FileName))
                             {
-                                DataManager.LoadModelFromFile(ofd.FileName);
+                                AssetImporter.LoadModelFromFile(ofd.FileName);
                             }
                         }
                     }
@@ -89,7 +89,7 @@ namespace LeaderEditor
 
                     if (ImGui.BeginChild("sub-prefabs-win"))
                     {
-                        foreach (var p in DataManager.Prefabs)
+                        foreach (var p in GlobalData.Prefabs)
                             if (ImGui.Selectable(p.Value.Name, SelectedPrefab == p.Value))
                                 SelectedPrefab = p.Value;
                         ImGui.EndChild();
@@ -105,7 +105,7 @@ namespace LeaderEditor
 
                     if (ImGui.BeginChild("sub-meshes-win"))
                     {
-                        foreach (var m in DataManager.Meshes)
+                        foreach (var m in GlobalData.Meshes)
                             if (ImGui.Selectable(m.Value.Name, SelectedMesh == m.Value))
                                 SelectedMesh = m.Value;
                         ImGui.EndChild();
@@ -121,7 +121,7 @@ namespace LeaderEditor
 
                     if (ImGui.BeginChild("sub-tex-win"))
                     {
-                        foreach (var t in DataManager.Textures)
+                        foreach (var t in GlobalData.Textures)
                             if (ImGui.Selectable(t.Value.Name, SelectedTexture == t.Value))
                                 SelectedTexture = t.Value;
                         ImGui.EndChild();
@@ -137,7 +137,7 @@ namespace LeaderEditor
 
                     if (ImGui.BeginChild("sub-mats-win"))
                     {
-                        foreach (var m in DataManager.Materials)
+                        foreach (var m in GlobalData.Materials)
                             if (ImGui.Selectable(m.Value.Name, SelectedMaterial == m.Value))
                                 SelectedMaterial = m.Value;
                         ImGui.EndChild();

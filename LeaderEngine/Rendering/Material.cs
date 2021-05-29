@@ -43,7 +43,7 @@ namespace LeaderEngine
 
             ID = id ?? RNG.GetRandomID();
 
-            DataManager.Materials.Add(ID, this);
+            GlobalData.Materials.Add(ID, this);
         }
 
         #region SetMethods
@@ -196,7 +196,7 @@ namespace LeaderEngine
             {
                 textures.Add(
                     (TextureUnit)reader.ReadInt32(),
-                    DataManager.Textures[reader.ReadString()]
+                    GlobalData.Textures[reader.ReadString()]
                 );
             }
 
@@ -236,7 +236,7 @@ namespace LeaderEngine
 
         public void Dispose()
         {
-            DataManager.Materials.Remove(ID);
+            GlobalData.Materials.Remove(ID);
         }
     }
 }
