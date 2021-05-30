@@ -79,17 +79,7 @@ namespace LeaderEditor
             ImGui.Checkbox("Looping", ref loop);
             source.Looping = loop;
 
-            if (ImGui.BeginCombo("Clip", source.Clip != null ? source.Clip.Name : "[None]"))
-            {
-                if (ImGui.Selectable("[None]", source.Clip == null))
-                    source.Clip = null;
-
-                foreach (var clip in GlobalData.AudioClips)
-                    if (ImGui.Selectable(clip.Value.Name, source.Clip == clip.Value))
-                        source.Clip = clip.Value;
-
-                ImGui.EndCombo();
-            }
+            source.Clip = (AudioClip)DefaultAC("Clip", source.Clip);
 
             if (ImGui.Button("Play"))
                 source.Play();
@@ -159,12 +149,13 @@ namespace LeaderEditor
 
             if (ImGui.BeginCombo(name, value != null ? value.Name : "[None]"))
             {
-                if (ImGui.Selectable("[None]", value == null))
-                    value = null;
-
                 foreach (var tex in GlobalData.Textures)
+                {
+                    ImGui.PushID(tex.GetHashCode());
                     if (ImGui.Selectable(tex.Value.Name, value == tex.Value))
                         value = tex.Value;
+                    ImGui.PopID();
+                }
 
                 ImGui.EndCombo();
             }
@@ -182,8 +173,12 @@ namespace LeaderEditor
                     value = null;
 
                 foreach (var font in GlobalData.Fonts)
+                {
+                    ImGui.PushID(font.GetHashCode());
                     if (ImGui.Selectable(font.Value.Name, value == font.Value))
                         value = font.Value;
+                    ImGui.PopID();
+                }
 
                 ImGui.EndCombo();
             }
@@ -197,12 +192,13 @@ namespace LeaderEditor
 
             if (ImGui.BeginCombo(name, value != null ? value.Name : "[None]"))
             {
-                if (ImGui.Selectable("[None]", value == null))
-                    value = null;
-
                 foreach (var clip in GlobalData.AudioClips)
+                {
+                    ImGui.PushID(clip.GetHashCode());
                     if (ImGui.Selectable(clip.Value.Name, value == clip.Value))
                         value = clip.Value;
+                    ImGui.PopID();
+                }
 
                 ImGui.EndCombo();
             }

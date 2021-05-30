@@ -170,6 +170,9 @@ namespace LeaderEngine
                     return;
                 }
 
+                if (value == null) 
+                    return;
+
                 _audioClip = value;
                 AL.Source(handle, ALSourcei.Buffer, value.GetHandle());
             }
