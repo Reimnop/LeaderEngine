@@ -53,24 +53,28 @@ namespace LeaderEngine
         {
             using (Image<Rgba32> image = Image.Load<Rgba32>(path))
             {
-                Span<Rgba32> pixelSpan;
-                if (!image.TryGetSinglePixelSpan(out pixelSpan))
+                Rgba32[] pixels;
+
+                if (!image.TryGetSinglePixelSpan(out Span<Rgba32> pixelSpan))
                 {
-                    Rgba32[] pixelArray = new Rgba32[image.Width * image.Height];
+                    pixels = new Rgba32[image.Width * image.Height];
                     for (int i = 0; i < image.Height; i++)
                     {
                         var row = image.GetPixelRowSpan(i);
                         for (int j = 0; j < image.Width; j++)
                         {
-                            pixelArray[i * image.Height + j] = row[j];
+                            pixels[i * image.Height + j] = row[j];
                         }
                     }
-                    pixelSpan = new Span<Rgba32>(pixelArray);
+                }
+                else
+                {
+                    pixels = pixelSpan.ToArray();
                 }
 
                 width = image.Width;
                 height = image.Height;
-                return pixelSpan.ToArray();
+                return pixels;
             }
         }
 

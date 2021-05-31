@@ -140,8 +140,29 @@ namespace LeaderEditor
             { typeof(Vector2), DefaultV2 },
             { typeof(AudioClip), DefaultAC },
             { typeof(Texture), DefaultTexture },
-            { typeof(Font), DefaultFont }
+            { typeof(Font), DefaultFont },
+            { typeof(Cubemap), DefaultCubemap }
         };
+
+        private static object DefaultCubemap(string name, object obj)
+        {
+            Cubemap value = (Cubemap)obj;
+
+            if (ImGui.BeginCombo(name, value != null ? value.Name : "[None]"))
+            {
+                foreach (var cbm in GlobalData.Cubemaps)
+                {
+                    ImGui.PushID(cbm.GetHashCode());
+                    if (ImGui.Selectable(cbm.Value.Name, value == cbm.Value))
+                        value = cbm.Value;
+                    ImGui.PopID();
+                }
+
+                ImGui.EndCombo();
+            }
+
+            return value;
+        }
 
         private static object DefaultTexture(string name, object obj)
         {

@@ -16,7 +16,8 @@ namespace LeaderEditor
             { typeof(TextRenderer), SerializeFunc.SerializeTextRenderer },
             { typeof(AudioSource), SerializeFunc.SerializeAudioSource },
             { typeof(AudioListener), null },
-            { typeof(SpriteRenderer), null }
+            { typeof(SpriteRenderer), null },
+            { typeof(SkyboxRenderer), null }
         };
 
         private void Start()

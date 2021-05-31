@@ -13,6 +13,7 @@ namespace LeaderEditor
         public static Texture SelectedTexture;
         public static Material SelectedMaterial;
         public static AudioClip SelectedClip;
+        public static Cubemap SelectedCubemap;
 
         private void Start()
         {
@@ -27,7 +28,55 @@ namespace LeaderEditor
                 if (Input.GetKeyDown(Keys.I) && ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows))
                     SelectedPrefab?.Instantiate();
 
+                if (ImGui.BeginChild("cubemaps", new Vector2(210f, 0f), true))
+                {
+                    ImGui.Text("Cubemaps");
 
+                    ImGui.SameLine();
+
+                    if (ImGui.Button("Import Cubemap", new Vector2(115f, 0f)))
+                    {
+                        var aiw = new AssetImporterWizard("cubemap-importer");
+                        aiw.Title = "Import Cubemap";
+                    }
+
+                    var assetImporter = AssetImporterWizard.GetAssetImporter("cubemap-importer");
+
+                    if (assetImporter != null)
+                    {
+                        if (assetImporter.Begin())
+                        {
+                            string right = assetImporter.OpenFileDialog("Right", "Image|*.jpg;*.png");
+                            string left = assetImporter.OpenFileDialog("Left", "Image|*.jpg;*.png");
+                            string top = assetImporter.OpenFileDialog("Top", "Image|*.jpg;*.png");
+                            string bottom = assetImporter.OpenFileDialog("Bottom", "Image|*.jpg;*.png");
+                            string back = assetImporter.OpenFileDialog("Back", "Image|*.jpg;*.png");
+                            string front = assetImporter.OpenFileDialog("Front", "Image|*.jpg;*.png");
+
+                            assetImporter.End();
+
+                            if (assetImporter.Finished())
+                            {
+                                Cubemap.FromFile("cubemap", right, left, top, bottom, back, front);
+
+                                assetImporter.Dispose();
+                            }
+                        }
+                    }
+
+                    ImGui.Separator();
+
+                    if (ImGui.BeginChild("sub-cb-win"))
+                    {
+                        foreach (var a in GlobalData.Cubemaps)
+                            if (ImGui.Selectable(a.Value.Name, SelectedCubemap == a.Value))
+                                SelectedCubemap = a.Value;
+                        ImGui.EndChild();
+                    }
+
+                    ImGui.EndChild();
+                }
+                ImGui.SameLine();
                 if (ImGui.BeginChild("clips", new Vector2(210f, 0f), true))
                 {
                     ImGui.Text("Audio Clips");
@@ -36,17 +85,27 @@ namespace LeaderEditor
 
                     if (ImGui.Button("Import Audio", new Vector2(100f, 0f)))
                     {
-                        using (var ofd = new OpenFileDialog())
+                        var aiw = new AssetImporterWizard("audio-importer");
+                        aiw.Title = "Import Audio";
+                    }
+
+                    var assetImporter = AssetImporterWizard.GetAssetImporter("audio-importer");
+
+                    if (assetImporter != null)
+                    {
+                        if (assetImporter.Begin())
                         {
-                            ofd.Filter = "Audio File|*.wav";
+                            string path = assetImporter.OpenFileDialog("Audio Clip", "Audio File|*.wav");
 
-                            ofd.ShowDialog();
-
-                            if (!string.IsNullOrEmpty(ofd.FileName))
+                            if (assetImporter.Finished())
                             {
-                                AudioClip.FromFile("audio clip", ofd.FileName);
+                                AudioClip.FromFile("audio clip", path);
+
+                                assetImporter.Dispose();
                             }
                         }
+
+                        assetImporter.End();
                     }
 
                     ImGui.Separator();

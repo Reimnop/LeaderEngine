@@ -20,7 +20,7 @@ namespace LeaderEditor
         {
             if (projectConfigMenuOpen)
             {
-                if (ImGui.Begin("Project Configuration", ref projectConfigMenuOpen))
+                if (ImGui.Begin("Project Configuration", ref projectConfigMenuOpen, ImGuiWindowFlags.NoDocking))
                 {
                     if (ImGui.BeginTabBar("prj-config-tabs"))
                     {
