@@ -36,12 +36,19 @@ namespace LeaderEditor
             if (finished)
                 return false;
 
-            return ImGui.Begin(Title, ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoCollapse);
+            ImGui.SetNextWindowSize(System.Numerics.Vector2.Zero);
+
+            return ImGui.Begin(Title, ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoSavedSettings);
         }
 
         public void End()
         {
             finished = ImGui.Button("Import") || finished;
+
+            ImGui.SameLine();
+
+            if (ImGui.Button("Cancel")) 
+                Dispose();
 
             ImGui.End();
         }
