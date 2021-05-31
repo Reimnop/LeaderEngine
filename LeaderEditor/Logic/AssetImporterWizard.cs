@@ -51,6 +51,18 @@ namespace LeaderEditor
             return finished;
         }
 
+        public string InputText(string name)
+        {
+            if (!values.ContainsKey(name))
+                values.Add(name, string.Empty);
+
+            string value = (string)values[name];
+            ImGui.InputText(name, ref value, 32767);
+            values[name] = value;
+
+            return value;
+        }
+
         public string OpenFileDialog(string name, string filter)
         {
             if (!values.ContainsKey(name))
