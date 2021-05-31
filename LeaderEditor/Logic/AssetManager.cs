@@ -46,6 +46,7 @@ namespace LeaderEditor
                     {
                         if (assetImporter.Begin())
                         {
+                            string name = assetImporter.InputText("Name");
                             string right = assetImporter.OpenFileDialog("Right", "Image|*.jpg;*.png");
                             string left = assetImporter.OpenFileDialog("Left", "Image|*.jpg;*.png");
                             string top = assetImporter.OpenFileDialog("Top", "Image|*.jpg;*.png");
@@ -57,7 +58,7 @@ namespace LeaderEditor
 
                             if (assetImporter.Finished())
                             {
-                                Cubemap.FromFile("cubemap", right, left, top, bottom, back, front);
+                                Cubemap.FromFile(name, right, left, top, bottom, back, front);
 
                                 assetImporter.Dispose();
                             }
@@ -95,17 +96,18 @@ namespace LeaderEditor
                     {
                         if (assetImporter.Begin())
                         {
+                            string name = assetImporter.InputText("Name");
                             string path = assetImporter.OpenFileDialog("Audio Clip", "Audio File|*.wav");
+
+                            assetImporter.End();
 
                             if (assetImporter.Finished())
                             {
-                                AudioClip.FromFile("audio clip", path);
+                                AudioClip.FromFile(name, path);
 
                                 assetImporter.Dispose();
                             }
                         }
-
-                        assetImporter.End();
                     }
 
                     ImGui.Separator();
