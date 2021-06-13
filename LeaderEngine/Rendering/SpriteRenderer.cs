@@ -50,8 +50,6 @@ namespace LeaderEngine
                 new SpriteVertexData { UV = new Vector2(0f, 1f) }
             });
 
-            mesh.Unlist();
-
             string dir = Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/");
 
             shader = Shader.FromSourceFile("sprite-shader",

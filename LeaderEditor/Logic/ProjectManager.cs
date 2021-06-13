@@ -122,7 +122,8 @@ namespace LeaderEditor
                 return;
 
             var ag = Project.Assets[Project.CurrentAssetGroupIndex];
-            GlobalData.LoadAssets(Path.Combine(Project.Path, "Assets/", ag.FileName));
+            //LeaderEngine.AssetManager.LoadAssets(Path.Combine(Project.Path, "Assets/", ag.FileName));
+            throw new System.Exception("TEMPORARILY DISABLED!");
         }
 
         private static void LoadScene()
@@ -155,7 +156,10 @@ namespace LeaderEditor
             Directory.CreateDirectory(assetsPath);
 
             var ag = Project.Assets[index];
-            GlobalData.SaveAssets(Path.Combine(assetsPath, ag.FileName));
+            //LeaderEngine.AssetManager.SaveAssets(Path.Combine(assetsPath, ag.FileName));
+            throw new System.Exception("TEMPORARILY DISABLED!");
+
+            //TODO: FIX ME!
         }
     }
 }

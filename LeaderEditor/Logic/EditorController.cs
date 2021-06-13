@@ -4,13 +4,14 @@ using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System;
+using System.Runtime.InteropServices;
 
 namespace LeaderEditor
 {
     public class EditorController : Component
     {
         public static EditorController Main;
-        public static EditorRenderer ERenderer;
+        public static EditorRenderer Renderer;
 
         private Entity editorCamera;
 
@@ -22,7 +23,7 @@ namespace LeaderEditor
             if (Main == null)
                 Main = this;
 
-            ERenderer = (EditorRenderer)Engine.Renderer;
+            Renderer = (EditorRenderer)Engine.Renderer;
 
             //init editor gui
             ImGuiController.RegisterImGui(ImGuiRenderer);
@@ -103,11 +104,11 @@ namespace LeaderEditor
                 var cPos = ImGui.GetCursorScreenPos();
                 var vSize = ImGui.GetContentRegionAvail();
 
-                ERenderer.ViewportSize = new Vector2i((int)vSize.X, (int)vSize.Y);
+                Renderer.ViewportSize = new Vector2i((int)vSize.X, (int)vSize.Y);
 
                 //display framebuffer texture on window
                 ImGui.GetWindowDrawList().AddImage(
-                    (IntPtr)ERenderer.Framebuffer.GetTexture(FramebufferAttachment.ColorAttachment0),
+                    (IntPtr)Renderer.FramebufferTexture,
                     cPos,
                     cPos + vSize,
                     new System.Numerics.Vector2(0f, 1f),

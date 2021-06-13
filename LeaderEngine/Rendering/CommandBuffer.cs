@@ -59,7 +59,7 @@ namespace LeaderEngine
 
         public void BindShader(Shader shader)
         {
-            BindShader(shader.GetHandle());
+            BindShader(shader.Handle);
         }
 
         public void BindTexture(TextureUnit unit, int handle) //basic
@@ -73,7 +73,7 @@ namespace LeaderEngine
 
         public void BindTexture(TextureUnit unit, Texture texture)
         {
-            BindTexture(unit, texture.GetHandle());
+            BindTexture(unit, texture.Handle);
         }
 
         public void BindVertexArray(int handle)
@@ -243,31 +243,9 @@ namespace LeaderEngine
             DrawElements(mesh.PrimitiveType, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
         }
 
-        public void BindMaterial(Material material, Shader shader)
+        public void BindMaterial(int index, Material material)
         {
-            foreach (var prop in material.MaterialProps)
-            {
-                switch (prop.Value.PropType)
-                {
-                    case MaterialPropType.Int:
-                        SetUniformInt(shader, prop.Key, (int)prop.Value.Data);
-                        break;
-                    case MaterialPropType.Float:
-                        SetUniformFloat(shader, prop.Key, (float)prop.Value.Data);
-                        break;
-                    case MaterialPropType.Vector3:
-                        SetUniformVector3(shader, prop.Key, (Vector3)prop.Value.Data);
-                        break;
-                    case MaterialPropType.Vector4:
-                        SetUniformVector4(shader, prop.Key, (Vector4)prop.Value.Data);
-                        break;
-                }
-            }
-
-            foreach (var tex in material.MaterialTextures)
-            {
-                BindTexture(tex.Key, tex.Value);
-            }
+            GL.UniformBlockBinding(material.Shader.Handle, index, material.UniformBuffer);
         }
     }
 }

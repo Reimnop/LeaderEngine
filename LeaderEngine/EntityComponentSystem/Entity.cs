@@ -70,7 +70,7 @@ namespace LeaderEngine
                 scene.SceneRootEntities.Remove(this);
             }
 
-            GlobalData.UnlistedEntities.Add(this);
+            AssetManager.UnlistedEntities.Add(this);
         }
 
         internal void RecursivelyUpdate()

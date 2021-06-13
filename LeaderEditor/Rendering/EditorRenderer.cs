@@ -1,47 +1,44 @@
 ﻿using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
+using System;
 
 namespace LeaderEditor
 {
     public class EditorRenderer : ForwardRenderer
     {
-        private ImGuiController ImGuiController { get; } = new ImGuiController();
+        public int FramebufferTexture => framebufferTexture;
 
-        public Framebuffer Framebuffer;
+        private ImGuiController ImGuiController = new ImGuiController();
+
+        private Vector2i lastViewportSize;
+
+        private int framebufferTexture;
+        private int framebuffer;
 
         public override void Init()
         {
-            Framebuffer = new Framebuffer("viewport-fbo", 1, 1, new Attachment[]
-            {
-                new Attachment
-                {
-                    Draw = false,
-                    PixelInternalFormat = PixelInternalFormat.Rgba,
-                    PixelFormat = PixelFormat.Rgba,
-                    PixelType = PixelType.Float,
-                    FramebufferAttachment = FramebufferAttachment.ColorAttachment0,
-                    TextureParamsInt = new TextureParamInt[]
-                    {
-                        new TextureParamInt { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Linear },
-                        new TextureParamInt { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Linear }
-                    }
-                },
-                new Attachment
-                {
-                    Draw = false,
-                    PixelInternalFormat = PixelInternalFormat.DepthComponent,
-                    PixelFormat = PixelFormat.DepthComponent,
-                    PixelType = PixelType.Float,
-                    FramebufferAttachment = FramebufferAttachment.DepthAttachment,
-                    TextureParamsInt = new TextureParamInt[]
-                    {
-                        new TextureParamInt { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Nearest },
-                        new TextureParamInt { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Nearest }
-                    }
-                }
-            });
-
             ImGuiController.Init();
+
+            //init FBO
+            framebuffer = GL.GenFramebuffer();
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebuffer);
+
+            //init shadowmap
+            framebufferTexture = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, framebufferTexture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, 1, 1, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            //bind texture to framebuffer
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, framebufferTexture, 0);
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            string name = "ViewportFramebuffer";
+            GL.ObjectLabel(ObjectLabelIdentifier.Framebuffer, framebuffer, name.Length, name);
 
             base.Init();
         }
@@ -50,21 +47,29 @@ namespace LeaderEditor
         {
             base.Update();
 
-            if (ViewportSize.X * ViewportSize.Y > 0)
-                Framebuffer.Resize(ViewportSize.X, ViewportSize.Y);
-
             ImGuiController.Update(Time.DeltaTime);
+
+            if (ViewportSize == lastViewportSize || ViewportSize.X * ViewportSize.Y == 0)
+                return;
+
+            GL.BindTexture(TextureTarget.Texture2D, framebufferTexture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, ViewportSize.X, ViewportSize.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            lastViewportSize = ViewportSize;
         }
 
         public override void Render()
         {
+            RenderStuff();
+
             //begin fbo
-            Framebuffer.Begin();
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebuffer);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            base.Render();
+            RenderPostProcess();
 
-            Framebuffer.End();
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
             //restore viewport
             GL.Viewport(0, 0, Engine.MainWindow.ClientSize.X, Engine.MainWindow.ClientSize.Y);

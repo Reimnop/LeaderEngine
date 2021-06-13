@@ -3,7 +3,7 @@ using System.IO;
 
 namespace LeaderEngine
 {
-    public class MeshSerializer : BinarySerializer
+    /*public class MeshSerializer : BinarySerializer
     {
         public override bool IsSerializable(Type type)
         {
@@ -17,7 +17,7 @@ namespace LeaderEngine
 
         public override object DeserializeObject(BinaryReader reader)
         {
-            return GlobalData.Meshes[reader.ReadString()];
+            return AssetManager.Meshes[reader.ReadString()];
         }
     }
 
@@ -35,7 +35,7 @@ namespace LeaderEngine
 
         public override object DeserializeObject(BinaryReader reader)
         {
-            return GlobalData.Materials[reader.ReadString()];
+            return AssetManager.Materials[reader.ReadString()];
         }
     }
 
@@ -53,7 +53,8 @@ namespace LeaderEngine
 
         public override object DeserializeObject(BinaryReader reader)
         {
-            return GlobalData.Textures[reader.ReadString()];
+            return AssetManager.Textures[reader.ReadString()];
         }
-    }
+    }*/
+    //TODO: FIX ME!
 }

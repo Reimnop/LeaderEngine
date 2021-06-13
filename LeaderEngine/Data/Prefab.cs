@@ -5,46 +5,22 @@ using System.IO;
 
 namespace LeaderEngine
 {
-    public class PrefabEntity
+    public class Prefab : GameAsset
     {
-        public string Name;
+        public override GameAssetType AssetType => GameAssetType.Prefab;
 
-        public Vector3 Position = Vector3.Zero;
-        public Quaternion Rotation = Quaternion.Identity;
-        public Vector3 Scale = Vector3.One;
-        public Vector3 OriginOffset = Vector3.Zero;
+        public PrefabEntity RootEntity => _rootEntity;
 
-        public Mesh Mesh;
-        public Material Material;
+        private PrefabEntity _rootEntity;
 
-        public List<PrefabEntity> Children { get; } = new List<PrefabEntity>();
-
-        public PrefabEntity(string name)
+        public Prefab(string name, PrefabEntity rootEntity) : base(name)
         {
-            Name = name;
-        }
-    }
-
-    public class Prefab : IDisposable
-    {
-        public readonly string Name;
-        public readonly string ID;
-
-        public readonly PrefabEntity RootPrefabEntity;
-
-        public Prefab(string name, PrefabEntity rootEntity, string id = null)
-        {
-            Name = name;
-            RootPrefabEntity = rootEntity;
-
-            ID = id ?? RNG.GetRandomID();
-
-            GlobalData.Prefabs.Add(ID, this);
+            _rootEntity = rootEntity;
         }
 
         public Entity Instantiate(Entity parent = null)
         {
-            return RecursivelySpawnEntities(RootPrefabEntity, parent);
+            return RecursivelySpawnEntities(_rootEntity, parent);
         }
 
         private Entity RecursivelySpawnEntities(PrefabEntity prefabEntity, Entity parent)
@@ -68,112 +44,6 @@ namespace LeaderEngine
                 RecursivelySpawnEntities(child, entity);
 
             return entity;
-        }
-
-        public void Serialize(BinaryWriter writer)
-        {
-            //write name
-            writer.Write(Name);
-            //write id
-            writer.Write(ID);
-
-            //write entites
-            RecursivelySerialize(RootPrefabEntity, writer);
-        }
-
-        private void RecursivelySerialize(PrefabEntity entity, BinaryWriter writer)
-        {
-            //write name
-            writer.Write(entity.Name);
-
-            //write transform
-            writer.Write(entity.Position.X);
-            writer.Write(entity.Position.Y);
-            writer.Write(entity.Position.Z); //position
-
-            writer.Write(entity.Rotation.X);
-            writer.Write(entity.Rotation.Y);
-            writer.Write(entity.Rotation.Z);
-            writer.Write(entity.Rotation.W); //rotation
-
-            writer.Write(entity.Scale.X);
-            writer.Write(entity.Scale.Y);
-            writer.Write(entity.Scale.Z); //scale
-
-            writer.Write(entity.OriginOffset.X);
-            writer.Write(entity.OriginOffset.Y);
-            writer.Write(entity.OriginOffset.Z); //origin
-
-            //write mesh & material
-            writer.Write(entity.Mesh != null);
-            if (entity.Mesh != null)
-                writer.Write(entity.Mesh.ID);
-
-            writer.Write(entity.Material != null);
-            if (entity.Material != null)
-                writer.Write(entity.Material.ID);
-
-            //write children
-            writer.Write(entity.Children.Count); //children count
-
-            foreach (var child in entity.Children)
-                RecursivelySerialize(child, writer);
-        }
-
-        public static Prefab Deserialize(BinaryReader reader)
-        {
-            //read name
-            string name = reader.ReadString();
-            //read id
-            string id = reader.ReadString();
-
-            //read entities
-            PrefabEntity rootEntity = RecursivelyDeserialize(reader);
-
-            return new Prefab(name, rootEntity, id);
-        }
-
-        private static PrefabEntity RecursivelyDeserialize(BinaryReader reader)
-        {
-            //read name and init
-            PrefabEntity prefabEntity = new PrefabEntity(reader.ReadString());
-
-            //read transform
-            prefabEntity.Position.X = reader.ReadSingle();
-            prefabEntity.Position.Y = reader.ReadSingle();
-            prefabEntity.Position.Z = reader.ReadSingle(); //position
-
-            prefabEntity.Rotation.X = reader.ReadSingle();
-            prefabEntity.Rotation.Y = reader.ReadSingle();
-            prefabEntity.Rotation.Z = reader.ReadSingle();
-            prefabEntity.Rotation.W = reader.ReadSingle(); //rotation
-
-            prefabEntity.Scale.X = reader.ReadSingle();
-            prefabEntity.Scale.Y = reader.ReadSingle();
-            prefabEntity.Scale.Z = reader.ReadSingle(); //scale
-
-            prefabEntity.OriginOffset.X = reader.ReadSingle();
-            prefabEntity.OriginOffset.Y = reader.ReadSingle();
-            prefabEntity.OriginOffset.Z = reader.ReadSingle(); //origin
-
-            //read mesh & material
-            if (reader.ReadBoolean())
-                prefabEntity.Mesh = GlobalData.Meshes[reader.ReadString()]; //mesh
-
-            if (reader.ReadBoolean())
-                prefabEntity.Material = GlobalData.Materials[reader.ReadString()]; //material
-
-            //read children
-            int childrenCount = reader.ReadInt32();
-            for (int i = 0; i < childrenCount; i++)
-                prefabEntity.Children.Add(RecursivelyDeserialize(reader));
-
-            return prefabEntity;
-        }
-
-        public void Dispose()
-        {
-            GlobalData.Prefabs.Remove(ID);
         }
     }
 }

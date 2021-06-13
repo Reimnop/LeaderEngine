@@ -31,13 +31,12 @@ namespace LeaderEngine
             {
                 var aiMaterial = aiMaterials[i];
 
-                materials[i] = new Material(aiMaterial.Name);
-                Material mat = materials[i];
+                LitMaterial material = new LitMaterial();
 
-                mat.SetVector3("color", new Vector3(aiMaterial.ColorDiffuse.R, aiMaterial.ColorDiffuse.G, aiMaterial.ColorDiffuse.B));
+                material.Color = new Vector3(aiMaterial.ColorDiffuse.R, aiMaterial.ColorDiffuse.G, aiMaterial.ColorDiffuse.B);
 
                 //reset values
-                mat.SetInt("hasDiffuse", 0);
+                material.HasDiffuse = 1;
 
                 if (aiMaterial.HasTextureDiffuse)
                 {
@@ -76,13 +75,18 @@ namespace LeaderEngine
                             }
                         }
 
-                        texture.SetWrapS(ConvertWrapModeToOTK(aiTexture.WrapModeU));
-                        texture.SetWrapT(ConvertWrapModeToOTK(aiTexture.WrapModeV));
+                        texture.SetTextureWrapMode(ConvertWrapModeToOTK(aiTexture.WrapModeU));
 
-                        mat.SetInt("hasDiffuse", 1);
+                        long handle = GL.Arb.GetTextureHandle(texture.Handle);
+                        GL.Arb.MakeTextureHandleResident(handle);
 
-                        mat.SetInt("diffuse", 0);
-                        mat.SetTexture2D(TextureUnit.Texture0, texture);
+                        material.HasDiffuse = 1;
+                        material.DiffuseTexture = handle;
+
+                        Material<LitMaterial> genericMat = new Material<LitMaterial>(aiMaterial.Name, DefaultShaders.Lit);
+                        genericMat.UpdateMaterial(material);
+
+                        materials[i] = genericMat;
                     }
                     catch (Exception e)
                     {

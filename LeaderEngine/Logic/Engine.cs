@@ -1,4 +1,6 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿#define NO_INFO
+
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -23,8 +25,6 @@ namespace LeaderEngine
         public static GameWindow MainWindow { get; private set; }
 
         public static GLRenderer Renderer = new ForwardRenderer();
-
-        public static bool IgnoreGLInfo = false;
 
         private static DebugProc debugProcCallback = DebugCallback;
         private static GCHandle debugProcCallbackHandle;
@@ -79,7 +79,7 @@ namespace LeaderEngine
             GL.Enable(EnableCap.DebugOutputSynchronous);
 
             //init modules
-            GlobalData.Init();
+            AssetManager.Init();
             DefaultShaders.Init();
             SpriteRenderer.Init();
             SkyboxRenderer.Init();
@@ -118,10 +118,14 @@ namespace LeaderEngine
                     break;
                 case DebugSeverity.DebugSeverityHigh:
                     Logger.LogError($"OpenGL: {messageString}");
+#if DEBUG
+                    throw new Exception(messageString);
+#endif
                     break;
                 default:
-                    if (!IgnoreGLInfo)
-                        Logger.Log($"OpenGL: {messageString}");
+#if !NO_INFO
+                    Logger.Log($"OpenGL: {messageString}");
+#endif
                     break;
             }
         }
@@ -139,7 +143,7 @@ namespace LeaderEngine
             DataManager.CurrentScene.UpdateSceneHierachy();
 
             //update unlisted entities
-            foreach (var entity in GlobalData.UnlistedEntities)
+            foreach (var entity in AssetManager.UnlistedEntities)
                 entity.RecursivelyUpdate();
 
             //update renderer
@@ -148,9 +152,6 @@ namespace LeaderEngine
 
         private static void RenderFrame(FrameEventArgs obj)
         {
-            GL.Viewport(0, 0, MainWindow.ClientSize.X, MainWindow.ClientSize.Y);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-
             Renderer.Render();
 
             MainWindow.SwapBuffers();

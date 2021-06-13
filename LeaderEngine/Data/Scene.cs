@@ -13,9 +13,10 @@ namespace LeaderEngine
             new IntSerializer(),
             new FloatSerializer(),
             new StringSerializer(),
-            new MeshSerializer(),
-            new MaterialSerializer(),
-            new TextureSerializer()
+            //new MeshSerializer(),
+            //new MaterialSerializer(),
+            //new TextureSerializer()
+            //TODO: FIX ME!
         };
     }
 

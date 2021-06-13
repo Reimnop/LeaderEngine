@@ -6,15 +6,17 @@ using System.IO;
 
 namespace LeaderEngine
 {
-    public sealed class Shader : IDisposable
+    public sealed class Shader : GameAsset
     {
-        private int handle;
+        public override GameAssetType AssetType => GameAssetType.Shader;
+
+        public int Handle => _handle;
+
+        private int _handle;
 
         private readonly Dictionary<string, int> uniformLocations;
 
-        public readonly string Name;
-
-        public Shader(string name, string vertSource, string fragSource)
+        public Shader(string name, string vertSource, string fragSource) : base(name)
         {
             bool success;
 
@@ -32,36 +34,34 @@ namespace LeaderEngine
             if (!success)
                 return;
 
-            handle = GL.CreateProgram();
+            _handle = GL.CreateProgram();
 
-            GL.AttachShader(handle, vertexShader);
-            GL.AttachShader(handle, fragmentShader);
+            GL.AttachShader(_handle, vertexShader);
+            GL.AttachShader(_handle, fragmentShader);
 
-            LinkProgram(handle, out success);
+            LinkProgram(_handle, out success);
 
             if (!success)
                 return;
 
-            GL.DetachShader(handle, vertexShader);
-            GL.DetachShader(handle, fragmentShader);
+            GL.DetachShader(_handle, vertexShader);
+            GL.DetachShader(_handle, fragmentShader);
             GL.DeleteShader(fragmentShader);
             GL.DeleteShader(vertexShader);
 
-            GL.GetProgram(handle, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
+            GL.GetProgram(_handle, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
 
             uniformLocations = new Dictionary<string, int>();
 
             for (var i = 0; i < numberOfUniforms; i++)
             {
-                var key = GL.GetActiveUniform(handle, i, out _, out _);
-                var location = GL.GetUniformLocation(handle, key);
+                var key = GL.GetActiveUniform(_handle, i, out _, out _);
+                var location = GL.GetUniformLocation(_handle, key);
 
                 uniformLocations.Add(key, location);
             }
 
-            Name = name;
-
-            GL.ObjectLabel(ObjectLabelIdentifier.Program, handle, name.Length, name);
+            GL.ObjectLabel(ObjectLabelIdentifier.Program, _handle, name.Length, name);
         }
 
         public static Shader FromSourceFile(string name, string vertPath, string fragPath)
@@ -100,7 +100,7 @@ namespace LeaderEngine
 
         public void Use()
         {
-            GL.UseProgram(handle);
+            GL.UseProgram(_handle);
         }
 
         public int GetAttribLocation(string attribName)
@@ -108,72 +108,39 @@ namespace LeaderEngine
             if (uniformLocations.TryGetValue(attribName, out int loc))
                 return loc;
 
-            return GL.GetAttribLocation(handle, attribName);
+            return GL.GetAttribLocation(_handle, attribName);
         }
-
-        /// <summary>
-        /// Set a uniform int on this shader.
-        /// </summary>
-        /// <param name="name">The name of the uniform</param>
-        /// <param name="data">The data to set</param>
         public void SetInt(string name, int data)
         {
             if (uniformLocations.TryGetValue(name, out int loc))
                 GL.Uniform1(loc, data);
         }
-
-        /// <summary>
-        /// Set a uniform float on this shader.
-        /// </summary>
-        /// <param name="name">The name of the uniform</param>
-        /// <param name="data">The data to set</param>
         public void SetFloat(string name, float data)
         {
             if (uniformLocations.TryGetValue(name, out int loc))
                 GL.Uniform1(loc, data);
         }
-
-        /// <summary>
-        /// Set a uniform Matrix4 on this shader
-        /// </summary>
-        /// <param name="name">The name of the uniform</param>
-        /// <param name="data">The data to set</param>
-        /// <remarks>
-        ///   <para>
-        ///   The matrix is transposed before being sent to the shader.
-        ///   </para>
-        /// </remarks>
         public void SetMatrix4(string name, Matrix4 data)
         {
             if (uniformLocations.TryGetValue(name, out int loc))
                 GL.UniformMatrix4(loc, true, ref data);
         }
-
-        /// <summary>
-        /// Set a uniform Vector3 on this shader.
-        /// </summary>
-        /// <param name="name">The name of the uniform</param>
-        /// <param name="data">The data to set</param>
         public void SetVector3(string name, Vector3 data)
         {
             if (uniformLocations.TryGetValue(name, out int loc))
                 GL.Uniform3(loc, data);
         }
-
         public void SetVector4(string name, Vector4 data)
         {
             if (uniformLocations.TryGetValue(name, out int loc))
                 GL.Uniform4(loc, data);
         }
 
-        public int GetHandle()
+        public override void Dispose()
         {
-            return handle;
-        }
+            base.Dispose();
 
-        public void Dispose()
-        {
-            GL.DeleteShader(handle);
+            GL.DeleteShader(_handle);
         }
     }
 }

@@ -150,11 +150,16 @@ namespace LeaderEditor
 
             if (ImGui.BeginCombo(name, value != null ? value.Name : "[None]"))
             {
-                foreach (var cbm in GlobalData.Cubemaps)
+                foreach (GameAsset asset in LeaderEngine.AssetManager.Assets)
                 {
+                    if (asset.AssetType != GameAssetType.Cubemap)
+                        continue;
+
+                    Cubemap cbm = (Cubemap)asset;
+
                     ImGui.PushID(cbm.GetHashCode());
-                    if (ImGui.Selectable(cbm.Value.Name, value == cbm.Value))
-                        value = cbm.Value;
+                    if (ImGui.Selectable(cbm.Name, value == cbm))
+                        value = cbm;
                     ImGui.PopID();
                 }
 
@@ -170,11 +175,16 @@ namespace LeaderEditor
 
             if (ImGui.BeginCombo(name, value != null ? value.Name : "[None]"))
             {
-                foreach (var tex in GlobalData.Textures)
+                foreach (GameAsset asset in LeaderEngine.AssetManager.Assets)
                 {
+                    if (asset.AssetType != GameAssetType.Texture)
+                        continue;
+
+                    Texture tex = (Texture)asset;
+
                     ImGui.PushID(tex.GetHashCode());
-                    if (ImGui.Selectable(tex.Value.Name, value == tex.Value))
-                        value = tex.Value;
+                    if (ImGui.Selectable(tex.Name, value == tex))
+                        value = tex;
                     ImGui.PopID();
                 }
 
@@ -193,11 +203,16 @@ namespace LeaderEditor
                 if (ImGui.Selectable("[None]", value == null))
                     value = null;
 
-                foreach (var font in GlobalData.Fonts)
+                foreach (GameAsset asset in LeaderEngine.AssetManager.Assets)
                 {
+                    if (asset.AssetType != GameAssetType.Font)
+                        continue;
+
+                    Font font = (Font)asset;
+
                     ImGui.PushID(font.GetHashCode());
-                    if (ImGui.Selectable(font.Value.Name, value == font.Value))
-                        value = font.Value;
+                    if (ImGui.Selectable(font.Name, value == font))
+                        value = font;
                     ImGui.PopID();
                 }
 
@@ -213,11 +228,16 @@ namespace LeaderEditor
 
             if (ImGui.BeginCombo(name, value != null ? value.Name : "[None]"))
             {
-                foreach (var clip in GlobalData.AudioClips)
+                foreach (GameAsset asset in LeaderEngine.AssetManager.Assets)
                 {
+                    if (asset.AssetType != GameAssetType.AudioClip)
+                        continue;
+
+                    AudioClip clip = (AudioClip)asset;
+
                     ImGui.PushID(clip.GetHashCode());
-                    if (ImGui.Selectable(clip.Value.Name, value == clip.Value))
-                        value = clip.Value;
+                    if (ImGui.Selectable(clip.Name, value == clip))
+                        value = clip;
                     ImGui.PopID();
                 }
 

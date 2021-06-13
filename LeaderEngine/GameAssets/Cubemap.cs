@@ -3,20 +3,16 @@ using System;
 
 namespace LeaderEngine
 {
-    public class Cubemap : IDisposable
+    public class Cubemap : GameAsset
     {
-        public readonly string Name;
-        public readonly string ID;
+        public override GameAssetType AssetType => GameAssetType.Cubemap;
 
-        private int handle;
+        public int Handle => _handle;
 
-        private Cubemap(string name, string id = null)
+        private int _handle;
+
+        private Cubemap(string name) : base(name)
         {
-            Name = name;
-
-            ID = id ?? RNG.GetRandomID();
-
-            GlobalData.Cubemaps.Add(ID, this);
         }
 
         public static Cubemap FromPointers(
@@ -25,12 +21,11 @@ namespace LeaderEngine
             IntPtr right, IntPtr left, IntPtr top, IntPtr bottom, IntPtr back, IntPtr front, 
             PixelInternalFormat internalFormat = PixelInternalFormat.Rgba,
             PixelFormat format = PixelFormat.Rgba,
-            PixelType pixelType = PixelType.UnsignedByte,
-            string id = null)
+            PixelType pixelType = PixelType.UnsignedByte)
         {
-            Cubemap cubemap = new Cubemap(name, id);
-            cubemap.handle = GL.GenTexture();
-            GL.BindTexture(TextureTarget.TextureCubeMap, cubemap.handle);
+            Cubemap cubemap = new Cubemap(name);
+            cubemap._handle = GL.GenTexture();
+            GL.BindTexture(TextureTarget.TextureCubeMap, cubemap._handle);
 
             //upload
             GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX, 0, internalFormat, width, height, 0, format, pixelType, right);
@@ -47,9 +42,9 @@ namespace LeaderEngine
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
 
-            GL.ObjectLabel(ObjectLabelIdentifier.Texture, cubemap.handle, name.Length, name);
-
             GL.BindTexture(TextureTarget.TextureCubeMap, 0);
+
+            GL.ObjectLabel(ObjectLabelIdentifier.Texture, cubemap._handle, name.Length, name);
 
             return cubemap;
         }
@@ -60,12 +55,11 @@ namespace LeaderEngine
             T[] right, T[] left, T[] top, T[] bottom, T[] back, T[] front,
             PixelInternalFormat internalFormat = PixelInternalFormat.Rgba,
             PixelFormat format = PixelFormat.Rgba,
-            PixelType pixelType = PixelType.UnsignedByte,
-            string id = null) where T : struct
+            PixelType pixelType = PixelType.UnsignedByte) where T : struct
         {
-            Cubemap cubemap = new Cubemap(name, id);
-            cubemap.handle = GL.GenTexture();
-            GL.BindTexture(TextureTarget.TextureCubeMap, cubemap.handle);
+            Cubemap cubemap = new Cubemap(name);
+            cubemap._handle = GL.GenTexture();
+            GL.BindTexture(TextureTarget.TextureCubeMap, cubemap._handle);
 
             //upload
             GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX, 0, internalFormat, width, height, 0, format, pixelType, right);
@@ -82,7 +76,7 @@ namespace LeaderEngine
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
 
-            GL.ObjectLabel(ObjectLabelIdentifier.Texture, cubemap.handle, name.Length, name);
+            GL.ObjectLabel(ObjectLabelIdentifier.Texture, cubemap._handle, name.Length, name);
 
             GL.BindTexture(TextureTarget.TextureCubeMap, 0);
 
@@ -91,8 +85,7 @@ namespace LeaderEngine
 
         public static Cubemap FromFile(
             string name, 
-            string rightPath, string leftPath, string topPath, string bottomPath, string backPath, string frontPath,
-            string id = null)
+            string rightPath, string leftPath, string topPath, string bottomPath, string backPath, string frontPath)
         {
             int[] widths = new int[6];
             int[] heights = new int[6];
@@ -116,20 +109,19 @@ namespace LeaderEngine
             return FromArrays(
                 name,
                 width, height,
-                right, left, top, bottom, back, front,
-                id: id);
+                right, left, top, bottom, back, front);
         }
 
         public int GetHandle()
         {
-            return handle;
+            return _handle;
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
-            GL.DeleteTexture(handle);
+            base.Dispose();
 
-            GlobalData.Cubemaps.Remove(ID);
+            GL.DeleteTexture(_handle);
         }
     }
 }

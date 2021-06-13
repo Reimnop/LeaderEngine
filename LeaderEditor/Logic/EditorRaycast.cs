@@ -1,5 +1,6 @@
 ﻿using LeaderEngine;
 using OpenTK.Mathematics;
+using System;
 
 namespace LeaderEditor
 {
@@ -15,13 +16,16 @@ namespace LeaderEditor
         {
             t = float.PositiveInfinity;
 
+            Span<Vector3> vertices = mesh.Vertices;
+            Span<uint> indices = mesh.Indices;
+
             bool intersect = false;
             for (int i = 0; i < mesh.IndicesCount / 3; i++)
             {
                 int index = i * 3;
-                Vector3 v0 = (new Vector4(mesh.Vertices[mesh.Indices[index + 0]], 1f) * model).Xyz;
-                Vector3 v1 = (new Vector4(mesh.Vertices[mesh.Indices[index + 1]], 1f) * model).Xyz;
-                Vector3 v2 = (new Vector4(mesh.Vertices[mesh.Indices[index + 2]], 1f) * model).Xyz;
+                Vector3 v0 = (new Vector4(vertices[(int)indices[index + 0]], 1f) * model).Xyz;
+                Vector3 v1 = (new Vector4(vertices[(int)indices[index + 1]], 1f) * model).Xyz;
+                Vector3 v2 = (new Vector4(vertices[(int)indices[index + 2]], 1f) * model).Xyz;
 
                 if (IntersectTriangle(ray, v0, v1, v2, out float dist, out _, out _))
                 {

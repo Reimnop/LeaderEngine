@@ -90,34 +90,34 @@ namespace LeaderEditor
             string VertexSource =
 @"#version 430 core
 
-layout(location = 0) in vec2 in_position;
-layout(location = 1) in vec2 in_texCoord;
-layout(location = 2) in vec4 in_color;
+layout(location = 0) in vec2 aPosition;
+layout(location = 1) in vec2 aTexCoord;
+layout(location = 2) in vec4 aColor;
 
-uniform mat4 projection_matrix;
+uniform mat4 projection;
 
 out vec4 color;
 out vec2 texCoord;
 
 void main()
 {
-    color = in_color;
-    texCoord = in_texCoord;
-    gl_Position = vec4(in_position, 0.0, 1.0) * projection_matrix;
+    color = aColor;
+    texCoord = aTexCoord;
+    gl_Position = vec4(aPosition, 0.0, 1.0) * projection;
 }";
             string FragmentSource =
 @"#version 430 core
 
 layout(location = 0) out vec4 fragColor;
 
-uniform sampler2D in_fontTexture;
+uniform sampler2D inTexture;
 
 in vec4 color;
 in vec2 texCoord;
 
 void main()
 {
-    fragColor = texture(in_fontTexture, texCoord) * color;
+    fragColor = texture(inTexture, texCoord) * color;
 }";
 
             shader = new Shader("ImGui Shader", VertexSource, FragmentSource);
@@ -138,12 +138,10 @@ void main()
                 PixelFormat.Rgba,
                 PixelType.UnsignedByte);
 
-            fontTexture.Unlist();
-
             fontTexture.SetMagFilter(TextureMagFilter.Linear);
             fontTexture.SetMinFilter(TextureMinFilter.Linear);
 
-            io.Fonts.SetTexID((IntPtr)fontTexture.GetHandle());
+            io.Fonts.SetTexID((IntPtr)fontTexture.Handle);
 
             io.Fonts.ClearTexData();
         }
@@ -299,8 +297,8 @@ void main()
                 -1f, 1f); //near and far plane
 
             shader.Use();
-            shader.SetMatrix4("projection_matrix", mvp);
-            shader.SetInt("in_fontTexture", 0);
+            shader.SetMatrix4("projection", mvp);
+            shader.SetInt("inTexture", 0);
 
             mesh.Use();
 
@@ -323,6 +321,7 @@ void main()
                     {
                         GL.ActiveTexture(TextureUnit.Texture0);
                         GL.BindTexture(TextureTarget.Texture2D, (int)pcmd.TextureId);
+
                         var clip = pcmd.ClipRect;
                         GL.Scissor((int)clip.X, windowHeight - (int)clip.W, (int)(clip.Z - clip.X), (int)(clip.W - clip.Y));
 
