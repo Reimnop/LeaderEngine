@@ -184,7 +184,7 @@ void main()
             io.DeltaTime = dt;
         }
 
-        readonly List<char> PressedChars = new List<char>();
+        private readonly List<char> PressedChars = new List<char>();
 
         private void UpdateImGuiInput()
         {

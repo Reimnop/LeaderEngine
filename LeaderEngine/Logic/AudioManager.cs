@@ -5,7 +5,7 @@ using System.IO;
 
 namespace LeaderEngine
 {
-    static class AudioLoader
+    internal static class AudioLoader
     {
         public static byte[] LoadWave(Stream stream, out int channels, out int bits, out int rate)
         {

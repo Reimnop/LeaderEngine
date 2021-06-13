@@ -1,9 +1,4 @@
-﻿using OpenTK.Mathematics;
-using System;
-using System.Collections.Generic;
-using System.IO;
-
-namespace LeaderEngine
+﻿namespace LeaderEngine
 {
     public class Prefab : GameAsset
     {

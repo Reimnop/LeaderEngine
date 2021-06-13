@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace LeaderEngine
+﻿namespace LeaderEngine
 {
     /*public class MeshSerializer : BinarySerializer
     {

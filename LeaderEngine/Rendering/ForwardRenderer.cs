@@ -2,13 +2,12 @@
 using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace LeaderEngine
 {
     public class ForwardRenderer : GLRenderer
     {
-        const int defaultSize = 4096;
+        private const int defaultSize = 4096;
 
         private List<CommandBuffer> shadowMapBuffers = new List<CommandBuffer>();
         private List<CommandBuffer> opaqueBuffers = new List<CommandBuffer>();
@@ -19,8 +18,8 @@ namespace LeaderEngine
         public float Exposure = 1f;
         #endregion
 
-        const int shadowMapRes = 4096;
-        const float shadowMapSize = 48f;
+        private const int shadowMapRes = 4096;
+        private const float shadowMapSize = 48f;
 
         private int shadowMapFBO;
         private int shadowMap;

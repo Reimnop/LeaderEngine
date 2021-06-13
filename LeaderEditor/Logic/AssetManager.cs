@@ -1,7 +1,5 @@
 ﻿using ImGuiNET;
 using LeaderEngine;
-using System.Numerics;
-using System.Windows.Forms;
 using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 
 namespace LeaderEditor

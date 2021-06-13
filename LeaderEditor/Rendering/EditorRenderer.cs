@@ -37,9 +37,6 @@ namespace LeaderEditor
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
-            string name = "ViewportFramebuffer";
-            GL.ObjectLabel(ObjectLabelIdentifier.Framebuffer, framebuffer, name.Length, name);
-
             base.Init();
         }
 

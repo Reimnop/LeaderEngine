@@ -1,10 +1,9 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System;
-using System.Runtime.CompilerServices;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace LeaderEngine
 {
