@@ -37,7 +37,7 @@ namespace LeaderEngine
             //init shadowmap
             shadowMap = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, shadowMap);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, shadowMapRes, shadowMap, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, shadowMapRes, shadowMapRes, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
             GL.BindTexture(TextureTarget.Texture2D, 0);
@@ -45,8 +45,12 @@ namespace LeaderEngine
             //bind texture to framebuffer
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, shadowMap, 0);
 
+            GL.DrawBuffer(DrawBufferMode.None);
+            GL.ReadBuffer(ReadBufferMode.None);
+
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
+            //init post processor
             postProcessor = new PostProcessor();
 
             GL.DepthFunc(DepthFunction.Lequal);
@@ -96,11 +100,13 @@ namespace LeaderEngine
             if (camera == null)
                 return;
 
-            foreach (var entity in DataManager.CurrentScene.SceneRootEntities)
-                entity.Transform.CalculateModelMatrixRecursively();
+            foreach (Entity entity in DataManager.CurrentScene.SceneEntities)
+                if (entity.Parent == null)
+                    entity.Transform.CalculateModelMatrixRecursively();
 
-            foreach (var entity in AssetManager.UnlistedEntities)
-                entity.Transform.CalculateModelMatrixRecursively();
+            foreach (Entity entity in DataManager.UnlistedEntities)
+                if (entity.Parent == null)
+                    entity.Transform.CalculateModelMatrixRecursively();
 
             //shadow mapping
             Matrix4 lightView = Matrix4.Identity;
@@ -117,11 +123,11 @@ namespace LeaderEngine
                 Projection = lightProjection
             };
 
-            foreach (var entity in DataManager.CurrentScene.SceneRootEntities)
-                entity.RecursivelyRenderShadowMap(in lightData);
+            foreach (Entity entity in DataManager.CurrentScene.SceneEntities)
+                entity.RenderShadowMap(in lightData);
 
-            foreach (var entity in AssetManager.UnlistedEntities)
-                entity.RecursivelyRenderShadowMap(in lightData);
+            foreach (Entity entity in DataManager.UnlistedEntities)
+                entity.RenderShadowMap(in lightData);
 
             GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
 
@@ -153,11 +159,11 @@ namespace LeaderEngine
                 ShadowMapTexture = shadowMap
             };
 
-            foreach (var entity in DataManager.CurrentScene.SceneRootEntities)
-                entity.RecursivelyRender(renderData);
+            foreach (var entity in DataManager.CurrentScene.SceneEntities)
+                entity.Render(renderData);
 
-            foreach (var entity in AssetManager.UnlistedEntities)
-                entity.RecursivelyRender(renderData);
+            foreach (var entity in DataManager.UnlistedEntities)
+                entity.Render(renderData);
 
             GL.Viewport(0, 0, ViewportSize.X, ViewportSize.Y);
 

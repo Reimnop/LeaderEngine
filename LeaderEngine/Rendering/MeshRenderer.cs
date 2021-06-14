@@ -51,8 +51,8 @@ namespace LeaderEngine
 
             mainCmd.SetUniformMatrix4(shader, "lightSpaceMat", renderData.LightView * renderData.LightProjection);
 
-            mainCmd.SetUniformInt(shader, "shadowMap", 1);
-            mainCmd.BindTexture(TextureUnit.Texture1, renderData.ShadowMapTexture);
+            mainCmd.SetUniformInt(shader, "shadowMap", 0);
+            mainCmd.BindTexture(TextureUnit.Texture0, renderData.ShadowMapTexture);
 
             mainCmd.BindMaterial(0, Material);
 

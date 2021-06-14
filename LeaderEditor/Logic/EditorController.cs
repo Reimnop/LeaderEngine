@@ -46,7 +46,7 @@ namespace LeaderEditor
             Entity rayHit = null;
             float t = float.PositiveInfinity;
 
-            foreach (var entity in DataManager.CurrentScene.SceneRootEntities)
+            foreach (var entity in DataManager.CurrentScene.SceneEntities)
                 CheckMeshRayHitRecursively(entity);
 
             SceneHierachy.SelectedEntity = rayHit;

@@ -9,7 +9,7 @@ namespace LeaderEditor
     {
         public static Entity SelectedEntity = null;
 
-        private static List<Entity> currentSceneEntities => DataManager.CurrentScene.SceneRootEntities;
+        private static List<Entity> currentSceneEntities => DataManager.CurrentScene.SceneEntities;
 
         private void Start()
         {
@@ -41,9 +41,12 @@ namespace LeaderEditor
         {
             if (ImGui.BeginChild("Scene"))
             {
-                for (int i = 0; i < currentSceneEntities.Count; i++)
+                foreach (Entity entity in currentSceneEntities)
                 {
-                    RecursivelyRender(currentSceneEntities[i]);
+                    if (entity.Parent == null)
+                    {
+                        RecursivelyRender(entity);
+                    }
                 }
 
                 if (!ImGui.IsAnyItemHovered() && ImGui.IsWindowHovered(ImGuiHoveredFlags.ChildWindows))

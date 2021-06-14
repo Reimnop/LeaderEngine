@@ -7,9 +7,7 @@ namespace LeaderEngine
     public struct LitMaterial
     {
         public Vector3 Color;
-
-        public int HasDiffuse;
-
+        public bool HasDiffuse;
         public long DiffuseTexture;
     }
 }

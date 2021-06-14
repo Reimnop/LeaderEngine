@@ -1,6 +1,4 @@
-﻿#define NO_INFO
-
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -31,7 +29,8 @@ namespace LeaderEngine
 
         private static string[] requiredExtensions = new string[]
         {
-            "GL_ARB_direct_state_access"
+            "GL_ARB_direct_state_access",
+            "GL_ARB_bindless_texture"
         };
 
         public static void Init(GameWindowSettings gws, NativeWindowSettings nws, Action initCallback = null, GLRenderer renderer = null)
@@ -57,7 +56,7 @@ namespace LeaderEngine
             foreach (var ext in requiredExtensions)
             {
                 if (!supportedExtensions.Contains(ext))
-                    throw new Exception($"Extension {ext} is not supported on the system!");
+                    Logger.LogError($"Extension {ext} is not supported on the system!");
             }
 
             //subscribe to window events
@@ -118,12 +117,13 @@ namespace LeaderEngine
                     break;
                 case DebugSeverity.DebugSeverityHigh:
                     Logger.LogError($"OpenGL: {messageString}");
-#if DEBUG
+#if THROW_ON_GL_ERROR
                     throw new Exception(messageString);
-#endif
+#else
                     break;
+#endif
                 default:
-#if !NO_INFO
+#if !NO_GL_INFO
                     Logger.Log($"OpenGL: {messageString}");
 #endif
                     break;
@@ -140,11 +140,11 @@ namespace LeaderEngine
             Time.UnscaledDeltaTime = t;
 
             //update scene
-            DataManager.CurrentScene.UpdateSceneHierachy();
+            DataManager.CurrentScene.UpdateScene();
 
             //update unlisted entities
-            foreach (var entity in AssetManager.UnlistedEntities)
-                entity.RecursivelyUpdate();
+            foreach (var entity in DataManager.UnlistedEntities)
+                entity.Update();
 
             //update renderer
             Renderer.Update();

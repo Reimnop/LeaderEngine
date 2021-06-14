@@ -23,7 +23,9 @@ namespace LeaderEngine
         SetUniformVector3,
         SetUniformVector4,
         SetUniformMatrix3,
-        SetUniformMatrix4
+        SetUniformMatrix4,
+        UniformBlockBinding,
+        BindBufferBase
     }
 
     public struct GLCommand
@@ -232,6 +234,24 @@ namespace LeaderEngine
             SetUniformMatrix4(shader.GetAttribLocation(name), value);
         }
 
+        public void UniformBlockBinding(int shader, int index, int uniformBuffer)
+        {
+            AddCommand(new GLCommand
+            {
+                Command = CommandEnum.UniformBlockBinding,
+                Arguments = ValueTuple.Create(shader, index, uniformBuffer)
+            });
+        }
+
+        public void BindBufferBase(BufferRangeTarget target, int index, int buffer)
+        {
+            AddCommand(new GLCommand
+            {
+                Command = CommandEnum.BindBufferBase,
+                Arguments = ValueTuple.Create(target, index, buffer)
+            });
+        }
+
         //methods for the lazy
         public void BindMesh(Mesh mesh)
         {
@@ -245,7 +265,7 @@ namespace LeaderEngine
 
         public void BindMaterial(int index, Material material)
         {
-            GL.UniformBlockBinding(material.Shader.Handle, index, material.UniformBuffer);
+            BindBufferBase(BufferRangeTarget.UniformBuffer, index, material.UniformBuffer);
         }
     }
 }

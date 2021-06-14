@@ -10,7 +10,6 @@ namespace LeaderEngine
         public static List<GameAsset> Assets { get; } = new List<GameAsset>();
 
         internal static Dictionary<string, Type> ComponentTypes { get; } = new Dictionary<string, Type>();
-        internal static List<Entity> UnlistedEntities { get; } = new List<Entity>();
 
         internal static void Init()
         {

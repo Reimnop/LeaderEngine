@@ -20,7 +20,8 @@ namespace LeaderEngine
 
         public TextureMinFilter MinFilter => _minFilter;
         public TextureMagFilter MagFilter => _magFilter;
-        public TextureWrapMode WrapMode => _wrapMode; 
+        public TextureWrapMode WrapModeT => _wrapModeT;
+        public TextureWrapMode WrapModeS => _wrapModeS;
 
         private int _handle;
 
@@ -32,7 +33,8 @@ namespace LeaderEngine
 
         private TextureMinFilter _minFilter = TextureMinFilter.Linear;
         private TextureMagFilter _magFilter = TextureMagFilter.Linear;
-        private TextureWrapMode _wrapMode = TextureWrapMode.ClampToEdge;
+        private TextureWrapMode _wrapModeT = TextureWrapMode.ClampToEdge;
+        private TextureWrapMode _wrapModeS = TextureWrapMode.ClampToEdge;
 
         private Texture(string name) : base(name)
         {
@@ -140,13 +142,21 @@ namespace LeaderEngine
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
-        public void SetTextureWrapMode(TextureWrapMode textureWrapMode)
+        public void SetWrapModeT(TextureWrapMode textureWrapMode)
         {
-            _wrapMode = textureWrapMode;
+            _wrapModeT = textureWrapMode;
+
+            GL.BindTexture(TextureTarget.Texture2D, _handle);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)textureWrapMode);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+        }
+
+        public void SetWrapModeS(TextureWrapMode textureWrapMode)
+        {
+            _wrapModeS = textureWrapMode;
 
             GL.BindTexture(TextureTarget.Texture2D, _handle);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)textureWrapMode);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)textureWrapMode);
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 

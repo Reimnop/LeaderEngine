@@ -35,9 +35,6 @@ namespace LeaderEngine
 
                 material.Color = new Vector3(aiMaterial.ColorDiffuse.R, aiMaterial.ColorDiffuse.G, aiMaterial.ColorDiffuse.B);
 
-                //reset values
-                material.HasDiffuse = 1;
-
                 if (aiMaterial.HasTextureDiffuse)
                 {
                     TextureSlot aiTexture = aiMaterial.TextureDiffuse;
@@ -75,18 +72,14 @@ namespace LeaderEngine
                             }
                         }
 
-                        texture.SetTextureWrapMode(ConvertWrapModeToOTK(aiTexture.WrapModeU));
+                        texture.SetWrapModeT(ConvertWrapModeToOTK(aiTexture.WrapModeU));
+                        texture.SetWrapModeS(ConvertWrapModeToOTK(aiTexture.WrapModeV));
 
                         long handle = GL.Arb.GetTextureHandle(texture.Handle);
                         GL.Arb.MakeTextureHandleResident(handle);
 
-                        material.HasDiffuse = 1;
+                        material.HasDiffuse = true;
                         material.DiffuseTexture = handle;
-
-                        Material<LitMaterial> genericMat = new Material<LitMaterial>(aiMaterial.Name, DefaultShaders.Lit);
-                        genericMat.UpdateMaterial(material);
-
-                        materials[i] = genericMat;
                     }
                     catch (Exception e)
                     {
@@ -97,6 +90,11 @@ namespace LeaderEngine
 #endif
                     }
                 }
+
+                Material<LitMaterial> genericMat = new Material<LitMaterial>(aiMaterial.Name, DefaultShaders.Lit);
+                genericMat.UpdateMaterial(material);
+
+                materials[i] = genericMat;
             }
 
             //load meshes

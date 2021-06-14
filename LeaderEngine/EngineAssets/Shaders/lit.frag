@@ -1,5 +1,7 @@
 ﻿#version 430 core
 
+#extension GL_ARB_bindless_texture : enable
+
 layout (location = 0) out vec4 fragColor;
 
 in vec3 Color;
@@ -8,10 +10,14 @@ in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragPos;
 
-uniform bool hasDiffuse;
-uniform sampler2D diffuse;
+layout (bindless_sampler) uniform;
 
-uniform vec3 color;
+layout (std140, binding = 0) uniform Material 
+{
+	vec3 color;
+	bool hasDiffuse;
+	sampler2D diffuse;
+};
 
 uniform vec3 camPos;
 
@@ -57,12 +63,12 @@ void main() {
 
 	vec3 norm = normalize(Normal);
 
-	float diffuse = max(dot(norm, lightDir), 0.0) * lightIntensity;
+	float diffuseIntensity = max(dot(norm, lightDir), 0.0) * lightIntensity;
 	float shadow = (calculateShadow(FragPosLightSpace));
 
 	float calculatedAmbient = max(dot(norm, normalize(camPos - FragPos)), 0.25) * ambient;
 
-	vec3 outColor = (calculatedAmbient + diffuse * shadow) * obColor;
+	vec3 outColor = (calculatedAmbient + diffuseIntensity * shadow) * obColor;
 
 	fragColor = vec4(outColor, 1.0);
 }
