@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Windows.Forms;
-using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
 
 namespace LeaderEditor
 {
@@ -33,9 +32,6 @@ namespace LeaderEditor
         {
             if (ImGui.Begin("Asset Manager"))
             {
-                if (SelectedAsset != null && SelectedAsset.AssetType == GameAssetType.Prefab && Input.GetKeyDown(Keys.I) && ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows))
-                    ((Prefab)SelectedAsset).Instantiate();
-
                 if (ImGui.BeginChild("asset-import", new Vector2(140f, 0f), true))
                 {
                     {
@@ -164,6 +160,16 @@ namespace LeaderEditor
                             {
                                 SelectedAsset = asset;
                             }
+
+                            if (asset.AssetType == GameAssetType.Prefab) 
+                            {
+                                if (ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
+                                {
+                                    Prefab prefab = (Prefab)asset;
+                                    prefab.Instantiate();
+                                }
+                            }
+
                             ImGui.SameLine();
 
                             ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.6f, 0.6f, 0.6f, 0.5f));
