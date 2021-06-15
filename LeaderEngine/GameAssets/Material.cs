@@ -28,6 +28,8 @@ namespace LeaderEngine
             Marshal.StructureToPtr(data, ptr, true);
             GL.NamedBufferData(_uniformBuffer, size, ptr, BufferUsageHint.DynamicCopy);
             Marshal.FreeHGlobal(ptr);
+
+            _data = data;
         }
 
         public override void Dispose()

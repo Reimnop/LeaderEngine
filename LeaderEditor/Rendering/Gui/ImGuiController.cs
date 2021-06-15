@@ -31,6 +31,9 @@ namespace LeaderEditor
         private int meshVBO;
         private int meshEBO;
 
+        private int lastVBSize;
+        private int lastIBSize;
+
         private int fontTexture;
 
         private int shader;
@@ -258,26 +261,30 @@ namespace LeaderEditor
             int totalVBSize = drawData.TotalVtxCount * Unsafe.SizeOf<ImDrawVert>();
             int totalIBSize = drawData.TotalIdxCount * sizeof(ushort);
 
-            //bind buffers
-            GL.BindBuffer(BufferTarget.ArrayBuffer, meshVBO);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, meshEBO);
-
             //resize buffers
-            GL.BufferData(BufferTarget.ArrayBuffer, totalVBSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, totalIBSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
+            if (totalVBSize > lastVBSize)
+            {
+                GL.NamedBufferData(meshVBO, totalVBSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
+                lastVBSize = totalVBSize;
+            }
+
+            if (totalIBSize > lastIBSize)
+            {
+                GL.NamedBufferData(meshEBO, totalIBSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
+                lastIBSize = totalIBSize;
+            }
 
             int vertexOffsetInVertices = 0;
             int indexOffsetInElements = 0;
-
             for (int i = 0; i < drawData.CmdListsCount; i++)
             {
-                ImDrawListPtr cmd_list = drawData.CmdListsRange[i];
+                ImDrawListPtr cmdList = drawData.CmdListsRange[i];
 
-                GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)(vertexOffsetInVertices * Unsafe.SizeOf<ImDrawVert>()), cmd_list.VtxBuffer.Size * Unsafe.SizeOf<ImDrawVert>(), cmd_list.VtxBuffer.Data);
-                GL.BufferSubData(BufferTarget.ElementArrayBuffer, (IntPtr)(indexOffsetInElements * sizeof(ushort)), cmd_list.IdxBuffer.Size * sizeof(ushort), cmd_list.IdxBuffer.Data);
+                GL.NamedBufferSubData(meshVBO, (IntPtr)(vertexOffsetInVertices * Unsafe.SizeOf<ImDrawVert>()), cmdList.VtxBuffer.Size * Unsafe.SizeOf<ImDrawVert>(), cmdList.VtxBuffer.Data);
+                GL.NamedBufferSubData(meshEBO, (IntPtr)(indexOffsetInElements * sizeof(ushort)), cmdList.IdxBuffer.Size * sizeof(ushort), cmdList.IdxBuffer.Data);
 
-                vertexOffsetInVertices += cmd_list.VtxBuffer.Size;
-                indexOffsetInElements += cmd_list.IdxBuffer.Size;
+                vertexOffsetInVertices += cmdList.VtxBuffer.Size;
+                indexOffsetInElements += cmdList.IdxBuffer.Size;
             }
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -296,7 +303,7 @@ namespace LeaderEditor
                 0f, io.DisplaySize.X, //width
                 io.DisplaySize.Y, 0f, //height
                 -1f, 1f); //near and far plane
-
+            
             GL.UseProgram(shader);
             GL.UniformMatrix4(projectionLoc, true, ref mvp); //projection
             GL.Uniform1(textureLoc, 0);
