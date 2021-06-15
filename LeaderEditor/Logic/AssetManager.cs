@@ -119,7 +119,7 @@ namespace LeaderEditor
 
                 ImGui.SameLine();
 
-                if (ImGui.BeginChild("assets", new Vector2(580f, 0f), true))
+                if (ImGui.BeginChild("assets", new Vector2(630f, 0f), true))
                 {
                     ImGui.Text("Assets");
                     ImGui.SameLine();
@@ -145,7 +145,9 @@ namespace LeaderEditor
                         ImGui.EndCombo();
                     }
 
-                    if (editedStr || editedFilter)
+                    ImGui.SameLine();
+
+                    if (ImGui.Button("Refresh") || editedStr || editedFilter)
                     {
                         ApplyFilter(searchStr, filter);
                     }
