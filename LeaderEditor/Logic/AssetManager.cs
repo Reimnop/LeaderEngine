@@ -22,14 +22,14 @@ namespace LeaderEditor
         private void Start()
         {
             //register ImGui
-            ImGuiController.RegisterImGui(ImGuiRenderer);
+            ImGuiController.OnImGui += OnImGui;
 
             assetTypes = (GameAssetType[])Enum.GetValues(typeof(GameAssetType));
 
             ApplyFilter(searchStr, filter);
         }
 
-        private void ImGuiRenderer()
+        private void OnImGui()
         {
             if (ImGui.Begin("Asset Manager"))
             {

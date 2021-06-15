@@ -8,39 +8,6 @@ using System.Runtime.InteropServices;
 
 namespace LeaderEngine
 {
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    public class VertexAttrib : Attribute
-    {
-        public VertexAttribPointerType PointerType;
-        public int Location;
-        public int Size;
-        public bool Normalized;
-
-        public VertexAttrib(VertexAttribPointerType pointerType, int location, int size, bool normalized)
-        {
-            if (location == 0)
-                throw new Exception("Location cannot be 0!");
-
-            PointerType = pointerType;
-            Location = location;
-            Normalized = normalized;
-            Size = size;
-        }
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct VertexData
-    {
-        [VertexAttrib(VertexAttribPointerType.Float, 1, 3, false)]
-        public Vector3 Normal;
-
-        [VertexAttrib(VertexAttribPointerType.Float, 2, 3, false)]
-        public Vector3 Color;
-
-        [VertexAttrib(VertexAttribPointerType.Float, 3, 2, false)]
-        public Vector2 UV;
-    }
-
     public sealed class Mesh : GameAsset
     {
         private struct VertexAttribData

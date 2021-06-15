@@ -2,20 +2,6 @@
 
 namespace LeaderEngine
 {
-    internal static class SceneGlobals
-    {
-        internal static BinarySerializer[] Serializers = new BinarySerializer[]
-        {
-            new IntSerializer(),
-            new FloatSerializer(),
-            new StringSerializer(),
-            //new MeshSerializer(),
-            //new MaterialSerializer(),
-            //new TextureSerializer()
-            //TODO: FIX ME!
-        };
-    }
-
     public class Scene
     {
         public string Name;

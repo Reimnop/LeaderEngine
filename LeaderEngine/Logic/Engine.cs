@@ -3,7 +3,6 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using ErrorCode = OpenTK.Windowing.GraphicsLibraryFramework.ErrorCode;
@@ -20,22 +19,15 @@ namespace LeaderEngine
 
     public static class Engine
     {
-        public static GameWindow MainWindow { get; private set; }
+        public static GameWindow MainWindow => _window;
+        public static GLRenderer Renderer => _renderer;
 
-        public static GLRenderer Renderer = new ForwardRenderer();
+        private static GameWindow _window;
+        private static GLRenderer _renderer;
 
-        private static DebugProc debugProcCallback = DebugCallback;
-        private static GCHandle debugProcCallbackHandle;
-
-        private static string[] requiredExtensions = new string[]
+        public static void Init(GameWindowSettings gws, NativeWindowSettings nws, GLRenderer renderer = null, Action initCallback = null)
         {
-            "GL_ARB_direct_state_access",
-            "GL_ARB_bindless_texture"
-        };
-
-        public static void Init(GameWindowSettings gws, NativeWindowSettings nws, Action initCallback = null, GLRenderer renderer = null)
-        {
-            MainWindow = new GameWindow(gws, nws);
+            _window = new GameWindow(gws, nws);
 
             //log basic info
             Logger.Log("Base Directory: " + AppContext.BaseDirectory, true);
@@ -43,21 +35,6 @@ namespace LeaderEngine
             Logger.Log("Vendor: " + GL.GetString(StringName.Vendor), true);
             Logger.Log("Version: " + GL.GetString(StringName.Version), true);
             Logger.Log("Shading Language version: " + GL.GetString(StringName.ShadingLanguageVersion), true);
-
-            //check extensions
-            HashSet<string> supportedExtensions = new HashSet<string>();
-
-            int numExt = GL.GetInteger(GetPName.NumExtensions);
-            for (int i = 0; i < numExt; i++)
-            {
-                supportedExtensions.Add(GL.GetString(StringNameIndexed.Extensions, i));
-            }
-
-            foreach (var ext in requiredExtensions)
-            {
-                if (!supportedExtensions.Contains(ext))
-                    Logger.LogError($"Extension {ext} is not supported on the system!");
-            }
 
             //subscribe to window events
             MainWindow.UpdateFrame += UpdateFrame;
@@ -71,7 +48,8 @@ namespace LeaderEngine
             //init debug callbacks
             GLFW.SetErrorCallback(LogGLFWError);
 
-            debugProcCallbackHandle = GCHandle.Alloc(debugProcCallback);
+            DebugProc debugProcCallback = DebugCallback;
+            GCHandle debugProcCallbackHandle = GCHandle.Alloc(debugProcCallback);
 
             GL.DebugMessageCallback(debugProcCallback, IntPtr.Zero);
             GL.Enable(EnableCap.DebugOutput);
@@ -83,7 +61,7 @@ namespace LeaderEngine
             SpriteRenderer.Init();
             SkyboxRenderer.Init();
 
-            Renderer = renderer ?? Renderer;
+            _renderer = renderer ?? new ForwardRenderer();
             Renderer.Init();
 
             AudioManager.Init();

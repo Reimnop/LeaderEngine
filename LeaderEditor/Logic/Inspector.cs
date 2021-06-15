@@ -23,10 +23,10 @@ namespace LeaderEditor
         private void Start()
         {
             //register ImGui
-            ImGuiController.RegisterImGui(ImGuiRenderer);
+            ImGuiController.OnImGui += OnImGui;
         }
 
-        private void ImGuiRenderer()
+        private void OnImGui()
         {
             if (ImGui.Begin("Inspector"))
             {

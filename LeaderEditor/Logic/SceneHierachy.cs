@@ -13,7 +13,7 @@ namespace LeaderEditor
 
         private void Start()
         {
-            ImGuiController.RegisterImGui(ImGuiRenderer);
+            ImGuiController.OnImGui += OnImGui;
         }
 
         private void Update()
@@ -26,7 +26,7 @@ namespace LeaderEditor
             }
         }
 
-        private void ImGuiRenderer()
+        private void OnImGui()
         {
             //render scene hierachy gui
             if (ImGui.Begin("Scene Hierachy"))

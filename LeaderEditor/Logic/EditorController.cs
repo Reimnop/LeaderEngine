@@ -16,6 +16,8 @@ namespace LeaderEditor
         private ProjectController pc;
         private CameraMove cm;
 
+        private OPERATION operation = OPERATION.TRANSLATE;
+
         private void Start()
         {
             if (Main == null)
@@ -24,7 +26,7 @@ namespace LeaderEditor
             Renderer = (EditorRenderer)Engine.Renderer;
 
             //init editor gui
-            ImGuiController.RegisterImGui(ImGuiRenderer);
+            ImGuiController.OnImGui += OnImGui;
 
             BaseEntity.AddComponent<GridRenderer>();
             BaseEntity.AddComponent<SceneHierachy>();
@@ -80,9 +82,7 @@ namespace LeaderEditor
             }
         }
 
-        private OPERATION operation = OPERATION.TRANSLATE;
-
-        private void ImGuiRenderer()
+        private void OnImGui()
         {
             //dockspace
             ImGui.DockSpaceOverViewport();

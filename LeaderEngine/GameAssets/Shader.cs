@@ -139,7 +139,7 @@ namespace LeaderEngine
         {
             base.Dispose();
 
-            GL.DeleteShader(_handle);
+            GL.DeleteProgram(_handle);
         }
     }
 }

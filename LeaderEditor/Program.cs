@@ -20,7 +20,7 @@ namespace LeaderEditor
                 Profile = ContextProfile.Core,
                 Size = new Vector2i(1440, 810),
                 Title = "LeaderEditor"
-            }, InitEditor, new EditorRenderer());
+            }, new EditorRenderer(), InitEditor);
         }
 
         private static void InitEditor()

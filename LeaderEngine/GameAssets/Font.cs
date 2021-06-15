@@ -1,4 +1,5 @@
-﻿using OpenTK.Mathematics;
+﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using System.Collections.Generic;
 
 namespace LeaderEngine
@@ -25,9 +26,9 @@ namespace LeaderEngine
         public readonly int PaddingBottom;
         public readonly int PaddingRight;
 
-        public Texture FontTexture => _fontTexture;
+        public int FontTexture => _fontTexture;
 
-        private Texture _fontTexture;
+        private int _fontTexture;
 
         public Font(string name, string path) : base(name)
         {
@@ -67,7 +68,7 @@ namespace LeaderEngine
         {
             base.Dispose();
 
-            _fontTexture.Dispose();
+            GL.DeleteTexture(_fontTexture);
         }
     }
 }

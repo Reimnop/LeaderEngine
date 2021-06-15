@@ -7,10 +7,10 @@ namespace LeaderEditor
     {
         private void Start()
         {
-            ImGuiController.RegisterImGui(ImGuiRenderer);
+            ImGuiController.OnImGui += OnImGui;
         }
 
-        private void ImGuiRenderer()
+        private void OnImGui()
         {
 
         }
