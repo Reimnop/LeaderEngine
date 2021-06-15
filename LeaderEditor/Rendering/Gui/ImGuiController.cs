@@ -287,9 +287,6 @@ namespace LeaderEditor
                 indexOffsetInElements += cmdList.IdxBuffer.Size;
             }
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-
             //enable states
             GL.Enable(EnableCap.Blend);
             GL.Enable(EnableCap.ScissorTest);
