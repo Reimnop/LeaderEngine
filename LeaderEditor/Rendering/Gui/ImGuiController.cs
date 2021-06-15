@@ -101,7 +101,7 @@ namespace LeaderEditor
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, stride, sizeof(float) * 2); //aTexCoord
             GL.EnableVertexAttribArray(1);
 
-            GL.VertexAttribPointer(2, 4, VertexAttribPointerType.UnsignedByte, true, stride, sizeof(float) * 4); //aTexCoord
+            GL.VertexAttribPointer(2, 4, VertexAttribPointerType.UnsignedByte, true, stride, sizeof(float) * 4); //aColor
             GL.EnableVertexAttribArray(2);
 
             GL.BindVertexArray(0);

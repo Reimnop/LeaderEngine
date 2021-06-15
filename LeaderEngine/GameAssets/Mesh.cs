@@ -42,9 +42,6 @@ namespace LeaderEngine
 
         private VertexAttribData[] vertexAttribs;
 
-        public PrimitiveType PrimitiveType { private set; get; }
-        public DrawElementsType DrawElementsType { private set; get; }
-
         public Mesh(string name) : base(name)
         {
             //generate buffers
@@ -54,14 +51,8 @@ namespace LeaderEngine
             _ebo = GL.GenBuffer();
         }
 
-        public void LoadMesh(
-            Vector3[] vertices, uint[] indices, 
-            PrimitiveType primitiveType = PrimitiveType.Triangles, 
-            DrawElementsType drawElementsType = DrawElementsType.UnsignedInt)
+        public void LoadMesh(Vector3[] vertices, uint[] indices)
         {
-            PrimitiveType = primitiveType;
-            DrawElementsType = drawElementsType;
-
             _vertices = vertices;
             _indices = indices;
 
@@ -69,11 +60,11 @@ namespace LeaderEngine
 
             //upload vertex buffer
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo0);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * Vector3.SizeInBytes, vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, Vector3.SizeInBytes * vertices.Length, vertices, BufferUsageHint.StaticDraw);
 
             //upload element buffer
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, sizeof(uint) * indices.Length, indices, BufferUsageHint.StaticDraw);
 
             //vertex attrib
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, Vector3.SizeInBytes, 0);
@@ -96,7 +87,7 @@ namespace LeaderEngine
             GL.BindVertexArray(_vao);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo1);
-            GL.BufferData(BufferTarget.ArrayBuffer, data.Length * vertexSize, data, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, vertexSize * data.Length, data, BufferUsageHint.StaticDraw);
 
             //vertex attribs
             FieldInfo[] fields = typeof(T).GetFields();

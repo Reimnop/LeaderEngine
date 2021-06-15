@@ -260,7 +260,7 @@ namespace LeaderEngine
 
         public void DrawMesh(Mesh mesh)
         {
-            DrawElements(mesh.PrimitiveType, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
+            DrawElements(PrimitiveType.Triangles, mesh.IndicesCount, DrawElementsType.UnsignedInt, 0);
         }
 
         public void BindMaterial(int index, Material material)
