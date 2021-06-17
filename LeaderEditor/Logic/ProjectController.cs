@@ -19,7 +19,7 @@ namespace LeaderEditor
         {
             if (ImGui.BeginMenu("File"))
             {
-                
+
 
                 ImGui.EndMenu();
             }

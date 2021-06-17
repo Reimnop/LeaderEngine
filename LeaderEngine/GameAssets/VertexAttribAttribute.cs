@@ -1,18 +1,20 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using System;
 
 namespace LeaderEngine
 {
-    public struct VertexAttrib
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+    public class VertexAttribAttribute : Attribute
     {
         public VertexAttribPointerType PointerType;
         public int Size;
         public bool Normalized;
 
-        public VertexAttrib(VertexAttribPointerType pointerType, int size, bool normalized)
+        public VertexAttribAttribute(VertexAttribPointerType pointerType, int size, bool normalized)
         {
             PointerType = pointerType;
-            Size = size;
             Normalized = normalized;
+            Size = size;
         }
     }
 }

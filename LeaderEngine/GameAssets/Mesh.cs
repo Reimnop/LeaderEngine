@@ -10,19 +10,12 @@ namespace LeaderEngine
 {
     public sealed class Mesh : GameAsset
     {
-        private struct VertexAttribData
-        {
-            public VertexAttribPointerType PointerType;
-            public int Location;
-            public int Size;
-            public int Offset;
-            public bool Normalized;
-        }
-
         public override GameAssetType AssetType => GameAssetType.Mesh;
 
         public Span<Vector3> Vertices => new Span<Vector3>(_vertices);
         public Span<uint> Indices => new Span<uint>(_indices);
+
+        public Span<VertexAttrib> VertexAttribs => new Span<VertexAttrib>(_vertexAttribs);
 
         public int VerticesCount => _vertices.Length;
         public int IndicesCount => _indices.Length;
@@ -35,12 +28,12 @@ namespace LeaderEngine
         private Vector3[] _vertices;
         private uint[] _indices;
 
+        private VertexAttrib[] _vertexAttribs;
+
         private int _vao;
         private int _vbo0;
         private int _vbo1;
         private int _ebo;
-
-        private VertexAttribData[] vertexAttribs;
 
         public Mesh(string name) : base(name)
         {
@@ -81,43 +74,85 @@ namespace LeaderEngine
 
         public void SetPerVertexData<T>(T[] data) where T : struct
         {
-            //upload buffer to gpu
-            int vertexSize = Unsafe.SizeOf<T>();
-
-            GL.BindVertexArray(_vao);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo1);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertexSize * data.Length, data, BufferUsageHint.StaticDraw);
-
             //vertex attribs
             FieldInfo[] fields = typeof(T).GetFields();
 
-            vertexAttribs = new VertexAttribData[fields.Length];
+            VertexAttrib[] vertexAttribs = new VertexAttrib[fields.Length];
 
             for (int i = 0; i < fields.Length; i++)
             {
-                var attribs = fields[i].GetCustomAttributes(typeof(VertexAttrib));
-                VertexAttrib attrib = attribs.Count() > 0 ? (VertexAttrib)attribs.First() : throw new ArgumentNullException();
-
-                int offset = Marshal.OffsetOf<T>(fields[i].Name).ToInt32();
-
-                GL.VertexAttribPointer(attrib.Location, attrib.Size, attrib.PointerType, attrib.Normalized, vertexSize, offset);
-                GL.EnableVertexAttribArray(attrib.Location);
-
-                //store vertex attrib
-                vertexAttribs[i] = new VertexAttribData
-                {
-                    PointerType = attrib.PointerType,
-                    Location = attrib.Location,
-                    Size = attrib.Size,
-                    Offset = offset,
-                    Normalized = attrib.Normalized
-                };
+                var attribs = fields[i].GetCustomAttributes(typeof(VertexAttribAttribute));
+                VertexAttribAttribute attrib = attribs.Count() > 0 ? (VertexAttribAttribute)attribs.First() : throw new ArgumentNullException();
+                vertexAttribs[i] = new VertexAttrib(attrib.PointerType, attrib.Size, attrib.Normalized);
             }
 
+            SetPerVertexData(data, vertexAttribs);
+        }
+
+        public void SetPerVertexData<T>(T[] data, params VertexAttrib[] vertexAttribs) where T : struct
+        {
+            GL.BindVertexArray(_vao);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo1);
+            GL.BufferData(BufferTarget.ArrayBuffer, Unsafe.SizeOf<T>() * data.Length, data, BufferUsageHint.StaticDraw);
+
+            //calculate stride
+            int stride = 0;
+            foreach (VertexAttrib attrib in vertexAttribs)
+                stride += GetPointerTypeSize(attrib.PointerType) * attrib.Size;
+
+            int offset = 0;
+            for (int i = 0; i < vertexAttribs.Length; i++)
+            {
+                VertexAttrib attrib = vertexAttribs[i];
+
+                GL.VertexAttribPointer(i + 1, attrib.Size, attrib.PointerType, attrib.Normalized, stride, offset);
+                GL.EnableVertexAttribArray(i + 1);
+
+                offset += GetPointerTypeSize(attrib.PointerType) * attrib.Size;
+            }
+
+            GL.BindVertexArray(0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
             GL.ObjectLabel(ObjectLabelIdentifier.Buffer, _vbo1, Name.Length + 5, Name + "-VBO1");
+
+            _vertexAttribs = vertexAttribs;
+        }
+
+        private int GetPointerTypeSize(VertexAttribPointerType pointerType)
+        {
+            switch (pointerType)
+            {
+                case VertexAttribPointerType.Byte:
+                    return sizeof(sbyte);
+                case VertexAttribPointerType.Double:
+                    return sizeof(double);
+                case VertexAttribPointerType.Fixed:
+                    return 4; //32 bits
+                case VertexAttribPointerType.Float:
+                    return sizeof(float);
+                case VertexAttribPointerType.HalfFloat:
+                    return 2; //16 bits
+                case VertexAttribPointerType.Int:
+                    return sizeof(int);
+                case VertexAttribPointerType.Int2101010Rev:
+                    return 4; //32 bits
+                case VertexAttribPointerType.Short:
+                    return sizeof(short);
+                case VertexAttribPointerType.UnsignedByte:
+                    return sizeof(byte);
+                case VertexAttribPointerType.UnsignedInt:
+                    return sizeof(uint);
+                case VertexAttribPointerType.UnsignedInt10F11F11FRev:
+                    return 4; //32 bits
+                case VertexAttribPointerType.UnsignedInt2101010Rev:
+                    return 4; //32 bits
+                case VertexAttribPointerType.UnsignedShort:
+                    return sizeof(ushort);
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         public override void Dispose()

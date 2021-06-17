@@ -11,7 +11,7 @@ namespace LeaderEngine
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct SpriteVertexData
         {
-            [VertexAttrib(VertexAttribPointerType.Float, 1, 2, false)]
+            [VertexAttribAttribute(VertexAttribPointerType.Float, 2, false)]
             public Vector2 UV;
         }
 
