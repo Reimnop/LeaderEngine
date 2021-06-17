@@ -10,9 +10,12 @@ namespace LeaderEngine
     public sealed class Texture : GameAsset
     {
         public override GameAssetType AssetType => GameAssetType.Texture;
-
+        
         public int Handle => _handle;
+        public long LongHandle => _longHandle;
         public Vector2i Size => _size;
+
+        public bool IsResident => _isResident;
 
         public PixelInternalFormat PixelInternalFormat => _pixelInternalFormat;
         public PixelFormat PixelFormat => _pixelFormat;
@@ -24,8 +27,11 @@ namespace LeaderEngine
         public TextureWrapMode WrapModeS => _wrapModeS;
 
         private int _handle;
+        private long _longHandle;
 
         private Vector2i _size;
+
+        private bool _isResident = false;
 
         private PixelInternalFormat _pixelInternalFormat;
         private PixelFormat _pixelFormat;
@@ -122,6 +128,14 @@ namespace LeaderEngine
             texture._size = new Vector2i(width, height);
 
             return texture;
+        }
+
+        public void MakeResident()
+        {
+            _longHandle = GL.Arb.GetTextureHandle(_handle);
+            GL.Arb.MakeTextureHandleResident(_longHandle);
+
+            _isResident = true;
         }
 
         public void SetMinFilter(TextureMinFilter textureMinFilter)

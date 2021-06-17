@@ -21,7 +21,8 @@ namespace LeaderEngine
 
         private static GameAssetSerializer[] gameAssetSerializers = new GameAssetSerializer[]
         {
-            new MeshSerializer()
+            new MeshSerializer(),
+            new TextureSerializer()
         };
 
         public static List<GameAsset> Assets { get; } = new List<GameAsset>();

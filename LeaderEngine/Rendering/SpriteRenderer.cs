@@ -2,6 +2,7 @@
 using OpenTK.Mathematics;
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace LeaderEngine
@@ -9,13 +10,22 @@ namespace LeaderEngine
     public class SpriteRenderer : Component, IRenderer
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        private struct SpriteVertexData
+        private struct SpriteVertex
         {
-            [VertexAttribAttribute(VertexAttribPointerType.Float, 2, false)]
+            public Vector3 Position;
             public Vector2 UV;
+
+            public SpriteVertex(Vector3 position, Vector2 uv)
+            {
+                Position = position;
+                UV = uv;
+            }
         }
 
-        private static Mesh mesh;
+        private static int meshVAO;
+        private static int meshVBO;
+        private static int meshEBO;
+
         private static Shader shader;
 
         public Texture Texture;
@@ -25,14 +35,12 @@ namespace LeaderEngine
 
         internal static void Init()
         {
-            mesh = new Mesh("sprite-mesh");
-
-            Vector3[] vertices = new Vector3[]
+            SpriteVertex[] vertices = new SpriteVertex[]
             {
-                new Vector3( 0.5f,  0.5f, 0f),
-                new Vector3( 0.5f, -0.5f, 0f),
-                new Vector3(-0.5f, -0.5f, 0f),
-                new Vector3(-0.5f,  0.5f, 0f)
+                new SpriteVertex(new Vector3( 0.5f,  0.5f, 0f), new Vector2(1f, 1f)),
+                new SpriteVertex(new Vector3( 0.5f, -0.5f, 0f), new Vector2(1f, 0f)),
+                new SpriteVertex(new Vector3(-0.5f, -0.5f, 0f), new Vector2(0f, 0f)),
+                new SpriteVertex(new Vector3(-0.5f,  0.5f, 0f), new Vector2(0f, 1f))
             };
 
             uint[] indices = new uint[]
@@ -41,14 +49,26 @@ namespace LeaderEngine
                 1, 2, 3
             };
 
-            mesh.LoadMesh(vertices, indices);
-            mesh.SetPerVertexData(new SpriteVertexData[]
-            {
-                new SpriteVertexData { UV = new Vector2(1f, 1f) },
-                new SpriteVertexData { UV = new Vector2(1f, 0f) },
-                new SpriteVertexData { UV = new Vector2(0f, 0f) },
-                new SpriteVertexData { UV = new Vector2(0f, 1f) }
-            });
+            meshVAO = GL.GenVertexArray();
+            GL.BindVertexArray(meshVAO);
+
+            meshVBO = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, meshVBO);
+            GL.BufferData(BufferTarget.ArrayBuffer, Unsafe.SizeOf<SpriteVertex>() * vertices.Length, vertices, BufferUsageHint.StaticDraw);
+
+            meshEBO = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, meshEBO);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, sizeof(uint) * indices.Length, indices, BufferUsageHint.StaticDraw);
+
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof(float) * 5, 0);
+            GL.EnableVertexAttribArray(0);
+
+            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, sizeof(float) * 5, sizeof(float) * 3);
+            GL.EnableVertexAttribArray(1);
+
+            GL.BindVertexArray(0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
 
             string dir = Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/");
 
@@ -70,8 +90,8 @@ namespace LeaderEngine
 
             cmd.BindTexture(TextureUnit.Texture0, Texture);
 
-            cmd.BindMesh(mesh);
-            cmd.DrawMesh(mesh);
+            cmd.BindVertexArray(meshVAO);
+            cmd.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, 0);
 
             Engine.Renderer.QueueCommandsOpaque(cmd);
         }

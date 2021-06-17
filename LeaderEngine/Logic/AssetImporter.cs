@@ -75,11 +75,10 @@ namespace LeaderEngine
                         texture.SetWrapModeT(ConvertWrapModeToOTK(aiTexture.WrapModeU));
                         texture.SetWrapModeS(ConvertWrapModeToOTK(aiTexture.WrapModeV));
 
-                        long handle = GL.Arb.GetTextureHandle(texture.Handle);
-                        GL.Arb.MakeTextureHandleResident(handle);
+                        texture.MakeResident();
 
                         material.HasDiffuse = true;
-                        material.DiffuseTexture = handle;
+                        material.DiffuseTexture = texture.LongHandle;
                     }
                     catch (Exception e)
                     {
