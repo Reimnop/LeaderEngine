@@ -97,42 +97,12 @@ namespace LeaderEngine
             }
         }
 
-        public void Use()
-        {
-            GL.UseProgram(_handle);
-        }
-
         public int GetAttribLocation(string attribName)
         {
             if (uniformLocations.TryGetValue(attribName, out int loc))
                 return loc;
 
             return GL.GetAttribLocation(_handle, attribName);
-        }
-        public void SetInt(string name, int data)
-        {
-            if (uniformLocations.TryGetValue(name, out int loc))
-                GL.Uniform1(loc, data);
-        }
-        public void SetFloat(string name, float data)
-        {
-            if (uniformLocations.TryGetValue(name, out int loc))
-                GL.Uniform1(loc, data);
-        }
-        public void SetMatrix4(string name, Matrix4 data)
-        {
-            if (uniformLocations.TryGetValue(name, out int loc))
-                GL.UniformMatrix4(loc, true, ref data);
-        }
-        public void SetVector3(string name, Vector3 data)
-        {
-            if (uniformLocations.TryGetValue(name, out int loc))
-                GL.Uniform3(loc, data);
-        }
-        public void SetVector4(string name, Vector4 data)
-        {
-            if (uniformLocations.TryGetValue(name, out int loc))
-                GL.Uniform4(loc, data);
         }
 
         public override void Dispose()
