@@ -130,12 +130,21 @@ namespace LeaderEngine
             return texture;
         }
 
-        public void MakeResident()
+        public void MakeImmutable()
         {
             _longHandle = GL.Arb.GetTextureHandle(_handle);
-            GL.Arb.MakeTextureHandleResident(_longHandle);
+        }
 
+        public void MakeResident()
+        {
+            GL.Arb.MakeTextureHandleResident(_longHandle);
             _isResident = true;
+        }
+
+        public void MakeNonResident()
+        {
+            GL.Arb.MakeTextureHandleNonResident(_longHandle);
+            _isResident = false;
         }
 
         public void SetMinFilter(TextureMinFilter textureMinFilter)

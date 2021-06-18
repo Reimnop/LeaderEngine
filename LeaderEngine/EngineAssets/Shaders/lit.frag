@@ -10,13 +10,11 @@ in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragPos;
 
-layout (bindless_sampler) uniform;
-
 layout (std140, binding = 0) uniform Material 
 {
 	vec3 color;
 	bool hasDiffuse;
-	sampler2D diffuse;
+	layout (bindless_sampler) sampler2D diffuse;
 };
 
 uniform vec3 camPos;

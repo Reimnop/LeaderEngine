@@ -72,7 +72,10 @@ namespace LeaderEngine
             texture.SetWrapModeT(wrapModeT);
 
             if (isResident)
+            {
+                texture.MakeImmutable();
                 texture.MakeResident();
+            }
 
             return texture;
         }
