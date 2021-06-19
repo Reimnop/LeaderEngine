@@ -31,7 +31,7 @@ namespace LeaderEditor
             TextRenderer textRenderer = (TextRenderer)obj;
             
             textRenderer.Text = (string)DefaultString("Text", textRenderer.Text);
-            textRenderer.Font = (Font)DefaultFont("Font", textRenderer.Font);
+            textRenderer.Font = (Font)SerializeGameAsset("Font", textRenderer.Font, typeof(Font));
 
             ImGui.Text("Alignment");
             if (ImGui.BeginCombo("Horizontal", textRenderer.HorizontalAlignment.ToString()))
@@ -79,7 +79,7 @@ namespace LeaderEditor
             ImGui.Checkbox("Looping", ref loop);
             source.Looping = loop;
 
-            source.Clip = (AudioClip)DefaultAC("Clip", source.Clip);
+            source.Clip = (AudioClip)SerializeGameAsset("Clip", source.Clip, typeof(AudioClip));
 
             if (ImGui.Button("Play"))
                 source.Play();
@@ -103,6 +103,15 @@ namespace LeaderEditor
             var fields = obj.GetType().GetFields();
             foreach (var field in fields)
             {
+                if (typeof(GameAsset).IsAssignableFrom(field.FieldType))
+                {
+                    ImGui.PushID(field.Name);
+                    field.SetValue(obj, SerializeGameAsset(field.Name, (GameAsset)field.GetValue(obj), field.FieldType));
+                    ImGui.PopID();
+                    guiDrawn = true;
+                    continue;
+                }
+
                 if (fieldDrawFuncs.TryGetValue(field.FieldType, out var drawFunc) && field.IsPublic && !field.IsStatic)
                 {
                     ImGui.PushID(field.Name);
@@ -116,6 +125,15 @@ namespace LeaderEditor
             var props = obj.GetType().GetProperties();
             foreach (var prop in props)
             {
+                if (typeof(GameAsset).IsAssignableFrom(prop.PropertyType))
+                {
+                    ImGui.PushID(prop.Name);
+                    prop.SetValue(obj, SerializeGameAsset(prop.Name, (GameAsset)prop.GetValue(obj), prop.PropertyType));
+                    ImGui.PopID();
+                    guiDrawn = true;
+                    continue;
+                }
+
                 if (fieldDrawFuncs.TryGetValue(prop.PropertyType, out var drawFunc))
                 {
                     ImGui.PushID(prop.Name);
@@ -129,6 +147,27 @@ namespace LeaderEditor
                 ImGui.Text("No property");
         }
 
+        private static GameAsset SerializeGameAsset(string name, GameAsset gameAsset, Type type)
+        {
+            if (ImGui.BeginCombo(name, gameAsset != null ? gameAsset.Name : "[None]"))
+            {
+                foreach (GameAsset asset in LeaderEngine.AssetManager.Assets.Values)
+                {
+                    if (!type.IsAssignableFrom(asset.GetType()))
+                        continue;
+
+                    ImGui.PushID(asset.GetHashCode());
+                    if (ImGui.Selectable(asset.Name, gameAsset == asset))
+                        gameAsset = asset;
+                    ImGui.PopID();
+                }
+
+                ImGui.EndCombo();
+            }
+
+            return gameAsset;
+        }
+
         //default serializers
         private static Dictionary<Type, Func<string, object, object>> fieldDrawFuncs = new Dictionary<Type, Func<string, object, object>>()
         {
@@ -137,95 +176,8 @@ namespace LeaderEditor
             { typeof(string), DefaultString },
             { typeof(Vector4), DefaultV4 },
             { typeof(Vector3), DefaultV3 },
-            { typeof(Vector2), DefaultV2 },
-            { typeof(AudioClip), DefaultAC },
-            { typeof(Texture), DefaultTexture },
-            { typeof(Font), DefaultFont },
-            { typeof(Cubemap), DefaultCubemap }
+            { typeof(Vector2), DefaultV2 }
         };
-
-        private static object DefaultCubemap(string name, object obj)
-        {
-            Cubemap value = (Cubemap)obj;
-
-            if (ImGui.BeginCombo(name, value != null ? value.Name : "[None]"))
-            {
-                foreach (var cbm in GlobalData.Cubemaps)
-                {
-                    ImGui.PushID(cbm.GetHashCode());
-                    if (ImGui.Selectable(cbm.Value.Name, value == cbm.Value))
-                        value = cbm.Value;
-                    ImGui.PopID();
-                }
-
-                ImGui.EndCombo();
-            }
-
-            return value;
-        }
-
-        private static object DefaultTexture(string name, object obj)
-        {
-            Texture value = (Texture)obj;
-
-            if (ImGui.BeginCombo(name, value != null ? value.Name : "[None]"))
-            {
-                foreach (var tex in GlobalData.Textures)
-                {
-                    ImGui.PushID(tex.GetHashCode());
-                    if (ImGui.Selectable(tex.Value.Name, value == tex.Value))
-                        value = tex.Value;
-                    ImGui.PopID();
-                }
-
-                ImGui.EndCombo();
-            }
-
-            return value;
-        }
-
-        private static object DefaultFont(string name, object obj)
-        {
-            Font value = (Font)obj;
-
-            if (ImGui.BeginCombo(name, value != null ? value.Name : "[None]"))
-            {
-                if (ImGui.Selectable("[None]", value == null))
-                    value = null;
-
-                foreach (var font in GlobalData.Fonts)
-                {
-                    ImGui.PushID(font.GetHashCode());
-                    if (ImGui.Selectable(font.Value.Name, value == font.Value))
-                        value = font.Value;
-                    ImGui.PopID();
-                }
-
-                ImGui.EndCombo();
-            }
-
-            return value;
-        }
-
-        private static object DefaultAC(string name, object obj)
-        {
-            AudioClip value = (AudioClip)obj;
-
-            if (ImGui.BeginCombo(name, value != null ? value.Name : "[None]"))
-            {
-                foreach (var clip in GlobalData.AudioClips)
-                {
-                    ImGui.PushID(clip.GetHashCode());
-                    if (ImGui.Selectable(clip.Value.Name, value == clip.Value))
-                        value = clip.Value;
-                    ImGui.PopID();
-                }
-
-                ImGui.EndCombo();
-            }
-
-            return value;
-        }
 
         private static object DefaultV2(string name, object obj)
         {

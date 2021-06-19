@@ -1,4 +1,6 @@
-﻿using OpenTK.Mathematics;
+﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -122,7 +124,7 @@ namespace LeaderEngine
         public int Base;
 
         public Vector2i TextureSize;
-        public Texture FontTexture;
+        public int FontTexture;
 
         public int CharacterCount;
         public Dictionary<int, FntCharacter> Characters = new Dictionary<int, FntCharacter>();
@@ -232,8 +234,16 @@ namespace LeaderEngine
                 switch (a.Name)
                 {
                     case "file":
-                        parser.FontTexture = Texture.FromFile(parser.FontName + "-Font", Path.Combine(Path.GetDirectoryName(parser.FilePath), a.Value));
-                        parser.FontTexture.Unlist();
+                        Rgba32[] pixels = Helper.LoadImageFromFile(Path.Combine(Path.GetDirectoryName(parser.FilePath), a.Value), out int width, out int height);
+
+                        int texture = GL.GenTexture();
+                        GL.BindTexture(TextureTarget.Texture2D, texture);
+                        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                        GL.BindTexture(TextureTarget.Texture2D, 0);
+
+                        parser.FontTexture = texture;
                         break;
                 }
             }

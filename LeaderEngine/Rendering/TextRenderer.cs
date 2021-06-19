@@ -139,7 +139,7 @@ namespace LeaderEngine
             cmd.SetUniformFloat(shader, "width", Width);
             cmd.SetUniformFloat(shader, "edge", Edge);
 
-            cmd.BindTexture(TextureUnit.Texture0, Font.GetTexture());
+            cmd.BindTexture(TextureUnit.Texture0, Font.FontTexture);
 
             cmd.BindVertexArray(VAO);
             cmd.DrawArrays(PrimitiveType.Triangles, 0, vertCount);

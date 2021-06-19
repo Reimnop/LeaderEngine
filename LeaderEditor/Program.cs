@@ -6,10 +6,10 @@ using System;
 
 namespace LeaderEditor
 {
-    class Program
+    internal class Program
     {
         [STAThread]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Engine.Init(new GameWindowSettings(), new NativeWindowSettings()
             {
@@ -20,13 +20,12 @@ namespace LeaderEditor
                 Profile = ContextProfile.Core,
                 Size = new Vector2i(1440, 810),
                 Title = "LeaderEditor"
-            }, InitEditor, new EditorRenderer());
+            }, new EditorRenderer(), InitEditor);
         }
 
         private static void InitEditor()
         {
             Engine.MainWindow.VSync = VSyncMode.Off;
-            Engine.IgnoreGLInfo = true;
 
             Entity editorScripts = new Entity("EditorEntity");
             editorScripts.AddComponent<EditorController>();

@@ -1,5 +1,5 @@
-﻿using OpenTK.Mathematics;
-using System;
+﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using System.Collections.Generic;
 
 namespace LeaderEngine
@@ -13,10 +13,9 @@ namespace LeaderEngine
         public int Advance;
     }
 
-    public class Font : IDisposable
+    public class Font : GameAsset
     {
-        public readonly string Name;
-        public readonly string ID;
+        public override GameAssetType AssetType => GameAssetType.Font;
 
         public readonly Dictionary<int, Character> Characters;
         public readonly Dictionary<(int, int), int> Kernings;
@@ -27,15 +26,15 @@ namespace LeaderEngine
         public readonly int PaddingBottom;
         public readonly int PaddingRight;
 
-        private Texture fontTexture;
+        public int FontTexture => _fontTexture;
 
-        public Font(string name, string path, string id = null)
+        private int _fontTexture;
+
+        public Font(string name, string path) : base(name)
         {
-            Name = name;
-
             var parser = new FntParser(path);
 
-            fontTexture = parser.FontTexture;
+            _fontTexture = parser.FontTexture;
             FontHeight = parser.LineHeight;
 
             PaddingTop = parser.PaddingTop;
@@ -63,20 +62,13 @@ namespace LeaderEngine
                     Advance = fChar.Advance - parser.PaddingLeft - parser.PaddingRight
                 });
             }
-
-            ID = id ?? RNG.GetRandomID();
-
-            GlobalData.Fonts.Add(ID, this);
         }
 
-        public Texture GetTexture()
-            => fontTexture;
-
-        public void Dispose()
+        public override void Dispose()
         {
-            fontTexture.Dispose();
+            base.Dispose();
 
-            GlobalData.Fonts.Remove(ID);
+            GL.DeleteTexture(_fontTexture);
         }
     }
 }

@@ -5,7 +5,7 @@ using System.IO;
 
 namespace LeaderEngine
 {
-    static class AudioLoader
+    internal static class AudioLoader
     {
         public static byte[] LoadWave(Stream stream, out int channels, out int bits, out int rate)
         {
@@ -60,50 +60,6 @@ namespace LeaderEngine
                 case 2: return bits == 8 ? ALFormat.Stereo8 : ALFormat.Stereo16;
                 default: throw new NotSupportedException("The specified sound format is not supported.");
             }
-        }
-    }
-
-    public class AudioClip : IDisposable
-    {
-        public readonly string Name;
-        public readonly string ID;
-
-        public readonly int SampleRate;
-        public readonly int Size;
-
-        private int handle;
-
-        private AudioClip(string name, ALFormat format, byte[] data, int size, int rate, string id = null)
-        {
-            Name = name;
-
-            handle = AL.GenBuffer();
-            AL.BufferData(handle, format, ref data[0], size, rate);
-
-            SampleRate = rate;
-            Size = size;
-
-            ID = id ?? RNG.GetRandomID();
-
-            GlobalData.AudioClips.Add(ID, this);
-        }
-
-        public static AudioClip FromFile(string name, string path)
-        {
-            byte[] data = AudioLoader.LoadWave(File.Open(path, FileMode.Open), out int channels, out int bits, out int rate);
-            return new AudioClip(name, AudioLoader.GetSoundFormat(channels, bits), data, data.Length - data.Length % (bits / 8 * channels), rate);
-        }
-
-        public int GetHandle()
-        {
-            return handle;
-        }
-
-        public void Dispose()
-        {
-            AL.DeleteBuffer(handle);
-
-            GlobalData.AudioClips.Remove(ID);
         }
     }
 
@@ -218,7 +174,7 @@ namespace LeaderEngine
         public float GetPlayPosition()
         {
             AL.GetSource(handle, ALGetSourcei.SampleOffset, out int bPosition);
-            return bPosition / (float)Clip.Size * (Clip.Size / (float)Clip.SampleRate);
+            return bPosition / (float)Clip.SampleRate;
         }
 
         public int GetHandle()

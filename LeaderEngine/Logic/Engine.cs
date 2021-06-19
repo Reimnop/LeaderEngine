@@ -3,7 +3,6 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using ErrorCode = OpenTK.Windowing.GraphicsLibraryFramework.ErrorCode;
@@ -20,23 +19,15 @@ namespace LeaderEngine
 
     public static class Engine
     {
-        public static GameWindow MainWindow { get; private set; }
+        public static GameWindow MainWindow => _window;
+        public static GLRenderer Renderer => _renderer;
 
-        public static GLRenderer Renderer = new ForwardRenderer();
+        private static GameWindow _window;
+        private static GLRenderer _renderer;
 
-        public static bool IgnoreGLInfo = false;
-
-        private static DebugProc debugProcCallback = DebugCallback;
-        private static GCHandle debugProcCallbackHandle;
-
-        private static string[] requiredExtensions = new string[]
+        public static void Init(GameWindowSettings gws, NativeWindowSettings nws, GLRenderer renderer = null, Action initCallback = null)
         {
-            "GL_ARB_direct_state_access"
-        };
-
-        public static void Init(GameWindowSettings gws, NativeWindowSettings nws, Action initCallback = null, GLRenderer renderer = null)
-        {
-            MainWindow = new GameWindow(gws, nws);
+            _window = new GameWindow(gws, nws);
 
             //log basic info
             Logger.Log("Base Directory: " + AppContext.BaseDirectory, true);
@@ -44,21 +35,6 @@ namespace LeaderEngine
             Logger.Log("Vendor: " + GL.GetString(StringName.Vendor), true);
             Logger.Log("Version: " + GL.GetString(StringName.Version), true);
             Logger.Log("Shading Language version: " + GL.GetString(StringName.ShadingLanguageVersion), true);
-
-            //check extensions
-            HashSet<string> supportedExtensions = new HashSet<string>();
-
-            int numExt = GL.GetInteger(GetPName.NumExtensions);
-            for (int i = 0; i < numExt; i++)
-            {
-                supportedExtensions.Add(GL.GetString(StringNameIndexed.Extensions, i));
-            }
-
-            foreach (var ext in requiredExtensions)
-            {
-                if (!supportedExtensions.Contains(ext))
-                    throw new Exception($"Extension {ext} is not supported on the system!");
-            }
 
             //subscribe to window events
             MainWindow.UpdateFrame += UpdateFrame;
@@ -72,19 +48,20 @@ namespace LeaderEngine
             //init debug callbacks
             GLFW.SetErrorCallback(LogGLFWError);
 
-            debugProcCallbackHandle = GCHandle.Alloc(debugProcCallback);
+            DebugProc debugProcCallback = DebugCallback;
+            GCHandle debugProcCallbackHandle = GCHandle.Alloc(debugProcCallback);
 
             GL.DebugMessageCallback(debugProcCallback, IntPtr.Zero);
             GL.Enable(EnableCap.DebugOutput);
             GL.Enable(EnableCap.DebugOutputSynchronous);
 
             //init modules
-            GlobalData.Init();
+            AssetManager.Init();
             DefaultShaders.Init();
             SpriteRenderer.Init();
             SkyboxRenderer.Init();
 
-            Renderer = renderer ?? Renderer;
+            _renderer = renderer ?? new ForwardRenderer();
             Renderer.Init();
 
             AudioManager.Init();
@@ -118,10 +95,15 @@ namespace LeaderEngine
                     break;
                 case DebugSeverity.DebugSeverityHigh:
                     Logger.LogError($"OpenGL: {messageString}");
+#if THROW_ON_GL_ERROR
+                    throw new Exception(messageString);
+#else
                     break;
+#endif
                 default:
-                    if (!IgnoreGLInfo)
-                        Logger.Log($"OpenGL: {messageString}");
+#if !NO_GL_INFO
+                    Logger.Log($"OpenGL: {messageString}");
+#endif
                     break;
             }
         }
@@ -136,11 +118,11 @@ namespace LeaderEngine
             Time.UnscaledDeltaTime = t;
 
             //update scene
-            DataManager.CurrentScene.UpdateSceneHierachy();
+            DataManager.CurrentScene.UpdateScene();
 
             //update unlisted entities
-            foreach (var entity in GlobalData.UnlistedEntities)
-                entity.RecursivelyUpdate();
+            foreach (var entity in DataManager.UnlistedEntities)
+                entity.Update();
 
             //update renderer
             Renderer.Update();
@@ -148,9 +130,6 @@ namespace LeaderEngine
 
         private static void RenderFrame(FrameEventArgs obj)
         {
-            GL.Viewport(0, 0, MainWindow.ClientSize.X, MainWindow.ClientSize.Y);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-
             Renderer.Render();
 
             MainWindow.SwapBuffers();

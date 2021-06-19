@@ -7,6 +7,8 @@ namespace LeaderEngine
 {
     public static class CommandProcessor
     {
+        private static int lastShader;
+
         private static Dictionary<CommandEnum, Action<object>> commandProcessors = new Dictionary<CommandEnum, Action<object>>()
         {
             { CommandEnum.BindShader, ExecuteBindShader },
@@ -26,10 +28,23 @@ namespace LeaderEngine
             { CommandEnum.SetUniformVector3, ExecuteSetUniformVector3 },
             { CommandEnum.SetUniformVector4, ExecuteSetUniformVector4 },
             { CommandEnum.SetUniformMatrix3, ExecuteSetUniformMatrix3 },
-            { CommandEnum.SetUniformMatrix4, ExecuteSetUniformMatrix4 }
+            { CommandEnum.SetUniformMatrix4, ExecuteSetUniformMatrix4 },
+
+            { CommandEnum.UniformBlockBinding, ExecuteUniformBlockBinding },
+            { CommandEnum.BindBufferBase, ExecuteBindBufferBase }
         };
 
-        private static int lastShader;
+        private static void ExecuteBindBufferBase(object obj)
+        {
+            var args = (ValueTuple<BufferRangeTarget, int, int>)obj;
+            GL.BindBufferBase(args.Item1, args.Item2, args.Item3);
+        }
+
+        private static void ExecuteUniformBlockBinding(object obj)
+        {
+            var args = (ValueTuple<int, int, int>)obj;
+            GL.UniformBlockBinding(args.Item1, args.Item2, args.Item3);
+        }
 
         private static void ExecuteSetUniformMatrix4(object obj)
         {

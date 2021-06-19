@@ -2,13 +2,12 @@
 using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace LeaderEngine
 {
     public class ForwardRenderer : GLRenderer
     {
-        const int defaultSize = 4096;
+        private const int defaultSize = 4096;
 
         private List<CommandBuffer> shadowMapBuffers = new List<CommandBuffer>();
         private List<CommandBuffer> opaqueBuffers = new List<CommandBuffer>();
@@ -19,56 +18,40 @@ namespace LeaderEngine
         public float Exposure = 1f;
         #endregion
 
-        const int shadowMapRes = 4096;
-        const float shadowMapSize = 48f;
+        private const int shadowMapRes = 4096;
+        private const float shadowMapSize = 48f;
 
-        private Framebuffer shadowMapFramebuffer;
+        private int shadowMapFBO;
+        private int shadowMap;
 
         private PostProcessor postProcessor;
 
-        private PostProcessingEffect hdrEffect;
+        private Vector2i lastViewportSize;
 
         public override void Init()
         {
-            shadowMapFramebuffer = new Framebuffer("shadowmap-fbo", shadowMapRes, shadowMapRes, new Attachment[]
-            {
-                new Attachment
-                {
-                    Draw = false,
-                    PixelInternalFormat = PixelInternalFormat.DepthComponent,
-                    PixelFormat = PixelFormat.DepthComponent,
-                    PixelType = PixelType.Float,
-                    FramebufferAttachment = FramebufferAttachment.DepthAttachment,
-                    TextureParamsInt = new TextureParamInt[]
-                    {
-                        new TextureParamInt { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Nearest },
-                        new TextureParamInt { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Nearest },
-                        new TextureParamInt { ParamName = TextureParameterName.TextureWrapS, Param = (int)TextureWrapMode.ClampToBorder },
-                        new TextureParamInt { ParamName = TextureParameterName.TextureWrapT, Param = (int)TextureWrapMode.ClampToBorder }
-                    },
-                    TextureParamsFloatArr = new TextureParamFloatArr[]
-                    {
-                        new TextureParamFloatArr { ParamName = TextureParameterName.TextureBorderColor, Params = new float[] { 1f, 1f, 1f, 1f } }
-                    }
-                }
-            });
+            //init FBO
+            shadowMapFBO = GL.GenFramebuffer();
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
 
-            #region PostProcess
-            string postProcessPath = Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/PostProcess");
+            //init shadowmap
+            shadowMap = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, shadowMap);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, shadowMapRes, shadowMapRes, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
 
-            hdrEffect = new PostProcessingEffect
-            {
-                Uniforms = new UniformData(),
-                Shader = Shader.FromSourceFile("hdr",
-                    Path.Combine(postProcessPath, "post-process.vert"),
-                    Path.Combine(postProcessPath, "hdr.frag"))
-            };
+            //bind texture to framebuffer
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, shadowMap, 0);
 
+            GL.DrawBuffer(DrawBufferMode.None);
+            GL.ReadBuffer(ReadBufferMode.None);
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            //init post processor
             postProcessor = new PostProcessor();
-            postProcessor.Effects.AddRange(new PostProcessingEffect[] {
-                hdrEffect
-            });
-            #endregion
 
             GL.DepthFunc(DepthFunction.Lequal);
 
@@ -97,19 +80,33 @@ namespace LeaderEngine
 
         public override void Update()
         {
+            if (ViewportSize == lastViewportSize)
+                return;
+
             postProcessor.Resize(ViewportSize);
+            lastViewportSize = ViewportSize;
         }
 
         public override void Render()
         {
-            if (Camera.Main == null)
+            RenderStuff();
+            RenderPostProcess();
+        }
+
+        protected void RenderStuff()
+        {
+            Camera camera = Camera.Main;
+
+            if (camera == null)
                 return;
 
-            foreach (var entity in DataManager.CurrentScene.SceneRootEntities)
-                entity.Transform.CalculateModelMatrixRecursively();
+            foreach (Entity entity in DataManager.CurrentScene.SceneEntities)
+                if (entity.Parent == null)
+                    entity.Transform.CalculateModelMatrixRecursively();
 
-            foreach (var entity in GlobalData.UnlistedEntities)
-                entity.Transform.CalculateModelMatrixRecursively();
+            foreach (Entity entity in DataManager.UnlistedEntities)
+                if (entity.Parent == null)
+                    entity.Transform.CalculateModelMatrixRecursively();
 
             //shadow mapping
             Matrix4 lightView = Matrix4.Identity;
@@ -118,7 +115,7 @@ namespace LeaderEngine
             if (DirectionalLight.Main == null)
                 goto RenderOpaque;
 
-            DirectionalLight.Main.CalculateViewProjection(out lightView, out lightProjection, shadowMapSize, Camera.Main.BaseTransform.Position);
+            DirectionalLight.Main.CalculateViewProjection(out lightView, out lightProjection, shadowMapSize, camera.BaseTransform.Position);
 
             LightData lightData = new LightData
             {
@@ -126,15 +123,15 @@ namespace LeaderEngine
                 Projection = lightProjection
             };
 
-            foreach (var entity in DataManager.CurrentScene.SceneRootEntities)
-                entity.RecursivelyRenderShadowMap(in lightData);
+            foreach (Entity entity in DataManager.CurrentScene.SceneEntities)
+                entity.RenderShadowMap(in lightData);
 
-            foreach (var entity in GlobalData.UnlistedEntities)
-                entity.RecursivelyRenderShadowMap(in lightData);
+            foreach (Entity entity in DataManager.UnlistedEntities)
+                entity.RenderShadowMap(in lightData);
 
             GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
 
-            shadowMapFramebuffer.Begin();
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             GL.Enable(EnableCap.DepthTest);
@@ -146,11 +143,11 @@ namespace LeaderEngine
             foreach (var buffer in shadowMapBuffers)
                 ExecuteCommandBuffer(buffer);
 
-            shadowMapFramebuffer.End();
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
         //render opaque
         RenderOpaque:
-            Camera.Main.CalculateViewProjection(out var view, out var projection);
+            camera.CalculateViewProjection(out var view, out var projection);
 
             //call all render funcs
             RenderData renderData = new RenderData
@@ -159,14 +156,14 @@ namespace LeaderEngine
                 Projection = projection,
                 LightView = lightView,
                 LightProjection = lightProjection,
-                ShadowMapTexture = shadowMapFramebuffer.GetTexture(FramebufferAttachment.DepthAttachment)
+                ShadowMapTexture = shadowMap
             };
 
-            foreach (var entity in DataManager.CurrentScene.SceneRootEntities)
-                entity.RecursivelyRender(renderData);
+            foreach (var entity in DataManager.CurrentScene.SceneEntities)
+                entity.Render(renderData);
 
-            foreach (var entity in GlobalData.UnlistedEntities)
-                entity.RecursivelyRender(renderData);
+            foreach (var entity in DataManager.UnlistedEntities)
+                entity.Render(renderData);
 
             GL.Viewport(0, 0, ViewportSize.X, ViewportSize.Y);
 
@@ -195,16 +192,6 @@ namespace LeaderEngine
 
             postProcessor.End();
 
-            //reset states
-            GL.DepthMask(true);
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.CullFace);
-
-            //post processing
-            hdrEffect.Uniforms.SetUniform("exposure", new Uniform(UniformType.Float, Exposure));
-
-            postProcessor.Render();
-
             //clean up
             shadowMapBuffers.Clear();
             opaqueBuffers.Clear();
@@ -212,6 +199,17 @@ namespace LeaderEngine
             guiBuffers.Clear();
 
             CommandProcessor.Reset();
+        }
+
+        protected void RenderPostProcess()
+        {
+            //reset states
+            GL.DepthMask(true);
+            GL.Disable(EnableCap.Blend);
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
+
+            postProcessor.Render();
         }
 
         private void ExecuteCommandBuffer(CommandBuffer commandBuffer)

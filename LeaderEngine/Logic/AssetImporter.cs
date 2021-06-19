@@ -1,5 +1,4 @@
 ﻿using Assimp;
-using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -31,13 +30,9 @@ namespace LeaderEngine
             {
                 var aiMaterial = aiMaterials[i];
 
-                materials[i] = new Material(aiMaterial.Name);
-                Material mat = materials[i];
-
-                mat.SetVector3("color", new Vector3(aiMaterial.ColorDiffuse.R, aiMaterial.ColorDiffuse.G, aiMaterial.ColorDiffuse.B));
-
-                //reset values
-                mat.SetInt("hasDiffuse", 0);
+                Vector3 color = new Vector3(aiMaterial.ColorDiffuse.R, aiMaterial.ColorDiffuse.G, aiMaterial.ColorDiffuse.B);
+                bool hasDiffuse = false;
+                Texture diffuseTexture = null;
 
                 if (aiMaterial.HasTextureDiffuse)
                 {
@@ -76,13 +71,14 @@ namespace LeaderEngine
                             }
                         }
 
-                        texture.SetWrapS(ConvertWrapModeToOTK(aiTexture.WrapModeU));
-                        texture.SetWrapT(ConvertWrapModeToOTK(aiTexture.WrapModeV));
+                        texture.SetWrapModeT(ConvertWrapModeToOTK(aiTexture.WrapModeU));
+                        texture.SetWrapModeS(ConvertWrapModeToOTK(aiTexture.WrapModeV));
 
-                        mat.SetInt("hasDiffuse", 1);
+                        texture.MakeImmutable();
+                        texture.MakeResident();
 
-                        mat.SetInt("diffuse", 0);
-                        mat.SetTexture2D(TextureUnit.Texture0, texture);
+                        hasDiffuse = true;
+                        diffuseTexture = texture;
                     }
                     catch (Exception e)
                     {
@@ -93,6 +89,19 @@ namespace LeaderEngine
 #endif
                     }
                 }
+
+                Material material = new Material(aiMaterial.Name, DefaultShaders.Lit, 
+                    new MaterialProperty("Color", MaterialPropertyType.Vector3),
+                    new MaterialProperty("HasDiffuse", MaterialPropertyType.Int),
+                    new MaterialProperty("Diffuse", MaterialPropertyType.Texture));
+
+                material.SetVector3("Color", color);
+                material.SetInt("HasDiffuse", hasDiffuse ? 1 : 0);
+                material.SetTexture("Diffuse", diffuseTexture);
+
+                material.UpdateBuffer();
+
+                materials[i] = material;
             }
 
             //load meshes

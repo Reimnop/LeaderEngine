@@ -60,6 +60,12 @@
     <None Update="EditorAssets\Fonts\Inconsolata.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="EditorAssets\Shaders\imgui.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="EditorAssets\Shaders\imgui.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,6 @@
 ﻿using ImGuiNET;
 using ImGuizmoNET;
 using LeaderEngine;
-using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System;
 
@@ -10,22 +9,24 @@ namespace LeaderEditor
     public class EditorController : Component
     {
         public static EditorController Main;
-        public static EditorRenderer ERenderer;
+        public static EditorRenderer Renderer;
 
         private Entity editorCamera;
 
         private ProjectController pc;
         private CameraMove cm;
 
+        private OPERATION operation = OPERATION.TRANSLATE;
+
         private void Start()
         {
             if (Main == null)
                 Main = this;
 
-            ERenderer = (EditorRenderer)Engine.Renderer;
+            Renderer = (EditorRenderer)Engine.Renderer;
 
             //init editor gui
-            ImGuiController.RegisterImGui(ImGuiRenderer);
+            ImGuiController.OnImGui += OnImGui;
 
             BaseEntity.AddComponent<GridRenderer>();
             BaseEntity.AddComponent<SceneHierachy>();
@@ -41,13 +42,19 @@ namespace LeaderEditor
             editorCamera.Unlist();
         }
 
+        private void Update()
+        {
+            if (Input.GetKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.P))
+                LeaderEngine.AssetManager.LoadAssetsFromFile("bruh.ldrassets");
+        }
+
         //mouse select
         private void MouseSelect(Ray ray)
         {
             Entity rayHit = null;
             float t = float.PositiveInfinity;
 
-            foreach (var entity in DataManager.CurrentScene.SceneRootEntities)
+            foreach (var entity in DataManager.CurrentScene.SceneEntities)
                 CheckMeshRayHitRecursively(entity);
 
             SceneHierachy.SelectedEntity = rayHit;
@@ -81,9 +88,7 @@ namespace LeaderEditor
             }
         }
 
-        private OPERATION operation = OPERATION.TRANSLATE;
-
-        private void ImGuiRenderer()
+        private void OnImGui()
         {
             //dockspace
             ImGui.DockSpaceOverViewport();
@@ -103,11 +108,11 @@ namespace LeaderEditor
                 var cPos = ImGui.GetCursorScreenPos();
                 var vSize = ImGui.GetContentRegionAvail();
 
-                ERenderer.ViewportSize = new Vector2i((int)vSize.X, (int)vSize.Y);
+                Renderer.ViewportSize = new Vector2i((int)vSize.X, (int)vSize.Y);
 
                 //display framebuffer texture on window
                 ImGui.GetWindowDrawList().AddImage(
-                    (IntPtr)ERenderer.Framebuffer.GetTexture(FramebufferAttachment.ColorAttachment0),
+                    (IntPtr)Renderer.FramebufferTexture,
                     cPos,
                     cPos + vSize,
                     new System.Numerics.Vector2(0f, 1f),

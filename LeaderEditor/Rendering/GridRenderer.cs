@@ -25,9 +25,8 @@ namespace LeaderEditor
         private Shader shader = DefaultShaders.SingleColor;
 
         private CommandBuffer cmd = new CommandBuffer();
-
-        const int gridSize = 80;
-        const int vertCount = gridSize * 8 + 4;
+        private const int gridSize = 80;
+        private const int vertCount = gridSize * 8 + 4;
 
         //init grid mesh
         private void Start()

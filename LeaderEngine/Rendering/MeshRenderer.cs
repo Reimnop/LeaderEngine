@@ -6,7 +6,6 @@ namespace LeaderEngine
     {
         public Mesh Mesh;
         public Material Material;
-        public Shader Shader = DefaultShaders.Lit;
 
         private CommandBuffer shadowMapCmd = new CommandBuffer();
         private CommandBuffer mainCmd = new CommandBuffer();
@@ -34,26 +33,28 @@ namespace LeaderEngine
             if (!Enabled)
                 return;
 
+            Shader shader = Material.Shader;
+
             mainCmd.Clear();
 
-            mainCmd.BindShader(Shader);
-            mainCmd.SetUniformMatrix4(Shader, "model", BaseTransform.ModelMatrix);
-            mainCmd.SetUniformMatrix4(Shader, "mvp", BaseTransform.ModelMatrix * renderData.View * renderData.Projection);
+            mainCmd.BindShader(shader);
+            mainCmd.SetUniformMatrix4(shader, "model", BaseTransform.ModelMatrix);
+            mainCmd.SetUniformMatrix4(shader, "mvp", BaseTransform.ModelMatrix * renderData.View * renderData.Projection);
 
-            mainCmd.SetUniformVector3(Shader, "camPos", Camera.Main.BaseTransform.Position);
+            mainCmd.SetUniformVector3(shader, "camPos", Camera.Main.BaseTransform.Position);
 
             if (DirectionalLight.Main != null)
             {
-                mainCmd.SetUniformFloat(Shader, "lightIntensity", DirectionalLight.Main.Intensity);
-                mainCmd.SetUniformVector3(Shader, "lightDir", -DirectionalLight.Main.BaseTransform.Forward);
+                mainCmd.SetUniformFloat(shader, "lightIntensity", DirectionalLight.Main.Intensity);
+                mainCmd.SetUniformVector3(shader, "lightDir", -DirectionalLight.Main.BaseTransform.Forward);
             }
 
-            mainCmd.SetUniformMatrix4(Shader, "lightSpaceMat", renderData.LightView * renderData.LightProjection);
+            mainCmd.SetUniformMatrix4(shader, "lightSpaceMat", renderData.LightView * renderData.LightProjection);
 
-            mainCmd.SetUniformInt(Shader, "shadowMap", 1);
-            mainCmd.BindTexture(TextureUnit.Texture1, renderData.ShadowMapTexture);
+            mainCmd.SetUniformInt(shader, "shadowMap", 0);
+            mainCmd.BindTexture(TextureUnit.Texture0, renderData.ShadowMapTexture);
 
-            mainCmd.BindMaterial(Material, Shader);
+            mainCmd.BindMaterial(0, Material);
 
             mainCmd.BindMesh(Mesh);
             mainCmd.DrawMesh(Mesh);

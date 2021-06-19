@@ -25,11 +25,6 @@ namespace LeaderEngine
                 //add to new parent
                 _parent = value;
                 _parent?.Children.Add(this);
-
-                if (value == null)
-                    scene.SceneRootEntities.Add(this);
-                else
-                    scene.SceneRootEntities.Remove(this);
             }
         }
 
@@ -46,34 +41,30 @@ namespace LeaderEngine
         public Entity(string name, string tag = null, Entity parent = null, Scene scene = null)
         {
             Name = name;
-            Tag = tag == null ? string.Empty : tag;
+            Tag = tag ?? string.Empty;
 
             Transform = new Transform(this);
 
-            this.scene = scene != null ? scene : DataManager.CurrentScene;
+            this.scene = scene ?? DataManager.CurrentScene;
 
-            if (parent == null)
-            {
-                this.scene.SceneRootEntities.Add(this);
-            }
-            else
+            if (parent != null)
             {
                 _parent = parent;
                 parent.Children.Add(this);
             }
+
+            this.scene.SceneEntities.Add(this);
         }
 
         internal void Unlist()
         {
-            if (_parent == null)
-            {
-                scene.SceneRootEntities.Remove(this);
-            }
+            scene.SceneEntities.Remove(this);
+            scene = null;
 
-            GlobalData.UnlistedEntities.Add(this);
+            DataManager.UnlistedEntities.Add(this);
         }
 
-        internal void RecursivelyUpdate()
+        internal void Update()
         {
             if (!Active)
                 return;
@@ -85,42 +76,42 @@ namespace LeaderEngine
                     component.UpdateMethod?.Invoke();
                 }
             }
-
-            foreach (var child in Children)
-                child.RecursivelyUpdate();
         }
 
-        internal void RecursivelyRender(in RenderData renderData)
+        internal void Render(in RenderData renderData)
         {
             if (!Active)
                 return;
 
             foreach (var renderer in Renderers)
                 renderer.Render(renderData);
-
-            foreach (var child in Children)
-                child.RecursivelyRender(renderData);
         }
 
-        internal void RecursivelyRenderShadowMap(in LightData lightData)
+        internal void RenderShadowMap(in LightData lightData)
         {
             if (!Active)
                 return;
 
             foreach (var renderer in ShadowMapRenderers)
                 renderer.RenderShadowMap(lightData);
-
-            foreach (var child in Children)
-                child.RecursivelyRenderShadowMap(lightData);
         }
 
         public void Destroy()
         {
             _parent?.Children.Remove(this);
-            scene.SceneRootEntities.Remove(this);
+
+            RemoveFromEntityList();
 
             while (Children.Count > 0)
                 Children[0].Destroy();
+        }
+
+        private void RemoveFromEntityList()
+        {
+            if (scene != null)
+                scene.SceneEntities.Remove(this);
+            else
+                DataManager.UnlistedEntities.Remove(this);
         }
 
         #region ComponentGettersSetters
