@@ -174,6 +174,10 @@ namespace LeaderEditor
 
                             ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.6f, 0.6f, 0.6f, 0.5f));
                             ImGui.Text($"[{asset.AssetType}]");
+#if DEBUG
+                            ImGui.SameLine();
+                            ImGui.Text($"[ID: {asset.ID}]");
+#endif
                             ImGui.PopStyleColor();
 
                             ImGui.PopID();
@@ -191,7 +195,7 @@ namespace LeaderEditor
         {
             displayAssets.Clear();
 
-            foreach (GameAsset asset in LeaderEngine.AssetManager.Assets)
+            foreach (GameAsset asset in LeaderEngine.AssetManager.Assets.Values)
             {
                 if (asset.Name.Contains(strFilter, StringComparison.OrdinalIgnoreCase) && assetTypeFilter.HasFlag(asset.AssetType))
                 {

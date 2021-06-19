@@ -108,6 +108,7 @@ namespace LeaderEditor
                     ImGui.PushID(field.Name);
                     field.SetValue(obj, SerializeGameAsset(field.Name, (GameAsset)field.GetValue(obj), field.FieldType));
                     ImGui.PopID();
+                    guiDrawn = true;
                     continue;
                 }
 
@@ -129,6 +130,7 @@ namespace LeaderEditor
                     ImGui.PushID(prop.Name);
                     prop.SetValue(obj, SerializeGameAsset(prop.Name, (GameAsset)prop.GetValue(obj), prop.PropertyType));
                     ImGui.PopID();
+                    guiDrawn = true;
                     continue;
                 }
 
@@ -149,7 +151,7 @@ namespace LeaderEditor
         {
             if (ImGui.BeginCombo(name, gameAsset != null ? gameAsset.Name : "[None]"))
             {
-                foreach (GameAsset asset in LeaderEngine.AssetManager.Assets)
+                foreach (GameAsset asset in LeaderEngine.AssetManager.Assets.Values)
                 {
                     if (!type.IsAssignableFrom(asset.GetType()))
                         continue;

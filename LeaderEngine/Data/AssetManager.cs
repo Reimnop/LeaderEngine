@@ -22,10 +22,12 @@ namespace LeaderEngine
         private static GameAssetSerializer[] gameAssetSerializers = new GameAssetSerializer[]
         {
             new MeshSerializer(),
-            new TextureSerializer()
+            new TextureSerializer(),
+            new MaterialSerializer(),
+            new PrefabSerializer()
         };
 
-        public static List<GameAsset> Assets { get; } = new List<GameAsset>();
+        public static Dictionary<string, GameAsset> Assets { get; } = new Dictionary<string, GameAsset>();
 
         internal static Dictionary<string, Type> ComponentTypes { get; } = new Dictionary<string, Type>();
 
@@ -53,9 +55,11 @@ namespace LeaderEngine
                 for (int i = 0; i < serializableAssets.Length; i++)
                 {
                     AssetSerializerPair assetSerializerPair = serializableAssets[i];
+                    GameAsset asset = assetSerializerPair.Asset;
 
-                    writer.Write((int)assetSerializerPair.Asset.AssetType); //asset type
-                    assetSerializerPair.Serializer.WriteToStream(writer, assetSerializerPair.Asset); //asset data
+                    writer.Write(asset.ID);
+                    writer.Write((int)asset.AssetType); //asset type
+                    assetSerializerPair.Serializer.WriteToStream(writer, asset); //asset data
                 }
             }
         }
@@ -69,12 +73,14 @@ namespace LeaderEngine
                 int assetsCount = reader.ReadInt32();
                 for (int i = 0; i < assetsCount; i++)
                 {
+                    string id = reader.ReadString();
                     GameAssetType assetType = (GameAssetType)reader.ReadInt32();
 
                     GameAssetSerializer serializer = GetSuitableSerializer(assetType);
                     if (serializer == null)
                         throw new Exception("No suitable serializer found!");
 
+                    GameAsset.SetNextID(id);
                     serializer.ReadFromStream(reader);
                 }
             }
@@ -84,7 +90,7 @@ namespace LeaderEngine
         {
             List<AssetSerializerPair> assetSerializerPairs = new List<AssetSerializerPair>();
 
-            GameAsset[] assets = Assets.ToArray();
+            GameAsset[] assets = Assets.Values.ToArray();
             foreach (GameAsset asset in assets)
             {
                 GameAssetSerializer serializer = GetSuitableSerializer(asset.AssetType);
