@@ -41,6 +41,8 @@ namespace LeaderEngine
 
             foreach (var kvp in kvps)
                 ComponentTypes.Add(kvp.Key, kvp.Value);
+
+            new Font("Impact", "EngineAssets/Fonts/Impact.fnt");
         }
 
         public static void SaveAssetsToFile(string path)

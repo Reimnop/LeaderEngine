@@ -51,17 +51,17 @@ namespace LeaderEngine
 
             TextVertex[][] vertexArrays = new TextVertex[lines.Length][];
 
-            float scale = 1f / font.FontHeight;
+            float scale = 1f / font.LineHeight;
             int spaceWidth = font.PaddingTop + font.PaddingBottom;
 
             float yOffset = 0f;
             if (VerticalAlignment == VerticalAlignment.Center)
             {
-                yOffset = -(font.FontHeight - spaceWidth) * scale * lines.Length * 0.5f;
+                yOffset = -(font.LineHeight - spaceWidth) * scale * lines.Length * 0.5f;
             }
             else if (VerticalAlignment == VerticalAlignment.Top)
             {
-                yOffset = -(font.FontHeight - spaceWidth) * scale * lines.Length;
+                yOffset = -(font.LineHeight - spaceWidth) * scale * lines.Length;
             }
 
             int vertCount = 0;
@@ -77,7 +77,7 @@ namespace LeaderEngine
                     xOffset = -GetLineWidth(lines[i]);
                 }
                 
-                yOffset += (font.FontHeight - spaceWidth) * scale;
+                yOffset += (font.LineHeight - spaceWidth) * scale;
 
                 vertexArrays[i] = GenSingleLineMesh(lines[i], xOffset, yOffset);
                 vertCount += vertexArrays[i].Length;
@@ -104,7 +104,7 @@ namespace LeaderEngine
             int vertCount = text.Count(c => font.Characters.ContainsKey(c)) * 6;
             TextVertex[] vertices = new TextVertex[vertCount];
 
-            float scale = 1f / font.FontHeight;
+            float scale = 1f / font.LineHeight;
             int spaceWidth = font.PaddingTop + font.PaddingBottom;
 
             int offset = 0;
@@ -148,7 +148,9 @@ namespace LeaderEngine
                     int first = text[i];
                     int second = text[i + 1];
 
-                    if (font.Kernings.TryGetValue((first, second), out int amount))
+                    CharsPair pair = new CharsPair((char)first, (char)second);
+
+                    if (font.Kernings.TryGetValue(pair, out int amount))
                     {
                         xOffset += amount * scale;
                     }
@@ -161,7 +163,7 @@ namespace LeaderEngine
         private float GetLineWidth(string text)
         {
             float result = 0f;
-            float scale = 1f / font.FontHeight;
+            float scale = 1f / font.LineHeight;
 
             for (int i = 0; i < text.Length; i++)
             {
@@ -176,8 +178,10 @@ namespace LeaderEngine
                 {
                     int first = text[i];
                     int second = text[i + 1];
+                    
+                    CharsPair pair = new CharsPair((char)first, (char)second);
 
-                    if (font.Kernings.TryGetValue((first, second), out int amount))
+                    if (font.Kernings.TryGetValue(pair, out int amount))
                     {
                         result += amount * scale;
                     }
