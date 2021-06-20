@@ -1,5 +1,5 @@
-﻿using OpenTK.Mathematics;
-using System;
+﻿using System;
+using OpenTK.Mathematics;
 
 namespace LeaderEngine
 {

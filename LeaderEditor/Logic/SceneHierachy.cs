@@ -1,7 +1,7 @@
-﻿using ImGuiNET;
+﻿using System.Collections.Generic;
+using ImGuiNET;
 using LeaderEngine;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using System.Collections.Generic;
 
 namespace LeaderEditor
 {

@@ -1,9 +1,9 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace LeaderEngine
 {

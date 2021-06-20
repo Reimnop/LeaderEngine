@@ -1,7 +1,7 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
+using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace LeaderEngine

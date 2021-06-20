@@ -1,5 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using System;
+﻿using System;
+using OpenTK.Graphics.OpenGL4;
 
 namespace LeaderEngine
 {

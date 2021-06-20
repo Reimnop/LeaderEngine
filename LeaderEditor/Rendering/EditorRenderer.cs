@@ -1,7 +1,7 @@
-﻿using LeaderEngine;
+﻿using System;
+using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using System;
 
 namespace LeaderEditor
 {

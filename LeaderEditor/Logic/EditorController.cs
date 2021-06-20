@@ -1,8 +1,8 @@
-﻿using ImGuiNET;
+﻿using System;
+using ImGuiNET;
 using ImGuizmoNET;
 using LeaderEngine;
 using OpenTK.Mathematics;
-using System;
 
 namespace LeaderEditor
 {

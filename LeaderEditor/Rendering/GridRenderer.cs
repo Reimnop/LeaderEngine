@@ -1,8 +1,8 @@
-﻿using LeaderEngine;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace LeaderEditor
 {
