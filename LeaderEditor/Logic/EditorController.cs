@@ -42,12 +42,6 @@ namespace LeaderEditor
             editorCamera.Unlist();
         }
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.P))
-                LeaderEngine.AssetManager.LoadAssetsFromFile("bruh.ldrassets");
-        }
-
         //mouse select
         private void MouseSelect(Ray ray)
         {

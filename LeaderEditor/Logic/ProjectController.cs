@@ -22,14 +22,16 @@ namespace LeaderEditor
 #if DEBUG
                 if (ImGui.BeginMenu("DEBUG"))
                 {
-                    if (ImGui.MenuItem("Save assets as \"Bruh\""))
+                    if (ImGui.MenuItem("Save as \"Test\""))
                     {
-                        LeaderEngine.AssetManager.SaveAssetsToFile("bruh.ldrassets");
+                        LeaderEngine.AssetManager.SaveAssetsToFile("test.ldrassets");
+                        DataManager.SaveSceneToFile("test.ldrscene");
                     }
 
-                    if (ImGui.MenuItem("Load \"Bruh\" assets"))
+                    if (ImGui.MenuItem("Load \"Test\""))
                     {
-                        LeaderEngine.AssetManager.LoadAssetsFromFile("bruh.ldrassets");
+                        LeaderEngine.AssetManager.LoadAssetsFromFile("test.ldrassets");
+                        DataManager.LoadSceneFromFile("test.ldrscene");
                     }
                     ImGui.EndMenu();
                 }

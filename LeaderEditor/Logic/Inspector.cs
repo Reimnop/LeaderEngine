@@ -52,7 +52,7 @@ namespace LeaderEditor
                 ImGui.Checkbox("Enabled", ref SceneHierachy.SelectedEntity.Active);
 
                 //get all components
-                var components = SceneHierachy.SelectedEntity.GetComponents<Component>();
+                Component[] components = SceneHierachy.SelectedEntity.GetComponents<Component>();
 
                 //add component menu
                 if (ImGui.BeginPopup("comp-menu"))
@@ -83,7 +83,7 @@ namespace LeaderEditor
                 ImGuiExtension.DragVector3("Origin Offset", ref SceneHierachy.SelectedEntity.Transform.OriginOffset, Vector3.Zero, 0.1f);
 
                 //serialize components in an entity
-                for (int i = 0; i < components.Count; i++)
+                for (int i = 0; i < components.Length; i++)
                 {
                     ImGui.Separator();
 

@@ -31,7 +31,7 @@ namespace LeaderEngine
         public bool Active = true;
 
         internal List<Entity> Children { get; } = new List<Entity>();
-        private List<Component> components { get; } = new List<Component>();
+        private List<Component> components = new List<Component>();
 
         public List<IRenderer> Renderers { get; } = new List<IRenderer>();
         public List<IShadowMapRenderer> ShadowMapRenderers { get; } = new List<IShadowMapRenderer>();
@@ -119,9 +119,9 @@ namespace LeaderEngine
         {
             return (T)components.Find(c => typeof(T).IsAssignableFrom(c.GetType()));
         }
-        public List<Component> GetComponents<T>() where T : Component
+        public Component[] GetComponents<T>() where T : Component
         {
-            return components.FindAll(c => typeof(T).IsAssignableFrom(c.GetType()));
+            return components.FindAll(c => typeof(T).IsAssignableFrom(c.GetType())).ToArray();
         }
         public void AddComponent(Component component) //basic
         {
