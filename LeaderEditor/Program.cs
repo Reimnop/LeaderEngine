@@ -1,8 +1,8 @@
-﻿using System;
-using LeaderEngine;
+﻿using LeaderEngine;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using System;
 
 namespace LeaderEditor
 {

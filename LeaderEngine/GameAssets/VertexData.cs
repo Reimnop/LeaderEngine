@@ -1,6 +1,6 @@
-﻿using System.Runtime.InteropServices;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using System.Runtime.InteropServices;
 
 namespace LeaderEngine
 {

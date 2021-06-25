@@ -1,9 +1,9 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using System;
+using System.Runtime.CompilerServices;
 
 namespace LeaderEngine
 {

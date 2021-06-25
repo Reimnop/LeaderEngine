@@ -1,8 +1,8 @@
-﻿using System;
-using ImGuiNET;
+﻿using ImGuiNET;
 using ImGuizmoNET;
 using LeaderEngine;
 using OpenTK.Mathematics;
+using System;
 
 namespace LeaderEditor
 {
@@ -13,7 +13,7 @@ namespace LeaderEditor
 
         private Entity editorCamera;
 
-        private ProjectController pc;
+        private ProjectManager pc;
         private CameraMove cm;
 
         private OPERATION operation = OPERATION.TRANSLATE;
@@ -33,7 +33,7 @@ namespace LeaderEditor
             BaseEntity.AddComponent<Inspector>();
             BaseEntity.AddComponent<AssetManager>();
 
-            pc = BaseEntity.AddComponent<ProjectController>();
+            pc = BaseEntity.AddComponent<ProjectManager>();
 
             editorCamera = new Entity("EditorCamera");
             editorCamera.AddComponent<Camera>();

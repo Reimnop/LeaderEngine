@@ -1,6 +1,6 @@
-﻿using System;
-using LeaderEngine;
+﻿using LeaderEngine;
 using OpenTK.Mathematics;
+using System;
 
 namespace LeaderEditor
 {

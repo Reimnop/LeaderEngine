@@ -1,7 +1,7 @@
-﻿using System;
+﻿using ImGuiNET;
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using ImGuiNET;
 
 namespace LeaderEditor
 {

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using OpenTK.Graphics.OpenGL4;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using ErrorCode = OpenTK.Windowing.GraphicsLibraryFramework.ErrorCode;
 
 namespace LeaderEngine

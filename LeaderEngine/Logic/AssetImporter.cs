@@ -1,9 +1,9 @@
-﻿using System;
-using System.IO;
-using Assimp;
+﻿using Assimp;
 using OpenTK.Mathematics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using System;
+using System.IO;
 using Quaternion = OpenTK.Mathematics.Quaternion;
 using TextureWrapMode = OpenTK.Graphics.OpenGL4.TextureWrapMode;
 

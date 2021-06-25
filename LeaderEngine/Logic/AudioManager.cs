@@ -1,7 +1,7 @@
-﻿using System;
-using System.IO;
-using OpenTK.Audio.OpenAL;
+﻿using OpenTK.Audio.OpenAL;
 using OpenTK.Mathematics;
+using System;
+using System.IO;
 
 namespace LeaderEngine
 {
