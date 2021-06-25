@@ -5,7 +5,7 @@ using System.IO;
 
 namespace LeaderEngine
 {
-    static class AudioLoader
+    internal static class AudioLoader
     {
         public static byte[] LoadWave(Stream stream, out int channels, out int bits, out int rate)
         {
@@ -63,56 +63,12 @@ namespace LeaderEngine
         }
     }
 
-    public class AudioClip : IDisposable
-    {
-        public readonly string Name;
-        public readonly string ID;
-
-        public readonly int SampleRate;
-        public readonly int Size;
-
-        private int handle;
-
-        private AudioClip(string name, ALFormat format, byte[] data, int size, int rate, string id = null)
-        {
-            Name = name;
-
-            handle = AL.GenBuffer();
-            AL.BufferData(handle, format, ref data[0], size, rate);
-
-            SampleRate = rate;
-            Size = size;
-
-            ID = id != null ? id : RNG.GetRandomID();
-
-            DataManager.AudioClips.Add(ID, this);
-        }
-
-        public static AudioClip FromFile(string name, string path)
-        {
-            byte[] data = AudioLoader.LoadWave(File.Open(path, FileMode.Open), out int channels, out int bits, out int rate);
-            return new AudioClip(name, AudioLoader.GetSoundFormat(channels, bits), data, data.Length - data.Length % (bits / 8 * channels), rate);
-        }
-
-        public int GetHandle()
-        {
-            return handle;
-        }
-
-        public void Dispose()
-        {
-            AL.DeleteBuffer(handle);
-
-            DataManager.AudioClips.Remove(ID);
-        }
-    }
-
     public class AudioSource : Component
     {
         private int handle;
 
-        private float _gain = 1.0f;
-        private float _pitch = 1.0f;
+        private float _gain = 1f;
+        private float _pitch = 1f;
         private bool _loop = true;
 
         public float Gain
@@ -170,6 +126,9 @@ namespace LeaderEngine
                     return;
                 }
 
+                if (value == null) 
+                    return;
+
                 _audioClip = value;
                 AL.Source(handle, ALSourcei.Buffer, value.GetHandle());
             }
@@ -215,7 +174,7 @@ namespace LeaderEngine
         public float GetPlayPosition()
         {
             AL.GetSource(handle, ALGetSourcei.SampleOffset, out int bPosition);
-            return bPosition / (float)Clip.Size * (Clip.Size / (float)Clip.SampleRate);
+            return bPosition / (float)Clip.SampleRate;
         }
 
         public int GetHandle()

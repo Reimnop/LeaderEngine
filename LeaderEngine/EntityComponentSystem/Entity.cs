@@ -1,5 +1,4 @@
-﻿using OpenTK.Mathematics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace LeaderEngine
@@ -26,18 +25,13 @@ namespace LeaderEngine
                 //add to new parent
                 _parent = value;
                 _parent?.Children.Add(this);
-
-                if (value == null)
-                    scene.SceneRootEntities.Add(this);
-                else
-                    scene.SceneRootEntities.Remove(this);
             }
         }
 
         public bool Active = true;
 
         internal List<Entity> Children { get; } = new List<Entity>();
-        private List<Component> components { get; } = new List<Component>();
+        private List<Component> components = new List<Component>();
 
         public List<IRenderer> Renderers { get; } = new List<IRenderer>();
         public List<IShadowMapRenderer> ShadowMapRenderers { get; } = new List<IShadowMapRenderer>();
@@ -47,70 +41,77 @@ namespace LeaderEngine
         public Entity(string name, string tag = null, Entity parent = null, Scene scene = null)
         {
             Name = name;
-            Tag = tag == null ? string.Empty : tag;
+            Tag = tag ?? string.Empty;
 
             Transform = new Transform(this);
 
-            this.scene = scene != null ? scene : DataManager.CurrentScene;
+            this.scene = scene ?? DataManager.CurrentScene;
 
-            if (parent == null)
-            {
-                this.scene.SceneRootEntities.Add(this);
-            }
-            else
+            if (parent != null)
             {
                 _parent = parent;
                 parent.Children.Add(this);
             }
+
+            this.scene.SceneEntities.Add(this);
         }
 
         internal void Unlist()
         {
-            if (_parent == null)
+            scene.SceneEntities.Remove(this);
+            scene = null;
+
+            DataManager.UnlistedEntities.Add(this);
+        }
+
+        internal void Update()
+        {
+            if (!Active)
+                return;
+
+            foreach (var component in components)
             {
-                scene.SceneRootEntities.Remove(this);
+                if (component.Enabled)
+                {
+                    component.UpdateMethod?.Invoke();
+                }
             }
-
-            DataManager.EngineReservedEntities.Add(this);
         }
 
-        internal void RecursivelyUpdate()
+        internal void Render(in RenderData renderData)
         {
             if (!Active)
                 return;
 
-            components.ForEach(x => { if (x.Enabled) x.UpdateMethod?.Invoke(); });
-
-            Children.ForEach(child => child.RecursivelyUpdate());
+            foreach (var renderer in Renderers)
+                renderer.Render(renderData);
         }
 
-        internal void RecursivelyRender(Matrix4 view, Matrix4 projection)
+        internal void RenderShadowMap(in LightData lightData)
         {
             if (!Active)
                 return;
 
-            Renderers.ForEach(x => x.Render(view, projection));
-
-            Children.ForEach(child => child.RecursivelyRender(view, projection));
-        }
-
-        internal void RecursivelyRenderShadowMap(Matrix4 view, Matrix4 projection)
-        {
-            if (!Active)
-                return;
-
-            ShadowMapRenderers.ForEach(x => x.RenderShadowMap(view, projection));
-
-            Children.ForEach(child => child.RecursivelyRenderShadowMap(view, projection));
+            foreach (var renderer in ShadowMapRenderers)
+                renderer.RenderShadowMap(lightData);
         }
 
         public void Destroy()
         {
             _parent?.Children.Remove(this);
-            scene.SceneRootEntities.Remove(this);
+
+            RemoveFromEntityList();
 
             while (Children.Count > 0)
                 Children[0].Destroy();
+        }
+
+        private void RemoveFromEntityList()
+        {
+            if (scene != null)
+                scene.SceneEntities.Remove(this);
+            else
+                DataManager.UnlistedEntities.Remove(this);
         }
 
         #region ComponentGettersSetters
@@ -118,13 +119,20 @@ namespace LeaderEngine
         {
             return (T)components.Find(c => typeof(T).IsAssignableFrom(c.GetType()));
         }
-        public List<Component> GetComponents<T>() where T : Component
+        public Component[] GetComponents<T>() where T : Component
         {
-            return components.FindAll(c => typeof(T).IsAssignableFrom(c.GetType()));
+            return components.FindAll(c => typeof(T).IsAssignableFrom(c.GetType())).ToArray();
         }
         public void AddComponent(Component component) //basic
         {
             components.Add(component);
+
+            if (typeof(IRenderer).IsAssignableFrom(component.GetType()))
+                Renderers.Add((IRenderer)component);
+
+            if (typeof(IShadowMapRenderer).IsAssignableFrom(component.GetType()))
+                ShadowMapRenderers.Add((IShadowMapRenderer)component);
+
             component.BaseEntity = this;
             component.StartMethod?.Invoke();
         }
@@ -136,7 +144,15 @@ namespace LeaderEngine
         }
         private void RemoveComponentAt(int index) //basic
         {
-            components[index].RemoveMethod?.Invoke();
+            var component = components[index];
+
+            component.RemoveMethod?.Invoke();
+
+            if (typeof(IRenderer).IsAssignableFrom(component.GetType()))
+                Renderers.Remove((IRenderer)component);
+
+            if (typeof(IShadowMapRenderer).IsAssignableFrom(component.GetType()))
+                ShadowMapRenderers.Remove((IShadowMapRenderer)component);
 
             components.RemoveAt(index);
         }

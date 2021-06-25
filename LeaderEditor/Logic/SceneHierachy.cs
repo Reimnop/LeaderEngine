@@ -9,11 +9,11 @@ namespace LeaderEditor
     {
         public static Entity SelectedEntity = null;
 
-        private static List<Entity> currentSceneEntities => DataManager.CurrentScene.SceneRootEntities;
+        private static List<Entity> currentSceneEntities => DataManager.CurrentScene.SceneEntities;
 
         private void Start()
         {
-            ImGuiController.RegisterImGui(ImGuiRenderer);
+            ImGuiController.OnImGui += OnImGui;
         }
 
         private void Update()
@@ -26,7 +26,7 @@ namespace LeaderEditor
             }
         }
 
-        private void ImGuiRenderer()
+        private void OnImGui()
         {
             //render scene hierachy gui
             if (ImGui.Begin("Scene Hierachy"))
@@ -41,9 +41,12 @@ namespace LeaderEditor
         {
             if (ImGui.BeginChild("Scene"))
             {
-                for (int i = 0; i < currentSceneEntities.Count; i++)
+                foreach (Entity entity in currentSceneEntities)
                 {
-                    RecursivelyRender(currentSceneEntities[i]);
+                    if (entity.Parent == null)
+                    {
+                        RecursivelyRender(entity);
+                    }
                 }
 
                 if (!ImGui.IsAnyItemHovered() && ImGui.IsWindowHovered(ImGuiHoveredFlags.ChildWindows))
@@ -77,7 +80,7 @@ namespace LeaderEditor
                 nodeFlags |= ImGuiTreeNodeFlags.Selected;
 
             if (!en.Active)
-                ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(0.4f, 0.4f, 0.4f, 1.0f));
+                ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(0.4f, 0.4f, 0.4f, 1f));
 
             bool nodeOpen = ImGui.TreeNodeEx(en.Name, nodeFlags);
 

@@ -2,98 +2,136 @@
 using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace LeaderEngine
 {
     public class ForwardRenderer : GLRenderer
     {
-        private Dictionary<DrawType, List<GLDrawData>> drawLists = new Dictionary<DrawType, List<GLDrawData>>()
-        {
-            { DrawType.ShadowMap, new List<GLDrawData>() },
-            { DrawType.Opaque, new List<GLDrawData>() },
-            { DrawType.Transparent, new List<GLDrawData>() },
-            { DrawType.GUI, new List<GLDrawData>() }
-        };
+        private const int defaultSize = 4096;
 
-        const int shadowMapRes = 4096;
-        const float shadowMapSize = 48.0f;
+        private List<CommandBuffer> shadowMapBuffers = new List<CommandBuffer>();
+        private List<CommandBuffer> opaqueBuffers = new List<CommandBuffer>();
+        private List<CommandBuffer> transparentBuffers = new List<CommandBuffer>();
+        private List<CommandBuffer> guiBuffers = new List<CommandBuffer>();
 
-        private Framebuffer shadowMapFramebuffer;
+        #region PostProcess
+        public float Exposure = 1f;
+        #endregion
+
+        private const int shadowMapRes = 4096;
+        private const float shadowMapSize = 48f;
+
+        private int shadowMapFBO;
+        private int shadowMap;
 
         private PostProcessor postProcessor;
 
+        private Vector2i lastViewportSize;
+
         public override void Init()
         {
-            shadowMapFramebuffer = new Framebuffer("shadowmap-fbo", shadowMapRes, shadowMapRes, new Attachment[]
-            {
-                new Attachment
-                {
-                    Draw = false,
-                    PixelInternalFormat = PixelInternalFormat.DepthComponent,
-                    PixelFormat = PixelFormat.DepthComponent,
-                    PixelType = PixelType.Float,
-                    FramebufferAttachment = FramebufferAttachment.DepthAttachment,
-                    TextureParamsInt = new TextureParamInt[]
-                    {
-                        new TextureParamInt { ParamName = TextureParameterName.TextureMinFilter, Param = (int)TextureMinFilter.Nearest },
-                        new TextureParamInt { ParamName = TextureParameterName.TextureMagFilter, Param = (int)TextureMagFilter.Nearest },
-                        new TextureParamInt { ParamName = TextureParameterName.TextureWrapS, Param = (int)TextureWrapMode.ClampToBorder },
-                        new TextureParamInt { ParamName = TextureParameterName.TextureWrapT, Param = (int)TextureWrapMode.ClampToBorder }
-                    },
-                    TextureParamsFloatArr = new TextureParamFloatArr[]
-                    {
-                        new TextureParamFloatArr { ParamName = TextureParameterName.TextureBorderColor, Params = new float[] { 1.0f, 1.0f, 1.0f, 1.0f } }
-                    }
-                }
-            });
+            //init FBO
+            shadowMapFBO = GL.GenFramebuffer();
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
 
-            string postProcessPath = Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/PostProcess");
+            //init shadowmap
+            shadowMap = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, shadowMap);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, shadowMapRes, shadowMapRes, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
 
+            //bind texture to framebuffer
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, shadowMap, 0);
+
+            GL.DrawBuffer(DrawBufferMode.None);
+            GL.ReadBuffer(ReadBufferMode.None);
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            //init post processor
             postProcessor = new PostProcessor();
-            postProcessor.Shaders.AddRange(new Shader[] {
-                Shader.FromSourceFile("post-process",
-                    Path.Combine(postProcessPath, "post-process.vert"),
-                    Path.Combine(postProcessPath, "empty.frag"))
-            });
+
+            GL.DepthFunc(DepthFunction.Lequal);
 
             Logger.Log("Renderer initialized.", true);
         }
 
-        public override void PushDrawData(DrawType drawType, GLDrawData drawData)
+        public override void QueueCommandsShadowMap(CommandBuffer commandBuffer)
         {
-            drawLists[drawType].Add(drawData);
+            shadowMapBuffers.Add(commandBuffer);
+        }
+
+        public override void QueueCommandsOpaque(CommandBuffer commandBuffer)
+        {
+            opaqueBuffers.Add(commandBuffer);
+        }
+
+        public override void QueueCommandsTransparent(CommandBuffer commandBuffer)
+        {
+            transparentBuffers.Add(commandBuffer);
+        }
+
+        public override void QueueCommandsGUI(CommandBuffer commandBuffer)
+        {
+            guiBuffers.Add(commandBuffer);
         }
 
         public override void Update()
         {
+            if (ViewportSize == lastViewportSize)
+                return;
+
             postProcessor.Resize(ViewportSize);
+            lastViewportSize = ViewportSize;
         }
 
         public override void Render()
         {
-            if (Camera.Main == null)
+            RenderStuff();
+            RenderPostProcess();
+        }
+
+        protected void RenderStuff()
+        {
+            Camera camera = Camera.Main;
+
+            if (camera == null)
                 return;
 
-            DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.Transform.CalculateModelMatrixRecursively());
-            DataManager.EngineReservedEntities.ForEach(en => en.Transform.CalculateModelMatrixRecursively());
+            foreach (Entity entity in DataManager.CurrentScene.SceneEntities)
+                if (entity.Parent == null)
+                    entity.Transform.CalculateModelMatrixRecursively();
+
+            foreach (Entity entity in DataManager.UnlistedEntities)
+                if (entity.Parent == null)
+                    entity.Transform.CalculateModelMatrixRecursively();
 
             //shadow mapping
+            Matrix4 lightView = Matrix4.Identity;
+            Matrix4 lightProjection = Matrix4.Identity;
+
             if (DirectionalLight.Main == null)
                 goto RenderOpaque;
 
-            Matrix4 lView;
-            Matrix4 lProjection;
-            DirectionalLight.Main.CalculateViewProjection(out lView, out lProjection, shadowMapSize, Camera.Main.BaseTransform.Position);
-            LightingGlobals.LightView = lView;
-            LightingGlobals.LightProjection = lProjection;
+            DirectionalLight.Main.CalculateViewProjection(out lightView, out lightProjection, shadowMapSize, camera.BaseTransform.Position);
 
-            DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRenderShadowMap(LightingGlobals.LightView, LightingGlobals.LightProjection));
-            DataManager.EngineReservedEntities.ForEach(en => en.RecursivelyRenderShadowMap(LightingGlobals.LightView, LightingGlobals.LightProjection));
+            LightData lightData = new LightData
+            {
+                View = lightView,
+                Projection = lightProjection
+            };
+
+            foreach (Entity entity in DataManager.CurrentScene.SceneEntities)
+                entity.RenderShadowMap(in lightData);
+
+            foreach (Entity entity in DataManager.UnlistedEntities)
+                entity.RenderShadowMap(in lightData);
 
             GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
 
-            shadowMapFramebuffer.Begin();
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             GL.Enable(EnableCap.DepthTest);
@@ -102,19 +140,30 @@ namespace LeaderEngine
             GL.CullFace(CullFaceMode.Back);
             GL.FrontFace(FrontFaceDirection.Ccw);
 
-            DrawDrawList(drawLists[DrawType.ShadowMap]);
+            foreach (var buffer in shadowMapBuffers)
+                ExecuteCommandBuffer(buffer);
 
-            shadowMapFramebuffer.End();
-
-            LightingGlobals.ShadowMap = shadowMapFramebuffer.GetTexture(FramebufferAttachment.DepthAttachment);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
         //render opaque
         RenderOpaque:
-            Camera.Main.CalculateViewProjection(out Matrix4 view, out Matrix4 projection);
+            camera.CalculateViewProjection(out var view, out var projection);
 
             //call all render funcs
-            DataManager.CurrentScene.SceneRootEntities.ForEach(en => en.RecursivelyRender(view, projection));
-            DataManager.EngineReservedEntities.ForEach(en => en.RecursivelyRender(view, projection));
+            RenderData renderData = new RenderData
+            {
+                View = view,
+                Projection = projection,
+                LightView = lightView,
+                LightProjection = lightProjection,
+                ShadowMapTexture = shadowMap
+            };
+
+            foreach (var entity in DataManager.CurrentScene.SceneEntities)
+                entity.Render(renderData);
+
+            foreach (var entity in DataManager.UnlistedEntities)
+                entity.Render(renderData);
 
             GL.Viewport(0, 0, ViewportSize.X, ViewportSize.Y);
 
@@ -127,7 +176,8 @@ namespace LeaderEngine
             GL.CullFace(CullFaceMode.Back);
             GL.FrontFace(FrontFaceDirection.Ccw);
 
-            DrawDrawList(drawLists[DrawType.Opaque]);
+            foreach (var buffer in opaqueBuffers)
+                ExecuteCommandBuffer(buffer);
 
             //render transparent
             GL.DepthMask(false);
@@ -137,54 +187,35 @@ namespace LeaderEngine
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            DrawDrawList(drawLists[DrawType.Transparent]);
+            foreach (var buffer in transparentBuffers)
+                ExecuteCommandBuffer(buffer);
+
             postProcessor.End();
 
+            //clean up
+            shadowMapBuffers.Clear();
+            opaqueBuffers.Clear();
+            transparentBuffers.Clear();
+            guiBuffers.Clear();
+
+            CommandProcessor.Reset();
+        }
+
+        protected void RenderPostProcess()
+        {
             //reset states
             GL.DepthMask(true);
+            GL.Disable(EnableCap.Blend);
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
 
             postProcessor.Render();
-
-            ClearDrawList();
         }
 
-        private void DrawDrawList(List<GLDrawData> drawDatas)
+        private void ExecuteCommandBuffer(CommandBuffer commandBuffer)
         {
-            Mesh oldMesh = null;
-            Shader oldShader = null;
-
-            drawDatas.ForEach(drawData =>
-            {
-                Mesh mesh = drawData.Mesh;
-                Shader shader = drawData.Shader;
-                Material material = drawData.Material;
-                UniformData uniforms = drawData.Uniforms;
-
-                if (mesh == null || shader == null || uniforms == null)
-                    return;
-
-                if (mesh != oldMesh)
-                    mesh.Use();
-
-                if (shader != oldShader)
-                    shader.Use();
-
-                oldMesh = mesh;
-                oldShader = shader;
-
-                material?.Use(shader);
-                uniforms.Use(shader);
-
-                GL.DrawElements(mesh.PrimitiveType, mesh.IndicesCount, mesh.DrawElementsType, 0);
-            });
-        }
-
-        private void ClearDrawList()
-        {
-            foreach (var kvp in drawLists)
-                kvp.Value.Clear();
+            for (int i = 0; i < commandBuffer.Count; i++)
+                CommandProcessor.ExecuteCommand(commandBuffer.Commands[i]);
         }
     }
 }

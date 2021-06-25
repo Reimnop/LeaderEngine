@@ -1,6 +1,4 @@
-﻿using OpenTK.Mathematics;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Text;
 
@@ -8,335 +6,89 @@ namespace LeaderEngine
 {
     public class FntParser : IDisposable
     {
-        private class TokenSeparator
-        {
-            public readonly string BaseString;
-            public readonly int Length;
+        public readonly FntNode RootNode;
 
-            public int Position;
-
-            public TokenSeparator(string str)
-            {
-                BaseString = str.TrimEnd();
-                Length = BaseString.Length;
-            }
-
-            public bool NextToken(out string tokenString)
-            {
-                tokenString = null;
-
-                //get out!
-                if (Position >= Length)
-                    return false;
-
-                //remove spaces
-                StringBuilder stringBuilder = new StringBuilder();
-
-                bool forceRead = true;
-                bool canRead = false;
-
-                do
-                {
-                    if (!canRead && BaseString[Position] != ' ')
-                    {
-                        forceRead = false;
-                        canRead = true;
-                    }
-
-                    if (BaseString[Position] == '"')
-                        forceRead = !forceRead;
-
-                    if (canRead)
-                        stringBuilder.Append(BaseString[Position]);
-
-                    Position++;
-                }
-                while (Position < Length && (BaseString[Position] != ' ' || forceRead));
-
-                tokenString = stringBuilder.ToString();
-                return true;
-            }
-        }
-
-        private struct Assignment
-        {
-            public string Name;
-            public string Value;
-
-            public static Assignment FromString(string str)
-            {
-                StringBuilder name = new StringBuilder();
-                StringBuilder value = new StringBuilder();
-
-                int pos = 0;
-
-                //get name
-                while (str[pos] != '=')
-                {
-                    name.Append(str[pos]);
-                    pos++;
-                }
-
-                pos++;
-
-                //get value
-                while (pos < str.Length)
-                {
-                    if (str[pos] != '"')
-                        value.Append(str[pos]);
-                    pos++;
-                }
-
-                return new Assignment
-                {
-                    Name = name.ToString(),
-                    Value = value.ToString()
-                };
-            }
-        }
-
-        public struct FntCharacter
-        {
-            public Vector2i Position;
-            public Vector2i Size;
-            public Vector2i Offset;
-            public int Advance;
-        }
-
-        private StreamReader reader;
-
-        public string FilePath;
-
-        #region FontData
-        public string FontName;
-        public int FontSize;
-        public bool IsBold;
-        public bool IsItalic;
-
-        public int PaddingTop;
-        public int PaddingLeft;
-        public int PaddingBottom;
-        public int PaddingRight;
-
-        public int LineHeight;
-        public int Base;
-
-        public Vector2i TextureSize;
-        public Texture FontTexture;
-
-        public int CharacterCount;
-        public Dictionary<int, FntCharacter> Characters = new Dictionary<int, FntCharacter>();
-
-        public int KerningCount;
-        public Dictionary<(int, int), int> Kernings = new Dictionary<(int, int), int>();
-        #endregion
-
-        private static Dictionary<string, Action<FntParser, Stack<Assignment>>> parseFuncs = new Dictionary<string, Action<FntParser, Stack<Assignment>>>()
-        {
-            { "info", ParseInfo },
-            { "common", ParseCommon },
-            { "page", ParsePage },
-            { "chars", ParseChars },
-            { "char", ParseChar },
-            { "kernings", ParseKernings },
-            { "kerning", ParseKerning }
-        };
+        private Stream stream;
 
         public FntParser(string path)
         {
-            FilePath = path;
+            RootNode = new FntNode(Path.GetFileNameWithoutExtension(path), string.Empty);
+            stream = new FileStream(path, FileMode.Open);
 
-            reader = new StreamReader(File.Open(path, FileMode.Open));
-            LoadFile();
-        }
-
-        private void LoadFile()
-        {
-            while (!reader.EndOfStream)
+            FntNode currentNode = null;
+            while (NextToken(out string token))
             {
-                string line = reader.ReadLine();
-
-                var tokens = new TokenSeparator(line);
-                if (tokens.NextToken(out string token))
+                if (!token.Contains('='))
                 {
-                    Stack<Assignment> assignments = new Stack<Assignment>();
-                    while (tokens.NextToken(out string tk))
-                        assignments.Push(Assignment.FromString(tk));
-
-                    if (parseFuncs.TryGetValue(token, out var func))
-                        func.Invoke(this, assignments);
+                    if (currentNode != null)
+                    {
+                        RootNode.AddChildren(currentNode);
+                    }
+                    currentNode = new FntNode(token, string.Empty);
+                    continue;
                 }
-            }
-        }
 
-        #region ParseFuncs
-        private static void ParseInfo(FntParser parser, Stack<Assignment> assignments)
-        {
-            while (assignments.Count > 0)
-            {
-                Assignment a = assignments.Pop();
+                string[] splittedToken = token.Split('=');
 
-                switch (a.Name)
+                string name = splittedToken[0];
+                string value = splittedToken[1];
+
+                if (value[0] == '"' && value[value.Length - 1] == '"')
                 {
-                    case "face":
-                        parser.FontName = a.Value;
-                        break;
-                    case "size":
-                        parser.FontSize = int.Parse(a.Value);
-                        break;
-                    case "bold":
-                        parser.IsBold = a.Value == "1";
-                        break;
-                    case "italic":
-                        parser.IsItalic = a.Value == "1";
-                        break;
-                    case "padding":
-                        string[] paddingStrs = a.Value.Split(',');
-                        parser.PaddingTop = int.Parse(paddingStrs[0]);
-                        parser.PaddingLeft = int.Parse(paddingStrs[1]);
-                        parser.PaddingBottom = int.Parse(paddingStrs[2]);
-                        parser.PaddingRight = int.Parse(paddingStrs[3]);
-                        break;
+                    value = value.Substring(1, value.Length - 2);
                 }
+
+                currentNode.AddChildren(new FntNode(name, value));
             }
+
+            RootNode.AddChildren(currentNode);
         }
-        private static void ParseCommon(FntParser parser, Stack<Assignment> assignments)
+
+        private bool NextToken(out string token)
         {
-            while (assignments.Count > 0)
+            token = string.Empty;
+
+            if (stream.Position >= stream.Length)
+                return false; //end of stream
+
+            bool inQuotes = false;
+
+            bool tokenStarted = false;
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            while (stream.Position < stream.Length)
             {
-                Assignment a = assignments.Pop();
+                char c = (char)stream.ReadByte();
 
-                switch (a.Name)
+                if (!tokenStarted && (c == ' ' || c == '\r' || c == '\n'))
+                    continue;
+
+                if (!tokenStarted && c != ' ' && c != '\r' && c != '\n')
+                    tokenStarted = true;
+
+                if (tokenStarted)
                 {
-                    case "lineHeight":
-                        parser.LineHeight = int.Parse(a.Value);
+                    if (c == ' ' && !inQuotes)
                         break;
-                    case "base":
-                        parser.Base = int.Parse(a.Value);
-                        break;
-                    case "scaleW":
-                        parser.TextureSize.X = int.Parse(a.Value);
-                        break;
-                    case "scaleH":
-                        parser.TextureSize.Y = int.Parse(a.Value);
-                        break;
-                }
-            }
-        }
-        private static void ParsePage(FntParser parser, Stack<Assignment> assignments)
-        {
-            while (assignments.Count > 0)
-            {
-                Assignment a = assignments.Pop();
 
-                switch (a.Name)
-                {
-                    case "file":
-                        parser.FontTexture = Texture.FromFile(parser.FontName + "-Font", Path.Combine(Path.GetDirectoryName(parser.FilePath), a.Value));
-                        parser.FontTexture.Unlist();
+                    if (c == '\r' || c == '\n')
                         break;
-                }
-            }
-        }
-        private static void ParseChars(FntParser parser, Stack<Assignment> assignments)
-        {
-            while (assignments.Count > 0)
-            {
-                Assignment a = assignments.Pop();
 
-                switch (a.Name)
-                {
-                    case "count":
-                        parser.CharacterCount = int.Parse(a.Value);
-                        break;
-                }
-            }
-        }
-        private static void ParseChar(FntParser parser, Stack<Assignment> assignments)
-        {
-            int id = 0;
-            FntCharacter character = new FntCharacter();
+                    if (c == '"')
+                        inQuotes = !inQuotes;
 
-            while (assignments.Count > 0)
-            {
-                Assignment a = assignments.Pop();
-
-                switch (a.Name)
-                {
-                    case "id":
-                        id = int.Parse(a.Value);
-                        break;
-                    case "x":
-                        character.Position.X = int.Parse(a.Value);
-                        break;
-                    case "y":
-                        character.Position.Y = int.Parse(a.Value);
-                        break;
-                    case "width":
-                        character.Size.X = int.Parse(a.Value);
-                        break;
-                    case "height":
-                        character.Size.Y = int.Parse(a.Value);
-                        break;
-                    case "xoffset":
-                        character.Offset.X = int.Parse(a.Value);
-                        break;
-                    case "yoffset":
-                        character.Offset.Y = int.Parse(a.Value);
-                        break;
-                    case "xadvance":
-                        character.Advance = int.Parse(a.Value);
-                        break;
+                    stringBuilder.Append(c);
                 }
             }
 
-            parser.Characters.Add(id, character);
+            token = stringBuilder.ToString();
+            return true;
         }
-        private static void ParseKernings(FntParser parser, Stack<Assignment> assignments)
-        {
-            while (assignments.Count > 0)
-            {
-                Assignment a = assignments.Pop();
-
-                switch (a.Name)
-                {
-                    case "count":
-                        parser.KerningCount = int.Parse(a.Value);
-                        break;
-                }
-            }
-        }
-        private static void ParseKerning(FntParser parser, Stack<Assignment> assignments)
-        {
-            int first = 0;
-            int second = 0;
-            int amount = 0;
-
-            while (assignments.Count > 0)
-            {
-                Assignment a = assignments.Pop();
-
-                switch (a.Name)
-                {
-                    case "first":
-                        first = int.Parse(a.Value);
-                        break;
-                    case "second":
-                        second = int.Parse(a.Value);
-                        break;
-                    case "amount":
-                        amount = int.Parse(a.Value);
-                        break;
-                }
-            }
-
-            parser.Kernings.Add((first, second), amount);
-        }
-        #endregion
 
         public void Dispose()
         {
-            reader.Dispose();
+            stream.Dispose();
         }
     }
 }

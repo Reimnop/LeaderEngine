@@ -1,5 +1,4 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
 
 namespace LeaderEngine
 {
@@ -7,78 +6,60 @@ namespace LeaderEngine
     {
         public Mesh Mesh;
         public Material Material;
-        public Shader Shader = DefaultShaders.Lit;
 
-        private UniformData shadowMapUniforms = new UniformData();
-        private UniformData uniforms = new UniformData();
+        private CommandBuffer shadowMapCmd = new CommandBuffer();
+        private CommandBuffer mainCmd = new CommandBuffer();
 
-        private void Start()
-        {
-            BaseEntity.ShadowMapRenderers.Add(this);
-            BaseEntity.Renderers.Add(this);
-        }
-
-        private void OnRemove()
-        {
-            BaseEntity.ShadowMapRenderers.Remove(this);
-            BaseEntity.Renderers.Remove(this);
-        }
-
-        public void RenderShadowMap(Matrix4 view, Matrix4 projection)
+        public void RenderShadowMap(in LightData lightData)
         {
             if (!Enabled)
                 return;
 
-            shadowMapUniforms.SetUniform("mvp", new Uniform(UniformType.Matrix4,
-                BaseTransform.ModelMatrix
-                * view * projection));
+            var shader = DefaultShaders.ShadowMap;
 
-            Engine.Renderer.PushDrawData(DrawType.ShadowMap, new GLDrawData
-            {
-                SourceEntity = BaseEntity,
-                Mesh = Mesh,
-                Shader = DefaultShaders.ShadowMap,
-                Uniforms = shadowMapUniforms
-            });
+            shadowMapCmd.Clear();
+
+            shadowMapCmd.BindShader(shader);
+            shadowMapCmd.SetUniformMatrix4(shader, "mvp", BaseTransform.ModelMatrix * lightData.View * lightData.Projection);
+
+            shadowMapCmd.BindMesh(Mesh);
+            shadowMapCmd.DrawMesh(Mesh);
+
+            Engine.Renderer.QueueCommandsShadowMap(shadowMapCmd);
         }
 
-        public void Render(Matrix4 view, Matrix4 projection)
+        public void Render(in RenderData renderData)
         {
             if (!Enabled)
                 return;
 
-            GLRenderer renderer = Engine.Renderer;
+            Shader shader = Material.Shader;
 
-            uniforms.SetUniform("model", new Uniform(UniformType.Matrix4,
-                BaseTransform.ModelMatrix));
+            mainCmd.Clear();
 
-            uniforms.SetUniform("view", new Uniform(UniformType.Matrix4, view));
+            mainCmd.BindShader(shader);
+            mainCmd.SetUniformMatrix4(shader, "model", BaseTransform.ModelMatrix);
+            mainCmd.SetUniformMatrix4(shader, "mvp", BaseTransform.ModelMatrix * renderData.View * renderData.Projection);
 
-            uniforms.SetUniform("projection", new Uniform(UniformType.Matrix4, projection));
-
-            uniforms.SetUniform("mvp", new Uniform(UniformType.Matrix4,
-                BaseTransform.ModelMatrix
-                * view * projection));
-
-            uniforms.SetUniform("camPos", new Uniform(UniformType.Vector3,
-                Camera.Main.BaseTransform.Position));
+            mainCmd.SetUniformVector3(shader, "camPos", Camera.Main.BaseTransform.Position);
 
             if (DirectionalLight.Main != null)
-                uniforms.SetUniform("lightDir", new Uniform(UniformType.Vector3,
-                    -DirectionalLight.Main.BaseTransform.Forward));
-
-            uniforms.SetUniform("lightSpaceMat", new Uniform(UniformType.Matrix4, LightingGlobals.LightView * LightingGlobals.LightProjection));
-
-            uniforms.SetUniform("shadowMap", new Uniform(UniformType.Texture2D, new TextureData(TextureUnit.Texture1, LightingGlobals.ShadowMap)));
-
-            renderer.PushDrawData(DrawType.Opaque, new GLDrawData
             {
-                SourceEntity = BaseEntity,
-                Mesh = Mesh,
-                Shader = Shader,
-                Material = Material,
-                Uniforms = uniforms
-            });
+                mainCmd.SetUniformFloat(shader, "lightIntensity", DirectionalLight.Main.Intensity);
+                mainCmd.SetUniformVector3(shader, "lightDir", -DirectionalLight.Main.BaseTransform.Forward);
+            }
+
+            mainCmd.SetUniformMatrix4(shader, "lightSpaceMat", renderData.LightView * renderData.LightProjection);
+
+            mainCmd.SetUniformInt(shader, "shadowMap", 0);
+            mainCmd.BindTexture(TextureUnit.Texture0, renderData.ShadowMapTexture);
+
+            mainCmd.BindMaterial(0, Material);
+
+            mainCmd.BindMesh(Mesh);
+            mainCmd.DrawMesh(Mesh);
+
+            Engine.Renderer.QueueCommandsOpaque(mainCmd);
         }
     }
 }

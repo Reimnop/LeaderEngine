@@ -18,8 +18,7 @@ namespace LeaderEngine
                     return baseEntity.Parent != null ? baseEntity.Parent.Transform.GlobalTransform : Matrix4.Identity;
 
                 Matrix4 res =
-                    Matrix4.CreateTranslation(-OriginOffset)
-                    * Matrix4.CreateScale(Scale)
+                    Matrix4.CreateScale(Scale)
                     * Matrix4.CreateFromQuaternion(internalRotation)
                     * Matrix4.CreateTranslation(Position);
 
@@ -27,15 +26,6 @@ namespace LeaderEngine
                     res *= baseEntity.Parent.Transform.GlobalTransform;
 
                 return res;
-            }
-            set
-            {
-                Matrix4 invParentGlobal = baseEntity.Parent != null ? baseEntity.Parent.Transform.GlobalTransform.Inverted() : Matrix4.Identity;
-                Matrix4 local = value * invParentGlobal;
-
-                Position = local.ExtractTranslation();
-                Rotation = local.ExtractRotation();
-                Scale = local.ExtractScale();
             }
         }
 
@@ -97,6 +87,9 @@ namespace LeaderEngine
 
         internal void CalculateModelMatrixRecursively()
         {
+            if (!baseEntity.Active)
+                return;
+
             //calculate the model matrix
             if (Position == Vector3.Zero && Scale == Vector3.One && Rotation == Quaternion.Identity)
             {
@@ -117,7 +110,8 @@ namespace LeaderEngine
 
         //calculate children
         CalculateChildren:
-            baseEntity.Children.ForEach(x => x.Transform.CalculateModelMatrixRecursively());
+            foreach (var child in baseEntity.Children)
+                child.Transform.CalculateModelMatrixRecursively();
         }
     }
 }

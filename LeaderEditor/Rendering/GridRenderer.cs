@@ -1,106 +1,102 @@
 ﻿using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace LeaderEditor
 {
     internal class GridRenderer : Component, IRenderer
     {
-        private Mesh mesh;
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        private struct GridVertex
+        {
+            public Vector3 Position;
+            public Vector3 Color;
+
+            public GridVertex(Vector3 position, Vector3 color)
+            {
+                Position = position;
+                Color = color;
+            }
+        }
+
+        private int VAO, VBO;
         private Shader shader = DefaultShaders.SingleColor;
 
-        private UniformData uniforms = new UniformData();
-
-        const int gridSize = 80;
+        private CommandBuffer cmd = new CommandBuffer();
+        private const int gridSize = 80;
+        private const int vertCount = gridSize * 8 + 4;
 
         //init grid mesh
         private void Start()
         {
-            mesh = new Mesh("grid");
-            mesh.Unlist();
+            #region GenGridMesh
+            GridVertex[] vertices = new GridVertex[vertCount];
 
-            List<Vector3> vertexPositions = new List<Vector3>();
-            List<VertexData> vertices = new List<VertexData>();
+            int offset = 0;
 
             for (int i = -gridSize; i <= gridSize; i++)
             {
-                Vector3 color = Vector3.One * 0.2f;
+                Vector3 color = Vector3.One * 0.03f;
 
                 if (i % 10 == 0)
-                    color = Vector3.One * 0.6f;
+                    color = Vector3.One * 0.3f;
 
                 if (i == 0)
-                    color = new Vector3(0.0f, 0.0f, 1.0f);
+                    color = new Vector3(0f, 0f, 1f);
 
-                vertexPositions.Add(new Vector3(i, 0.0f, -gridSize));
-                vertexPositions.Add(new Vector3(i, 0.0f, gridSize));
+                vertices[offset + 0] = new GridVertex(new Vector3(i, 0f, -gridSize), color);
+                vertices[offset + 1] = new GridVertex(new Vector3(i, 0f,  gridSize), color);
 
-                vertices.Add(new VertexData
-                {
-                    Color = color
-                });
-
-                vertices.Add(new VertexData
-                {
-                    Color = color
-                });
+                offset += 2;
             }
 
             for (int i = -gridSize; i <= gridSize; i++)
             {
-                Vector3 color = Vector3.One * 0.2f;
+                Vector3 color = Vector3.One * 0.03f;
 
                 if (i % 10 == 0)
-                    color = Vector3.One * 0.6f;
+                    color = Vector3.One * 0.3f;
 
                 if (i == 0)
-                    color = new Vector3(1.0f, 0.0f, 0.0f);
+                    color = new Vector3(1f, 0f, 0f);
 
-                vertexPositions.Add(new Vector3(-gridSize, 0.0f, i));
-                vertexPositions.Add(new Vector3(gridSize, 0.0f, i));
+                vertices[offset + 0] = new GridVertex(new Vector3(-gridSize, 0f, i), color);
+                vertices[offset + 1] = new GridVertex(new Vector3( gridSize, 0f, i), color);
 
-                vertices.Add(new VertexData
-                {
-                    Color = color
-                });
-
-                vertices.Add(new VertexData
-                {
-                    Color = color
-                });
+                offset += 2;
             }
+            #endregion
 
-            uint[] indices = new uint[vertices.Count];
+            VAO = GL.GenVertexArray();
+            GL.BindVertexArray(VAO);
 
-            for (uint i = 0; i < vertices.Count; i++)
-                indices[i] = i;
+            VBO = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * Unsafe.SizeOf<GridVertex>(), vertices, BufferUsageHint.StaticDraw);
 
-            mesh.LoadMesh(vertexPositions.ToArray(), indices, PrimitiveType.Lines);
-            mesh.SetPerVertexData(vertices.ToArray());
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, Unsafe.SizeOf<GridVertex>(), 0);
+            GL.EnableVertexAttribArray(0);
 
-            BaseEntity.Renderers.Add(this);
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, Unsafe.SizeOf<GridVertex>(), Vector3.SizeInBytes);
+            GL.EnableVertexAttribArray(1);
+
+            GL.BindVertexArray(0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
-        private void OnRemove()
+        public void Render(in RenderData renderData)
         {
-            BaseEntity.Renderers.Remove(this);
-        }
+            cmd.Clear();
 
-        public void Render(Matrix4 view, Matrix4 projection)
-        {
-            GLRenderer renderer = Engine.Renderer;
+            cmd.BindShader(shader);
+            cmd.SetUniformMatrix4(shader, "mvp", BaseTransform.ModelMatrix * renderData.View * renderData.Projection);
 
-            uniforms.SetUniform("mvp", new Uniform(UniformType.Matrix4,
-                view * projection));
+            cmd.BindVertexArray(VAO);
+            cmd.DrawArrays(PrimitiveType.Lines, 0, vertCount);
 
-            renderer.PushDrawData(DrawType.Opaque, new GLDrawData
-            {
-                SourceEntity = BaseEntity,
-                Mesh = mesh,
-                Shader = shader,
-                Uniforms = uniforms
-            });
+            Engine.Renderer.QueueCommandsOpaque(cmd);
         }
     }
 }

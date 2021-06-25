@@ -13,18 +13,20 @@ namespace LeaderEditor
         public static Dictionary<Type, Action<Component>> SerializeableComponents = new Dictionary<Type, Action<Component>>()
         {
             { typeof(DirectionalLight), null },
-            { typeof(TextRenderer), null },
+            { typeof(TextRenderer), SerializeFunc.SerializeTextRenderer },
             { typeof(AudioSource), SerializeFunc.SerializeAudioSource },
-            { typeof(AudioListener), null }
+            { typeof(AudioListener), null },
+            { typeof(SpriteRenderer), null },
+            { typeof(SkyboxRenderer), null }
         };
 
         private void Start()
         {
             //register ImGui
-            ImGuiController.RegisterImGui(ImGuiRenderer);
+            ImGuiController.OnImGui += OnImGui;
         }
 
-        private void ImGuiRenderer()
+        private void OnImGui()
         {
             if (ImGui.Begin("Inspector"))
             {
@@ -34,12 +36,12 @@ namespace LeaderEditor
                     goto EndMenu;
                 }
 
-                ImGui.SetNextItemWidth(160.0f);
+                ImGui.SetNextItemWidth(160f);
                 ImGui.InputText("Name", ref SceneHierachy.SelectedEntity.Name, 255);
 
                 ImGui.SameLine();
 
-                ImGui.SetNextItemWidth(160.0f);
+                ImGui.SetNextItemWidth(160f);
                 ImGui.InputText("Tag", ref SceneHierachy.SelectedEntity.Tag, 255);
 
                 if (ImGui.Button("Add Component"))
@@ -50,7 +52,7 @@ namespace LeaderEditor
                 ImGui.Checkbox("Enabled", ref SceneHierachy.SelectedEntity.Active);
 
                 //get all components
-                var components = SceneHierachy.SelectedEntity.GetComponents<Component>();
+                Component[] components = SceneHierachy.SelectedEntity.GetComponents<Component>();
 
                 //add component menu
                 if (ImGui.BeginPopup("comp-menu"))
@@ -81,7 +83,7 @@ namespace LeaderEditor
                 ImGuiExtension.DragVector3("Origin Offset", ref SceneHierachy.SelectedEntity.Transform.OriginOffset, Vector3.Zero, 0.1f);
 
                 //serialize components in an entity
-                for (int i = 0; i < components.Count; i++)
+                for (int i = 0; i < components.Length; i++)
                 {
                     ImGui.Separator();
 
@@ -105,7 +107,7 @@ namespace LeaderEditor
                         ImGui.SameLine();
 
                         //remove component button
-                        ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - 30.0f);
+                        ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - 30f);
                         if (ImGui.Button("Remove Component"))
                         {
                             SceneHierachy.SelectedEntity.RemoveComponent(component);

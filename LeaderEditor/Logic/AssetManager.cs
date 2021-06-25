@@ -1,140 +1,206 @@
 ﻿using ImGuiNET;
 using LeaderEngine;
+using System;
+using System.Collections.Generic;
 using System.Numerics;
-using Keys = OpenTK.Windowing.GraphicsLibraryFramework.Keys;
+using System.Windows.Forms;
 
 namespace LeaderEditor
 {
     public class AssetManager : Component
     {
-        public static Prefab SelectedPrefab;
-        public static Mesh SelectedMesh;
-        public static Texture SelectedTexture;
-        public static Material SelectedMaterial;
-        public static AudioClip SelectedClip;
+        public static GameAsset SelectedAsset;
+
+        private List<GameAsset> displayAssets = new List<GameAsset>();
+
+        private string searchStr = string.Empty;
+        private GameAssetType filter = GameAssetType.All;
+
+        private GameAssetType[] assetTypes;
 
         private void Start()
         {
             //register ImGui
-            ImGuiController.RegisterImGui(ImGuiRenderer);
+            ImGuiController.OnImGui += OnImGui;
+
+            assetTypes = (GameAssetType[])Enum.GetValues(typeof(GameAssetType));
+
+            ApplyFilter(searchStr, filter);
         }
 
-        private void ImGuiRenderer()
+        private void OnImGui()
         {
             if (ImGui.Begin("Asset Manager"))
             {
-                if (Input.GetKeyDown(Keys.I) && ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows))
-                    SelectedPrefab?.Instantiate();
-
-
-                if (ImGui.BeginChild("clips", new Vector2(210.0f, 0.0f), true))
+                if (ImGui.BeginChild("asset-import", new Vector2(140f, 0f), true))
                 {
-                    ImGui.Text("Audio Clips");
+                    {
+                        if (ImGui.Button("Import Cubemap"))
+                        {
+                            var aiw = new AssetImporterWizard("cubemap-importer");
+                            aiw.Title = "Import Cubemap";
+                        }
+
+                        var assetImporter = AssetImporterWizard.GetAssetImporter("cubemap-importer");
+
+                        if (assetImporter != null)
+                        {
+                            if (assetImporter.Begin())
+                            {
+                                string name = assetImporter.InputText("Name");
+                                string right = assetImporter.OpenFileDialog("Right", "Image|*.jpg;*.png");
+                                string left = assetImporter.OpenFileDialog("Left", "Image|*.jpg;*.png");
+                                string top = assetImporter.OpenFileDialog("Top", "Image|*.jpg;*.png");
+                                string bottom = assetImporter.OpenFileDialog("Bottom", "Image|*.jpg;*.png");
+                                string back = assetImporter.OpenFileDialog("Back", "Image|*.jpg;*.png");
+                                string front = assetImporter.OpenFileDialog("Front", "Image|*.jpg;*.png");
+
+                                assetImporter.End();
+
+                                if (assetImporter.Finished())
+                                {
+                                    Cubemap.FromFile(name, right, left, top, bottom, back, front);
+
+                                    assetImporter.Dispose();
+                                }
+                            }
+                        }
+                    }
+
+                    {
+                        if (ImGui.Button("Import Audio"))
+                        {
+                            var aiw = new AssetImporterWizard("audio-importer");
+                            aiw.Title = "Import Audio";
+                        }
+
+                        var assetImporter = AssetImporterWizard.GetAssetImporter("audio-importer");
+
+                        if (assetImporter != null)
+                        {
+                            if (assetImporter.Begin())
+                            {
+                                string name = assetImporter.InputText("Name");
+                                string path = assetImporter.OpenFileDialog("Audio Clip", "Audio File|*.wav");
+
+                                assetImporter.End();
+
+                                if (assetImporter.Finished())
+                                {
+                                    AudioClip.FromFile(name, path);
+
+                                    assetImporter.Dispose();
+                                }
+                            }
+                        }
+                    }
+
+                    if (ImGui.Button("Import Model", new Vector2(100f, 0f)))
+                    {
+                        using (var ofd = new OpenFileDialog())
+                        {
+                            ofd.Filter = "3D Model|*.fbx;*.obj";
+
+                            ofd.ShowDialog();
+
+                            if (!string.IsNullOrEmpty(ofd.FileName))
+                            {
+                                AssetImporter.LoadModelFromFile(ofd.FileName);
+                            }
+                        }
+                    }
+
+                    ImGui.EndChild();
+                }
+
+                ImGui.SameLine();
+
+                if (ImGui.BeginChild("assets", new Vector2(630f, 0f), true))
+                {
+                    ImGui.Text("Assets");
+                    ImGui.SameLine();
+
+                    ImGui.SetNextItemWidth(240f);
+                    ImGui.InputText("Search", ref searchStr, 32768);
+                    bool editedStr = ImGui.IsItemEdited();
 
                     ImGui.SameLine();
 
-                    FilePicker fp = FilePicker.GetFilePicker("audio", null, ".wav");
-
-                    fp.Title = "Select File (*.wav)";
-
-                    if (ImGui.Button("Import Audio", new Vector2(100.0f, 0.0f)))
-                        fp.Open();
-
-                    if (fp.Draw())
-                        AudioClip.FromFile("song", fp.SelectedFile);
-
-                    ImGui.Separator();
-
-                    if (ImGui.BeginChild("sub-ac-win"))
+                    bool editedFilter = false;
+                    ImGui.SetNextItemWidth(140f);
+                    if (ImGui.BeginCombo("Filter", filter.ToString()))
                     {
-                        foreach (var a in DataManager.AudioClips)
-                            if (ImGui.Selectable(a.Value.Name, SelectedClip == a.Value))
-                                SelectedClip = a.Value;
-                        ImGui.EndChild();
+                        foreach (GameAssetType assetType in assetTypes)
+                        {
+                            if (ImGui.Selectable(assetType.ToString(), assetType == filter))
+                            {
+                                filter = assetType;
+                                editedFilter = true;
+                            }
+                        }
+                        ImGui.EndCombo();
                     }
-
-                    ImGui.EndChild();
-                }
-                ImGui.SameLine();
-                if (ImGui.BeginChild("prefabs", new Vector2(210.0f, 0.0f), true))
-                {
-                    ImGui.Text("Prefabs");
 
                     ImGui.SameLine();
 
-                    ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - 100.0f);
-
-                    FilePicker fp = FilePicker.GetFilePicker("prefab-model", null, ".fbx;.obj");
-
-                    fp.Title = "Select File (*.fbx; *.obj)";
-
-                    if (ImGui.Button("Import Model", new Vector2(100.0f, 0.0f)))
-                        fp.Open();
-
-                    if (fp.Draw())
-                        DataManager.LoadModelFromFile(fp.SelectedFile);
+                    if (ImGui.Button("Refresh") || editedStr || editedFilter)
+                    {
+                        ApplyFilter(searchStr, filter);
+                    }
 
                     ImGui.Separator();
 
-                    if (ImGui.BeginChild("sub-prefabs-win"))
+                    if (ImGui.BeginChild("assets-sub", Vector2.Zero))
                     {
-                        foreach (var p in DataManager.Prefabs)
-                            if (ImGui.Selectable(p.Value.Name, SelectedPrefab == p.Value))
-                                SelectedPrefab = p.Value;
+                        foreach (GameAsset asset in displayAssets)
+                        {
+                            ImGui.PushID(asset.GetHashCode());
+
+                            if (ImGui.Selectable(asset.Name, asset == SelectedAsset))
+                            {
+                                SelectedAsset = asset;
+                            }
+
+                            if (asset.AssetType == GameAssetType.Prefab) 
+                            {
+                                if (ImGui.IsItemHovered() && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
+                                {
+                                    Prefab prefab = (Prefab)asset;
+                                    prefab.Instantiate();
+                                }
+                            }
+
+                            ImGui.SameLine();
+
+                            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.6f, 0.6f, 0.6f, 0.5f));
+                            ImGui.Text($"[{asset.AssetType}]");
+#if DEBUG
+                            ImGui.SameLine();
+                            ImGui.Text($"[ID: {asset.ID}]");
+#endif
+                            ImGui.PopStyleColor();
+
+                            ImGui.PopID();
+                        }
+
                         ImGui.EndChild();
                     }
 
                     ImGui.EndChild();
                 }
-                ImGui.SameLine();
-                if (ImGui.BeginChild("meshes", new Vector2(210.0f, 0.0f), true))
+            }
+        }
+
+        private void ApplyFilter(string strFilter, GameAssetType assetTypeFilter)
+        {
+            displayAssets.Clear();
+
+            foreach (GameAsset asset in LeaderEngine.AssetManager.Assets.Values)
+            {
+                if (asset.Name.Contains(strFilter, StringComparison.OrdinalIgnoreCase) && assetTypeFilter.HasFlag(asset.AssetType))
                 {
-                    ImGui.Text("Meshes");
-                    ImGui.Separator();
-
-                    if (ImGui.BeginChild("sub-meshes-win"))
-                    {
-                        foreach (var m in DataManager.Meshes)
-                            if (ImGui.Selectable(m.Value.Name, SelectedMesh == m.Value))
-                                SelectedMesh = m.Value;
-                        ImGui.EndChild();
-                    }
-
-                    ImGui.EndChild();
+                    displayAssets.Add(asset);
                 }
-                ImGui.SameLine();
-                if (ImGui.BeginChild("textures", new Vector2(210.0f, 0.0f), true))
-                {
-                    ImGui.Text("Textures");
-                    ImGui.Separator();
-
-                    if (ImGui.BeginChild("sub-tex-win"))
-                    {
-                        foreach (var t in DataManager.Textures)
-                            if (ImGui.Selectable(t.Value.Name, SelectedTexture == t.Value))
-                                SelectedTexture = t.Value;
-                        ImGui.EndChild();
-                    }
-
-                    ImGui.EndChild();
-                }
-                ImGui.SameLine();
-                if (ImGui.BeginChild("materials", new Vector2(210.0f, 0.0f), true))
-                {
-                    ImGui.Text("Materials");
-                    ImGui.Separator();
-
-                    if (ImGui.BeginChild("sub-mats-win"))
-                    {
-                        foreach (var m in DataManager.Materials)
-                            if (ImGui.Selectable(m.Value.Name, SelectedMaterial == m.Value))
-                                SelectedMaterial = m.Value;
-                        ImGui.EndChild();
-                    }
-
-                    ImGui.EndChild();
-                }
-                ImGui.End();
             }
         }
     }

@@ -14,23 +14,20 @@ namespace LeaderEngine
         public static float Elapsed { get; internal set; }
         public static float DeltaTime { get; internal set; }
         public static float UnscaledDeltaTime { get; internal set; }
-        public static float TimeScale = 1.0f;
+        public static float TimeScale = 1f;
     }
 
     public static class Engine
     {
-        public static GameWindow MainWindow { get; private set; }
+        public static GameWindow MainWindow => _window;
+        public static GLRenderer Renderer => _renderer;
 
-        public static GLRenderer Renderer = new ForwardRenderer();
+        private static GameWindow _window;
+        private static GLRenderer _renderer;
 
-        public static bool IgnoreGLInfo = false;
-
-        private static DebugProc debugProcCallback = DebugCallback;
-        private static GCHandle debugProcCallbackHandle;
-
-        public static void Init(GameWindowSettings gws, NativeWindowSettings nws, Action initCallback = null, GLRenderer renderer = null)
+        public static void Init(GameWindowSettings gws, NativeWindowSettings nws, GLRenderer renderer = null, Action initCallback = null)
         {
-            MainWindow = new GameWindow(gws, nws);
+            _window = new GameWindow(gws, nws);
 
             //log basic info
             Logger.Log("Base Directory: " + AppContext.BaseDirectory, true);
@@ -51,18 +48,20 @@ namespace LeaderEngine
             //init debug callbacks
             GLFW.SetErrorCallback(LogGLFWError);
 
-            debugProcCallbackHandle = GCHandle.Alloc(debugProcCallback);
+            DebugProc debugProcCallback = DebugCallback;
+            GCHandle debugProcCallbackHandle = GCHandle.Alloc(debugProcCallback);
 
             GL.DebugMessageCallback(debugProcCallback, IntPtr.Zero);
             GL.Enable(EnableCap.DebugOutput);
             GL.Enable(EnableCap.DebugOutputSynchronous);
 
             //init modules
-            DataManager.Init();
-
+            AssetManager.Init();
             DefaultShaders.Init();
+            SpriteRenderer.Init();
+            SkyboxRenderer.Init();
 
-            Renderer = renderer != null ? renderer : Renderer;
+            _renderer = renderer ?? new ForwardRenderer();
             Renderer.Init();
 
             AudioManager.Init();
@@ -96,10 +95,15 @@ namespace LeaderEngine
                     break;
                 case DebugSeverity.DebugSeverityHigh:
                     Logger.LogError($"OpenGL: {messageString}");
+#if THROW_ON_GL_ERROR
+                    throw new Exception(messageString);
+#else
                     break;
+#endif
                 default:
-                    if (!IgnoreGLInfo)
-                        Logger.Log($"OpenGL: {messageString}");
+#if !NO_GL_INFO
+                    Logger.Log($"OpenGL: {messageString}");
+#endif
                     break;
             }
         }
@@ -114,10 +118,11 @@ namespace LeaderEngine
             Time.UnscaledDeltaTime = t;
 
             //update scene
-            DataManager.CurrentScene.UpdateSceneHierachy();
+            DataManager.CurrentScene.UpdateScene();
 
-            //update engine entities
-            DataManager.EngineReservedEntities.ForEach(x => x.RecursivelyUpdate());
+            //update unlisted entities
+            foreach (var entity in DataManager.UnlistedEntities)
+                entity.Update();
 
             //update renderer
             Renderer.Update();
@@ -125,9 +130,6 @@ namespace LeaderEngine
 
         private static void RenderFrame(FrameEventArgs obj)
         {
-            GL.Viewport(0, 0, MainWindow.ClientSize.X, MainWindow.ClientSize.Y);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-
             Renderer.Render();
 
             MainWindow.SwapBuffers();
