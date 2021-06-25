@@ -14,10 +14,6 @@ namespace LeaderEngine
         private List<CommandBuffer> transparentBuffers = new List<CommandBuffer>();
         private List<CommandBuffer> guiBuffers = new List<CommandBuffer>();
 
-        #region PostProcess
-        public float Exposure = 1f;
-        #endregion
-
         private const int shadowMapRes = 4096;
         private const float shadowMapSize = 48f;
 

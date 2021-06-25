@@ -179,10 +179,6 @@ namespace LeaderEditor
                 ImGui.Text($"Frametime: {MathF.Floor(Time.UnscaledDeltaTime * 100000f) / 100f}ms");
                 ImGui.Text($"Framerate: {MathF.Floor(1f / Time.UnscaledDeltaTime)}");
 
-#if DEBUG
-                ImGui.DragFloat("Exposure", ref ((ForwardRenderer)Engine.Renderer).Exposure, 0.1f);
-#endif
-
                 ImGui.End();
             }
         }
