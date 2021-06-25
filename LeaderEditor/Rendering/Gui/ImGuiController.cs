@@ -4,6 +4,7 @@ using LeaderEngine;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
@@ -261,6 +262,30 @@ namespace LeaderEditor
 
             MouseState mouseState = Engine.MainWindow.MouseState;
             KeyboardState keyboardState = Engine.MainWindow.KeyboardState;
+
+            ImGuiMouseCursor cursor = ImGui.GetMouseCursor();
+
+            switch (cursor)
+            {
+                case ImGuiMouseCursor.Arrow:
+                    Engine.MainWindow.Cursor = MouseCursor.Default;
+                    break;
+                case ImGuiMouseCursor.Hand:
+                    Engine.MainWindow.Cursor = MouseCursor.Hand;
+                    break;
+                case ImGuiMouseCursor.TextInput:
+                    Engine.MainWindow.Cursor = MouseCursor.IBeam;
+                    break;
+                case ImGuiMouseCursor.ResizeNS:
+                    Engine.MainWindow.Cursor = MouseCursor.VResize;
+                    break;
+                case ImGuiMouseCursor.ResizeEW:
+                    Engine.MainWindow.Cursor = MouseCursor.HResize;
+                    break;
+                default:
+                    Engine.MainWindow.Cursor = MouseCursor.Default;
+                    break;
+            }
 
             io.MouseDown[0] = mouseState.IsButtonDown(MouseButton.Left);
             io.MouseDown[1] = mouseState.IsButtonDown(MouseButton.Right);
