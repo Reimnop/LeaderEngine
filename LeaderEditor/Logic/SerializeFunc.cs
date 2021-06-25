@@ -8,24 +8,6 @@ namespace LeaderEditor
 {
     public class SerializeFunc
     {
-        //serialize transform component
-        public static void Transform(Transform transform)
-        {
-            ImGui.PushID("PositionV3");
-            ImGuiExtension.DragVector3("Position", ref transform.Position, Vector3.Zero, 0.05f);
-            ImGui.PopID();
-
-            ImGui.PushID("RotationV3");
-            Vector3 euler = transform.EulerAngles;
-            ImGuiExtension.DragVector3("Rotation", ref euler, Vector3.Zero, 0.5f);
-            transform.EulerAngles = euler;
-            ImGui.PopID();
-
-            ImGui.PushID("ScaleV3");
-            ImGuiExtension.DragVector3("Scale", ref transform.Scale, Vector3.One, 0.05f);
-            ImGui.PopID();
-        }
-
         internal static void SerializeTextRenderer(Component obj)
         {
             TextRenderer textRenderer = (TextRenderer)obj;

@@ -100,14 +100,6 @@ namespace LeaderEngine
             if (camera == null)
                 return;
 
-            foreach (Entity entity in DataManager.CurrentScene.SceneEntities)
-                if (entity.Parent == null)
-                    entity.Transform.CalculateModelMatrixRecursively();
-
-            foreach (Entity entity in DataManager.UnlistedEntities)
-                if (entity.Parent == null)
-                    entity.Transform.CalculateModelMatrixRecursively();
-
             //shadow mapping
             Matrix4 lightView = Matrix4.Identity;
             Matrix4 lightProjection = Matrix4.Identity;

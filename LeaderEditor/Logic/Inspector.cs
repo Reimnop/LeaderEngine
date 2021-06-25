@@ -70,17 +70,17 @@ namespace LeaderEditor
                 ImGui.Separator();
                 ImGui.Text("Transform");
 
-                ImGuiExtension.DragVector3("Position", ref SceneHierachy.SelectedEntity.Transform.Position, Vector3.Zero, 0.1f);
+                Vector3 pos = SceneHierachy.SelectedEntity.Transform.Position;
+                ImGuiExtension.DragVector3("Position", ref pos, Vector3.Zero, 0.1f);
+                SceneHierachy.SelectedEntity.Transform.Position = pos;
 
                 Vector3 euler = SceneHierachy.SelectedEntity.Transform.EulerAngles;
                 ImGuiExtension.DragVector3("Rotation", ref euler, Vector3.Zero);
                 SceneHierachy.SelectedEntity.Transform.EulerAngles = euler;
 
-                ImGuiExtension.DragVector3("Scale", ref SceneHierachy.SelectedEntity.Transform.Scale, Vector3.One, 0.1f);
-
-                ImGui.Separator();
-
-                ImGuiExtension.DragVector3("Origin Offset", ref SceneHierachy.SelectedEntity.Transform.OriginOffset, Vector3.Zero, 0.1f);
+                Vector3 sca = SceneHierachy.SelectedEntity.Transform.Scale;
+                ImGuiExtension.DragVector3("Scale", ref sca, Vector3.One, 0.1f);
+                SceneHierachy.SelectedEntity.Transform.Scale = sca;
 
                 //serialize components in an entity
                 for (int i = 0; i < components.Length; i++)

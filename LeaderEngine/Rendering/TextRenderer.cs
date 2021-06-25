@@ -135,7 +135,7 @@ namespace LeaderEngine
             cmd.Clear();
 
             cmd.BindShader(shader);
-            cmd.SetUniformMatrix4(shader, "mvp", BaseTransform.ModelMatrix * renderData.View * renderData.Projection);
+            cmd.SetUniformMatrix4(shader, "mvp", BaseTransform.GlobalModelMatrix * renderData.View * renderData.Projection);
             cmd.SetUniformFloat(shader, "width", Width);
             cmd.SetUniformFloat(shader, "edge", Edge);
 

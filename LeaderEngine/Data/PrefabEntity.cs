@@ -10,7 +10,6 @@ namespace LeaderEngine
         public Vector3 Position = Vector3.Zero;
         public Quaternion Rotation = Quaternion.Identity;
         public Vector3 Scale = Vector3.One;
-        public Vector3 OriginOffset = Vector3.Zero;
 
         public Mesh Mesh;
         public Material Material;

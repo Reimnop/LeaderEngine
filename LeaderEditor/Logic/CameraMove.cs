@@ -15,7 +15,7 @@ namespace LeaderEditor
 
         private void Start()
         {
-            BaseTransform.Position.Y = 2f;
+            BaseTransform.Position = new Vector3(0f, 2f, 0f);
         }
 
         private void Update()

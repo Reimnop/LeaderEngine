@@ -20,7 +20,7 @@ namespace LeaderEngine
             shadowMapCmd.Clear();
 
             shadowMapCmd.BindShader(shader);
-            shadowMapCmd.SetUniformMatrix4(shader, "mvp", BaseTransform.ModelMatrix * lightData.View * lightData.Projection);
+            shadowMapCmd.SetUniformMatrix4(shader, "mvp", BaseTransform.GlobalModelMatrix * lightData.View * lightData.Projection);
 
             shadowMapCmd.BindMesh(Mesh);
             shadowMapCmd.DrawMesh(Mesh);
@@ -38,8 +38,8 @@ namespace LeaderEngine
             mainCmd.Clear();
 
             mainCmd.BindShader(shader);
-            mainCmd.SetUniformMatrix4(shader, "model", BaseTransform.ModelMatrix);
-            mainCmd.SetUniformMatrix4(shader, "mvp", BaseTransform.ModelMatrix * renderData.View * renderData.Projection);
+            mainCmd.SetUniformMatrix4(shader, "model", BaseTransform.GlobalModelMatrix);
+            mainCmd.SetUniformMatrix4(shader, "mvp", BaseTransform.GlobalModelMatrix * renderData.View * renderData.Projection);
 
             mainCmd.SetUniformVector3(shader, "camPos", Camera.Main.BaseTransform.Position);
 

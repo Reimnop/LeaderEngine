@@ -37,11 +37,12 @@ namespace LeaderEngine
             Logger.Log("Shading Language version: " + GL.GetString(StringName.ShadingLanguageVersion), true);
 
             //subscribe to window events
-            MainWindow.UpdateFrame += UpdateFrame;
-            MainWindow.RenderFrame += RenderFrame;
+            _window.UpdateFrame += UpdateFrame;
+            _window.RenderFrame += RenderFrame;
 
             //intialize engine
             Logger.Log("Initializing LeaderEngine...", true);
+
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
@@ -62,11 +63,11 @@ namespace LeaderEngine
             SkyboxRenderer.Init();
 
             _renderer = renderer ?? new ForwardRenderer();
-            Renderer.Init();
+            _renderer.Init();
 
             AudioManager.Init();
 
-            Input.Init(MainWindow.KeyboardState, MainWindow.MouseState);
+            Input.Init(_window.KeyboardState, _window.MouseState);
 
             //init main application
             initCallback?.Invoke();
@@ -76,7 +77,7 @@ namespace LeaderEngine
             Logger.Log($"LeaderEngine initialized. ({stopwatch.ElapsedMilliseconds}ms)", true);
 
             //open window
-            MainWindow.Run();
+            _window.Run();
         }
 
         private static void LogGLFWError(ErrorCode errorCode, string description)
@@ -125,14 +126,13 @@ namespace LeaderEngine
                 entity.Update();
 
             //update renderer
-            Renderer.Update();
+            _renderer.Update();
         }
 
         private static void RenderFrame(FrameEventArgs obj)
         {
-            Renderer.Render();
-
-            MainWindow.SwapBuffers();
+            _renderer.Render();
+            _window.SwapBuffers();
         }
     }
 }

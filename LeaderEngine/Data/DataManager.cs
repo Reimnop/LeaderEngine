@@ -56,7 +56,6 @@ namespace LeaderEngine
             transform.Position = ReadStruct<Vector3>(reader);
             transform.EulerAngles = ReadStruct<Vector3>(reader);
             transform.Scale = ReadStruct<Vector3>(reader);
-            transform.OriginOffset = ReadStruct<Vector3>(reader);
 
             Component[] components = ReadComponents(reader);
             foreach (Component component in components)
@@ -145,7 +144,6 @@ namespace LeaderEngine
             WriteStruct(writer, transform.Position);
             WriteStruct(writer, transform.EulerAngles);
             WriteStruct(writer, transform.Scale);
-            WriteStruct(writer, transform.OriginOffset);
 
             WriteComponents(entity.GetComponents<Component>(), writer);
 

@@ -67,7 +67,7 @@ namespace LeaderEditor
                 if (mr.Mesh == null)
                     goto CheckChildren;
 
-                if (EditorRaycast.MeshRaycast(mr.Mesh, ray, entity.Transform.GlobalTransform, out float dist))
+                if (EditorRaycast.MeshRaycast(mr.Mesh, ray, entity.Transform.GlobalModelMatrix, out float dist))
                 {
                     if (t > dist)
                     {
@@ -125,13 +125,13 @@ namespace LeaderEditor
 
                     Camera.Main.CalculateViewProjection(out var view, out var projection);
 
-                    var transform = entity.Transform.GlobalTransform;
+                    Matrix4 transform = entity.Transform.GlobalModelMatrix;
                     ImGuizmo.Manipulate(ref view.Row0.X, ref projection.Row0.X, operation, MODE.LOCAL, ref transform.Row0.X);
 
                     if (ImGuizmo.IsUsing())
                     {
-                        var parentGlobal = entity.Parent != null ? entity.Parent.Transform.GlobalTransform : Matrix4.Identity;
-                        var local = transform * parentGlobal.Inverted();
+                        Matrix4 parentGlobal = entity.Parent != null ? entity.Parent.Transform.GlobalModelMatrix : Matrix4.Identity;
+                        Matrix4 local = transform * parentGlobal.Inverted();
 
                         entity.Transform.Position = local.ExtractTranslation();
                         entity.Transform.Rotation = local.ExtractRotation();
@@ -157,7 +157,7 @@ namespace LeaderEditor
                 if (ImGui.IsWindowHovered() && ImGui.IsWindowFocused() && ImGui.IsMouseClicked(ImGuiMouseButton.Left) && !ImGuizmo.IsUsing())
                 {
                     Ray ray;
-                    ray.Origin = Camera.Main.BaseTransform.GlobalTransform.ExtractTranslation(); //get cam position
+                    ray.Origin = Camera.Main.BaseTransform.GlobalModelMatrix.ExtractTranslation(); //get cam position
 
                     var mPos = (ImGui.GetMousePos() - cPos) / vSize; //get mouse pos in [0, 1]
                     Vector2 mousePos = new Vector2(mPos.X, mPos.Y) * new Vector2(2f) - new Vector2(1f); //convert to [-1, 1]

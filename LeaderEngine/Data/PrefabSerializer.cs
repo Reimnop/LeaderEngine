@@ -37,7 +37,6 @@ namespace LeaderEngine
             entity.Position = ReadStruct<Vector3>(reader);
             entity.Scale = ReadStruct<Vector3>(reader);
             entity.Rotation = ReadStruct<Quaternion>(reader);
-            entity.OriginOffset = ReadStruct<Vector3>(reader);
 
             string meshID = reader.ReadString();
             entity.Mesh = !string.IsNullOrEmpty(meshID) ? (Mesh)AssetManager.Assets[meshID] : null;
@@ -59,7 +58,6 @@ namespace LeaderEngine
             WriteStruct(writer, entity.Position);
             WriteStruct(writer, entity.Scale);
             WriteStruct(writer, entity.Rotation);
-            WriteStruct(writer, entity.OriginOffset);
 
             writer.Write(entity.Mesh != null ? entity.Mesh.ID : string.Empty);
             writer.Write(entity.Material != null ? entity.Material.ID : string.Empty);

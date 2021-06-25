@@ -144,7 +144,7 @@ namespace LeaderEngine
 
         private void Update()
         {
-            Vector3 pos = BaseTransform.GlobalTransform.ExtractTranslation();
+            Vector3 pos = BaseTransform.GlobalModelMatrix.ExtractTranslation();
             AL.Source(handle, ALSource3f.Position, ref pos);
         }
 
@@ -189,7 +189,7 @@ namespace LeaderEngine
 
         private void Update()
         {
-            var pos = BaseTransform.GlobalTransform.ExtractTranslation();
+            var pos = BaseTransform.GlobalModelMatrix.ExtractTranslation();
             AL.Listener(ALListener3f.Position, ref pos);
 
             var fw = BaseTransform.Forward;

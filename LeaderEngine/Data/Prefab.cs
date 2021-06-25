@@ -25,7 +25,6 @@
             entity.Transform.Position = prefabEntity.Position;
             entity.Transform.Rotation = prefabEntity.Rotation;
             entity.Transform.Scale = prefabEntity.Scale;
-            entity.Transform.OriginOffset = prefabEntity.OriginOffset;
 
             if (prefabEntity.Material != null && prefabEntity.Mesh != null)
             {

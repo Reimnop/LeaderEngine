@@ -35,7 +35,7 @@ namespace LeaderEngine
                 projection = Matrix4.CreateOrthographic(OrthographicScale * 2f * aspect, OrthographicScale * 2f, NearPlane, FarPlane);
             }
 
-            Vector3 pos = BaseTransform.GlobalTransform.ExtractTranslation();
+            Vector3 pos = BaseTransform.GlobalModelMatrix.ExtractTranslation();
 
             view = Matrix4.LookAt(
                     pos,

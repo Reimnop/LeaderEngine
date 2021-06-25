@@ -91,7 +91,7 @@ namespace LeaderEditor
             cmd.Clear();
 
             cmd.BindShader(shader);
-            cmd.SetUniformMatrix4(shader, "mvp", BaseTransform.ModelMatrix * renderData.View * renderData.Projection);
+            cmd.SetUniformMatrix4(shader, "mvp", BaseTransform.GlobalModelMatrix * renderData.View * renderData.Projection);
 
             cmd.BindVertexArray(VAO);
             cmd.DrawArrays(PrimitiveType.Lines, 0, vertCount);
