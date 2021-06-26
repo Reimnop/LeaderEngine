@@ -7,18 +7,24 @@ namespace LeaderEngine
 {
     public class ForwardRenderer : GLRenderer
     {
-        private const int defaultSize = 4096;
-
         private List<CommandBuffer> shadowMapBuffers = new List<CommandBuffer>();
         private List<CommandBuffer> opaqueBuffers = new List<CommandBuffer>();
         private List<CommandBuffer> transparentBuffers = new List<CommandBuffer>();
         private List<CommandBuffer> guiBuffers = new List<CommandBuffer>();
 
-        private const int shadowMapRes = 4096;
-        private const float shadowMapSize = 48f;
+        private const int cascadeCount = 4;
+        private const float shadowMapSizeOffet = 0f;
+        private const float shadowMapDepth = 480f;
+        private const float cascadeSplitLogFactor = 0.95f;
+        private const float shadowMapMaxDistance = 60f;
+        private const int shadowMapRes = 2048;
 
-        private int shadowMapFBO;
-        private int shadowMap;
+        private float[] cascadeDepths = new float[cascadeCount + 1];
+
+        private int[] cascadeFramebuffers = new int[cascadeCount];
+        private int[] cascadeShadowMaps = new int[cascadeCount];
+
+        private Matrix4[] cascadeViewProjectionMatrices = new Matrix4[cascadeCount];
 
         private PostProcessor postProcessor;
 
@@ -26,25 +32,29 @@ namespace LeaderEngine
 
         public override void Init()
         {
-            //init FBO
-            shadowMapFBO = GL.GenFramebuffer();
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
+            //init shadowmap resources
+            for (int i = 0; i < cascadeCount; i++)
+            {
+                int shadowMapFramebuffer = GL.GenFramebuffer();
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFramebuffer);
 
-            //init shadowmap
-            shadowMap = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, shadowMap);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, shadowMapRes, shadowMapRes, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            GL.BindTexture(TextureTarget.Texture2D, 0);
+                int shadowMapTexture = GL.GenTexture();
+                GL.BindTexture(TextureTarget.Texture2D, shadowMapTexture);
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, shadowMapRes, shadowMapRes, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                GL.BindTexture(TextureTarget.Texture2D, 0);
 
-            //bind texture to framebuffer
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, shadowMap, 0);
+                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, shadowMapTexture, 0);
 
-            GL.DrawBuffer(DrawBufferMode.None);
-            GL.ReadBuffer(ReadBufferMode.None);
+                GL.DrawBuffer(DrawBufferMode.None);
+                GL.ReadBuffer(ReadBufferMode.None);
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+                cascadeFramebuffers[i] = shadowMapFramebuffer;
+                cascadeShadowMaps[i] = shadowMapTexture;
+            }
 
             //init post processor
             postProcessor = new PostProcessor();
@@ -96,55 +106,85 @@ namespace LeaderEngine
             if (camera == null)
                 return;
 
-            //shadow mapping
-            Matrix4 lightView = Matrix4.Identity;
-            Matrix4 lightProjection = Matrix4.Identity;
+            camera.GetViewProjectionMatrices(out Matrix4 view, out Matrix4 projection);
 
+            //shadow mapping
             if (DirectionalLight.Main == null)
                 goto RenderOpaque;
 
-            DirectionalLight.Main.CalculateViewProjection(out lightView, out lightProjection, shadowMapSize, camera.BaseTransform.Position);
+            DirectionalLight light = DirectionalLight.Main;
 
-            LightData lightData = new LightData
+            //calculate cascade depths
+            float camNear = camera.NearPlane;
+            float camFar = MathF.Min(shadowMapMaxDistance, camera.FarPlane);
+
+            for (int i = 0; i < cascadeCount; i++)
             {
-                View = lightView,
-                Projection = lightProjection
-            };
+                cascadeDepths[i] = MathHelper.Lerp(
+                    camNear + (i / (float)cascadeCount) * (camFar - camNear),
+                    camNear * MathF.Pow(camFar / camNear, (float)i / cascadeCount),
+                    cascadeSplitLogFactor);
+            }
 
-            foreach (Entity entity in DataManager.CurrentScene.SceneEntities)
-                entity.RenderShadowMap(in lightData);
+            cascadeDepths[cascadeCount] = camFar;
 
-            foreach (Entity entity in DataManager.UnlistedEntities)
-                entity.RenderShadowMap(in lightData);
-
+            GL.Disable(EnableCap.CullFace);
+            GL.Enable(EnableCap.DepthTest);
             GL.Viewport(0, 0, shadowMapRes, shadowMapRes);
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, shadowMapFBO);
-            GL.Clear(ClearBufferMask.DepthBufferBit);
+            //render shadowmaps cascades
+            for (int i = 0; i < cascadeCount; i++)
+            {
+                Matrix4 cascadeProj = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(camera.FOV), ViewportSize.X / (float)ViewportSize.Y, cascadeDepths[i], cascadeDepths[i + 1]);
+                FrustumCorners corners = CalculateFrustum(view * cascadeProj);
 
-            GL.Enable(EnableCap.DepthTest);
+                Vector3 lightPos = Vector3.Zero;
+                lightPos += corners.NearTopLeft;
+                lightPos += corners.NearTopRight;
+                lightPos += corners.NearBottomLeft;
+                lightPos += corners.NearBottomRight;
+                lightPos += corners.FarTopLeft;
+                lightPos += corners.FarTopRight;
+                lightPos += corners.FarBottomLeft;
+                lightPos += corners.FarBottomRight;
+                lightPos /= 8f;
 
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
-            GL.FrontFace(FrontFaceDirection.Ccw);
+                Matrix4 lightViewProjection = CalculateLightViewProjection(lightPos, light.BaseTransform.Forward, light.BaseTransform.Up, Vector3.Distance(corners.FarTopLeft, corners.FarTopRight) + shadowMapSizeOffet, shadowMapDepth);
 
-            foreach (var buffer in shadowMapBuffers)
-                ExecuteCommandBuffer(buffer);
+                cascadeViewProjectionMatrices[i] = lightViewProjection;
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                LightData lightData = new LightData
+                {
+                    ViewProjection = lightViewProjection
+                };
+
+                foreach (Entity entity in DataManager.CurrentScene.SceneEntities)
+                    entity.RenderShadowMap(in lightData);
+
+                foreach (Entity entity in DataManager.UnlistedEntities)
+                    entity.RenderShadowMap(in lightData);
+
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, cascadeFramebuffers[i]);
+                GL.Clear(ClearBufferMask.DepthBufferBit);
+
+                foreach (var buffer in shadowMapBuffers)
+                    ExecuteCommandBuffer(buffer);
+
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            }
 
         //render opaque
         RenderOpaque:
-            camera.CalculateViewProjection(out var view, out var projection);
-
             //call all render funcs
             RenderData renderData = new RenderData
             {
                 View = view,
                 Projection = projection,
-                LightView = lightView,
-                LightProjection = lightProjection,
-                ShadowMapTexture = shadowMap
+                ViewProjection = view * projection,
+                CascadeCount = cascadeCount,
+                CascadeDepths = cascadeDepths,
+                CascadeShadowMaps = cascadeShadowMaps,
+                CascadeViewProjections = cascadeViewProjectionMatrices
             };
 
             foreach (var entity in DataManager.CurrentScene.SceneEntities)
@@ -155,14 +195,14 @@ namespace LeaderEngine
 
             GL.Viewport(0, 0, ViewportSize.X, ViewportSize.Y);
 
-            postProcessor.Begin();
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
             GL.Enable(EnableCap.DepthTest);
 
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Back);
             GL.FrontFace(FrontFaceDirection.Ccw);
+
+            postProcessor.Begin();
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             foreach (var buffer in opaqueBuffers)
                 ExecuteCommandBuffer(buffer);
@@ -204,6 +244,53 @@ namespace LeaderEngine
         {
             for (int i = 0; i < commandBuffer.Count; i++)
                 CommandProcessor.ExecuteCommand(commandBuffer.Commands[i]);
+        }
+
+        private Matrix4 CalculateLightViewProjection(Vector3 position, Vector3 direction, Vector3 up, float size, float maxDepth)
+        {
+            Matrix4 view = Matrix4.LookAt(
+                position,
+                position + direction,
+                up);
+
+            Matrix4 projection = Matrix4.CreateOrthographic(size, size, -maxDepth, maxDepth);
+
+            return view * projection;
+        }
+
+        private FrustumCorners CalculateFrustum(Matrix4 projection)
+        {
+            Vector4 nearTopLeft     = new Vector4(-1f,  1f, -1f, 1f);
+            Vector4 nearTopRight    = new Vector4( 1f,  1f, -1f, 1f);
+            Vector4 nearBottomLeft  = new Vector4(-1f, -1f, -1f, 1f);
+            Vector4 nearBottomRight = new Vector4( 1f, -1f, -1f, 1f);
+            Vector4 farTopLeft      = new Vector4(-1f,  1f,  1f, 1f);
+            Vector4 farTopRight     = new Vector4( 1f,  1f,  1f, 1f);
+            Vector4 farBottomLeft   = new Vector4(-1f, -1f,  1f, 1f);
+            Vector4 farBottomRight  = new Vector4( 1f, -1f,  1f, 1f);
+
+            Matrix4 inverseProjection = Matrix4.Invert(projection);
+
+            nearTopLeft     *= inverseProjection;
+            nearTopRight    *= inverseProjection;
+            nearBottomLeft  *= inverseProjection;
+            nearBottomRight *= inverseProjection;
+            farTopLeft      *= inverseProjection;
+            farTopRight     *= inverseProjection;
+            farBottomLeft   *= inverseProjection;
+            farBottomRight  *= inverseProjection;
+
+            return new FrustumCorners
+            {
+                NearTopLeft = nearTopLeft.Xyz / nearTopLeft.W,
+                NearTopRight = nearBottomRight.Xyz / nearTopRight.W,
+                NearBottomLeft = nearBottomLeft.Xyz / nearBottomLeft.W,
+                NearBottomRight = nearBottomRight.Xyz / nearBottomRight.W,
+                FarTopLeft = farTopLeft.Xyz / farTopLeft.W,
+                FarTopRight = farBottomRight.Xyz / farTopRight.W,
+                FarBottomLeft = farBottomLeft.Xyz / farBottomLeft.W,
+                FarBottomRight = farBottomRight.Xyz / farBottomRight.W,
+            };
         }
     }
 }

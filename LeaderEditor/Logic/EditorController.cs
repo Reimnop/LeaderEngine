@@ -123,7 +123,7 @@ namespace LeaderEditor
 
                     ImGuizmo.SetRect(cPos.X, cPos.Y, vSize.X, vSize.Y);
 
-                    Camera.Main.CalculateViewProjection(out var view, out var projection);
+                    Camera.Main.GetViewProjectionMatrices(out var view, out var projection);
 
                     Matrix4 transform = entity.Transform.GlobalModelMatrix;
                     ImGuizmo.Manipulate(ref view.Row0.X, ref projection.Row0.X, operation, MODE.LOCAL, ref transform.Row0.X);
@@ -162,7 +162,7 @@ namespace LeaderEditor
                     var mPos = (ImGui.GetMousePos() - cPos) / vSize; //get mouse pos in [0, 1]
                     Vector2 mousePos = new Vector2(mPos.X, mPos.Y) * new Vector2(2f) - new Vector2(1f); //convert to [-1, 1]
 
-                    Camera.Main.CalculateViewProjection(out var view, out var proj); //get view and proj
+                    Camera.Main.GetViewProjectionMatrices(out var view, out var proj); //get view and proj
 
                     Vector4 unprojected = new Vector4(mousePos.X, -mousePos.Y, 1f, 1f) * Matrix4.Invert(view * proj); //what the fuck?
                     ray.Direction = Vector3.Normalize(unprojected.Xyz);

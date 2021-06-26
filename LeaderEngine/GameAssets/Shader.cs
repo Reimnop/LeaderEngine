@@ -101,7 +101,11 @@ namespace LeaderEngine
             if (uniformLocations.TryGetValue(attribName, out int loc))
                 return loc;
 
-            return GL.GetAttribLocation(_handle, attribName);
+            int attribLoc = GL.GetAttribLocation(_handle, attribName);
+            if (attribLoc != -1)
+                uniformLocations.Add(attribName, attribLoc);
+
+            return attribLoc;
         }
 
         public override void Dispose()

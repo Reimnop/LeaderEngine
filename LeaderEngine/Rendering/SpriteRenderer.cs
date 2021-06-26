@@ -85,7 +85,7 @@ namespace LeaderEngine
             cmd.Clear();
 
             cmd.BindShader(shader);
-            cmd.SetUniformMatrix4(shader, "mvp", BaseTransform.GlobalModelMatrix * renderData.View * renderData.Projection);
+            cmd.SetUniformMatrix4(shader, "mvp", BaseTransform.GlobalModelMatrix * renderData.ViewProjection);
             cmd.SetUniformVector4(shader, "color", Color);
 
             cmd.BindTexture(TextureUnit.Texture0, Texture);

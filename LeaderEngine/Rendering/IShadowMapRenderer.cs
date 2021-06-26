@@ -4,8 +4,7 @@ namespace LeaderEngine
 {
     public struct LightData
     {
-        public Matrix4 View;
-        public Matrix4 Projection;
+        public Matrix4 ViewProjection;
     }
 
     public interface IShadowMapRenderer

@@ -16,7 +16,7 @@ out vec2 TexCoord;
 out vec3 Normal;
 out vec3 FragPos;
 
-out vec4 FragPosLightSpace;
+out float Depth;
 
 void main() {
 	Color = aColor;
@@ -25,7 +25,5 @@ void main() {
 	Normal = aNormal * mat3(transpose(inverse(model)));
 	FragPos = vec3(vec4(aPosition, 1.0) * model);
 
-	FragPosLightSpace = vec4(FragPos, 1.0) * lightSpaceMat;
-
-	gl_Position = vec4(aPosition, 1.0) * mvp; 
+	gl_Position = vec4(aPosition, 1.0) * mvp;
 }
