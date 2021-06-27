@@ -15,7 +15,7 @@ namespace LeaderEngine
         private const int cascadeCount = 4;
         private const float shadowMapSizeOffet = 0f;
         private const float shadowMapDepth = 480f;
-        private const float cascadeSplitLogFactor = 0.95f;
+        private const float cascadeSplitLogFactor = 1.2f;
         private const float shadowMapMaxDistance = 60f;
         private const int shadowMapRes = 2048;
 

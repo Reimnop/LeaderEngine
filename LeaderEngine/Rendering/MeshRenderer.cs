@@ -52,6 +52,8 @@ namespace LeaderEngine
                 mainCmd.SetUniformVector3(shader, "lightDir", -DirectionalLight.Main.BaseTransform.Forward);
             }
 
+            mainCmd.SetUniformFloat(shader, "ambient", LightSettings.Ambient);
+
             mainCmd.SetUniformInt(shader, "cascadeCount", renderData.CascadeCount);
 
             for (int i = 0; i < renderData.CascadeCount; i++)

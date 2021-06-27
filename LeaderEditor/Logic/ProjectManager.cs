@@ -56,6 +56,18 @@ namespace LeaderEditor
             {
                 if (ImGui.Begin("Project Manager", ref isWindowOpen))
                 {
+                    if (ImGui.BeginTabBar("prj-config-tabs"))
+                    {
+                        if (ImGui.BeginTabItem("Lightings"))
+                        {
+                            ImGui.DragFloat("Ambient", ref LightSettings.Ambient, 0.05f);
+
+                            ImGui.EndTabItem();
+                        }
+
+                        ImGui.EndTabBar();
+                    }
+
                     ImGui.End();
                 }
             }
@@ -130,6 +142,11 @@ namespace LeaderEditor
             LeaderEngine.AssetManager.LoadAssetsFromFile(Path.Combine(Project.Path, Project.AssetsPackage));
             string scenesDir = Path.Combine(Project.Path, "scenes");
             DataManager.LoadSceneFromFile(Path.Combine(scenesDir, Project.SceneFiles[Project.CurrentSceneIndex]));
+
+            //lightings
+            XmlElement lightings = (XmlElement)projectRoot.GetElementsByTagName("Lightings")[0];
+            XmlElement ambient = (XmlElement)lightings.GetElementsByTagName("Ambient")[0];
+            LightSettings.Ambient = float.Parse(ambient.GetAttribute("Value"));
         }
 
         private void SaveProjectAs()
@@ -181,6 +198,15 @@ namespace LeaderEditor
             }
 
             projectRoot.AppendChild(scenes);
+
+            //lightings
+            XmlElement lightings = xmlDocument.CreateElement("Lightings");
+
+            XmlElement ambient = xmlDocument.CreateElement("Ambient");
+            ambient.SetAttribute("Value", LightSettings.Ambient.ToString());
+            lightings.AppendChild(ambient);
+
+            projectRoot.AppendChild(lightings);
 
             xmlDocument.Save(Path.Combine(Project.Path, "project-config.xml"));
         }
