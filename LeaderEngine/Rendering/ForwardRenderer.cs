@@ -95,12 +95,6 @@ namespace LeaderEngine
 
         public override void Render()
         {
-            RenderStuff();
-            RenderPostProcess();
-        }
-
-        protected void RenderStuff()
-        {
             Camera camera = Camera.Main;
 
             if (camera == null)
@@ -164,13 +158,13 @@ namespace LeaderEngine
                 foreach (Entity entity in DataManager.UnlistedEntities)
                     entity.RenderShadowMap(in lightData);
 
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, cascadeFramebuffers[i]);
+                FramebufferManager.PushFramebuffer(cascadeFramebuffers[i]);
                 GL.Clear(ClearBufferMask.DepthBufferBit);
 
                 foreach (var buffer in shadowMapBuffers)
                     ExecuteCommandBuffer(buffer);
 
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                FramebufferManager.PopFramebuffer();
             }
 
         //render opaque
@@ -220,6 +214,14 @@ namespace LeaderEngine
 
             postProcessor.End();
 
+            //post process
+            GL.DepthMask(true);
+            GL.Disable(EnableCap.Blend);
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
+
+            postProcessor.Render();
+
             //clean up
             shadowMapBuffers.Clear();
             opaqueBuffers.Clear();
@@ -227,17 +229,6 @@ namespace LeaderEngine
             guiBuffers.Clear();
 
             CommandProcessor.Reset();
-        }
-
-        protected void RenderPostProcess()
-        {
-            //reset states
-            GL.DepthMask(true);
-            GL.Disable(EnableCap.Blend);
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.CullFace);
-
-            postProcessor.Render();
         }
 
         private void ExecuteCommandBuffer(CommandBuffer commandBuffer)

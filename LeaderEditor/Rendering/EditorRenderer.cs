@@ -58,15 +58,13 @@ namespace LeaderEditor
 
         public override void Render()
         {
-            RenderStuff();
-
-            //begin fbo
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebuffer);
+            //capture whatever is rendered
+            FramebufferManager.PushFramebuffer(framebuffer);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            RenderPostProcess();
+            base.Render();
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            FramebufferManager.PopFramebuffer();
 
             //restore viewport
             GL.Viewport(0, 0, Engine.MainWindow.ClientSize.X, Engine.MainWindow.ClientSize.Y);

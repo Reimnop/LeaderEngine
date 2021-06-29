@@ -103,12 +103,12 @@ namespace LeaderEngine
 
         public void Begin()
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, FBO);
+            FramebufferManager.PushFramebuffer(FBO);
         }
 
         public void End()
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            FramebufferManager.PopFramebuffer();
         }
 
         public void Render()
