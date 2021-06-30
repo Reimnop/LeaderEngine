@@ -28,13 +28,13 @@ namespace LeaderEngine
             
         }
 
-        public override void Render(int texture)
+        public override void Render(PostProcessingData postProcessingData)
         {
             GL.UseProgram(shader);
             GL.Uniform1(exposureLoc, Exposure);
 
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, texture);
+            GL.BindTexture(TextureTarget.Texture2D, postProcessingData.ColorTexture);
 
             DrawQuad();
         }

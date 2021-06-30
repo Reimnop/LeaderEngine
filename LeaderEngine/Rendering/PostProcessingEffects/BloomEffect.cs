@@ -87,13 +87,13 @@ namespace LeaderEngine
             }
         }
 
-        public override void Render(int texture)
+        public override void Render(PostProcessingData postProcessingData)
         {
             //extract bright pixels
             GL.UseProgram(filter);
 
             GL.Uniform1(thresholdLoc, Threshold);
-            GL.BindTextureUnit(0, texture);
+            GL.BindTextureUnit(0, postProcessingData.ColorTexture);
 
             FramebufferManager.PushFramebuffer(fbos[0]);
             GL.Clear(ClearBufferMask.ColorBufferBit);
@@ -130,7 +130,7 @@ namespace LeaderEngine
             GL.Uniform1(sourceLoc, 0);
             GL.Uniform1(bloomLoc, 1);
 
-            GL.BindTextureUnit(0, texture);
+            GL.BindTextureUnit(0, postProcessingData.ColorTexture);
             GL.BindTextureUnit(1, textures[2]);
 
             DrawQuad();

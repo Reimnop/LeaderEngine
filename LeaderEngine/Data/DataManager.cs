@@ -124,7 +124,15 @@ namespace LeaderEngine
                 else if (typeof(GameAsset).IsAssignableFrom(type)) 
                 {
                     string id = reader.ReadString();
-                    field.SetValue(obj, AssetManager.Assets[id]);
+
+                    if (AssetManager.Assets.TryGetValue(id, out GameAsset value))
+                    {
+                        field.SetValue(obj, value);
+                    }
+                    else
+                    {
+                        Logger.LogWarning($"Asset with id \"{id}\" does not exist in the assets pool!");
+                    }
                 }
                 else if (field.FieldType.IsClass)
                 {

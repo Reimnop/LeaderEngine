@@ -62,6 +62,6 @@ namespace LeaderEngine
 
         public abstract void Init();
         public abstract void Resize(Vector2i size);
-        public abstract void Render(int texture);
+        public abstract void Render(PostProcessingData postProcessingData);
     }
 }

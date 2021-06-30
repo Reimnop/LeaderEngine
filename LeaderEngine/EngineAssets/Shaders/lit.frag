@@ -3,6 +3,9 @@
 #extension GL_ARB_bindless_texture : enable
 
 layout (location = 0) out vec4 fragColor;
+layout (location = 1) out vec3 gAlbedo;
+layout (location = 2) out vec3 gPosition;
+layout (location = 3) out vec3 gNormal;
 
 in vec3 Color;
 in vec2 TexCoord;
@@ -109,4 +112,8 @@ void main() {
 	vec3 outColor = (calculatedAmbient + diffuseIntensity * shadow) * obColor;
 
 	fragColor = vec4(outColor, 1.0);
+
+	gAlbedo = obColor;
+	gPosition = FragPos;
+	gNormal = norm;
 }
