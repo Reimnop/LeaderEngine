@@ -1,10 +1,9 @@
 ﻿#version 450 core
 
-layout (location = 0) out vec4 fragColor;
+layout (location = 0) out float fragColor;
 
 in vec2 TexCoord;
 
-uniform sampler2D sourceTexture;
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D texNoise;
@@ -19,7 +18,7 @@ uniform mat4 projection;
 uniform float bias = 0.025;
 
 void main() {
-	vec2 noiseScale = textureSize(sourceTexture, 0) / textureSize(texNoise, 0);
+	vec2 noiseScale = textureSize(gPosition, 0) / textureSize(texNoise, 0);
 
 	vec3 fragPos   = vec3(vec4(texture(gPosition, TexCoord).xyz, 1.0) * view);
 	vec3 normal    = texture(gNormal, TexCoord).rgb;
@@ -44,5 +43,5 @@ void main() {
 		occlusion += (sampleDepth >= samplePos.z + bias ? 1.0 : 0.0) * rangeCheck;
 	}
 
-	fragColor = vec4(vec3(1.0 - occlusion / KERNEL_SIZE) * texture(sourceTexture, TexCoord).rgb, 1.0);
+	fragColor = 1.0 - occlusion / KERNEL_SIZE;
 }
