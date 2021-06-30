@@ -8,9 +8,9 @@ namespace LeaderEngine
     public class BloomEffect : PostProcessingEffect
     {
         private int filter, thresholdLoc;
-        private int horizontalBlur;
-        private int verticalBlur;
-        private int overlay, sourceLoc, bloomLoc, intensityLoc;
+        private int horizontalBlur, sizeLocH, sigmaLocH;
+        private int verticalBlur, sizeLocV, sigmaLocV;
+        private int overlay, sourceLoc, bloomLoc;
 
         private const int passCount = 3;
 
@@ -18,7 +18,9 @@ namespace LeaderEngine
         private int[] textures = new int[passCount];
 
         public float Threshold = 0.8f;
-        public float Intensity = 1f;
+
+        public int Size = 8;
+        public float Sigma = 3f;
 
         public override void Init()
         {
@@ -34,9 +36,15 @@ namespace LeaderEngine
                 Path.Combine(baseDir, "post-process.vert"),
                 Path.Combine(baseDir, "bloom-hblur.frag"));
 
+            sizeLocH = GL.GetUniformLocation(horizontalBlur, "size");
+            sigmaLocH = GL.GetUniformLocation(horizontalBlur, "sigma");
+
             verticalBlur = Helper.CreateShaderProgram(
                 Path.Combine(baseDir, "post-process.vert"),
                 Path.Combine(baseDir, "bloom-vblur.frag"));
+
+            sizeLocV = GL.GetUniformLocation(verticalBlur, "size");
+            sigmaLocV = GL.GetUniformLocation(verticalBlur, "sigma");
 
             overlay = Helper.CreateShaderProgram(
                 Path.Combine(baseDir, "post-process.vert"),
@@ -44,7 +52,6 @@ namespace LeaderEngine
 
             sourceLoc = GL.GetUniformLocation(overlay, "sourceTexture");
             bloomLoc = GL.GetUniformLocation(overlay, "bloomTexture");
-            intensityLoc = GL.GetUniformLocation(overlay, "intensity");
 
             //init fbos
             for (int i = 0; i < passCount; i++)
@@ -97,6 +104,9 @@ namespace LeaderEngine
             GL.UseProgram(horizontalBlur);
             GL.BindTextureUnit(0, textures[0]);
 
+            GL.Uniform1(sizeLocH, Size);
+            GL.Uniform1(sigmaLocH, Sigma);
+
             FramebufferManager.PushFramebuffer(fbos[1]);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             DrawQuad();
@@ -106,6 +116,9 @@ namespace LeaderEngine
             GL.UseProgram(verticalBlur);
             GL.BindTextureUnit(0, textures[1]);
 
+            GL.Uniform1(sizeLocV, Size);
+            GL.Uniform1(sigmaLocV, Sigma);
+
             FramebufferManager.PushFramebuffer(fbos[2]);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             DrawQuad();
@@ -114,7 +127,6 @@ namespace LeaderEngine
             //overlay
             GL.UseProgram(overlay);
 
-            GL.Uniform1(intensityLoc, Intensity);
             GL.Uniform1(sourceLoc, 0);
             GL.Uniform1(bloomLoc, 1);
 
