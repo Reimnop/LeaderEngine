@@ -40,19 +40,19 @@
     <None Update="EngineAssets\Fonts\Inconsolata.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="EngineAssets\Shaders\PostProcess\compose.frag">
+    <None Update="EngineAssets\Shaders\PostProcess\bloom-overlay.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="EngineAssets\Shaders\PostProcess\bloom-filter.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="EngineAssets\Shaders\PostProcess\bloom-vblur.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="EngineAssets\Shaders\PostProcess\bloom-hblur.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="EngineAssets\Shaders\PostProcess\hdr.frag">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="EngineAssets\Shaders\PostProcess\vertical-blur.frag">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="EngineAssets\Shaders\PostProcess\horizontal-blur.frag">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="EngineAssets\Shaders\PostProcess\extract-bright.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="EngineAssets\Shaders\PostProcess\post-process.vert">

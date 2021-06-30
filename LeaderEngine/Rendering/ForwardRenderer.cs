@@ -55,12 +55,14 @@ namespace LeaderEngine
                 cascadeFramebuffers[i] = shadowMapFramebuffer;
                 cascadeShadowMaps[i] = shadowMapTexture;
             }
-
-            //init post processor
-            postProcessor = new PostProcessor();
-
             GL.DepthFunc(DepthFunction.Lequal);
 
+            //init post processor
+            PostProcessingEffect.InitResources();
+            postProcessor = new PostProcessor(
+                new BloomEffect(),
+                new HDREffect());
+            
             Logger.Log("Renderer initialized.", true);
         }
 

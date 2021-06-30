@@ -1,36 +1,24 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System;
-using System.IO;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace LeaderEngine
 {
     public class PostProcessor
     {
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        private struct PostProcessorVertex
-        {
-            public Vector3 Position;
-            public Vector2 UV;
-
-            public PostProcessorVertex(Vector3 position, Vector2 uv)
-            {
-                Position = position;
-                UV = uv;
-            }
-        }
-
         private int FBO;
-        private int colorTexture, depthTexture;
+        private int colorTexture;
+        private int depthBuffer;
 
-        private int VAO;
-        private int VBO;
+        private int postProcessFBO;
+        private int postProcessColorTexture;
+        private int postProcessReadTexture;
 
-        private Shader shader;
+        private Vector2i currentSize = Vector2i.One;
 
-        public PostProcessor()
+        private PostProcessingEffect[] postProcessingEffects;
+
+        public PostProcessor(params PostProcessingEffect[] effects)
         {
             //init fbo
             FBO = GL.GenFramebuffer();
@@ -44,61 +32,66 @@ namespace LeaderEngine
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.BindTexture(TextureTarget.Texture2D, 0);
 
-            depthTexture = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, depthTexture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, 1, 1, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            GL.BindTexture(TextureTarget.Texture2D, 0);
+            depthBuffer = GL.GenRenderbuffer();
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depthBuffer);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, 1, 1);
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
 
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, colorTexture, 0);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, depthTexture, 0);
+            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, depthBuffer);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
-            //init mesh
-            PostProcessorVertex[] vertices = new PostProcessorVertex[]
-            {
-                new PostProcessorVertex(new Vector3(1f, 1f, 0f), new Vector2(1f, 1f)),
-                new PostProcessorVertex(new Vector3(1f, -1f, 0f), new Vector2(1f, 0f)),
-                new PostProcessorVertex(new Vector3(-1f, 1f, 0f), new Vector2(0f, 1f)),
-                new PostProcessorVertex(new Vector3(1f, -1f, 0f), new Vector2(1f, 0f)),
-                new PostProcessorVertex(new Vector3(-1f, -1f, 0f), new Vector2(0f, 0f)),
-                new PostProcessorVertex(new Vector3(-1f, 1f, 0f), new Vector2(0f, 1f))
-            };
+            //init post process resources
+            postProcessFBO = GL.GenFramebuffer();
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, postProcessFBO);
 
-            int vertSize = Unsafe.SizeOf<PostProcessorVertex>();
+            postProcessColorTexture = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, postProcessColorTexture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba32f, 1, 1, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
 
-            VAO = GL.GenVertexArray();
-            GL.BindVertexArray(VAO);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, postProcessColorTexture, 0);
 
-            VBO = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertSize * 6, vertices, BufferUsageHint.StaticDraw);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, vertSize, 0);
-            GL.EnableVertexAttribArray(0);
+            postProcessReadTexture = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, postProcessReadTexture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba32f, 1, 1, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
 
-            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, vertSize, Vector3.SizeInBytes);
-            GL.EnableVertexAttribArray(1);
+            foreach (PostProcessingEffect effect in effects)
+                effect.Init();
 
-            GL.BindVertexArray(0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-
-            shader = Shader.FromSourceFile("post-process",
-                Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/PostProcess/post-process.vert"),
-                Path.Combine(AppContext.BaseDirectory, "EngineAssets/Shaders/PostProcess/hdr.frag"));
+            postProcessingEffects = effects;
         }
 
         public void Resize(Vector2i size)
         {
             GL.BindTexture(TextureTarget.Texture2D, colorTexture);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba32f, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-
-            GL.BindTexture(TextureTarget.Texture2D, depthTexture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, size.X, size.Y, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
-
             GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depthBuffer);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, size.X, size.Y);
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
+
+            GL.BindTexture(TextureTarget.Texture2D, postProcessColorTexture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba32f, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            GL.BindTexture(TextureTarget.Texture2D, postProcessReadTexture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba32f, size.X, size.Y, 0, PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            foreach (PostProcessingEffect effect in postProcessingEffects)
+                effect.Resize(size);
+
+            currentSize = size;
         }
 
         public void Begin()
@@ -113,14 +106,25 @@ namespace LeaderEngine
 
         public void Render()
         {
-            GL.UseProgram(shader.Handle);
+            int texture = colorTexture;
 
-            GL.BindVertexArray(VAO);
+            for (int i = 0; i < postProcessingEffects.Length - 1; i++)
+            {
+                FramebufferManager.PushFramebuffer(postProcessFBO);
+                GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            GL.BindTexture(TextureTarget.Texture2D, colorTexture);
-            GL.ActiveTexture(TextureUnit.Texture2);
+                postProcessingEffects[i].Render(texture);
 
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+                GL.BindTexture(TextureTarget.Texture2D, postProcessReadTexture);
+                GL.CopyTexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, 0, 0, currentSize.X, currentSize.Y);
+                GL.BindTexture(TextureTarget.Texture2D, 0);
+
+                FramebufferManager.PopFramebuffer();
+
+                texture = postProcessReadTexture;
+            }
+
+            postProcessingEffects[postProcessingEffects.Length - 1].Render(texture);
         }
     }
 }

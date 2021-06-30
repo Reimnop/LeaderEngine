@@ -1,7 +1,9 @@
-﻿using SixLabors.ImageSharp;
+﻿using OpenTK.Graphics.OpenGL4;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -92,6 +94,29 @@ namespace LeaderEngine
 
             value = values[0];
             return true;
+        }
+
+        public static int CreateShaderProgram(string vertPath, string fragPath)
+        {
+            int vertexShader = GL.CreateShader(ShaderType.VertexShader);
+            GL.ShaderSource(vertexShader, File.ReadAllText(vertPath));
+            GL.CompileShader(vertexShader);
+
+            int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
+            GL.ShaderSource(fragmentShader, File.ReadAllText(fragPath));
+            GL.CompileShader(fragmentShader);
+
+            int shaderProgram = GL.CreateProgram();
+            GL.AttachShader(shaderProgram, vertexShader);
+            GL.AttachShader(shaderProgram, fragmentShader);
+            GL.LinkProgram(shaderProgram);
+
+            GL.DetachShader(shaderProgram, vertexShader);
+            GL.DetachShader(shaderProgram, fragmentShader);
+            GL.DeleteShader(vertexShader);
+            GL.DeleteShader(fragmentShader);
+
+            return shaderProgram;
         }
     }
 }
