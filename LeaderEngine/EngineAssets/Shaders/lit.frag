@@ -20,8 +20,6 @@ layout (std140, binding = 0) uniform Material
 	layout (bindless_sampler) sampler2D diffuse;
 };
 
-uniform vec3 camPos;
-
 //light uniforms
 uniform vec3 lightDir;
 uniform float lightIntensity = 1.0;
@@ -107,9 +105,7 @@ void main() {
 	vec4 fragPosLightSpace = calculateFragPosLightSpace(FragPos, cascadeViewProjs[cascadeIndex]);
 	float shadow = calculateShadow(fragPosLightSpace, cascadeShadowMaps[cascadeIndex]);
 
-	float calculatedAmbient = max(dot(norm, normalize(camPos - FragPos)), 0.25) * ambient;
-
-	vec3 outColor = (calculatedAmbient + diffuseIntensity * shadow) * obColor;
+	vec3 outColor = (ambient + diffuseIntensity * shadow) * obColor;
 
 	fragColor = vec4(outColor, 1.0);
 

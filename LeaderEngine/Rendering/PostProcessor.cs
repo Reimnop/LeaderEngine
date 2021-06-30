@@ -147,10 +147,12 @@ namespace LeaderEngine
             FramebufferManager.PopFramebuffer();
         }
 
-        public void Render()
+        public void Render(Matrix4 view, Matrix4 projection)
         {
             PostProcessingData postProcessingData = new PostProcessingData
             {
+                View = view,
+                Projection = projection,
                 ColorTexture = colorTexture,
                 AlbedoTexture = gAlbedoTexture,
                 PositionTexture = gPositionTexture,

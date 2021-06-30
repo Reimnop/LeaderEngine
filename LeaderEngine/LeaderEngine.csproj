@@ -40,6 +40,9 @@
     <None Update="EngineAssets\Fonts\Inconsolata.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="EngineAssets\Shaders\PostProcess\ssao.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="EngineAssets\Shaders\PostProcess\bloom-overlay.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

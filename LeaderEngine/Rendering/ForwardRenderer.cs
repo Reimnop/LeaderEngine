@@ -60,6 +60,7 @@ namespace LeaderEngine
             //init post processor
             PostProcessingEffect.InitResources();
             postProcessor = new PostProcessor(
+                new SSAOEffect(),
                 new BloomEffect(),
                 new HDREffect());
             
@@ -222,7 +223,7 @@ namespace LeaderEngine
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
 
-            postProcessor.Render();
+            postProcessor.Render(view, projection);
 
             //clean up
             shadowMapBuffers.Clear();

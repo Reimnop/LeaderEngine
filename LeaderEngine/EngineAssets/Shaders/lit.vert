@@ -16,8 +16,6 @@ out vec2 TexCoord;
 out vec3 Normal;
 out vec3 FragPos;
 
-out float Depth;
-
 void main() {
 	Color = aColor;
 	TexCoord = aTexCoord;

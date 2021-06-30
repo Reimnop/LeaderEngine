@@ -33,8 +33,7 @@ namespace LeaderEngine
             GL.UseProgram(shader);
             GL.Uniform1(exposureLoc, Exposure);
 
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, postProcessingData.ColorTexture);
+            GL.BindTextureUnit(0, postProcessingData.ColorTexture);
 
             DrawQuad();
         }
