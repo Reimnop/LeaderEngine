@@ -19,8 +19,8 @@ namespace LeaderEngine
 
         public float Threshold = 0.8f;
 
-        public int Size = 25;
-        public float Sigma = 10f;
+        public int Size = 12;
+        public float Sigma = 4f;
 
         public override void Init()
         {
