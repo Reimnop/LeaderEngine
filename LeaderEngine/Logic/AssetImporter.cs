@@ -18,7 +18,8 @@ namespace LeaderEngine
             var scene = importer.ImportFile(path,
                 PostProcessSteps.Triangulate |
                 PostProcessSteps.FlipUVs |
-                PostProcessSteps.CalculateTangentSpace);
+                PostProcessSteps.CalculateTangentSpace | 
+                PostProcessSteps.GenerateNormals);
 
             var aiMeshes = scene.Meshes;
             var aiMaterials = scene.Materials;
