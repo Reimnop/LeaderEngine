@@ -44,6 +44,8 @@ namespace LeaderEngine
             mainCmd.SetUniformMatrix4(shader, "model", globalModel);
             mainCmd.SetUniformMatrix4(shader, "mvp", globalModel * renderData.ViewProjection);
 
+            mainCmd.SetUniformVector3(shader, "viewPos", Camera.Main.BaseTransform.Position);
+
             if (DirectionalLight.Main != null)
             {
                 mainCmd.SetUniformFloat(shader, "lightIntensity", DirectionalLight.Main.Intensity);
