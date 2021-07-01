@@ -11,6 +11,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>TRACE;NO_GL_INFO;!THROW_ON_GL_ERROR</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

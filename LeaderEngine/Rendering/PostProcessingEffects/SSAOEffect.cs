@@ -8,9 +8,8 @@ namespace LeaderEngine
     public class SSAOEffect : PostProcessingEffect
     {
         private const int kernelSize = 64;
-        private const int noiseSize = 4;
+        private const int noiseSize = 64;
 
-        private int noiseTexture;
         private int ssaoProgram, viewLoc, projectionLoc;
 
         private int ssaoBlur;
@@ -69,9 +68,9 @@ namespace LeaderEngine
                 ssaoKernel[i] = sample;
             }
 
-            //create noise texture
-            Vector3[] noiseData = new Vector3[noiseSize * noiseSize];
-            for (int i = 0; i < noiseSize * noiseSize; i++)
+            //create noise data
+            Vector3[] noiseData = new Vector3[noiseSize];
+            for (int i = 0; i < noiseSize; i++)
             {
                 noiseData[i] = new Vector3(
                     (float)rng.NextDouble() * 2f - 1f,
@@ -79,26 +78,23 @@ namespace LeaderEngine
                     (float)rng.NextDouble());
             }
 
-            noiseTexture = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, noiseTexture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba32f, noiseSize, noiseSize, 0, PixelFormat.Rgb, PixelType.Float, noiseData);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-            GL.BindTexture(TextureTarget.Texture2D, 0);
-
             //upload uniforms
             GL.UseProgram(ssaoProgram);
+
             int kernelLoc = GL.GetUniformLocation(ssaoProgram, "kernel[0]");
             for (int i = 0; i < kernelSize; i++)
             {
                 GL.Uniform3(kernelLoc + i, ssaoKernel[i]);
             }
 
+            int noiseLoc = GL.GetUniformLocation(ssaoProgram, "noise[0]");
+            for (int i = 0; i < kernelSize; i++)
+            {
+                GL.Uniform3(noiseLoc + i, noiseData[i]);
+            }
+
             GL.Uniform1(GL.GetUniformLocation(ssaoProgram, "gPosition"), 0);
             GL.Uniform1(GL.GetUniformLocation(ssaoProgram, "gNormal"), 1);
-            GL.Uniform1(GL.GetUniformLocation(ssaoProgram, "texNoise"), 2);
 
             viewLoc = GL.GetUniformLocation(ssaoProgram, "view");
             projectionLoc = GL.GetUniformLocation(ssaoProgram, "projection");
@@ -124,7 +120,6 @@ namespace LeaderEngine
 
             GL.BindTextureUnit(0, postProcessingData.PositionTexture);
             GL.BindTextureUnit(1, postProcessingData.NormalTexture);
-            GL.BindTextureUnit(2, noiseTexture);
 
             FramebufferManager.PushFramebuffer(fbo);
             DrawQuad();

@@ -31,8 +31,12 @@ namespace LeaderEngine
                 var aiMaterial = aiMaterials[i];
 
                 Vector3 color = new Vector3(aiMaterial.ColorDiffuse.R, aiMaterial.ColorDiffuse.G, aiMaterial.ColorDiffuse.B);
+
                 bool hasDiffuse = false;
                 Texture diffuseTexture = null;
+
+                bool hasNormal = false;
+                Texture normalTexture = null;
 
                 if (aiMaterial.HasTextureDiffuse)
                 {
@@ -90,18 +94,78 @@ namespace LeaderEngine
                     }
                 }
 
+                if (aiMaterial.HasTextureNormal)
+                {
+                    TextureSlot aiTexture = aiMaterial.TextureNormal;
+
+                    //load texture
+                    string texPath = aiTexture.FilePath;
+                    string texName = aiMaterial.Name + "-Normal";
+
+                    try
+                    {
+                        Texture texture;
+                        if (!texPath.StartsWith('*'))
+                        {
+                            if (!Path.IsPathRooted(texPath))
+                                texPath = Path.Combine(Path.GetDirectoryName(path), texPath);
+
+                            texture = Texture.FromFile(texName, texPath);
+                        }
+                        else
+                        {
+                            int index = int.Parse(texPath.Substring(1));
+                            var embedTexture = scene.Textures[index];
+
+                            if (embedTexture.IsCompressed)
+                            {
+                                texture = Texture.FromImage(texName, Image.Load<Rgba32>(embedTexture.CompressedData));
+                            }
+                            else
+                            {
+                                texture = Texture.FromArray(
+                                    texName,
+                                    embedTexture.Width,
+                                    embedTexture.Height,
+                                    embedTexture.NonCompressedData);
+                            }
+                        }
+
+                        texture.SetWrapModeT(ConvertWrapModeToOTK(aiTexture.WrapModeU));
+                        texture.SetWrapModeS(ConvertWrapModeToOTK(aiTexture.WrapModeV));
+
+                        texture.MakeImmutable();
+                        texture.MakeResident();
+
+                        hasNormal = true;
+                        normalTexture = texture;
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogError($"Could not load texture {texName}!");
+
+#if DEBUG
+                        Logger.LogError($"Exception: {e}");
+#endif
+                    }
+                }
+
                 Material material = new Material(aiMaterial.Name, DefaultShaders.Lit, 
-                    new MaterialProperty("Color", MaterialPropertyType.Vector3),
-                    new MaterialProperty("HasDiffuse", MaterialPropertyType.Int),
-                    new MaterialProperty("Shininess", MaterialPropertyType.Float),
-                    new MaterialProperty("SpecularStrength", MaterialPropertyType.Float),
-                    new MaterialProperty("Diffuse", MaterialPropertyType.Texture));
+                    new MaterialProperty("Color", MaterialPropertyType.Vector3, 12),
+                    new MaterialProperty("Shininess", MaterialPropertyType.Float, 4),
+                    new MaterialProperty("SpecularStrength", MaterialPropertyType.Float, 4),
+                    new MaterialProperty("HasDiffuse", MaterialPropertyType.Int, 4),
+                    new MaterialProperty("HasNormal", MaterialPropertyType.Int, 8),
+                    new MaterialProperty("Diffuse", MaterialPropertyType.Texture, 8),
+                    new MaterialProperty("Normal", MaterialPropertyType.Texture, 8));
 
                 material.SetVector3("Color", color);
-                material.SetInt("HasDiffuse", hasDiffuse ? 1 : 0);
                 material.SetFloat("Shininess", aiMaterial.Shininess);
                 material.SetFloat("SpecularStrength", aiMaterial.ShininessStrength / 32f /* weighting */);
+                material.SetInt("HasDiffuse", hasDiffuse ? 1 : 0);
+                material.SetInt("HasNormal", hasNormal ? 1 : 0);
                 material.SetTexture("Diffuse", diffuseTexture);
+                material.SetTexture("Normal", normalTexture);
 
                 material.UpdateBuffer();
 
@@ -137,7 +201,9 @@ namespace LeaderEngine
 
                         UV = aiMesh.HasTextureCoords(0) ? new Vector2(
                             aiMesh.TextureCoordinateChannels[0][j].X,
-                            aiMesh.TextureCoordinateChannels[0][j].Y) : Vector2.Zero
+                            aiMesh.TextureCoordinateChannels[0][j].Y) : Vector2.Zero,
+
+                        Tangent = new Vector3(aiMesh.Tangents[j].X, aiMesh.Tangents[j].Y, aiMesh.Tangents[j].Z)
                     };
                 }
 

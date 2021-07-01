@@ -13,13 +13,17 @@ in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragPos;
 
+in mat3 TBN;
+
 layout (std140, binding = 0) uniform Material 
 {
-	vec3 color;
-	bool hasDiffuse;
-	float shininess;
-	float specularStrength;
-	layout (bindless_sampler) sampler2D diffuse;
+	layout (offset = 0) vec3 color;
+	layout (offset = 12) float shininess;
+	layout (offset = 16) float specularStrength;
+	layout (offset = 20) bool hasDiffuse;
+	layout (offset = 24) bool hasNormal;
+	layout (offset = 32, bindless_sampler) sampler2D diffuse;
+	layout (offset = 40, bindless_sampler) sampler2D normal;
 };
 
 //light uniforms
@@ -55,15 +59,13 @@ vec2 vogelDiskSample(int sampleIndex, int samplesCount, float phi)
 	return vec2(r * cosine, r * sine);
 }
 
-float calculateShadow(vec4 fragPosLightSpace, sampler2D cascadeMap) {
+float calculateShadow(vec4 fragPosLightSpace, vec3 normal, sampler2D cascadeMap) {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w * 0.5 + 0.5;
 
 	if(projCoords.z > 1.0)
         return 1.0;
 
-	vec3 norm = normalize(Normal);
-
-	float bias = max(bBias * (1.0 - dot(norm, lightDir)), bBias);
+	float bias = max(bBias * (1.0 - dot(normal, lightDir)), bBias);
 
 	float shadow = 0.0;
 	vec2 texelSize = 1.0 / textureSize(cascadeMap, 0);
@@ -101,13 +103,24 @@ void main() {
 		}
 	}
 
-	vec3 norm = normalize(Normal);
+	vec3 norm;
+	if (hasNormal) {
+		norm = texture(normal, TexCoord).rgb;
+		norm = norm * 2.0 - 1.0;
+		norm = normalize(TBN * norm);
+	}
+	else {
+		norm = normalize(Normal);
+	}
+	
+	//shadow mapping
+	vec4 fragPosLightSpace = calculateFragPosLightSpace(FragPos, cascadeViewProjs[cascadeIndex]);
+	float shadow = calculateShadow(fragPosLightSpace, norm, cascadeShadowMaps[cascadeIndex]);
 
+	//diffuse
 	float diffuseIntensity = max(dot(norm, lightDir), 0.0) * lightIntensity;
 
-	vec4 fragPosLightSpace = calculateFragPosLightSpace(FragPos, cascadeViewProjs[cascadeIndex]);
-	float shadow = calculateShadow(fragPosLightSpace, cascadeShadowMaps[cascadeIndex]);
-
+	//specular
 	vec3 viewDir = normalize(viewPos - FragPos);
 	vec3 reflectDir = reflect(-lightDir, norm);  
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);

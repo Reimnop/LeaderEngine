@@ -26,6 +26,7 @@ namespace LeaderEngine
             {
                 writer.Write(property.Name);
                 writer.Write((int)property.PropertyType);
+                writer.Write(property.Size);
                 switch (property.PropertyType)
                 {
                     case MaterialPropertyType.Int:
@@ -73,6 +74,7 @@ namespace LeaderEngine
             {
                 string propName = reader.ReadString();
                 MaterialPropertyType propertyType = (MaterialPropertyType)reader.ReadInt32();
+                int size = reader.ReadInt32();
 
                 switch (propertyType)
                 {
@@ -106,7 +108,7 @@ namespace LeaderEngine
                         break;
                 }
 
-                properties[i] = new MaterialProperty(propName, propertyType);
+                properties[i] = new MaterialProperty(propName, propertyType, size);
             }
 
             Material material = new Material(name, shader, properties);

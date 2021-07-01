@@ -6,23 +6,29 @@ in vec2 TexCoord;
 
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
-uniform sampler2D texNoise;
 
 const int KERNEL_SIZE = 64;
 uniform vec3 kernel[KERNEL_SIZE];
 uniform float radius = 0.5;
+
+const int NOISE_SIZE = 64;
+uniform vec3 noise[NOISE_SIZE];
 
 uniform mat4 view;
 uniform mat4 projection;
 
 uniform float bias = 0.025;
 
+float rand(vec2 co){
+	return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
 void main() {
-	vec2 noiseScale = textureSize(gPosition, 0) / textureSize(texNoise, 0);
+	int noiseIndex = int(rand(TexCoord) * NOISE_SIZE);
 
 	vec3 fragPos   = vec3(vec4(texture(gPosition, TexCoord).xyz, 1.0) * view);
 	vec3 normal    = texture(gNormal, TexCoord).rgb;
-	vec3 randomVec = texture(texNoise, TexCoord * noiseScale).xyz;
+	vec3 randomVec = noise[noiseIndex];
 
 	vec3 tangent   = normalize(randomVec - normal * dot(randomVec, normal));
 	vec3 bitangent = cross(normal, tangent);

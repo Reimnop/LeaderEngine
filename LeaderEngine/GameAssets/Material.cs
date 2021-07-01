@@ -9,8 +9,6 @@ namespace LeaderEngine
 {
     public class Material : GameAsset
     {
-        private const int alignment = 4;
-
         public override GameAssetType AssetType => GameAssetType.Material;
 
         public Shader Shader => _shader;
@@ -31,7 +29,7 @@ namespace LeaderEngine
         public Material(string name, Shader shader, params MaterialProperty[] properties) : base(name)
         {
             foreach (MaterialProperty property in properties)
-                _bufferSize += GetAlignedPropertySize(property.PropertyType);
+                _bufferSize += property.Size;
 
             propertyIndices = new Dictionary<string, int>();
             for (int i = 0; i < properties.Length; i++)
@@ -200,43 +198,10 @@ namespace LeaderEngine
                         break;
                 }
 
-                offset += GetAlignedPropertySize(property.PropertyType);
+                offset += property.Size;
             }
 
             return ptr;
-        }
-
-        private int GetAlignedPropertySize(MaterialPropertyType propertyType)
-        {
-            switch (propertyType)
-            {
-                case MaterialPropertyType.Int:
-                    return AlignSize(sizeof(int), alignment);
-                case MaterialPropertyType.Float:
-                    return AlignSize(sizeof(float), alignment);
-                case MaterialPropertyType.Vector2:
-                    return AlignSize(Vector2.SizeInBytes, alignment);
-                case MaterialPropertyType.Vector3:
-                    return AlignSize(Vector3.SizeInBytes, alignment);
-                case MaterialPropertyType.Vector4:
-                    return AlignSize(Vector4.SizeInBytes, alignment);
-                case MaterialPropertyType.Matrix2:
-                    return AlignSize(sizeof(float) * 4, alignment);
-                case MaterialPropertyType.Matrix3:
-                    return AlignSize(sizeof(float) * 9, alignment);
-                case MaterialPropertyType.Matrix4:
-                    return AlignSize(sizeof(float) * 16, alignment);
-                case MaterialPropertyType.Texture:
-                    return AlignSize(sizeof(long), alignment);
-                default:
-                    throw new Exception("Invalid property type!");
-            }
-        }
-
-        private int AlignSize(int size, int alignment)
-        {
-            size -= 1;
-            return size + alignment - size % alignment;
         }
 
         public override void Dispose()
