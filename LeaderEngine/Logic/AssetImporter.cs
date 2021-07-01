@@ -93,10 +93,14 @@ namespace LeaderEngine
                 Material material = new Material(aiMaterial.Name, DefaultShaders.Lit, 
                     new MaterialProperty("Color", MaterialPropertyType.Vector3),
                     new MaterialProperty("HasDiffuse", MaterialPropertyType.Int),
+                    new MaterialProperty("Shininess", MaterialPropertyType.Float),
+                    new MaterialProperty("SpecularStrength", MaterialPropertyType.Float),
                     new MaterialProperty("Diffuse", MaterialPropertyType.Texture));
 
                 material.SetVector3("Color", color);
                 material.SetInt("HasDiffuse", hasDiffuse ? 1 : 0);
+                material.SetFloat("Shininess", aiMaterial.Shininess);
+                material.SetFloat("SpecularStrength", aiMaterial.ShininessStrength / 32f /* weighting */);
                 material.SetTexture("Diffuse", diffuseTexture);
 
                 material.UpdateBuffer();

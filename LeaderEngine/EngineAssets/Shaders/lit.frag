@@ -17,10 +17,13 @@ layout (std140, binding = 0) uniform Material
 {
 	vec3 color;
 	bool hasDiffuse;
+	float shininess;
+	float specularStrength;
 	layout (bindless_sampler) sampler2D diffuse;
 };
 
 //light uniforms
+uniform vec3 viewPos;
 uniform vec3 lightDir;
 uniform float lightIntensity = 1.0;
 uniform float ambient = 0.05;
@@ -105,7 +108,12 @@ void main() {
 	vec4 fragPosLightSpace = calculateFragPosLightSpace(FragPos, cascadeViewProjs[cascadeIndex]);
 	float shadow = calculateShadow(fragPosLightSpace, cascadeShadowMaps[cascadeIndex]);
 
-	vec3 outColor = (ambient + diffuseIntensity * shadow) * obColor;
+	vec3 viewDir = normalize(viewPos - FragPos);
+	vec3 reflectDir = reflect(-lightDir, norm);  
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+	vec3 specular = vec3(specularStrength * spec * lightIntensity);
+
+	vec3 outColor = (ambient + diffuseIntensity * shadow + specular) * obColor;
 
 	fragColor = vec4(outColor, 1.0);
 
