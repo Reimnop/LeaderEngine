@@ -41,6 +41,9 @@
     <None Update="EngineAssets\Fonts\Inconsolata.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="EngineAssets\Shaders\PostProcess\edge-detect.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="EngineAssets\Shaders\PostProcess\ssao-blur.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

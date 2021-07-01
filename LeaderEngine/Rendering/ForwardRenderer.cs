@@ -64,7 +64,8 @@ namespace LeaderEngine
             postProcessor = new PostProcessor(
                 new SSAOEffect(),
                 new BloomEffect(),
-                new HDREffect());
+                new HDREffect(),
+                new EdgeDetectEffect());
             
             Logger.Log("Renderer initialized.", true);
         }
