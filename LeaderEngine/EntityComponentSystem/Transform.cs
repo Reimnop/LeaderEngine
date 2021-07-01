@@ -78,6 +78,8 @@ namespace LeaderEngine
             }
         }
 
+        internal Matrix4 CachedModelMatrix;
+
         private Vector3 _position = Vector3.Zero;
         private Vector3 _scale = Vector3.One;
         private Quaternion _rotation = Quaternion.Identity;
@@ -103,6 +105,11 @@ namespace LeaderEngine
                 Matrix4.CreateScale(_scale)
                 * Matrix4.CreateFromQuaternion(_rotation)
                 * Matrix4.CreateTranslation(_position);
+        }
+
+        internal void CacheResoures()
+        {
+            CachedModelMatrix = GlobalModelMatrix;
         }
     }
 }

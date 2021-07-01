@@ -7,6 +7,8 @@ namespace LeaderEngine
 {
     public class ForwardRenderer : GLRenderer
     {
+        private List<Entity> renderableEntities = new List<Entity>();
+
         private List<CommandBuffer> shadowMapBuffers = new List<CommandBuffer>();
         private List<CommandBuffer> opaqueBuffers = new List<CommandBuffer>();
         private List<CommandBuffer> transparentBuffers = new List<CommandBuffer>();
@@ -103,6 +105,28 @@ namespace LeaderEngine
             if (camera == null)
                 return;
 
+            //cache renderables
+            foreach (Entity entity in DataManager.CurrentScene.SceneEntities)
+            {
+                if (entity.Renderable)
+                {
+                    renderableEntities.Add(entity);
+                }
+            }
+
+            foreach (Entity entity in DataManager.UnlistedEntities)
+            {
+                if (entity.Renderable)
+                {
+                    renderableEntities.Add(entity);
+                }
+            }
+
+            //init render resources on all renderables
+            foreach (Entity entity in renderableEntities)
+                entity.InitRenderResources();
+
+
             camera.GetViewProjectionMatrices(out Matrix4 view, out Matrix4 projection);
 
             //shadow mapping
@@ -155,10 +179,7 @@ namespace LeaderEngine
                     ViewProjection = lightViewProjection
                 };
 
-                foreach (Entity entity in DataManager.CurrentScene.SceneEntities)
-                    entity.RenderShadowMap(in lightData);
-
-                foreach (Entity entity in DataManager.UnlistedEntities)
+                foreach (Entity entity in renderableEntities)
                     entity.RenderShadowMap(in lightData);
 
                 FramebufferManager.PushFramebuffer(cascadeFramebuffers[i]);
@@ -184,10 +205,7 @@ namespace LeaderEngine
                 CascadeViewProjections = cascadeViewProjectionMatrices
             };
 
-            foreach (var entity in DataManager.CurrentScene.SceneEntities)
-                entity.Render(renderData);
-
-            foreach (var entity in DataManager.UnlistedEntities)
+            foreach (Entity entity in renderableEntities)
                 entity.Render(renderData);
 
             GL.Viewport(0, 0, ViewportSize.X, ViewportSize.Y);
@@ -230,6 +248,8 @@ namespace LeaderEngine
             opaqueBuffers.Clear();
             transparentBuffers.Clear();
             guiBuffers.Clear();
+
+            renderableEntities.Clear();
 
             CommandProcessor.Reset();
         }

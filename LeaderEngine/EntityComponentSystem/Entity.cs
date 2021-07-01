@@ -33,8 +33,10 @@ namespace LeaderEngine
         internal List<Entity> Children { get; } = new List<Entity>();
         private List<Component> components = new List<Component>();
 
-        public List<IRenderer> Renderers { get; } = new List<IRenderer>();
-        public List<IShadowMapRenderer> ShadowMapRenderers { get; } = new List<IShadowMapRenderer>();
+        internal List<IRenderer> Renderers { get; } = new List<IRenderer>();
+        internal List<IShadowMapRenderer> ShadowMapRenderers { get; } = new List<IShadowMapRenderer>();
+
+        public bool Renderable => Renderers.Count > 0;
 
         private Scene scene;
 
@@ -76,6 +78,11 @@ namespace LeaderEngine
                     component.UpdateMethod?.Invoke();
                 }
             }
+        }
+
+        internal void InitRenderResources()
+        {
+            Transform.CacheResoures();
         }
 
         internal void Render(in RenderData renderData)
