@@ -38,7 +38,8 @@ void main() {
 		offset.xyz /= offset.w;
 		offset.xyz  = offset.xyz * 0.5 + 0.5;
 
-		float sampleDepth = vec3(vec4(texture(gPosition, offset.xy).xyz, 1.0) * view).z;
+		vec4 viewSpaceSample = vec4(texture(gPosition, offset.xy).xyz, 1.0) * view;
+		float sampleDepth = viewSpaceSample.z;
 		float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));
 		occlusion += (sampleDepth >= samplePos.z + bias ? 1.0 : 0.0) * rangeCheck;
 	}
