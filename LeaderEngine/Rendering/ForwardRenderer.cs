@@ -64,8 +64,7 @@ namespace LeaderEngine
             postProcessor = new PostProcessor(
                 new SSAOEffect(),
                 new BloomEffect(),
-                new HDREffect(),
-                new EdgeDetectEffect());
+                new HDREffect());
             
             Logger.Log("Renderer initialized.", true);
         }
@@ -126,7 +125,6 @@ namespace LeaderEngine
             //init render resources on all renderables
             foreach (Entity entity in renderableEntities)
                 entity.InitRenderResources();
-
 
             camera.GetViewProjectionMatrices(out Matrix4 view, out Matrix4 projection);
 
