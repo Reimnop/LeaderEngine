@@ -8,6 +8,7 @@ namespace LeaderEngine
         public Matrix4 Projection;
 
         public int ColorTexture;
+        public int DepthTexture;
         public int AlbedoTexture;
         public int PositionTexture;
         public int NormalTexture;

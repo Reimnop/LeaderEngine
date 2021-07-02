@@ -19,7 +19,8 @@ namespace LeaderEngine
 
             GL.UseProgram(shader);
             GL.Uniform1(GL.GetUniformLocation(shader, "sourceTexture"), 0);
-            GL.Uniform1(GL.GetUniformLocation(shader, "gPosition"), 1);
+            GL.Uniform1(GL.GetUniformLocation(shader, "depthTexture"), 1);
+            GL.Uniform1(GL.GetUniformLocation(shader, "gNormal"), 2);
             GL.UseProgram(0);
         }
 
@@ -33,7 +34,8 @@ namespace LeaderEngine
             GL.UseProgram(shader);
 
             GL.BindTextureUnit(0, postProcessingData.ColorTexture);
-            GL.BindTextureUnit(1, postProcessingData.PositionTexture);
+            GL.BindTextureUnit(1, postProcessingData.DepthTexture);
+            GL.BindTextureUnit(2, postProcessingData.NormalTexture);
 
             DrawQuad();
         }

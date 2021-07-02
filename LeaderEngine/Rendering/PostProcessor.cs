@@ -154,6 +154,7 @@ namespace LeaderEngine
                 View = view,
                 Projection = projection,
                 ColorTexture = colorTexture,
+                DepthTexture = depthTexture,
                 AlbedoTexture = gAlbedoTexture,
                 PositionTexture = gPositionTexture,
                 NormalTexture = gNormalTexture

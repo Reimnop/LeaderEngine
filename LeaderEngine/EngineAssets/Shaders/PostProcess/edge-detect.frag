@@ -5,37 +5,55 @@ layout (location = 0) out vec4 fragColor;
 in vec2 TexCoord;
 
 uniform sampler2D sourceTexture;
-uniform sampler2D gPosition;
+uniform sampler2D depthTexture;
+uniform sampler2D gNormal;
 
-uniform float threshold = 0.8;
-uniform float radius = 0.004;
-
-const int SAMPLES = 8;
-
-vec2 vogelDiskSample(int sampleIndex, int samplesCount, float phi)
-{
-	float r = sqrt(sampleIndex + 0.5) / sqrt(samplesCount);
-	float theta = sampleIndex * 2.4 + phi;
-
-	float sine = sin(theta);
-	float cosine = cos(theta);
-  
-	return vec2(r * cosine, r * sine);
-}
+vec2 kernel[9] = { 
+	vec2( 0,  0),
+	vec2(-1, -1),
+	vec2(-1,  0),
+	vec2(-1,  1),
+	vec2( 0,  1),
+	vec2( 1,  1),
+	vec2( 1,  0),
+	vec2( 1, -1),
+	vec2( 0, -1)
+};
 
 void main() {
-	vec3 currentPos = texture(gPosition, TexCoord).xyz;
+	vec2 unit = 1.0 / textureSize(sourceTexture, 0);
 
-	float delta = 0.0;
-	for (int i = 0; i < SAMPLES; i++) {
-		vec3 vDelta = abs(texture(gPosition, vogelDiskSample(i, SAMPLES, 0.4) * radius + TexCoord).xyz - currentPos);
-		float cDelta = vDelta.x + vDelta.y + vDelta.z;
+	float depth[9];
+	vec3 normal[9];
 
-		delta = max(delta, cDelta);
+	for (int i = 0; i < 9; i++) {
+		depth[i]  = texture(depthTexture, TexCoord + unit * kernel[i] * 2.0).r * 20.0;
+		normal[i] = texture(gNormal     , TexCoord + unit * kernel[i] * 2.0).xyz;
 	}
 
-	if (delta > threshold)
-		fragColor = vec4(0.0, 0.0, 0.0, 1.0);
-	else
-		fragColor = texture(sourceTexture, TexCoord);
+	vec4 delta0 = vec4(depth[1], depth[2], depth[3], depth[4]);
+	vec4 delta1 = vec4(depth[5], depth[6], depth[7], depth[8]);
+
+	delta0 = abs(delta0 - vec4(depth[0]));
+	delta1 = abs(delta1 - vec4(depth[0]));
+
+	vec4 maxDelta = max(delta0, delta1);
+	vec4 minDelta = max(min(delta0, delta1), vec4(0.0001));
+
+	vec4 dresult = step(minDelta * 25.0, maxDelta);
+
+	delta0 = vec4(
+		dot(normal[1], normal[0]),
+		dot(normal[3], normal[0]),
+		dot(normal[5], normal[0]),
+		dot(normal[7], normal[0])
+	);
+
+	vec4 nresult = step(0.4, delta1);
+	nresult = max(nresult, dresult);
+	float edge = (nresult.x + nresult.y + nresult.z + nresult.w) * 0.25;
+
+	vec3 color = texture(sourceTexture, TexCoord).rgb * (1.0 - edge);
+
+	fragColor = vec4(color, 1.0);
 }
