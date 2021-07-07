@@ -1,4 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using System;
 
 namespace LeaderEngine
@@ -8,8 +9,18 @@ namespace LeaderEngine
         public override GameAssetType AssetType => GameAssetType.Cubemap;
 
         public int Handle => _handle;
+        public Vector2i Size => _size;
+
+        public PixelInternalFormat PixelInternalFormat => _pixelInternalFormat;
+        public PixelFormat PixelFormat => _pixelFormat;
+        public PixelType PixelType => _pixelType;
 
         private int _handle;
+        private Vector2i _size;
+
+        private PixelInternalFormat _pixelInternalFormat;
+        private PixelFormat _pixelFormat;
+        private PixelType _pixelType;
 
         private Cubemap(string name) : base(name)
         {
@@ -24,6 +35,11 @@ namespace LeaderEngine
             PixelType pixelType = PixelType.UnsignedByte)
         {
             Cubemap cubemap = new Cubemap(name);
+            cubemap._size = new Vector2i(width, height);
+            cubemap._pixelInternalFormat = internalFormat;
+            cubemap._pixelFormat = format;
+            cubemap._pixelType = pixelType;
+
             cubemap._handle = GL.GenTexture();
             GL.BindTexture(TextureTarget.TextureCubeMap, cubemap._handle);
 
@@ -58,6 +74,11 @@ namespace LeaderEngine
             PixelType pixelType = PixelType.UnsignedByte) where T : struct
         {
             Cubemap cubemap = new Cubemap(name);
+            cubemap._size = new Vector2i(width, height);
+            cubemap._pixelInternalFormat = internalFormat;
+            cubemap._pixelFormat = format;
+            cubemap._pixelType = pixelType;
+
             cubemap._handle = GL.GenTexture();
             GL.BindTexture(TextureTarget.TextureCubeMap, cubemap._handle);
 

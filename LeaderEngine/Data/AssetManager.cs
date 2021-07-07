@@ -24,7 +24,8 @@ namespace LeaderEngine
             new MeshSerializer(),
             new TextureSerializer(),
             new MaterialSerializer(),
-            new PrefabSerializer()
+            new PrefabSerializer(),
+            new CubemapSerializer()
         };
 
         public static Dictionary<string, GameAsset> Assets { get; } = new Dictionary<string, GameAsset>();
