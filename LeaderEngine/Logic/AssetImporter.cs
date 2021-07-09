@@ -14,212 +14,214 @@ namespace LeaderEngine
         public static Prefab LoadModelFromFile(string path)
         {
             //import file
-            AssimpContext importer = new AssimpContext();
-            var scene = importer.ImportFile(path,
-                PostProcessSteps.Triangulate |
-                PostProcessSteps.FlipUVs |
-                PostProcessSteps.CalculateTangentSpace | 
-                PostProcessSteps.GenerateNormals);
-
-            var aiMeshes = scene.Meshes;
-            var aiMaterials = scene.Materials;
-
-            //load materials
-            Material[] materials = new Material[aiMaterials.Count];
-
-            for (int i = 0; i < scene.Materials.Count; i++)
+            using (AssimpContext importer = new AssimpContext())
             {
-                var aiMaterial = aiMaterials[i];
+                var scene = importer.ImportFile(path,
+                    PostProcessSteps.Triangulate |
+                    PostProcessSteps.FlipUVs |
+                    PostProcessSteps.CalculateTangentSpace |
+                    PostProcessSteps.GenerateNormals);
 
-                Vector3 color = new Vector3(aiMaterial.ColorDiffuse.R, aiMaterial.ColorDiffuse.G, aiMaterial.ColorDiffuse.B);
+                var aiMeshes = scene.Meshes;
+                var aiMaterials = scene.Materials;
 
-                bool hasDiffuse = false;
-                Texture diffuseTexture = null;
+                //load materials
+                Material[] materials = new Material[aiMaterials.Count];
 
-                bool hasNormal = false;
-                Texture normalTexture = null;
-
-                if (aiMaterial.HasTextureDiffuse)
+                for (int i = 0; i < scene.Materials.Count; i++)
                 {
-                    TextureSlot aiTexture = aiMaterial.TextureDiffuse;
+                    var aiMaterial = aiMaterials[i];
 
-                    //load texture
-                    string texPath = aiTexture.FilePath;
-                    string texName = aiMaterial.Name + "-Diffuse";
+                    Vector3 color = new Vector3(aiMaterial.ColorDiffuse.R, aiMaterial.ColorDiffuse.G, aiMaterial.ColorDiffuse.B);
 
-                    try
+                    bool hasDiffuse = false;
+                    Texture diffuseTexture = null;
+
+                    bool hasNormal = false;
+                    Texture normalTexture = null;
+
+                    if (aiMaterial.HasTextureDiffuse)
                     {
-                        Texture texture;
-                        if (!texPath.StartsWith('*'))
-                        {
-                            if (!Path.IsPathRooted(texPath))
-                                texPath = Path.Combine(Path.GetDirectoryName(path), texPath);
+                        TextureSlot aiTexture = aiMaterial.TextureDiffuse;
 
-                            texture = Texture.FromFile(texName, texPath);
-                        }
-                        else
-                        {
-                            int index = int.Parse(texPath.Substring(1));
-                            var embedTexture = scene.Textures[index];
+                        //load texture
+                        string texPath = aiTexture.FilePath;
+                        string texName = aiMaterial.Name + "-Diffuse";
 
-                            if (embedTexture.IsCompressed)
+                        try
+                        {
+                            Texture texture;
+                            if (!texPath.StartsWith('*'))
                             {
-                                texture = Texture.FromImage(texName, Image.Load<Rgba32>(embedTexture.CompressedData));
+                                if (!Path.IsPathRooted(texPath))
+                                    texPath = Path.Combine(Path.GetDirectoryName(path), texPath);
+
+                                texture = Texture.FromFile(texName, texPath);
                             }
                             else
                             {
-                                texture = Texture.FromArray(
-                                    texName,
-                                    embedTexture.Width,
-                                    embedTexture.Height,
-                                    embedTexture.NonCompressedData);
+                                int index = int.Parse(texPath.Substring(1));
+                                var embedTexture = scene.Textures[index];
+
+                                if (embedTexture.IsCompressed)
+                                {
+                                    texture = Texture.FromImage(texName, Image.Load<Rgba32>(embedTexture.CompressedData));
+                                }
+                                else
+                                {
+                                    texture = Texture.FromArray(
+                                        texName,
+                                        embedTexture.Width,
+                                        embedTexture.Height,
+                                        embedTexture.NonCompressedData);
+                                }
                             }
+
+                            texture.SetWrapModeT(ConvertWrapModeToOTK(aiTexture.WrapModeU));
+                            texture.SetWrapModeS(ConvertWrapModeToOTK(aiTexture.WrapModeV));
+
+                            texture.MakeImmutable();
+                            texture.MakeResident();
+
+                            hasDiffuse = true;
+                            diffuseTexture = texture;
                         }
-
-                        texture.SetWrapModeT(ConvertWrapModeToOTK(aiTexture.WrapModeU));
-                        texture.SetWrapModeS(ConvertWrapModeToOTK(aiTexture.WrapModeV));
-
-                        texture.MakeImmutable();
-                        texture.MakeResident();
-
-                        hasDiffuse = true;
-                        diffuseTexture = texture;
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.LogError($"Could not load texture {texName}!");
+                        catch (Exception e)
+                        {
+                            Logger.LogError($"Could not load texture {texName}!");
 
 #if DEBUG
-                        Logger.LogError($"Exception: {e}");
+                            Logger.LogError($"Exception: {e}");
 #endif
-                    }
-                }
-
-                if (aiMaterial.HasTextureNormal)
-                {
-                    TextureSlot aiTexture = aiMaterial.TextureNormal;
-
-                    //load texture
-                    string texPath = aiTexture.FilePath;
-                    string texName = aiMaterial.Name + "-Normal";
-
-                    try
-                    {
-                        Texture texture;
-                        if (!texPath.StartsWith('*'))
-                        {
-                            if (!Path.IsPathRooted(texPath))
-                                texPath = Path.Combine(Path.GetDirectoryName(path), texPath);
-
-                            texture = Texture.FromFile(texName, texPath);
                         }
-                        else
-                        {
-                            int index = int.Parse(texPath.Substring(1));
-                            var embedTexture = scene.Textures[index];
+                    }
 
-                            if (embedTexture.IsCompressed)
+                    if (aiMaterial.HasTextureNormal)
+                    {
+                        TextureSlot aiTexture = aiMaterial.TextureNormal;
+
+                        //load texture
+                        string texPath = aiTexture.FilePath;
+                        string texName = aiMaterial.Name + "-Normal";
+
+                        try
+                        {
+                            Texture texture;
+                            if (!texPath.StartsWith('*'))
                             {
-                                texture = Texture.FromImage(texName, Image.Load<Rgba32>(embedTexture.CompressedData));
+                                if (!Path.IsPathRooted(texPath))
+                                    texPath = Path.Combine(Path.GetDirectoryName(path), texPath);
+
+                                texture = Texture.FromFile(texName, texPath);
                             }
                             else
                             {
-                                texture = Texture.FromArray(
-                                    texName,
-                                    embedTexture.Width,
-                                    embedTexture.Height,
-                                    embedTexture.NonCompressedData);
+                                int index = int.Parse(texPath.Substring(1));
+                                var embedTexture = scene.Textures[index];
+
+                                if (embedTexture.IsCompressed)
+                                {
+                                    texture = Texture.FromImage(texName, Image.Load<Rgba32>(embedTexture.CompressedData));
+                                }
+                                else
+                                {
+                                    texture = Texture.FromArray(
+                                        texName,
+                                        embedTexture.Width,
+                                        embedTexture.Height,
+                                        embedTexture.NonCompressedData);
+                                }
                             }
+
+                            texture.SetWrapModeT(ConvertWrapModeToOTK(aiTexture.WrapModeU));
+                            texture.SetWrapModeS(ConvertWrapModeToOTK(aiTexture.WrapModeV));
+
+                            texture.MakeImmutable();
+                            texture.MakeResident();
+
+                            hasNormal = true;
+                            normalTexture = texture;
                         }
-
-                        texture.SetWrapModeT(ConvertWrapModeToOTK(aiTexture.WrapModeU));
-                        texture.SetWrapModeS(ConvertWrapModeToOTK(aiTexture.WrapModeV));
-
-                        texture.MakeImmutable();
-                        texture.MakeResident();
-
-                        hasNormal = true;
-                        normalTexture = texture;
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.LogError($"Could not load texture {texName}!");
+                        catch (Exception e)
+                        {
+                            Logger.LogError($"Could not load texture {texName}!");
 
 #if DEBUG
-                        Logger.LogError($"Exception: {e}");
+                            Logger.LogError($"Exception: {e}");
 #endif
+                        }
                     }
+
+                    Material material = new Material(aiMaterial.Name, DefaultShaders.Lit,
+                        new MaterialProperty("Color", MaterialPropertyType.Vector3, 12),
+                        new MaterialProperty("Shininess", MaterialPropertyType.Float, 4),
+                        new MaterialProperty("SpecularStrength", MaterialPropertyType.Float, 4),
+                        new MaterialProperty("HasDiffuse", MaterialPropertyType.Int, 4),
+                        new MaterialProperty("HasNormal", MaterialPropertyType.Int, 8),
+                        new MaterialProperty("Diffuse", MaterialPropertyType.Texture, 8),
+                        new MaterialProperty("Normal", MaterialPropertyType.Texture, 8));
+
+                    material.SetVector3("Color", color);
+                    material.SetFloat("Shininess", aiMaterial.Shininess);
+                    material.SetFloat("SpecularStrength", aiMaterial.ShininessStrength / 32f /* weighting */);
+                    material.SetInt("HasDiffuse", hasDiffuse ? 1 : 0);
+                    material.SetInt("HasNormal", hasNormal ? 1 : 0);
+                    material.SetTexture("Diffuse", diffuseTexture);
+                    material.SetTexture("Normal", normalTexture);
+
+                    material.UpdateBuffer();
+
+                    materials[i] = material;
                 }
 
-                Material material = new Material(aiMaterial.Name, DefaultShaders.Lit, 
-                    new MaterialProperty("Color", MaterialPropertyType.Vector3, 12),
-                    new MaterialProperty("Shininess", MaterialPropertyType.Float, 4),
-                    new MaterialProperty("SpecularStrength", MaterialPropertyType.Float, 4),
-                    new MaterialProperty("HasDiffuse", MaterialPropertyType.Int, 4),
-                    new MaterialProperty("HasNormal", MaterialPropertyType.Int, 8),
-                    new MaterialProperty("Diffuse", MaterialPropertyType.Texture, 8),
-                    new MaterialProperty("Normal", MaterialPropertyType.Texture, 8));
+                //load meshes
+                (Mesh mesh, int matIndex)[] meshes = new (Mesh mesh, int matIndex)[scene.Meshes.Count];
 
-                material.SetVector3("Color", color);
-                material.SetFloat("Shininess", aiMaterial.Shininess);
-                material.SetFloat("SpecularStrength", aiMaterial.ShininessStrength / 32f /* weighting */);
-                material.SetInt("HasDiffuse", hasDiffuse ? 1 : 0);
-                material.SetInt("HasNormal", hasNormal ? 1 : 0);
-                material.SetTexture("Diffuse", diffuseTexture);
-                material.SetTexture("Normal", normalTexture);
-
-                material.UpdateBuffer();
-
-                materials[i] = material;
-            }
-
-            //load meshes
-            (Mesh mesh, int matIndex)[] meshes = new (Mesh mesh, int matIndex)[scene.Meshes.Count];
-
-            //load each vertex
-            for (int i = 0; i < scene.Meshes.Count; i++)
-            {
-                var aiMesh = aiMeshes[i];
-
-                Vector3[] vertices = new Vector3[aiMesh.VertexCount];
-                VertexData[] perVertexData = new VertexData[aiMesh.VertexCount];
-
-                for (int j = 0; j < aiMesh.VertexCount; j++)
+                //load each vertex
+                for (int i = 0; i < scene.Meshes.Count; i++)
                 {
-                    var aiVert = aiMesh.Vertices[j];
-                    var aiNormal = aiMesh.Normals[j];
+                    var aiMesh = aiMeshes[i];
 
-                    vertices[j] = new Vector3(aiVert.X, aiVert.Y, aiVert.Z);
+                    Vector3[] vertices = new Vector3[aiMesh.VertexCount];
+                    VertexData[] perVertexData = new VertexData[aiMesh.VertexCount];
 
-                    perVertexData[j] = new VertexData
+                    for (int j = 0; j < aiMesh.VertexCount; j++)
                     {
-                        Normal = new Vector3(aiNormal.X, aiNormal.Y, aiNormal.Z),
+                        var aiVert = aiMesh.Vertices[j];
+                        var aiNormal = aiMesh.Normals[j];
 
-                        Color = aiMesh.HasVertexColors(0) ? new Vector3(
-                            aiMesh.VertexColorChannels[0][j].R,
-                            aiMesh.VertexColorChannels[0][j].G,
-                            aiMesh.VertexColorChannels[0][j].B) : Vector3.One,
+                        vertices[j] = new Vector3(aiVert.X, aiVert.Y, aiVert.Z);
 
-                        UV = aiMesh.HasTextureCoords(0) ? new Vector2(
-                            aiMesh.TextureCoordinateChannels[0][j].X,
-                            aiMesh.TextureCoordinateChannels[0][j].Y) : Vector2.Zero,
+                        perVertexData[j] = new VertexData
+                        {
+                            Normal = new Vector3(aiNormal.X, aiNormal.Y, aiNormal.Z),
 
-                        Tangent = new Vector3(aiMesh.Tangents[j].X, aiMesh.Tangents[j].Y, aiMesh.Tangents[j].Z)
-                    };
+                            Color = aiMesh.HasVertexColors(0) ? new Vector3(
+                                aiMesh.VertexColorChannels[0][j].R,
+                                aiMesh.VertexColorChannels[0][j].G,
+                                aiMesh.VertexColorChannels[0][j].B) : Vector3.One,
+
+                            UV = aiMesh.HasTextureCoords(0) ? new Vector2(
+                                aiMesh.TextureCoordinateChannels[0][j].X,
+                                aiMesh.TextureCoordinateChannels[0][j].Y) : Vector2.Zero,
+
+                            Tangent = new Vector3(aiMesh.Tangents[j].X, aiMesh.Tangents[j].Y, aiMesh.Tangents[j].Z)
+                        };
+                    }
+
+                    //create mesh
+                    Mesh mesh = new Mesh(aiMesh.Name);
+                    mesh.LoadMesh(vertices, aiMesh.GetUnsignedIndices());
+                    mesh.SetPerVertexData(perVertexData);
+
+                    meshes[i] = (mesh, aiMesh.MaterialIndex);
                 }
 
-                //create mesh
-                Mesh mesh = new Mesh(aiMesh.Name);
-                mesh.LoadMesh(vertices, aiMesh.GetUnsignedIndices());
-                mesh.SetPerVertexData(perVertexData);
+                //load model
+                PrefabEntity rootEntity = RecursivelyLoadAssimpNode(meshes, materials, scene.RootNode);
 
-                meshes[i] = (mesh, aiMesh.MaterialIndex);
+                return new Prefab(Path.GetFileNameWithoutExtension(path), rootEntity);
             }
-
-            //load model
-            PrefabEntity rootEntity = RecursivelyLoadAssimpNode(meshes, materials, scene.RootNode);
-
-            return new Prefab(Path.GetFileNameWithoutExtension(path), rootEntity);
         }
 
         private static PrefabEntity RecursivelyLoadAssimpNode((Mesh Mesh, int MatIndex)[] meshes, Material[] materials, Node node)
