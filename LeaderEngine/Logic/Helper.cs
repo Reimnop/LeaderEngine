@@ -1,8 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -51,32 +51,24 @@ namespace LeaderEngine
             return output;
         }
 
-        public static Rgba32[] LoadImageFromFile(string path, out int width, out int height)
+        public static byte[] LoadImageFromFile(string path, out int width, out int height)
         {
-            using (Image<Rgba32> image = Image.Load<Rgba32>(path))
+            using (Bitmap bmp = new Bitmap(path))
             {
-                Rgba32[] pixels;
+                BitmapData data = bmp.LockBits(
+                    new Rectangle(0, 0, bmp.Width, bmp.Height),
+                    ImageLockMode.ReadOnly,
+                    System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-                if (!image.TryGetSinglePixelSpan(out Span<Rgba32> pixelSpan))
-                {
-                    pixels = new Rgba32[image.Width * image.Height];
-                    for (int i = 0; i < image.Height; i++)
-                    {
-                        var row = image.GetPixelRowSpan(i);
-                        for (int j = 0; j < image.Width; j++)
-                        {
-                            pixels[i * image.Height + j] = row[j];
-                        }
-                    }
-                }
-                else
-                {
-                    pixels = pixelSpan.ToArray();
-                }
+                width = bmp.Width;
+                height = bmp.Height;
 
-                width = image.Width;
-                height = image.Height;
-                return pixels;
+                byte[] pixArr = new byte[width * height * 4]; // Each pixel takes 4 bytes
+                Marshal.Copy(data.Scan0, pixArr, 0, width * height * 4);
+
+                bmp.UnlockBits(data);
+
+                return pixArr;
             }
         }
 

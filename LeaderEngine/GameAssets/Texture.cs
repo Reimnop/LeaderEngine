@@ -1,9 +1,9 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using System;
-using System.Runtime.CompilerServices;
+using System.Drawing;
+using System.Drawing.Imaging;
+using PixelFormat = OpenTK.Graphics.OpenGL4.PixelFormat;
 
 namespace LeaderEngine
 {
@@ -48,28 +48,20 @@ namespace LeaderEngine
 
         public static Texture FromFile(string name, string path)
         {
-            using (var image = Image.Load<Rgba32>(path))
-                return FromImage(name, image);
+            using (Bitmap bmp = new Bitmap(path))
+                return FromBitmap(name, bmp);
         }
 
-        public unsafe static Texture FromImage(string name, Image<Rgba32> image)
+        public static Texture FromBitmap(string name, Bitmap bmp)
         {
-            Span<Rgba32> pixelSpan;
-            if (!image.TryGetSinglePixelSpan(out pixelSpan))
-            {
-                Rgba32[] pixelArray = new Rgba32[image.Width * image.Height];
-                for (int i = 0; i < image.Height; i++)
-                {
-                    var row = image.GetPixelRowSpan(i);
-                    for (int j = 0; j < image.Width; j++)
-                    {
-                        pixelArray[i * image.Height + j] = row[j];
-                    }
-                }
-                pixelSpan = new Span<Rgba32>(pixelArray);
-            }
+            BitmapData data = bmp.LockBits(
+                new Rectangle(0, 0, bmp.Width, bmp.Height),
+                ImageLockMode.ReadOnly,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            Texture tex = FromPointer(name, bmp.Width, bmp.Height, data.Scan0, PixelInternalFormat.SrgbAlpha, PixelFormat.Bgra);
+            bmp.UnlockBits(data);
 
-            return FromPointer(name, image.Width, image.Height, (IntPtr)Unsafe.AsPointer(ref pixelSpan[0]), PixelInternalFormat.SrgbAlpha);
+            return tex;
         }
 
         public static Texture FromPointer(string name, int width, int height, IntPtr data,
@@ -83,6 +75,7 @@ namespace LeaderEngine
             texture._pixelInternalFormat = internalFormat;
             texture._pixelFormat = format;
             texture._pixelType = pixelType;
+            texture._size = new Vector2i(width, height);
 
             texture._handle = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, texture._handle);
@@ -95,8 +88,6 @@ namespace LeaderEngine
             GL.BindTexture(TextureTarget.Texture2D, 0);
 
             GL.ObjectLabel(ObjectLabelIdentifier.Texture, texture._handle, name.Length, name);
-
-            texture._size = new Vector2i(width, height);
 
             return texture;
         }
@@ -112,6 +103,7 @@ namespace LeaderEngine
             texture._pixelInternalFormat = internalFormat;
             texture._pixelFormat = format;
             texture._pixelType = pixelType;
+            texture._size = new Vector2i(width, height);
 
             texture._handle = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, texture._handle);
@@ -124,8 +116,6 @@ namespace LeaderEngine
             GL.BindTexture(TextureTarget.Texture2D, 0);
 
             GL.ObjectLabel(ObjectLabelIdentifier.Texture, texture._handle, name.Length, name);
-
-            texture._size = new Vector2i(width, height);
 
             return texture;
         }

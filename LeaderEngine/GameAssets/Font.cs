@@ -1,6 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.Generic;
 using System.IO;
 
@@ -86,7 +85,7 @@ namespace LeaderEngine
 
             string texPath = Path.Combine(Path.GetDirectoryName(path), parser.RootNode["page"][0]["file"][0].Value);
 
-            Rgba32[] pixels = Helper.LoadImageFromFile(texPath, out _, out _);
+            byte[] pixels = Helper.LoadImageFromFile(texPath, out _, out _);
 
             FontTexture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, FontTexture);

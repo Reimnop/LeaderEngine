@@ -111,12 +111,12 @@ namespace LeaderEngine
             int[] widths = new int[6];
             int[] heights = new int[6];
 
-            var right = Helper.LoadImageFromFile(rightPath, out widths[0], out heights[0]);
-            var left = Helper.LoadImageFromFile(leftPath, out widths[1], out heights[1]);
-            var top = Helper.LoadImageFromFile(topPath, out widths[2], out heights[2]);
-            var bottom = Helper.LoadImageFromFile(bottomPath, out widths[3], out heights[3]);
-            var back = Helper.LoadImageFromFile(backPath, out widths[4], out heights[4]);
-            var front = Helper.LoadImageFromFile(frontPath, out widths[5], out heights[5]);
+            byte[] right = Helper.LoadImageFromFile(rightPath, out widths[0], out heights[0]);
+            byte[] left = Helper.LoadImageFromFile(leftPath, out widths[1], out heights[1]);
+            byte[] top = Helper.LoadImageFromFile(topPath, out widths[2], out heights[2]);
+            byte[] bottom = Helper.LoadImageFromFile(bottomPath, out widths[3], out heights[3]);
+            byte[] back = Helper.LoadImageFromFile(backPath, out widths[4], out heights[4]);
+            byte[] front = Helper.LoadImageFromFile(frontPath, out widths[5], out heights[5]);
 
             int width;
             int height;
@@ -130,7 +130,9 @@ namespace LeaderEngine
             return FromArrays(
                 name,
                 width, height,
-                right, left, top, bottom, back, front);
+                right, left, top, bottom, back, front,
+                PixelInternalFormat.Rgba,
+                PixelFormat.Bgra);
         }
 
         public int GetHandle()

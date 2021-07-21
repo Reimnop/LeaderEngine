@@ -1,8 +1,7 @@
 ﻿using Assimp;
 using OpenTK.Mathematics;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using System;
+using System.Drawing;
 using System.IO;
 using Quaternion = OpenTK.Mathematics.Quaternion;
 using TextureWrapMode = OpenTK.Graphics.OpenGL4.TextureWrapMode;
@@ -65,7 +64,7 @@ namespace LeaderEngine
 
                                 if (embedTexture.IsCompressed)
                                 {
-                                    texture = Texture.FromImage(texName, Image.Load<Rgba32>(embedTexture.CompressedData));
+                                    texture = Texture.FromBitmap(texName, new Bitmap(new MemoryStream(embedTexture.CompressedData)));
                                 }
                                 else
                                 {
@@ -121,7 +120,7 @@ namespace LeaderEngine
 
                                 if (embedTexture.IsCompressed)
                                 {
-                                    texture = Texture.FromImage(texName, Image.Load<Rgba32>(embedTexture.CompressedData));
+                                    texture = Texture.FromBitmap(texName, new Bitmap(new MemoryStream(embedTexture.CompressedData)));
                                 }
                                 else
                                 {
